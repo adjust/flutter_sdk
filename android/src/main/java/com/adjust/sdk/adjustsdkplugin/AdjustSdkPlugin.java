@@ -44,6 +44,9 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       case "trackEvent": trackEvent(call, result); break;
       case "isEnabled": isEnabled(result); break;
       case "setIsEnabled": setIsEnabled(call, result); break;
+      case "addSessionCallbackParameter": addSessionCallbackParameter(call, result); break;
+      case "addSessionPartnerParameter": addSessionPartnerParameter(call, result); break;
+
       default:
         error("Not implemented method: " + call.method);
         result.notImplemented();
@@ -81,6 +84,32 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
   private void setIsEnabled(MethodCall call, Result result) {
     AdjustBridge.setIsEnabled((Map)call.arguments);
+    result.success(null);
+  }
+
+  private void addSessionCallbackParameter(MethodCall call, Result result) {
+    if(!call.hasArgument("key") && !call.hasArgument("value")) {
+      result.error("0", "Arguments null or wrong", null);
+      return;
+    }
+
+    String key = (String) call.argument("key");
+    String value = (String) call.argument("value");
+    AdjustBridge.addSessionCallbackParameter(key, value);
+
+    result.success(null);
+  }
+
+  private void addSessionPartnerParameter(MethodCall call, Result result) {
+    if(!call.hasArgument("key") && !call.hasArgument("value")) {
+      result.error("0", "Arguments null or wrong", null);
+      return;
+    }
+
+    String key = (String) call.argument("key");
+    String value = (String) call.argument("value");
+    AdjustBridge.addSessionPartnerParameter(key, value);
+
     result.success(null);
   }
 

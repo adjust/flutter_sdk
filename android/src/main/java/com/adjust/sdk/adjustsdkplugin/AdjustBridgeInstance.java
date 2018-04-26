@@ -67,4 +67,12 @@ public class AdjustBridgeInstance {
         boolean isEnabled = (boolean) isEnabledParamsMap.get("isEnabled");
         Adjust.setEnabled(isEnabled);
     }
+
+    public static void addSessionCallbackParameter(String key, String value) {
+        Adjust.addSessionCallbackParameter(key, value);
+    }
+
+    public static void addSessionPartnerParameter(String key, String value) {
+        Adjust.addSessionPartnerParameter(key, value);
+    }
 }

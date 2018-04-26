@@ -44,4 +44,12 @@ public class AdjustBridge {
     public static void setIsEnabled(Map isEnabledParamsMap) {
         getDefaultInstance().setEnabled(isEnabledParamsMap);
     }
+
+    public static void addSessionCallbackParameter(String key, String value) {
+        getDefaultInstance().addSessionCallbackParameter(key, value);
+    }
+
+    public static void addSessionPartnerParameter(String key, String value) {
+        getDefaultInstance().addSessionPartnerParameter(key, value);
+    }
 }
