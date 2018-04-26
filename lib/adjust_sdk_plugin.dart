@@ -39,4 +39,14 @@ class AdjustSdkPlugin {
   static void trackEvent(AdjustEvent adjustEvent) {
     _channel.invokeMethod('trackEvent', adjustEvent.adjustEventParamsMap);
   }
+
+  static void addSessionCallbackParameter(String key, String value) {
+    _channel.invokeMethod(
+        'addSessionCallbackParameter', {'key': key, 'value': value});
+  }
+
+  static void addSessionPartnerParameter(String key, String value) {
+    _channel.invokeMethod(
+        'addSessionPartnerParameter', {'key': key, 'value': value});
+  }
 }
