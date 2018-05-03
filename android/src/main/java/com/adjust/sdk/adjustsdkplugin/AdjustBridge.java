@@ -1,11 +1,7 @@
 package com.adjust.sdk.adjustsdkplugin;
 
-import android.content.Context;
-
-import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
-
-import java.util.Map;
 
 /**
  * com.adjust.sdk.adjustsdkplugin
@@ -21,8 +17,8 @@ public class AdjustBridge {
         return defaultInstance;
     }
 
-    public static void onCreate(Context context, Map adjustConfigMap) {
-        getDefaultInstance().onCreate(context, adjustConfigMap);
+    public static void onCreate(AdjustConfig config) {
+        getDefaultInstance().onCreate(config);
     }
 
     public static void onResume() {
@@ -33,16 +29,16 @@ public class AdjustBridge {
         getDefaultInstance().onPause();
     }
 
-    public static void trackEvent(Map eventParamsMap) {
-        getDefaultInstance().trackEvent(eventParamsMap);
+    public static void trackEvent(AdjustEvent event) {
+        getDefaultInstance().trackEvent(event);
     }
 
     public static boolean isEnabled() {
         return getDefaultInstance().isEnabled();
     }
 
-    public static void setIsEnabled(Map isEnabledParamsMap) {
-        getDefaultInstance().setEnabled(isEnabledParamsMap);
+    public static void setIsEnabled(boolean isEnabled) {
+        getDefaultInstance().setEnabled(isEnabled);
     }
 
     public static void addSessionCallbackParameter(String key, String value) {

@@ -1,5 +1,9 @@
 import 'package:adjust_sdk_plugin/adjustConfig.dart';
 import 'package:adjust_sdk_plugin/adjustEvent.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjustEventFailure.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjustEventSuccess.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjustSessionFailure.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjustSessionSuccess.dart';
 import 'package:adjust_sdk_plugin_example/util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -68,13 +72,32 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       platformVersion = await AdjustSdkPlugin.platformVersion;
-
-      // initialize the Adjust SDK
-      print('Calling Adjust onCreate...');
-      AdjustSdkPlugin.onCreate(config);
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
+
+    // initialize the Adjust SDK
+    print('Calling Adjust onCreate...');
+    AdjustSdkPlugin.onCreate(config);
+
+    AdjustSdkPlugin
+        .setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessData) {
+      print(
+          ' >>>> Reeceived sessionSuccessData: ' + sessionSuccessData.message);
+    });
+    AdjustSdkPlugin
+        .setSessionFailureHandler((AdjustSessionFailure sessionFailureData) {
+      print(
+          ' >>>> Reeceived sessionFailureData: ' + sessionFailureData.message);
+    });
+    AdjustSdkPlugin
+        .setEventSuccessHandler((AdjustEventSuccess eventSuccessData) {
+      print(' >>>> Reeceived eventFailureData: ' + eventSuccessData.message);
+    });
+    AdjustSdkPlugin
+        .setEventFailureHandler((AdjustEventFailure eventFailureData) {
+      print(' >>>> Reeceived eventFailureData: ' + eventFailureData.message);
+    });
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -115,8 +138,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             // track simple event button
             Util.buildRaisedButton(
                 'Track Sample Event',
-                () => AdjustSdkPlugin.trackEvent(
-                    new AdjustEvent('c4thih', 10, 'EUR', ''))),
+                () => AdjustSdkPlugin
+                    .trackEvent(new AdjustEvent('c4thih', 10, 'EUR', ''))),
 
             // is SDK enabled switch
             new Text(
@@ -150,5 +173,4 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       print('no such method found im plugin: isEnabled');
     }
   }
-
 }
