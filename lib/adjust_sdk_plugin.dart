@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:adjust_sdk_plugin/adjustConfig.dart';
 import 'package:adjust_sdk_plugin/adjustEvent.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjustAttribution.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjustEventFailure.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjustEventSuccess.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjustSessionFailure.dart';
@@ -12,6 +13,7 @@ typedef void SessionSuccessHandler(AdjustSessionSuccess successData);
 typedef void SessionFailureHandler(AdjustSessionFailure failureData);
 typedef void EventSuccessHandler(AdjustEventSuccess successData);
 typedef void EventFailureHandler(AdjustEventFailure failureData);
+typedef void AttributionChangedHandler(AdjustAttribution attributionData);
 
 class AdjustSdkPlugin {
   static const MethodChannel _channel =
@@ -22,6 +24,7 @@ class AdjustSdkPlugin {
   static SessionFailureHandler _sessionFailureHandler;
   static EventSuccessHandler _eventSuccessHandler;
   static EventFailureHandler _eventFailureHandler;
+  static AttributionChangedHandler _attributionChangedHandler;
 
   static void _initCallbackHandlers() {
     if (_callbackHandlersInitialized) {
@@ -30,29 +33,43 @@ class AdjustSdkPlugin {
     _callbackHandlersInitialized = true;
 
     _channel.setMethodCallHandler((MethodCall call) {
-      print(" !!!!!! INCOMING METHOD FROM NATIVE: " + call.method);
-      
-      switch (call.method) {
-        case 'session-success':
-          AdjustSessionSuccess sessionSuccess =
-              AdjustSessionSuccess.fromMap(call.arguments);
-          _sessionSuccessHandler(sessionSuccess);
-          break;
-        case 'session-fail':
-          AdjustSessionFailure sessionFailure =
-              AdjustSessionFailure.fromMap(call.arguments);
-          _sessionFailureHandler(sessionFailure);
-          break;
-        case 'event-success':
-          AdjustEventSuccess eventSuccess =
-              AdjustEventSuccess.fromMap(call.arguments);
-          _eventSuccessHandler(eventSuccess);
-          break;
-        case 'event-fail':
-          AdjustEventFailure eventFailure =
-              AdjustEventFailure.fromMap(call.arguments);
-          _eventFailureHandler(eventFailure);
-          break;
+      print(" >>>>> INCOMING METHOD FROM NATIVE: " + call.method);
+
+      try {
+        switch (call.method) {
+          case 'session-success':
+            AdjustSessionSuccess sessionSuccess =
+                AdjustSessionSuccess.fromMap(call.arguments);
+            if (_sessionSuccessHandler != null)
+              _sessionSuccessHandler(sessionSuccess);
+            break;
+          case 'session-fail':
+            AdjustSessionFailure sessionFailure =
+                AdjustSessionFailure.fromMap(call.arguments);
+            if (_sessionFailureHandler != null)
+              _sessionFailureHandler(sessionFailure);
+            break;
+          case 'event-success':
+            AdjustEventSuccess eventSuccess =
+                AdjustEventSuccess.fromMap(call.arguments);
+            if (_eventSuccessHandler != null)
+              _eventSuccessHandler(eventSuccess);
+            break;
+          case 'event-fail':
+            AdjustEventFailure eventFailure =
+                AdjustEventFailure.fromMap(call.arguments);
+            if (_eventFailureHandler != null)
+              _eventFailureHandler(eventFailure);
+            break;
+          case 'attribution-change':
+            AdjustAttribution attribution =
+                AdjustAttribution.fromMap(call.arguments);
+            if (_attributionChangedHandler != null)
+              _attributionChangedHandler(attribution);
+            break;
+        }
+      } catch (e) {
+        print(e.toString());
       }
     });
   }
@@ -75,6 +92,11 @@ class AdjustSdkPlugin {
   static void setEventFailureHandler(EventFailureHandler handler) {
     _initCallbackHandlers();
     _eventFailureHandler = handler;
+  }
+
+  static void setAttributionChangedHandler(AttributionChangedHandler handler) {
+    _initCallbackHandlers();
+    _attributionChangedHandler = handler;
   }
 
   static Future<String> get platformVersion async {

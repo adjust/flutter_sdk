@@ -2,6 +2,7 @@ package com.adjust.sdk.adjustsdkplugin;
 
 import android.content.Context;
 
+import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustEventFailure;
@@ -9,6 +10,7 @@ import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.LogLevel;
+import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
@@ -149,6 +151,23 @@ public class AdjustSdkPlugin implements MethodCallHandler {
         adjustEventFailureMap.put("jsonResponse", adjustEventFailure.jsonResponse.toString());
 
         channel.invokeMethod("event-fail", adjustEventFailureMap);
+      }
+    });
+
+    config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+      @Override
+      public void onAttributionChanged(AdjustAttribution adjustAttribution) {
+        HashMap<String, String> adjustAttributionMap = new HashMap();
+        adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
+        adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
+        adjustAttributionMap.put("network", adjustAttribution.network);
+        adjustAttributionMap.put("campaign", adjustAttribution.campaign);
+        adjustAttributionMap.put("adgroup", adjustAttribution.adgroup);
+        adjustAttributionMap.put("creative", adjustAttribution.creative);
+        adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
+        adjustAttributionMap.put("adid", adjustAttribution.adid);
+
+        channel.invokeMethod("attribution-change", adjustAttributionMap);
       }
     });
 

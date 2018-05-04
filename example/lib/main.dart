@@ -1,5 +1,6 @@
 import 'package:adjust_sdk_plugin/adjustConfig.dart';
 import 'package:adjust_sdk_plugin/adjustEvent.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjustAttribution.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjustEventFailure.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjustEventSuccess.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjustSessionFailure.dart';
@@ -97,6 +98,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     AdjustSdkPlugin
         .setEventFailureHandler((AdjustEventFailure eventFailureData) {
       print(' >>>> Reeceived eventFailureData: ' + eventFailureData.message);
+    });
+    AdjustSdkPlugin
+        .setAttributionChangedHandler((AdjustAttribution attributionChangedData) {
+      print(' >>>> Reeceived attributionChangedData: ' + attributionChangedData.trackerToken);
     });
 
     // If the widget was removed from the tree while the asynchronous platform
