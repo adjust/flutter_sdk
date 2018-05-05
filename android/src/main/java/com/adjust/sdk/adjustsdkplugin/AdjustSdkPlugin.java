@@ -1,7 +1,9 @@
 package com.adjust.sdk.adjustsdkplugin;
 
 import android.content.Context;
+import android.net.Uri;
 
+import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
@@ -11,6 +13,8 @@ import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
+import com.adjust.sdk.OnDeeplinkResponseListener;
+import com.adjust.sdk.OnDeviceIdsRead;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
@@ -61,6 +65,15 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       case "trackEvent": trackEvent(call, result); break;
       case "isEnabled": isEnabled(result); break;
       case "setIsEnabled": setIsEnabled(call, result); break;
+
+      case "setOfflineMode": setOfflineMode(call, result); break;
+      case "setPushToken": setPushToken(call, result); break;
+      case "appWillOpenUrl": appWillOpenUrl(call, result); break;
+      case "sendFirstPackages": sendFirstPackages(result); break;
+      case "getAdid": getAdid(result); break;
+      case "getGoogleAdId": getGoogleAdId(result); break;
+      case "getAttribution": getAttribution(result); break;
+
       case "addSessionCallbackParameter": addSessionCallbackParameter(call, result); break;
       case "addSessionPartnerParameter": addSessionPartnerParameter(call, result); break;
 
@@ -97,6 +110,35 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     AdjustSdkPlugin.log("\tenvironment: " + environment);
     AdjustSdkPlugin.log("\tuserAgent: " + userAgent);
     AdjustSdkPlugin.log("\tlogLevel: " + logLevel);
+
+    config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+      @Override
+      public boolean launchReceivedDeeplink(Uri uri) {
+        HashMap uriParamsMap = new HashMap();
+        uriParamsMap.put("uri", uri);
+
+        final boolean[] shouldLaunchUri = new boolean[1];
+        channel.invokeMethod("should-launch-uri", uriParamsMap, new Result() {
+          @Override
+          public void success(Object o) {
+            shouldLaunchUri[0] = Boolean.parseBoolean(o.toString());
+          }
+
+          @Override
+          public void error(String s, String s1, Object o) {
+            shouldLaunchUri[0] = false;
+          }
+
+          @Override
+          public void notImplemented() {
+            shouldLaunchUri[0] = false;
+          }
+        });
+
+        // TODO: this won't work :)
+        return shouldLaunchUri[0];
+      }
+    });
 
     config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
       @Override
@@ -205,11 +247,69 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     result.success(AdjustBridge.isEnabled());
   }
 
+  private void setOfflineMode(MethodCall call, Result result) {
+    Map isOfflineParamsMap = (Map)call.arguments;
+    boolean isOffline = (boolean) isOfflineParamsMap.get("isOffline");
+    AdjustBridge.setOfflineMode(isOffline);
+    result.success(null);
+  }
+
+  private void setPushToken(MethodCall call, Result result) {
+    Map tokenParamsMap = (Map)call.arguments;
+    if(!tokenParamsMap.containsKey("token")) {
+      result.error("0", "Arguments null or wrong (missing argument >token<", null);
+      return;
+    }
+
+    String pushToken = tokenParamsMap.get("token").toString();
+    AdjustBridge.setPushToken(pushToken);
+    result.success(null);
+  }
+
   private void setIsEnabled(MethodCall call, Result result) {
     Map isEnabledParamsMap = (Map)call.arguments;
+    if(!isEnabledParamsMap.containsKey("isEnabled")) {
+      result.error("0", "Arguments null or wrong (missing argument >isEnabled<", null);
+      return;
+    }
+
     boolean isEnabled = (boolean) isEnabledParamsMap.get("isEnabled");
     AdjustBridge.setIsEnabled(isEnabled);
     result.success(null);
+  }
+
+  private void appWillOpenUrl(MethodCall call, Result result) {
+    Map urlParamsMap = (Map)call.arguments;
+    if(!urlParamsMap.containsKey("token")) {
+      result.error("0", "Arguments null or wrong (missing argument >url<", null);
+      return;
+    }
+
+    String url = urlParamsMap.get("url").toString();
+    AdjustBridge.appWillOpenUrl(url);
+    result.success(null);
+  }
+
+  private void sendFirstPackages(Result result) {
+    AdjustBridge.sendFirstPackages();
+    result.success(null);
+  }
+
+  private void getAdid(Result result) {
+    result.success(AdjustBridge.getAdid());
+  }
+
+  private void getGoogleAdId(final Result result) {
+    AdjustBridge.getGoogleAdId(applicationContext, new OnDeviceIdsRead() {
+      @Override
+      public void onGoogleAdIdRead(String googleAdId) {
+        result.success(googleAdId);
+      }
+    });
+  }
+
+  private void getAttribution(Result result) {
+    result.success(AdjustBridge.getAttribution());
   }
 
   private void addSessionCallbackParameter(MethodCall call, Result result) {

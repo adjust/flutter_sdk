@@ -81,28 +81,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     print('Calling Adjust onCreate...');
     AdjustSdkPlugin.onCreate(config);
 
-    AdjustSdkPlugin
-        .setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessData) {
-      print(
-          ' >>>> Reeceived sessionSuccessData: ' + sessionSuccessData.message);
-    });
-    AdjustSdkPlugin
-        .setSessionFailureHandler((AdjustSessionFailure sessionFailureData) {
-      print(
-          ' >>>> Reeceived sessionFailureData: ' + sessionFailureData.message);
-    });
-    AdjustSdkPlugin
-        .setEventSuccessHandler((AdjustEventSuccess eventSuccessData) {
-      print(' >>>> Reeceived eventFailureData: ' + eventSuccessData.message);
-    });
-    AdjustSdkPlugin
-        .setEventFailureHandler((AdjustEventFailure eventFailureData) {
-      print(' >>>> Reeceived eventFailureData: ' + eventFailureData.message);
-    });
-    AdjustSdkPlugin
-        .setAttributionChangedHandler((AdjustAttribution attributionChangedData) {
-      print(' >>>> Reeceived attributionChangedData: ' + attributionChangedData.trackerToken);
-    });
+    // set callbacks for session, event, attribution and deeplink
+    _setCallbacks();
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -146,6 +126,26 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 () => AdjustSdkPlugin
                     .trackEvent(new AdjustEvent('c4thih', 10, 'EUR', ''))),
 
+            // get google AdId
+            Util.buildRaisedButton(
+                'Get Google AdId',
+                () => AdjustSdkPlugin.getGoogleAdId().then((googleAdid) {
+                      print('Received google AdId: $googleAdid');
+                    })),
+
+            // get ADID
+            Util.buildRaisedButton(
+                'Get ADID',
+                () => AdjustSdkPlugin.getAdid().then((adid) {
+                      print('Received ADID: $adid');
+                    })),
+
+            // get attribution
+            Util.buildRaisedButton('Get Attribution',
+                () => AdjustSdkPlugin.getAttribution().then((attribution) {
+                  print('Received attribution: ${attribution.toString()}');
+                })),
+
             // is SDK enabled switch
             new Text(
               _isSdkEnabled ? 'Enabled' : 'Disabled',
@@ -177,5 +177,42 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     } on PlatformException {
       print('no such method found im plugin: isEnabled');
     }
+  }
+
+  _setCallbacks() {
+    AdjustSdkPlugin
+        .setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessData) {
+      print(
+          ' >>>> Reeceived sessionSuccessData: ' + sessionSuccessData.message);
+    });
+
+    AdjustSdkPlugin
+        .setSessionFailureHandler((AdjustSessionFailure sessionFailureData) {
+      print(
+          ' >>>> Reeceived sessionFailureData: ' + sessionFailureData.message);
+    });
+
+    AdjustSdkPlugin
+        .setEventSuccessHandler((AdjustEventSuccess eventSuccessData) {
+      print(' >>>> Reeceived eventFailureData: ' + eventSuccessData.message);
+    });
+
+    AdjustSdkPlugin
+        .setEventFailureHandler((AdjustEventFailure eventFailureData) {
+      print(' >>>> Reeceived eventFailureData: ' + eventFailureData.message);
+    });
+
+    AdjustSdkPlugin.setAttributionChangedHandler(
+        (AdjustAttribution attributionChangedData) {
+      print(' >>>> Reeceived attributionChangedData: ' +
+          attributionChangedData.trackerToken);
+    });
+
+    AdjustSdkPlugin.setShouldLaunchReceivedDeeplinkHandler((String uri) {
+      if (uri.startsWith('adjust.')) {
+        return true;
+      }
+      return false;
+    });
   }
 }

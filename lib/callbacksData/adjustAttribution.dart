@@ -8,6 +8,14 @@ class AdjustAttribution {
   String clickLabel;
   String adid;
 
+  @override
+  toString() {
+    return 
+      """token: $trackerToken, tokenName: $trackerName, network: $network, 
+        campaign: $campaign, adgroup: $adgroup, creative: $creative, 
+        clickLabel: $clickLabel, adid: $adid""";
+  }
+
   static AdjustAttribution fromMap(dynamic map) {
     AdjustAttribution attChange = new AdjustAttribution();
     try {

@@ -16,6 +16,9 @@ class AdjustConfig {
   AdjustLogLevel logLevel;
   AdjustEnvironment environment;
 
+  // example of platform calling the client codebase:
+  // https://github.com/flutter/plugins/tree/master/packages/quick_actions
+
   //  Action<string> deferredDeeplinkDelegate;
   //  Action<AdjustEventSuccess> eventSuccessDelegate;
   //  Action<AdjustEventFailure> eventFailureDelegate;

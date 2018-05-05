@@ -1,8 +1,15 @@
 package com.adjust.sdk.adjustsdkplugin;
 
+import android.content.Context;
+import android.net.Uri;
+
 import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
+import com.adjust.sdk.OnDeviceIdsRead;
+
+import java.util.HashMap;
 
 /**
  * com.adjust.sdk.adjustsdkplugin
@@ -21,6 +28,18 @@ public class AdjustBridgeInstance {
         return Adjust.isEnabled();
     }
 
+    public void setOfflineMode(boolean isOffline) {
+        Adjust.setOfflineMode(isOffline);
+    }
+
+    public void setPushToken(String token) {
+        Adjust.setPushToken(token);
+    }
+
+    public void appWillOpenUrl(String url) {
+        Adjust.appWillOpenUrl(Uri.parse(url));
+    }
+
     public void onResume() {
         Adjust.onResume();
     }
@@ -28,9 +47,34 @@ public class AdjustBridgeInstance {
     public void onPause() {
         Adjust.onPause();
     }
+    public void sendFirstPackages() {
+        Adjust.sendFirstPackages();
+    }
 
     public void setEnabled(boolean isEnabled) {
         Adjust.setEnabled(isEnabled);
+    }
+
+    public String getAdid() {
+        return Adjust.getAdid();
+    }
+
+    public void getGoogleAdId(Context context, OnDeviceIdsRead callback) {
+        Adjust.getGoogleAdId(context, callback);
+    }
+
+    public HashMap<String, String> getAttribution() {
+        AdjustAttribution adjustAttribution = Adjust.getAttribution();
+        HashMap<String, String> adjustAttributionMap = new HashMap();
+        adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
+        adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
+        adjustAttributionMap.put("network", adjustAttribution.network);
+        adjustAttributionMap.put("campaign", adjustAttribution.campaign);
+        adjustAttributionMap.put("adgroup", adjustAttribution.adgroup);
+        adjustAttributionMap.put("creative", adjustAttribution.creative);
+        adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
+        adjustAttributionMap.put("adid", adjustAttribution.adid);
+        return adjustAttributionMap;
     }
 
     public static void addSessionCallbackParameter(String key, String value) {

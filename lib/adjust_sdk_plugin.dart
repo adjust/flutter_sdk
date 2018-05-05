@@ -14,6 +14,7 @@ typedef void SessionFailureHandler(AdjustSessionFailure failureData);
 typedef void EventSuccessHandler(AdjustEventSuccess successData);
 typedef void EventFailureHandler(AdjustEventFailure failureData);
 typedef void AttributionChangedHandler(AdjustAttribution attributionData);
+typedef bool ShouldLaunchReceivedDeeplinkHandler(String uri);
 
 class AdjustSdkPlugin {
   static const MethodChannel _channel =
@@ -25,6 +26,8 @@ class AdjustSdkPlugin {
   static EventSuccessHandler _eventSuccessHandler;
   static EventFailureHandler _eventFailureHandler;
   static AttributionChangedHandler _attributionChangedHandler;
+  static ShouldLaunchReceivedDeeplinkHandler
+      _shouldLaunchReceivedDeeplinkHandler;
 
   static void _initCallbackHandlers() {
     if (_callbackHandlersInitialized) {
@@ -67,6 +70,14 @@ class AdjustSdkPlugin {
             if (_attributionChangedHandler != null)
               _attributionChangedHandler(attribution);
             break;
+          case 'should-launch-uri':
+            String uri = call.arguments['uri'];
+            if (_shouldLaunchReceivedDeeplinkHandler != null) {
+              bool shouldLaunchUri = _shouldLaunchReceivedDeeplinkHandler(uri);
+
+              // TODO: how to pass the value to the native part ??? :o
+
+            }
         }
       } catch (e) {
         print(e.toString());
@@ -97,6 +108,12 @@ class AdjustSdkPlugin {
   static void setAttributionChangedHandler(AttributionChangedHandler handler) {
     _initCallbackHandlers();
     _attributionChangedHandler = handler;
+  }
+
+  static void setShouldLaunchReceivedDeeplinkHandler(
+      ShouldLaunchReceivedDeeplinkHandler handler) {
+    _initCallbackHandlers();
+    _shouldLaunchReceivedDeeplinkHandler = handler;
   }
 
   static Future<String> get platformVersion async {
@@ -130,6 +147,37 @@ class AdjustSdkPlugin {
 
   static void trackEvent(AdjustEvent adjustEvent) {
     _channel.invokeMethod('trackEvent', adjustEvent.adjustEventParamsMap);
+  }
+
+  static void setOfflineMode(bool isOffline) {
+    _channel.invokeMethod('setOfflineMode', {'isOffline': isOffline});
+  }
+
+  static void setPushToken(String token) {
+    _channel.invokeMethod('setPushToken', {'token': token});
+  }
+
+  static void appWillOpenUrl(String url) {
+    _channel.invokeMethod('appWillOpenUrl', {'url': url});
+  }
+
+  static void sendFirstPackages() {
+    _channel.invokeMethod('sendFirstPackages');
+  }
+
+  static Future<String> getAdid() async {
+    final String adid = await _channel.invokeMethod('getAdid');
+    return adid;
+  }
+
+  static Future<String> getGoogleAdId() async {
+    final String googleAdId = await _channel.invokeMethod('getGoogleAdId');
+    return googleAdId;
+  }
+
+  static Future<AdjustAttribution> getAttribution() async {
+    final Map attributionMap = await _channel.invokeMethod('getAttribution');
+    return AdjustAttribution.fromMap(attributionMap);
   }
 
   static void addSessionCallbackParameter(String key, String value) {

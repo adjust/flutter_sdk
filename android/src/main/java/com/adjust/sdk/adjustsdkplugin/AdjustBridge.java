@@ -1,7 +1,12 @@
 package com.adjust.sdk.adjustsdkplugin;
 
+import android.content.Context;
+
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
+import com.adjust.sdk.OnDeviceIdsRead;
+
+import java.util.HashMap;
 
 /**
  * com.adjust.sdk.adjustsdkplugin
@@ -39,6 +44,34 @@ public class AdjustBridge {
 
     public static void setIsEnabled(boolean isEnabled) {
         getDefaultInstance().setEnabled(isEnabled);
+    }
+
+    public static void setPushToken(String token) {
+        getDefaultInstance().setPushToken(token);
+    }
+
+    public static void setOfflineMode(boolean isOffline) {
+        getDefaultInstance().setOfflineMode(isOffline);
+    }
+
+    public static void appWillOpenUrl(String url) {
+        getDefaultInstance().appWillOpenUrl(url);
+    }
+
+    public static void sendFirstPackages() {
+        getDefaultInstance().sendFirstPackages();
+    }
+
+    public static String getAdid() {
+        return getDefaultInstance().getAdid();
+    }
+
+    public static void getGoogleAdId(Context context, OnDeviceIdsRead callback) {
+        getDefaultInstance().getGoogleAdId(context, callback);
+    }
+
+    public static HashMap<String, String> getAttribution() {
+        return getDefaultInstance().getAttribution();
     }
 
     public static void addSessionCallbackParameter(String key, String value) {
