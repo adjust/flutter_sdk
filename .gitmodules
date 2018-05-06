@@ -1,0 +1,6 @@
+[submodule "ext/Android/sdk"]
+	path = ext/Android/sdk
+	url = git@github.com:adjust/android_sdk.git
+[submodule "ext/iOS/sdk"]
+	path = ext/iOS/sdk
+	url = git@github.com:adjust/ios_sdk.git
