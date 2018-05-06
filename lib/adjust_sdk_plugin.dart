@@ -18,7 +18,10 @@ typedef bool ShouldLaunchReceivedDeeplinkHandler(String uri);
 
 class AdjustSdkPlugin {
   static const MethodChannel _channel =
-      const MethodChannel('adjust_sdk_plugin');
+      const MethodChannel('com.adjust/api');
+  // any disadvantages of using multiple channels ??
+  static const MethodChannel _deeplinkChannel =
+      const MethodChannel('com.adjust/deeplink');
   static bool _callbackHandlersInitialized = false;
 
   static SessionSuccessHandler _sessionSuccessHandler;
@@ -34,6 +37,9 @@ class AdjustSdkPlugin {
       return;
     }
     _callbackHandlersInitialized = true;
+
+    // set deeplink channel handler
+    _deeplinkChannel.setMethodCallHandler(_deeplinkChannelHandler);
 
     _channel.setMethodCallHandler((MethodCall call) {
       print(" >>>>> INCOMING METHOD FROM NATIVE: " + call.method);
@@ -70,19 +76,27 @@ class AdjustSdkPlugin {
             if (_attributionChangedHandler != null)
               _attributionChangedHandler(attribution);
             break;
-          case 'should-launch-uri':
-            String uri = call.arguments['uri'];
-            if (_shouldLaunchReceivedDeeplinkHandler != null) {
-              bool shouldLaunchUri = _shouldLaunchReceivedDeeplinkHandler(uri);
-
-              // TODO: how to pass the value to the native part ??? :o
-
-            }
         }
       } catch (e) {
         print(e.toString());
       }
     });
+  }
+
+  static Future<dynamic> _deeplinkChannelHandler(MethodCall call) async {
+    print(" >>>>> INCOMING DEEPLINK METHOD FROM NATIVE: " + call.method);
+
+    switch (call.method) {
+      case 'should-launch-uri':
+        String uri = call.arguments['uri'];
+        if (_shouldLaunchReceivedDeeplinkHandler != null) {
+          return _shouldLaunchReceivedDeeplinkHandler(uri);
+        }
+        // TODO: what to return in case the client did not implement '_shouldLaunchReceivedDeeplinkHandler'
+        return false;
+      default:
+        throw new UnsupportedError('Unknown method: ${call.method}');
+    }
   }
 
   static void setSessionSuccessHandler(SessionSuccessHandler handler) {

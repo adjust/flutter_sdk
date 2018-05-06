@@ -35,6 +35,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  */
 public class AdjustSdkPlugin implements MethodCallHandler {
   private static MethodChannel channel;
+  private static MethodChannel deeplinkChannel;
   private Context applicationContext;
 
   public AdjustSdkPlugin(Context context) {
@@ -49,8 +50,12 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       throw new IllegalStateException("You should not call registerWith more than once.");
     }
 
-    channel = new MethodChannel(registrar.messenger(), "adjust_sdk_plugin");
-    channel.setMethodCallHandler(new AdjustSdkPlugin(registrar.context()));
+    AdjustSdkPlugin adjustSdkPlugin = new AdjustSdkPlugin(registrar.context());
+    channel = new MethodChannel(registrar.messenger(), "com.adjust/api");
+    channel.setMethodCallHandler(adjustSdkPlugin);
+
+    deeplinkChannel = new MethodChannel(registrar.messenger(), "com.adjust/deeplink");
+    deeplinkChannel.setMethodCallHandler(adjustSdkPlugin);
   }
 
   @Override
@@ -118,10 +123,14 @@ public class AdjustSdkPlugin implements MethodCallHandler {
         uriParamsMap.put("uri", uri);
 
         final boolean[] shouldLaunchUri = new boolean[1];
-        channel.invokeMethod("should-launch-uri", uriParamsMap, new Result() {
+        deeplinkChannel.invokeMethod("should-launch-uri", uriParamsMap, new Result() {
           @Override
           public void success(Object o) {
-            shouldLaunchUri[0] = Boolean.parseBoolean(o.toString());
+            if(o instanceof Boolean) {
+              shouldLaunchUri[0] = (Boolean)o;
+            } else {
+              shouldLaunchUri[0] = false;
+            }
           }
 
           @Override

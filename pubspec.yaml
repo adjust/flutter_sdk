@@ -1,7 +1,7 @@
 name: adjust_sdk_plugin
-description: A new flutter plugin project.
-version: 0.0.1
-author:
+description: Adjust Flutter SDK
+version: 0.5.0
+author: Srđan Tubin
 homepage:
 
 dependencies:
