@@ -3,7 +3,6 @@ package com.adjust.sdk.adjustsdkplugin;
 import android.content.Context;
 import android.net.Uri;
 
-import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
@@ -20,6 +19,10 @@ import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +31,8 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+
+import static com.adjust.sdk.adjustsdkplugin.AdjustPluginUtils.*;
 
 /**
  * com.adjust.sdk.adjustsdkplugin
@@ -80,6 +85,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       case "getAmazonAdId": getAmazonAdId(result); break;
       case "getAttribution": getAttribution(result); break;
       case "setReferrer": setReferrer(call, result); break;
+      case "gdprForgetMe": gdprForgetMe(result); break;
       case "addSessionCallbackParameter": addSessionCallbackParameter(call, result); break;
       case "addSessionPartnerParameter": addSessionPartnerParameter(call, result); break;
       case "removeSessionCallbackParameter": removeSessionCallbackParameter(call, result);
@@ -100,29 +106,94 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
   private void onCreate(final MethodCall call, final Result result) {
     Map adjustConfigMap = (Map)call.arguments;
+    if(!adjustConfigMap.containsKey("appToken")) {
+      result.error("0", "Arguments null or wrong (missing argument >appToken<", null);
+      return;
+    }
+    if(!adjustConfigMap.containsKey("environment")) {
+      result.error("0", "Arguments null or wrong (missing argument >environment<", null);
+      return;
+    }
 
     String appToken = (String) adjustConfigMap.get("appToken");
-    String logLevel = (String) adjustConfigMap.get("logLevel");
     String environment = (String) adjustConfigMap.get("environment");
+
+    String logLevel = (String) adjustConfigMap.get("logLevel");
     String defaultTracker = (String) adjustConfigMap.get("defaultTracker");
-    String isDeviceKnownString = (String) adjustConfigMap.get("isDeviceKnown");
-    boolean isDeviceKnown = Boolean.valueOf(isDeviceKnownString);
+    String processName = (String) adjustConfigMap.get("processName");
+    String delayStartString = (String) adjustConfigMap.get("delayStart");
+    String secretIdString = (String) adjustConfigMap.get("secretId");
+    String info1String = (String) adjustConfigMap.get("info1");
+    String info2String = (String) adjustConfigMap.get("info2");
+    String info3String = (String) adjustConfigMap.get("info3");
+    String info4String = (String) adjustConfigMap.get("info4");
 
     AdjustConfig config = new AdjustConfig(applicationContext, appToken, environment);
     String userAgent = (String) adjustConfigMap.get("userAgent");
     config.setUserAgent(userAgent);
     config.setLogLevel(LogLevel.valueOf(logLevel));
     config.setDefaultTracker(defaultTracker);
-    config.setDeviceKnown(isDeviceKnown);
+    config.setProcessName(processName);
+
+
+    if(adjustConfigMap.containsKey("eventBufferingEnabled")) {
+      String eventBufferingEnabledString = (String) adjustConfigMap.get("eventBufferingEnabled");
+      boolean eventBufferingEnabled = Boolean.valueOf(eventBufferingEnabledString);
+      config.setEventBufferingEnabled(eventBufferingEnabled);
+      AdjustSdkPlugin.log("\teventBufferingEnabled: " + eventBufferingEnabled);
+    }
+
+    if(adjustConfigMap.containsKey("sendInBackground")) {
+      String sendInBackgroundString = (String) adjustConfigMap.get("sendInBackground");
+      boolean sendInBackground = Boolean.valueOf(sendInBackgroundString);
+      config.setSendInBackground(sendInBackground);
+      AdjustSdkPlugin.log("\tsendInBackground: " + sendInBackground);
+    }
+
+    if(adjustConfigMap.containsKey("isDeviceKnown")) {
+      String isDeviceKnownString = (String) adjustConfigMap.get("isDeviceKnown");
+      boolean isDeviceKnown = Boolean.valueOf(isDeviceKnownString);
+      config.setDeviceKnown(isDeviceKnown);
+      AdjustSdkPlugin.log("\tisDeviceKnown: " + isDeviceKnown);
+    }
+
+    if(adjustConfigMap.containsKey("readImei")) {
+      String readImeiString = (String) adjustConfigMap.get("readImei");
+      boolean readImei = Boolean.valueOf(readImeiString);
+      config.setReadMobileEquipmentIdentity(readImei);
+      AdjustSdkPlugin.log("\treadImei: " + readImei);
+    }
+
+    if(stringIsNumber(delayStartString)) {
+      double delayStart = Double.valueOf(delayStartString);
+      config.setDelayStart(delayStart);
+      AdjustSdkPlugin.log("\tdelayStart: " + delayStart);
+    }
+
+    if(stringIsNumber(secretIdString) && stringIsNumber(info1String) && stringIsNumber(info2String)
+            && stringIsNumber(info3String) && stringIsNumber(info4String)) {
+      long secretId = Long.valueOf(secretIdString);
+      long info1 = Long.valueOf(info1String);
+      long info2 = Long.valueOf(info2String);
+      long info3 = Long.valueOf(info3String);
+      long info4 = Long.valueOf(info4String);
+
+      config.setAppSecret(secretId, info1, info2, info3, info4);
+      AdjustSdkPlugin.log(String.format("\tappSecret: %d, %d, %d, %d, %d", secretIdString, info1String, info2String, info3String, info4String));
+    }
 
     AdjustSdkPlugin.log("Calling onCreate with values:");
     AdjustSdkPlugin.log("\tappToken: " + appToken);
     AdjustSdkPlugin.log("\tenvironment: " + environment);
     AdjustSdkPlugin.log("\tuserAgent: " + userAgent);
     AdjustSdkPlugin.log("\tlogLevel: " + logLevel);
+    AdjustSdkPlugin.log("\tdefaultTracker: " + defaultTracker);
+    AdjustSdkPlugin.log("\tprocessName: " + processName);
 
     config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
       @Override
+      // maybe also implement a `launchReceivedDeeplink` method which returns void, but provides a callback
+      // in that case, this could work like a charm
       public boolean launchReceivedDeeplink(Uri uri) {
         HashMap uriParamsMap = new HashMap();
         uriParamsMap.put("uri", uri);
@@ -244,6 +315,11 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
   private void trackEvent(final MethodCall call, final Result result) {
     Map eventParamsMap = (Map)call.arguments;
+    if(!eventParamsMap.containsKey("eventToken")) {
+      result.error("0", "Arguments null or wrong (missing argument >eventToken<", null);
+      return;
+    }
+
     String revenue = (String) eventParamsMap.get("revenue");
     String currency = (String) eventParamsMap.get("currency");
     String orderId = (String) eventParamsMap.get("orderId");
@@ -252,6 +328,40 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     AdjustEvent event = new AdjustEvent(eventToken);
     event.setRevenue(Double.valueOf(revenue), currency);
     event.setOrderId(orderId);
+
+    // get callback parameters
+    if(eventParamsMap.containsKey("callbackParameters")) {
+      String callbackParametersJsonStr = (String) eventParamsMap.get("callbackParameters");
+      try {
+        JSONObject callbackParametersJson = new JSONObject(callbackParametersJsonStr);
+        JSONArray callbackParamsKeys = callbackParametersJson.names();
+        for (int i = 0; i < callbackParamsKeys.length (); ++i) {
+          String key = callbackParamsKeys.getString(i);
+          String value = callbackParametersJson.getString(key);
+          event.addCallbackParameter(key, value);
+        }
+      } catch (JSONException e) {
+        error("Failed to parse event callback parameters!");
+        e.printStackTrace();
+      }
+    }
+
+    // get partner parameters
+    if(eventParamsMap.containsKey("partnerParameters")) {
+      String partnerParametersJsonStr = (String) eventParamsMap.get("partnerParameters");
+      try {
+        JSONObject partnerParametersJson = new JSONObject(partnerParametersJsonStr);
+        JSONArray partnerParamsKeys = partnerParametersJson.names();
+        for (int i = 0; i < partnerParamsKeys.length (); ++i) {
+          String key = partnerParamsKeys.getString(i);
+          String value = partnerParametersJson.getString(key);
+          event.addPartnerParameter(key, value);
+        }
+      } catch (JSONException e) {
+        error("Failed to parse event partner parameters!");
+        e.printStackTrace();
+      }
+    }
 
     AdjustBridge.trackEvent(event);
     result.success(null);
@@ -328,6 +438,11 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
   private void getAmazonAdId(final Result result) {
     result.success(AdjustBridge.getAmazonAdId(applicationContext));
+  }
+
+  private void gdprForgetMe(final Result result) {
+    AdjustBridge.gdprForgetMe();
+    result.success(null);
   }
 
   private void getAttribution(final Result result) {

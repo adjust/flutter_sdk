@@ -11,20 +11,10 @@ class AdjustConfig {
   bool sendInBackground;
   bool eventBufferingEnabled;
   bool allowSuppressLogLevel;
-  bool launchDeferredDeeplink;
+  // bool launchDeferredDeeplink;
 
   AdjustLogLevel logLevel;
   AdjustEnvironment environment;
-
-  // example of platform calling the client codebase:
-  // https://github.com/flutter/plugins/tree/master/packages/quick_actions
-
-  //  Action<string> deferredDeeplinkDelegate;
-  //  Action<AdjustEventSuccess> eventSuccessDelegate;
-  //  Action<AdjustEventFailure> eventFailureDelegate;
-  //  Action<AdjustSessionSuccess> sessionSuccessDelegate;
-  //  Action<AdjustSessionFailure> sessionFailureDelegate;
-  //  Action<AdjustAttribution> attributionChangedDelegate;
 
   num info1;
   num info2;
@@ -48,6 +38,14 @@ class AdjustConfig {
     return logLevel.toString().substring(logLevel.toString().indexOf('.') + 1);
   }
 
+  void setAppSecret(num secretId, num info1, num info2, num info3, num info4) {
+    this.secretId = secretId;
+    this.info1 = info1;
+    this.info2 = info2;
+    this.info3 = info3;
+    this.info4 = info4;
+  }
+
   Map<String, String> get configParamsMap {
     return {
       'appToken': appToken,
@@ -56,6 +54,16 @@ class AdjustConfig {
       'userAgent': 'flutter',
       'defaultTracker': defaultTracker,
       'isDeviceKnown': isDeviceKnown.toString(),
+      'sendInBackground': sendInBackground.toString(),
+      'eventBufferingEnabled': eventBufferingEnabled.toString(),
+      'allowSuppressLogLevel': allowSuppressLogLevel.toString(),
+      'info1': info1.toString(),
+      'info2': info2.toString(),
+      'info3': info3.toString(),
+      'info4': info4.toString(),
+      'secretId': secretId.toString(),
+      'delayStart': delayStart.toString(),
+      'readImei': readImei.toString(),
     };
   }
 }

@@ -26,9 +26,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   initState() {
     super.initState();
-
     WidgetsBinding.instance.addObserver(this);
-
     initPlatformState();
   }
 
@@ -67,7 +65,39 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     config.environment = AdjustEnvironment.sandbox;
     config.logLevel = AdjustLogLevel.VERBOSE;
     config.isDeviceKnown = false;
-    //config.defaultTracker = "";
+
+    // Set default tracker
+    // config.defaultTracker = "def_tracker";
+
+    // Set process name.
+    // config.processName = "com.adjust.examples";
+
+    // Allow to send in the background.
+    config.sendInBackground = true;
+
+    // Enable event buffering.
+    // config.eventBufferingEnabled = true;
+
+    // Delay first session.
+    // config.delayStart = 7.0;
+
+    // Add session callback parameters.
+    AdjustSdkPlugin.addSessionCallbackParameter("scp_foo_1", "scp_bar");
+    AdjustSdkPlugin.addSessionCallbackParameter("scp_foo_2", "scp_value");
+
+    // Add session Partner parameters.
+    AdjustSdkPlugin.addSessionPartnerParameter("scp_foo_1", "scp_bar");
+    AdjustSdkPlugin.addSessionPartnerParameter("scp_foo_2", "scp_value");
+
+    // Remove session callback parameters.
+    AdjustSdkPlugin.removeSessionCallbackParameter("scp_foo_1");
+    AdjustSdkPlugin.removeSessionPartnerParameter("scp_foo_1");
+
+    // Clear all session callback parameters.
+    AdjustSdkPlugin.resetSessionCallbackParameters();
+
+    // Clear all session partner parameters.
+    AdjustSdkPlugin.resetSessionPartnerParameters();
 
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
@@ -106,66 +136,112 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return new MaterialApp(
       home: new Scaffold(
-        appBar: new AppBar(
-          title: new Text('Plugin example app'),
-        ),
-        body: new Column(
-          children: <Widget>[
-            new Text('Running on: $_platformVersion\n'),
-            _lastLifecycleState == null
-                ? const Text(
-                    'This widget has not observed any lifecycle changes.')
-                : new Text(
-                    'The most recent lifecycle state this widget observed was: $_lastLifecycleState.'),
+          appBar: new AppBar(
+            title: new Text('Plugin example app'),
+          ),
+          body: new CustomScrollView(
+            shrinkWrap: true,
+            slivers: <Widget>[
+              new SliverPadding(
+                padding: const EdgeInsets.all(20.0),
+                sliver: new SliverList(
+                  delegate: new SliverChildListDelegate(
+                    <Widget>[
+                      new Text('Running on: $_platformVersion\n'),
+                      _lastLifecycleState == null
+                          ? const Text(
+                              'This widget has not observed any lifecycle changes.')
+                          : new Text(
+                              'The most recent lifecycle state this widget observed was: $_lastLifecycleState.'),
 
-            Util.buildRasedButtonRow('Is Enabled ?', () => _printIsSdkEnabled()),
+                      Util.buildRasedButtonRow(
+                          'Is Enabled ?', () => _printIsSdkEnabled()),
 
-            // track simple event button
-            Util.buildRasedButtonRow(
-                'Track Sample Event',
-                () => AdjustSdkPlugin
-                    .trackEvent(new AdjustEvent('c4thih', 10, 'EUR', ''))),
+                      // track simple event button
+                      Util.buildRasedButtonRow(
+                          'Track Sample Event',
+                          () => AdjustSdkPlugin
+                              .trackEvent(Util.buildSimpleEvent())),
 
-            // get google AdId
-            Util.buildRasedButtonRow(
-                'Get Google AdId',
-                () => AdjustSdkPlugin.getGoogleAdId().then((googleAdid) {
-                      print('Received google AdId: $googleAdid');
-                    })),
+                      // track revenue event button
+                      Util.buildRasedButtonRow(
+                          'Track Revenue Event',
+                          () => AdjustSdkPlugin
+                              .trackEvent(Util.buildRevenueEvent())),
 
-            // get ADID
-            Util.buildRasedButtonRow(
-                'Get ADID',
-                () => AdjustSdkPlugin.getAdid().then((adid) {
-                      print('Received ADID: $adid');
-                    })),
+                      // track callback event button
+                      Util.buildRasedButtonRow(
+                          'Track Callback Event',
+                          () => AdjustSdkPlugin
+                              .trackEvent(Util.buildCallbackEvent())),
 
-            // get attribution
-            Util.buildRasedButtonRow('Get Attribution',
-                () => AdjustSdkPlugin.getAttribution().then((attribution) {
-                  print('Received attribution: ${attribution.toString()}');
-                })),
+                      // track partner event button
+                      Util.buildRasedButtonRow(
+                          'Track Partner Event',
+                          () => AdjustSdkPlugin
+                              .trackEvent(Util.buildPartnerEvent())),
 
-            // is SDK enabled switch
-            new Text(
-              _isSdkEnabled ? 'Enabled' : 'Disabled',
-              style: _isSdkEnabled
-                  ? new TextStyle(fontSize: 32.0, color: Colors.green)
-                  : new TextStyle(fontSize: 32.0, color: Colors.red),
-            ),
-            new CupertinoSwitch(
-              value: _isSdkEnabled,
-              onChanged: (bool value) {
-                setState(() {
-                  AdjustSdkPlugin.setIsEnabled(value);
-                  _isSdkEnabled = value;
-                  print('switch state = $_isSdkEnabled');
-                });
-              },
-            ),
-          ],
-        ),
-      ),
+                      // get google AdId
+                      Util.buildRasedButtonRow(
+                          'Get Google AdId',
+                          () => AdjustSdkPlugin
+                                  .getGoogleAdId()
+                                  .then((googleAdid) {
+                                print('Received google AdId: $googleAdid');
+                              })),
+
+                      // get ADID
+                      Util.buildRasedButtonRow(
+                          'Get ADID',
+                          () => AdjustSdkPlugin.getAdid().then((adid) {
+                                print('Received ADID: $adid');
+                              })),
+
+                      // get attribution
+                      Util.buildRasedButtonRow(
+                          'Get Attribution',
+                          () => AdjustSdkPlugin
+                                  .getAttribution()
+                                  .then((attribution) {
+                                print(
+                                    'Received attribution: ${attribution.toString()}');
+                              })),
+
+                      // SDK enabled/disabled switch
+                      new Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          // is SDK enabled switch
+                          new Text(
+                            _isSdkEnabled ? 'Enabled' : 'Disabled',
+                            style: _isSdkEnabled
+                                ? new TextStyle(
+                                    fontSize: 32.0, color: Colors.green)
+                                : new TextStyle(
+                                    fontSize: 32.0, color: Colors.red),
+                          ),
+                          new CupertinoSwitch(
+                            value: _isSdkEnabled,
+                            onChanged: (bool value) {
+                              setState(() {
+                                AdjustSdkPlugin.setIsEnabled(value);
+                                _isSdkEnabled = value;
+                                print('switch state = $_isSdkEnabled');
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+
+                      // end
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          )),
     );
   }
 

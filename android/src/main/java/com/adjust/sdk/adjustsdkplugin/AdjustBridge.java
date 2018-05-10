@@ -78,6 +78,10 @@ public class AdjustBridge {
         getDefaultInstance().setReferrer(context, referrer);
     }
 
+    public static void gdprForgetMe() {
+        getDefaultInstance().gdprForgetMe();
+    }
+
     public static HashMap<String, String> getAttribution() {
         return getDefaultInstance().getAttribution();
     }
