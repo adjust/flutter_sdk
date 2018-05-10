@@ -135,6 +135,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     config.setDefaultTracker(defaultTracker);
     config.setProcessName(processName);
 
+    AdjustSdkPlugin.log("Calling onCreate with values:");
 
     if(adjustConfigMap.containsKey("eventBufferingEnabled")) {
       String eventBufferingEnabledString = (String) adjustConfigMap.get("eventBufferingEnabled");
@@ -182,7 +183,6 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       AdjustSdkPlugin.log(String.format("\tappSecret: %d, %d, %d, %d, %d", secretIdString, info1String, info2String, info3String, info4String));
     }
 
-    AdjustSdkPlugin.log("Calling onCreate with values:");
     AdjustSdkPlugin.log("\tappToken: " + appToken);
     AdjustSdkPlugin.log("\tenvironment: " + environment);
     AdjustSdkPlugin.log("\tuserAgent: " + userAgent);
@@ -441,7 +441,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
   }
 
   private void gdprForgetMe(final Result result) {
-    AdjustBridge.gdprForgetMe();
+    AdjustBridge.gdprForgetMe(applicationContext);
     result.success(null);
   }
 

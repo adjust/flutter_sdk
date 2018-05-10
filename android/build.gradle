@@ -30,7 +30,7 @@ android {
 }
 
 dependencies {
-    implementation files('libs/adjust-4.12.4-release.jar')
+    implementation files('libs/adjust-release.jar')
     implementation 'com.google.android.gms:play-services-analytics:10.0.1'
     implementation 'com.android.installreferrer:installreferrer:1.0'
 }

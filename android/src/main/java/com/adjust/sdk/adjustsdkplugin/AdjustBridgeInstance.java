@@ -71,9 +71,8 @@ public class AdjustBridgeInstance {
         Adjust.setReferrer(referrer, context);
     }
 
-    public void gdprForgetMe() {
-        // TODO: implement after importing SDK 4.13.0
-
+    public void gdprForgetMe(Context context) {
+        Adjust.gdprForgetMe(context);
     }
 
     public HashMap<String, String> getAttribution() {

@@ -183,6 +183,10 @@ class AdjustSdkPlugin {
     _channel.invokeMethod('sendFirstPackages');
   }
 
+  static void gdprForgetMe() {
+    _channel.invokeMethod('gdprForgetMe');
+  }
+
   static Future<String> getAdid() async {
     final String adid = await _channel.invokeMethod('getAdid');
     return adid;
