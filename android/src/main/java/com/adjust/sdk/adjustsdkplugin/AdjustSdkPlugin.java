@@ -59,7 +59,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(MethodCall call, final Result result) {
     log("Trying to call a method: " + call.method);
 
     switch (call.method) {
@@ -70,7 +70,6 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       case "trackEvent": trackEvent(call, result); break;
       case "isEnabled": isEnabled(result); break;
       case "setIsEnabled": setIsEnabled(call, result); break;
-
       case "setOfflineMode": setOfflineMode(call, result); break;
       case "setPushToken": setPushToken(call, result); break;
       case "appWillOpenUrl": appWillOpenUrl(call, result); break;
@@ -78,7 +77,6 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       case "getAdid": getAdid(result); break;
       case "getGoogleAdId": getGoogleAdId(result); break;
       case "getAttribution": getAttribution(result); break;
-
       case "addSessionCallbackParameter": addSessionCallbackParameter(call, result); break;
       case "addSessionPartnerParameter": addSessionPartnerParameter(call, result); break;
 
