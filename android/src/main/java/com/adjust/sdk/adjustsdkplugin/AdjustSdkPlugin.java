@@ -79,6 +79,10 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       case "getAttribution": getAttribution(result); break;
       case "addSessionCallbackParameter": addSessionCallbackParameter(call, result); break;
       case "addSessionPartnerParameter": addSessionPartnerParameter(call, result); break;
+      case "removeSessionCallbackParameter": removeSessionCallbackParameter(call, result);
+      case "removeSessionPartnerParameter": removeSessionPartnerParameter(call, result); break;
+      case "resetSessionCallbackParameters": resetSessionCallbackParameters(result); break;
+      case "resetSessionPartnerParameters": resetSessionPartnerParameters(result); break;
 
       default:
         error("Not implemented method: " + call.method);
@@ -320,7 +324,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
   }
 
   private void addSessionCallbackParameter(MethodCall call, Result result) {
-    if(!call.hasArgument("key") && !call.hasArgument("value")) {
+    if(!call.hasArgument("key") || !call.hasArgument("value")) {
       result.error("0", "Arguments null or wrong", null);
       return;
     }
@@ -333,7 +337,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
   }
 
   private void addSessionPartnerParameter(MethodCall call, Result result) {
-    if(!call.hasArgument("key") && !call.hasArgument("value")) {
+    if(!call.hasArgument("key") || !call.hasArgument("value")) {
       result.error("0", "Arguments null or wrong", null);
       return;
     }
@@ -342,6 +346,40 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     String value = (String) call.argument("value");
     AdjustBridge.addSessionPartnerParameter(key, value);
 
+    result.success(null);
+  }
+
+  private void removeSessionCallbackParameter(MethodCall call, Result result) {
+    if(!call.hasArgument("key")) {
+      result.error("0", "Argument [key] null or wrong", null);
+      return;
+    }
+
+    String key = (String) call.argument("key");
+    AdjustBridge.removeSessionCallbackParameter(key);
+
+    result.success(null);
+  }
+
+  private void removeSessionPartnerParameter(MethodCall call, Result result) {
+    if(!call.hasArgument("key")) {
+      result.error("0", "Argument [key] null or wrong", null);
+      return;
+    }
+
+    String key = (String) call.argument("key");
+    AdjustBridge.removeSessionPartnerParameter(key);
+
+    result.success(null);
+  }
+
+  private void resetSessionCallbackParameters(Result result) {
+    AdjustBridge.resetSessionCallbackParameters();
+    result.success(null);
+  }
+
+  private void resetSessionPartnerParameters(Result result) {
+    AdjustBridge.resetSessionPartnerParameters();
     result.success(null);
   }
 

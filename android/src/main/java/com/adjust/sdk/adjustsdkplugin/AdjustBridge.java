@@ -81,4 +81,20 @@ public class AdjustBridge {
     public static void addSessionPartnerParameter(String key, String value) {
         getDefaultInstance().addSessionPartnerParameter(key, value);
     }
+
+    public static void removeSessionCallbackParameter(String key) {
+        getDefaultInstance().removeSessionCallbackParameter(key);
+    }
+
+    public static void removeSessionPartnerParameter(String key) {
+        getDefaultInstance().removeSessionPartnerParameter(key);
+    }
+
+    public static void resetSessionCallbackParameters() {
+        getDefaultInstance().resetSessionCallbackParameters();
+    }
+
+    public static void resetSessionPartnerParameters() {
+        getDefaultInstance().resetSessionPartnerParameters();
+    }
 }

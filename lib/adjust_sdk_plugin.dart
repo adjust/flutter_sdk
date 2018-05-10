@@ -17,8 +17,7 @@ typedef void AttributionChangedHandler(AdjustAttribution attributionData);
 typedef bool ShouldLaunchReceivedDeeplinkHandler(String uri);
 
 class AdjustSdkPlugin {
-  static const MethodChannel _channel =
-      const MethodChannel('com.adjust/api');
+  static const MethodChannel _channel = const MethodChannel('com.adjust/api');
   // any disadvantages of using multiple channels ??
   static const MethodChannel _deeplinkChannel =
       const MethodChannel('com.adjust/deeplink');
@@ -202,5 +201,21 @@ class AdjustSdkPlugin {
   static void addSessionPartnerParameter(String key, String value) {
     _channel.invokeMethod(
         'addSessionPartnerParameter', {'key': key, 'value': value});
+  }
+
+  static void removeSessionCallbackParameter(String key) {
+    _channel.invokeMethod('removeSessionCallbackParameter', {'key': key});
+  }
+
+  static void removeSessionPartnerParameter(String key) {
+    _channel.invokeMethod('removeSessionPartnerParameter', {'key': key});
+  }
+
+  static void resetSessionCallbackParameters() {
+    _channel.invokeMethod('resetSessionCallbackParameters');
+  }
+
+  static void resetSessionPartnerParameters() {
+    _channel.invokeMethod('resetSessionPartnerParameters');
   }
 }

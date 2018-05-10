@@ -118,30 +118,30 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 : new Text(
                     'The most recent lifecycle state this widget observed was: $_lastLifecycleState.'),
 
-            Util.buildRaisedButton('Is Enabled ?', () => _printIsSdkEnabled()),
+            Util.buildRasedButtonRow('Is Enabled ?', () => _printIsSdkEnabled()),
 
             // track simple event button
-            Util.buildRaisedButton(
+            Util.buildRasedButtonRow(
                 'Track Sample Event',
                 () => AdjustSdkPlugin
                     .trackEvent(new AdjustEvent('c4thih', 10, 'EUR', ''))),
 
             // get google AdId
-            Util.buildRaisedButton(
+            Util.buildRasedButtonRow(
                 'Get Google AdId',
                 () => AdjustSdkPlugin.getGoogleAdId().then((googleAdid) {
                       print('Received google AdId: $googleAdid');
                     })),
 
             // get ADID
-            Util.buildRaisedButton(
+            Util.buildRasedButtonRow(
                 'Get ADID',
                 () => AdjustSdkPlugin.getAdid().then((adid) {
                       print('Received ADID: $adid');
                     })),
 
             // get attribution
-            Util.buildRaisedButton('Get Attribution',
+            Util.buildRasedButtonRow('Get Attribution',
                 () => AdjustSdkPlugin.getAttribution().then((attribution) {
                   print('Received attribution: ${attribution.toString()}');
                 })),

@@ -65,6 +65,10 @@ public class AdjustBridgeInstance {
 
     public HashMap<String, String> getAttribution() {
         AdjustAttribution adjustAttribution = Adjust.getAttribution();
+        if(adjustAttribution == null) {
+            adjustAttribution = new AdjustAttribution();
+        }
+
         HashMap<String, String> adjustAttributionMap = new HashMap();
         adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
         adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
@@ -83,5 +87,21 @@ public class AdjustBridgeInstance {
 
     public static void addSessionPartnerParameter(String key, String value) {
         Adjust.addSessionPartnerParameter(key, value);
+    }
+
+    public static void removeSessionCallbackParameter(String key) {
+        Adjust.removeSessionCallbackParameter(key);
+    }
+
+    public static void removeSessionPartnerParameter(String key) {
+        Adjust.removeSessionPartnerParameter(key);
+    }
+
+    public static void resetSessionCallbackParameters() {
+        Adjust.resetSessionCallbackParameters();
+    }
+
+    public static void resetSessionPartnerParameters() {
+        Adjust.resetSessionPartnerParameters();
     }
 }
