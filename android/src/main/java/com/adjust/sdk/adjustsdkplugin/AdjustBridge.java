@@ -66,8 +66,16 @@ public class AdjustBridge {
         return getDefaultInstance().getAdid();
     }
 
+    public static String getAmazonAdId(Context context) {
+        return getDefaultInstance().getAmazonAdId(context);
+    }
+
     public static void getGoogleAdId(Context context, OnDeviceIdsRead callback) {
         getDefaultInstance().getGoogleAdId(context, callback);
+    }
+
+    public static void setReferrer(Context context, String referrer) {
+        getDefaultInstance().setReferrer(context, referrer);
     }
 
     public static HashMap<String, String> getAttribution() {

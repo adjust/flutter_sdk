@@ -183,6 +183,20 @@ class AdjustSdkPlugin {
     return adid;
   }
 
+  static Future<String> getIdfa() async {
+    final String idfa = await _channel.invokeMethod('getIdfa');
+    return idfa;
+  }
+
+  static Future<String> getAmazonAdId() async {
+    final String amazonAdId = await _channel.invokeMethod('getAmazonAdId');
+    return amazonAdId;
+  }
+
+  static void setReferrer(String referrer) {
+    _channel.invokeMethod('setReferrer', {'referrer': referrer});
+  }
+
   static Future<String> getGoogleAdId() async {
     final String googleAdId = await _channel.invokeMethod('getGoogleAdId');
     return googleAdId;

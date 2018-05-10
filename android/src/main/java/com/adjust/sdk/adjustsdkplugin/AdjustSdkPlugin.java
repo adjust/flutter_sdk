@@ -75,8 +75,11 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       case "appWillOpenUrl": appWillOpenUrl(call, result); break;
       case "sendFirstPackages": sendFirstPackages(result); break;
       case "getAdid": getAdid(result); break;
+      case "getIdfa": getIdfa(result); break;
       case "getGoogleAdId": getGoogleAdId(result); break;
+      case "getAmazonAdId": getAmazonAdId(result); break;
       case "getAttribution": getAttribution(result); break;
+      case "setReferrer": setReferrer(call, result); break;
       case "addSessionCallbackParameter": addSessionCallbackParameter(call, result); break;
       case "addSessionPartnerParameter": addSessionPartnerParameter(call, result); break;
       case "removeSessionCallbackParameter": removeSessionCallbackParameter(call, result);
@@ -91,11 +94,11 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     }
   }
 
-  private void getPlatformVersion(Result result) {
+  private void getPlatformVersion(final Result result) {
     result.success("Android " + android.os.Build.VERSION.RELEASE);
   }
 
-  private void onCreate(MethodCall call, Result result) {
+  private void onCreate(final MethodCall call, final Result result) {
     Map adjustConfigMap = (Map)call.arguments;
 
     String appToken = (String) adjustConfigMap.get("appToken");
@@ -229,17 +232,17 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void onResume(Result result) {
+  private void onResume(final Result result) {
     AdjustBridge.onResume();
     result.success(null);
   }
 
-  private void onPause(Result result) {
+  private void onPause(final Result result) {
     AdjustBridge.onPause();
     result.success(null);
   }
 
-  private void trackEvent(MethodCall call, Result result) {
+  private void trackEvent(final MethodCall call, final Result result) {
     Map eventParamsMap = (Map)call.arguments;
     String revenue = (String) eventParamsMap.get("revenue");
     String currency = (String) eventParamsMap.get("currency");
@@ -254,18 +257,18 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void isEnabled(Result result) {
+  private void isEnabled(final Result result) {
     result.success(AdjustBridge.isEnabled());
   }
 
-  private void setOfflineMode(MethodCall call, Result result) {
+  private void setOfflineMode(final MethodCall call, final Result result) {
     Map isOfflineParamsMap = (Map)call.arguments;
     boolean isOffline = (boolean) isOfflineParamsMap.get("isOffline");
     AdjustBridge.setOfflineMode(isOffline);
     result.success(null);
   }
 
-  private void setPushToken(MethodCall call, Result result) {
+  private void setPushToken(final MethodCall call, final Result result) {
     Map tokenParamsMap = (Map)call.arguments;
     if(!tokenParamsMap.containsKey("token")) {
       result.error("0", "Arguments null or wrong (missing argument >token<", null);
@@ -277,7 +280,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void setIsEnabled(MethodCall call, Result result) {
+  private void setIsEnabled(final MethodCall call, final Result result) {
     Map isEnabledParamsMap = (Map)call.arguments;
     if(!isEnabledParamsMap.containsKey("isEnabled")) {
       result.error("0", "Arguments null or wrong (missing argument >isEnabled<", null);
@@ -289,7 +292,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void appWillOpenUrl(MethodCall call, Result result) {
+  private void appWillOpenUrl(final MethodCall call, final Result result) {
     Map urlParamsMap = (Map)call.arguments;
     if(!urlParamsMap.containsKey("token")) {
       result.error("0", "Arguments null or wrong (missing argument >url<", null);
@@ -301,13 +304,17 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void sendFirstPackages(Result result) {
+  private void sendFirstPackages(final Result result) {
     AdjustBridge.sendFirstPackages();
     result.success(null);
   }
 
-  private void getAdid(Result result) {
+  private void getAdid(final Result result) {
     result.success(AdjustBridge.getAdid());
+  }
+
+  private void getIdfa(final Result result) {
+    result.error("0", "Error. No IDFA in Android Plaftorm!", null);
   }
 
   private void getGoogleAdId(final Result result) {
@@ -319,11 +326,26 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     });
   }
 
-  private void getAttribution(Result result) {
+  private void getAmazonAdId(final Result result) {
+    result.success(AdjustBridge.getAmazonAdId(applicationContext));
+  }
+
+  private void getAttribution(final Result result) {
     result.success(AdjustBridge.getAttribution());
   }
 
-  private void addSessionCallbackParameter(MethodCall call, Result result) {
+  private void setReferrer(final MethodCall call, final Result result) {
+    if(!call.hasArgument("referrer")) {
+      result.error("0", "Argument [referrer] null or wrong", null);
+      return;
+    }
+
+    String referrer = (String) call.argument("referrer");
+    AdjustBridge.setReferrer(applicationContext, referrer);
+    result.success(null);
+  }
+
+  private void addSessionCallbackParameter(final MethodCall call, final Result result) {
     if(!call.hasArgument("key") || !call.hasArgument("value")) {
       result.error("0", "Arguments null or wrong", null);
       return;
@@ -336,7 +358,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void addSessionPartnerParameter(MethodCall call, Result result) {
+  private void addSessionPartnerParameter(final MethodCall call, final Result result) {
     if(!call.hasArgument("key") || !call.hasArgument("value")) {
       result.error("0", "Arguments null or wrong", null);
       return;
@@ -349,7 +371,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void removeSessionCallbackParameter(MethodCall call, Result result) {
+  private void removeSessionCallbackParameter(final MethodCall call, final Result result) {
     if(!call.hasArgument("key")) {
       result.error("0", "Argument [key] null or wrong", null);
       return;
@@ -361,7 +383,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void removeSessionPartnerParameter(MethodCall call, Result result) {
+  private void removeSessionPartnerParameter(final MethodCall call, final Result result) {
     if(!call.hasArgument("key")) {
       result.error("0", "Argument [key] null or wrong", null);
       return;
@@ -373,12 +395,12 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void resetSessionCallbackParameters(Result result) {
+  private void resetSessionCallbackParameters(final Result result) {
     AdjustBridge.resetSessionCallbackParameters();
     result.success(null);
   }
 
-  private void resetSessionPartnerParameters(Result result) {
+  private void resetSessionPartnerParameters(final Result result) {
     AdjustBridge.resetSessionPartnerParameters();
     result.success(null);
   }
