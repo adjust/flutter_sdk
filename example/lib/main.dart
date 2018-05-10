@@ -1,10 +1,10 @@
-import 'package:adjust_sdk_plugin/adjustConfig.dart';
-import 'package:adjust_sdk_plugin/adjustEvent.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjustAttribution.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjustEventFailure.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjustEventSuccess.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjustSessionFailure.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjustSessionSuccess.dart';
+import 'package:adjust_sdk_plugin/adjust_config.dart';
+import 'package:adjust_sdk_plugin/adjust_event.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjust_attribution.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjust_event_failure.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjust_event_success.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjust_session_failure.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjust_session_success.dart';
 import 'package:adjust_sdk_plugin_example/util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
