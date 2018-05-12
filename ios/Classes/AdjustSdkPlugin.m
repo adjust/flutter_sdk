@@ -3,7 +3,7 @@
 @implementation AdjustSdkPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"adjust_sdk_plugin"
+      methodChannelWithName:@"com.adjust/api"
             binaryMessenger:[registrar messenger]];
   AdjustSdkPlugin* instance = [[AdjustSdkPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];

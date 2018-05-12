@@ -13,8 +13,8 @@ RED='\033[0;31m' # Red color
 GREEN='\033[0;32m' # Green color
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}>>> building Flutter Android platform plugin code... ${NC}"
-flutter build apk
+echo -e "${GREEN}>>> building Flutter iOS platform plugin code... ${NC}"
+flutter build ios --no-codesign
 
 echo -e "${GREEN}>>> running Flutter... ${NC}"
 flutter run

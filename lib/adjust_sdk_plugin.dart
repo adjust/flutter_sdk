@@ -17,15 +17,10 @@ typedef void AttributionChangedHandler(AdjustAttribution attributionData);
 typedef bool ShouldLaunchReceivedDeeplinkHandler(String uri);
 
 class AdjustSdkPlugin {
-  static const MethodChannel _channel = const MethodChannel('com.adjust/api');
-
-  // example of platform calling the client codebase:
-  // https://github.com/flutter/plugins/tree/master/packages/quick_actions
-
   // any disadvantages of using multiple channels ??
-  static const MethodChannel _deeplinkChannel =
-      const MethodChannel('com.adjust/deeplink');
-      
+  static const MethodChannel _channel = const MethodChannel('com.adjust/api');
+  static const MethodChannel _deeplinkChannel = const MethodChannel('com.adjust/deeplink');
+
   static bool _callbackHandlersInitialized = false;
 
   static SessionSuccessHandler _sessionSuccessHandler;
