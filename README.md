@@ -1,6 +1,6 @@
 # adjust_sdk_plugin
 
-A new flutter plugin project.
+Adjust Flutter iOS SDK.
 
 ## Getting Started
 
