@@ -1,0 +1,22 @@
+PODS:
+  - adjust_sdk_plugin (0.5.0):
+    - Flutter
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - adjust_sdk_plugin (from `Pods/.symlinks/plugins/adjust_sdk_plugin/ios`)
+  - Flutter (from `Pods/.symlinks/flutter/ios-release`)
+
+EXTERNAL SOURCES:
+  adjust_sdk_plugin:
+    :path: Pods/.symlinks/plugins/adjust_sdk_plugin/ios
+  Flutter:
+    :path: Pods/.symlinks/flutter/ios-release
+
+SPEC CHECKSUMS:
+  adjust_sdk_plugin: cc67126f5d78912c6cff729dcea436c1c5f1bd03
+  Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
+
+PODFILE CHECKSUM: 13dcf421f4da2e937a57e8ba760ed880beae536f
+
+COCOAPODS: 1.5.0
