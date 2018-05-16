@@ -11,122 +11,52 @@
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"getPlatformVersion" isEqualToString:call.method]) {
-        result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
+        [self getPlatformVersion:result];
     } else if ([@"onCreate" isEqualToString:call.method]) {
-        NSString *appToken         = call.arguments[@"appToken"];
-        NSString *environment      = call.arguments[@"environment"];
-        NSString *logLevel         = call.arguments[@"logLevel"];
-        NSString *sdkPrefix        = call.arguments[@"sdkPrefix"];
-        NSString *defaultTracker   = call.arguments[@"defaultTracker"];
-        
-        BOOL allowSuppressLogLevel = NO;
-        
-        NSString *userAgent             = call.arguments[@"userAgent"];
-        NSString *secretId              = call.arguments[@"secretId"];
-        NSString *info1                 = call.arguments[@"info1"];
-        NSString *info2                 = call.arguments[@"info2"];
-        NSString *info3                 = call.arguments[@"info3"];
-        NSString *info4                 = call.arguments[@"info4"];
-        
-        NSString *delayStart            = call.arguments[@"delayStart"];
-        NSString *isDeviceKnown         = call.arguments[@"isDeviceKnown"];
-        NSString *eventBufferingEnabled = call.arguments[@"eventBufferingEnabled"];
-        NSString *sendInBackground      = call.arguments[@"sendInBackground"];
-        
-        if ([self isFieldValid:logLevel]) {
-            if ([ADJLogger logLevelFromString:[logLevel lowercaseString]] == ADJLogLevelSuppress) {
-                allowSuppressLogLevel = YES;
-            }
-        }
-        
-        ADJConfig *adjustConfig = [ADJConfig configWithAppToken:appToken
-                                                    environment:environment
-                                          allowSuppressLogLevel:allowSuppressLogLevel];
-        
-        if ([self isFieldValid:logLevel]) {
-            [adjustConfig setLogLevel:[ADJLogger logLevelFromString:[logLevel lowercaseString]]];
-        }
-        
-        if ([self isFieldValid:eventBufferingEnabled]) {
-            [adjustConfig setEventBufferingEnabled:[eventBufferingEnabled boolValue]];
-        }
-        
-        if ([self isFieldValid:sdkPrefix]) {
-            [adjustConfig setSdkPrefix:sdkPrefix];
-        }
-        
-        if ([self isFieldValid:defaultTracker]) {
-            [adjustConfig setDefaultTracker:defaultTracker];
-        }
-
-        if ([self isFieldValid:sendInBackground]) {
-            [adjustConfig setSendInBackground:[sendInBackground boolValue]];
-        }
-        
-        if ([self isFieldValid:userAgent]) {
-            [adjustConfig setUserAgent:userAgent];
-        }
-        
-        if ([self isFieldValid:delayStart]) {
-            [adjustConfig setDelayStart:[delayStart doubleValue]];
-        }
-        
-        if ([self isFieldValid:isDeviceKnown]) {
-            [adjustConfig setIsDeviceKnown:[isDeviceKnown boolValue]];
-        }
-        
-        if ([self isFieldValid:secretId]
-            && [self isFieldValid:info1]
-            && [self isFieldValid:info2]
-            && [self isFieldValid:info3]
-            && [self isFieldValid:info4]) {
-            [adjustConfig setAppSecret:[[NSNumber numberWithLongLong:[secretId longLongValue]] unsignedIntegerValue]
-                                 info1:[[NSNumber numberWithLongLong:[info1 longLongValue]] unsignedIntegerValue]
-                                 info2:[[NSNumber numberWithLongLong:[info2 longLongValue]] unsignedIntegerValue]
-                                 info3:[[NSNumber numberWithLongLong:[info3 longLongValue]] unsignedIntegerValue]
-                                 info4:[[NSNumber numberWithLongLong:[info4 longLongValue]] unsignedIntegerValue]];
-        }
-        
-        [Adjust appDidLaunch:adjustConfig];
+        [self onCreate:call withResult:result];
     } else if ([@"onResume" isEqualToString:call.method]) {
         [Adjust trackSubsessionStart];
     } else if ([@"onPause" isEqualToString:call.method]) {
         [Adjust trackSubsessionEnd];
+    } else if ([@"trackEvent" isEqualToString:call.method]) {
+        [self trackEvent:call withResult:result];
+    } else if ([@"setIsEnabled" isEqualToString:call.method]) {
+        [self setIsEnabled:call withResult:result];
+    } else if ([@"sendFirstPackages" isEqualToString:call.method]) {
+        [self sendFirstPackages:call withResult:result];
+    } else if ([@"gdprForgetMe" isEqualToString:call.method]) {
+        [self gdprForgetMe:call withResult:result];
+    } else if ([@"getAttribution" isEqualToString:call.method]) {
+        [self getAttribution:call withResult:result];
+    } else if ([@"getIdfa" isEqualToString:call.method]) {
+        [self getIdfa:call withResult:result];
     } else if ([@"addSessionCallbackParameter" isEqualToString:call.method]) {
         NSString *key = call.arguments[@"key"];
         NSString *value = call.arguments[@"value"];
-        
         if (!([self isFieldValid:key]) || !([self isFieldValid:value])) {
             return;
         }
-        
         [Adjust addSessionCallbackParameter:key value:value];
     } else if ([@"removeSessionCallbackParameter" isEqualToString:call.method]) {
         NSString *key = call.arguments[@"key"];
-        
         if (!([self isFieldValid:key])) {
             return;
         }
-        
         [Adjust removeSessionCallbackParameter:key];
     } else if ([@"resetSessionCallbackParameters" isEqualToString:call.method]) {
         [Adjust resetSessionCallbackParameters];
     } else if ([@"addSessionPartnerParameter" isEqualToString:call.method]) {
         NSString *key = call.arguments[@"key"];
         NSString *value = call.arguments[@"value"];
-        
         if (!([self isFieldValid:key]) || !([self isFieldValid:value])) {
             return;
         }
-        
         [Adjust addSessionPartnerParameter:key value:value];
     } else if ([@"removeSessionPartnerParameter" isEqualToString:call.method]) {
         NSString *key = call.arguments[@"key"];
-        
         if (!([self isFieldValid:key])) {
             return;
         }
-        
         [Adjust removeSessionPartnerParameter:key];
     } else if ([@"resetSessionPartnerParameters" isEqualToString:call.method]) {
         [Adjust resetSessionPartnerParameters];
@@ -136,6 +66,205 @@
     } else {
         result(FlutterMethodNotImplemented);
     }
+}
+
+- (void)getPlatformVersion:(FlutterResult)result {
+    result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
+}
+
+- (void)onCreate:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+    NSString *appToken         = call.arguments[@"appToken"];
+    NSString *environment      = call.arguments[@"environment"];
+    NSString *logLevel         = call.arguments[@"logLevel"];
+    NSString *sdkPrefix        = call.arguments[@"sdkPrefix"];
+    NSString *defaultTracker   = call.arguments[@"defaultTracker"];
+    
+    BOOL allowSuppressLogLevel = NO;
+    
+    NSString *userAgent             = call.arguments[@"userAgent"];
+    NSString *secretId              = call.arguments[@"secretId"];
+    NSString *info1                 = call.arguments[@"info1"];
+    NSString *info2                 = call.arguments[@"info2"];
+    NSString *info3                 = call.arguments[@"info3"];
+    NSString *info4                 = call.arguments[@"info4"];
+    
+    NSString *delayStart            = call.arguments[@"delayStart"];
+    NSString *isDeviceKnown         = call.arguments[@"isDeviceKnown"];
+    NSString *eventBufferingEnabled = call.arguments[@"eventBufferingEnabled"];
+    NSString *sendInBackground      = call.arguments[@"sendInBackground"];
+    
+    if ([self isFieldValid:logLevel]) {
+        if ([ADJLogger logLevelFromString:[logLevel lowercaseString]] == ADJLogLevelSuppress) {
+            allowSuppressLogLevel = YES;
+        }
+    }
+    
+    ADJConfig *adjustConfig = [ADJConfig configWithAppToken:appToken
+                                                environment:environment
+                                      allowSuppressLogLevel:allowSuppressLogLevel];
+    
+    if ([self isFieldValid:logLevel]) {
+        [adjustConfig setLogLevel:[ADJLogger logLevelFromString:[logLevel lowercaseString]]];
+    }
+    
+    if ([self isFieldValid:eventBufferingEnabled]) {
+        [adjustConfig setEventBufferingEnabled:[eventBufferingEnabled boolValue]];
+    }
+    
+    if ([self isFieldValid:sdkPrefix]) {
+        [adjustConfig setSdkPrefix:sdkPrefix];
+    }
+    
+    if ([self isFieldValid:defaultTracker]) {
+        [adjustConfig setDefaultTracker:defaultTracker];
+    }
+    
+    if ([self isFieldValid:sendInBackground]) {
+        [adjustConfig setSendInBackground:[sendInBackground boolValue]];
+    }
+    
+    if ([self isFieldValid:userAgent]) {
+        [adjustConfig setUserAgent:userAgent];
+    }
+    
+    if ([self isFieldValid:delayStart]) {
+        [adjustConfig setDelayStart:[delayStart doubleValue]];
+    }
+    
+    if ([self isFieldValid:isDeviceKnown]) {
+        [adjustConfig setIsDeviceKnown:[isDeviceKnown boolValue]];
+    }
+    
+    if ([self isFieldValid:secretId]
+        && [self isFieldValid:info1]
+        && [self isFieldValid:info2]
+        && [self isFieldValid:info3]
+        && [self isFieldValid:info4]) {
+        [adjustConfig setAppSecret:[[NSNumber numberWithLongLong:[secretId longLongValue]] unsignedIntegerValue]
+                             info1:[[NSNumber numberWithLongLong:[info1 longLongValue]] unsignedIntegerValue]
+                             info2:[[NSNumber numberWithLongLong:[info2 longLongValue]] unsignedIntegerValue]
+                             info3:[[NSNumber numberWithLongLong:[info3 longLongValue]] unsignedIntegerValue]
+                             info4:[[NSNumber numberWithLongLong:[info4 longLongValue]] unsignedIntegerValue]];
+    }
+    
+    [Adjust appDidLaunch:adjustConfig];
+    
+    result(nil);
+}
+
+- (void)trackEvent:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+//    NSArray *jsonObject = [NSJSONSerialization JSONObjectWithData:[arguments dataUsingEncoding:NSUTF8StringEncoding]
+//                                                          options:0
+//                                                            error:NULL];
+    
+    NSString *eventToken = call.arguments[@"eventToken"];
+    NSString *revenue = call.arguments[@"revenue"];
+    NSString *currency = call.arguments[@"currency"];
+    NSString *receipt = call.arguments[@"receipt"];
+    NSString *transactionId = call.arguments[@"transactionId"];
+    NSString *isReceiptSet = call.arguments[@"isReceiptSet"];
+    
+    NSMutableArray *callbackParameters = [[NSMutableArray alloc] init];
+    NSMutableArray *partnerParameters = [[NSMutableArray alloc] init];
+    
+    // callbackParameters
+    //////////////////////////////////////////
+//    for (id item in [[jsonObject valueForKey:@"callbackParameters"] objectAtIndex:0]) {
+//        [callbackParameters addObject:item];
+//    }
+
+    // partnerParameters
+    //////////////////////////////////////////
+//    for (id item in [[jsonObject valueForKey:@"partnerParameters"] objectAtIndex:0]) {
+//        [partnerParameters addObject:item];
+//    }
+    
+    ADJEvent *adjustEvent = [ADJEvent eventWithEventToken:eventToken];
+    
+    if ([self isFieldValid:revenue]) {
+        double revenueValue = [revenue doubleValue];
+        [adjustEvent setRevenue:revenueValue currency:currency];
+    }
+    
+    for (int i = 0; i < [callbackParameters count]; i += 2) {
+        NSString *key = [callbackParameters objectAtIndex:i];
+        NSObject *value = [callbackParameters objectAtIndex:(i+1)];
+        [adjustEvent addCallbackParameter:key value:[NSString stringWithFormat:@"%@", value]];
+    }
+    
+    for (int i = 0; i < [partnerParameters count]; i += 2) {
+        NSString *key = [partnerParameters objectAtIndex:i];
+        NSObject *value = [partnerParameters objectAtIndex:(i+1)];
+        [adjustEvent addPartnerParameter:key value:[NSString stringWithFormat:@"%@", value]];
+    }
+    
+    // Deprecated
+    // Transaction ID and receipt
+    BOOL isTransactionIdSet = NO;
+    
+    if ([self isFieldValid:isReceiptSet]) {
+        if ([isReceiptSet boolValue]) {
+            [adjustEvent setReceipt:[receipt dataUsingEncoding:NSUTF8StringEncoding] transactionId:transactionId];
+        } else {
+            if ([self isFieldValid:transactionId]) {
+                [adjustEvent setTransactionId:transactionId];
+                isTransactionIdSet = YES;
+            }
+        }
+    }
+    
+    if (NO == isTransactionIdSet) {
+        if ([self isFieldValid:transactionId]) {
+            [adjustEvent setTransactionId:transactionId];
+        }
+    }
+    
+    [Adjust trackEvent:adjustEvent];
+    
+    result(nil);
+}
+
+- (void)setIsEnabled:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+    NSString *isEnabled = call.arguments[@"isEnabled"];
+    if ([self isFieldValid:isEnabled]) {
+        [Adjust setEnabled:[isEnabled boolValue]];
+    }
+    result(nil);
+}
+
+- (void)sendFirstPackages:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+    [Adjust sendFirstPackages];
+    result(nil);
+}
+
+- (void)gdprForgetMe:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+    [Adjust gdprForgetMe];
+    result(nil);
+}
+
+- (void)getAttribution:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+    ADJAttribution *attribution = [Adjust attribution];
+    
+    if (attribution == nil) {
+        return;
+    }
+    
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+    [self addValueOrEmpty:attribution.trackerToken withKey:@"trackerToken" toDictionary:dictionary];
+    [self addValueOrEmpty:attribution.trackerName withKey:@"trackerName" toDictionary:dictionary];
+    [self addValueOrEmpty:attribution.network withKey:@"network" toDictionary:dictionary];
+    [self addValueOrEmpty:attribution.campaign withKey:@"campaign" toDictionary:dictionary];
+    [self addValueOrEmpty:attribution.creative withKey:@"creative" toDictionary:dictionary];
+    [self addValueOrEmpty:attribution.adgroup withKey:@"adgroup" toDictionary:dictionary];
+    [self addValueOrEmpty:attribution.clickLabel withKey:@"clickLabel" toDictionary:dictionary];
+    [self addValueOrEmpty:attribution.adid withKey:@"adid" toDictionary:dictionary];
+    
+    result(dictionary);
+}
+
+- (void)getIdfa:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+    NSString* idfa = [Adjust idfa];
+    result(idfa);
 }
 
 - (BOOL)isFieldValid:(NSObject *)field {
@@ -157,6 +286,16 @@
     }
     
     return YES;
+}
+
+- (void)addValueOrEmpty:(NSObject *)value
+                withKey:(NSString *)key
+           toDictionary:(NSMutableDictionary *)dictionary {
+    if (nil != value) {
+        [dictionary setObject:[NSString stringWithFormat:@"%@", value] forKey:key];
+    } else {
+        [dictionary setObject:@"" forKey:key];
+    }
 }
 
 @end

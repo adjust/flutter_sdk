@@ -190,11 +190,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                 print('Received google AdId: $googleAdid');
                               })),
 
-                      // get ADID
+                      // get ADID (Android)
                       Util.buildRasedButtonRow(
-                          'Get ADID',
+                          'Get ADID (Android)',
                           () => AdjustSdkPlugin.getAdid().then((adid) {
                                 print('Received ADID: $adid');
+                              })),
+                              
+                      // get IDFA (iOS)
+                      Util.buildRasedButtonRow(
+                          'Get IDFA (iOS)',
+                          () => AdjustSdkPlugin.getIdfa().then((idfa) {
+                                print('Received IDFA: $idfa');
                               })),
 
                       // get attribution
