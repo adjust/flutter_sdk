@@ -30,6 +30,12 @@
         [self getAttribution:call withResult:result];
     } else if ([@"getIdfa" isEqualToString:call.method]) {
         [self getIdfa:call withResult:result];
+    } else if ([@"setOfflineMode" isEqualToString:call.method]) {
+        [self setOfflineMode:call withResult:result];
+    } else if ([@"setPushToken" isEqualToString:call.method]) {
+        [self setPushToken:call withResult:result];
+    } else if ([@"appWillOpenUrl" isEqualToString:call.method]) {
+        [self appWillOpenUrl:call withResult:result];
     } else if ([@"addSessionCallbackParameter" isEqualToString:call.method]) {
         NSString *key = call.arguments[@"key"];
         NSString *value = call.arguments[@"value"];
@@ -173,7 +179,6 @@
         for (id key in callbackParametersJson) {
             NSString *value = [callbackParametersJson objectForKey:key];
             [adjustEvent addCallbackParameter:key value:value];
-            NSLog(@"111111 callback added: %@, %@", key, value);
         }
     }
 
@@ -186,7 +191,6 @@
         for (id key in partnerParametersJson) {
             NSString *value = [partnerParametersJson objectForKey:key];
             [adjustEvent addPartnerParameter:key value:value];
-            NSLog(@"111111 partner added: %@, %@", key, value);
         }
     }
     
@@ -237,6 +241,43 @@
 - (void)gdprForgetMe:(FlutterMethodCall*)call withResult:(FlutterResult)result {
     [Adjust gdprForgetMe];
     result(nil);
+}
+
+- (void)setOfflineMode:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+    NSString *isOfflineMode = call.arguments[@"isOffline"];
+    if ([self isFieldValid:isOfflineMode]) {
+        [Adjust setOfflineMode:[isOfflineMode boolValue]];
+    }
+    result(nil);
+}
+
+- (void)setPushToken:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+    NSString *token = call.arguments[@"token"];
+    if ([self isFieldValid:token]) {
+        [Adjust setDeviceToken:[token dataUsingEncoding:NSUTF8StringEncoding]];
+    }
+    result(nil);
+}
+
+- (void)appWillOpenUrl:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+    NSString *urlString = call.arguments[@"url"];
+    
+    if (urlString == nil) {
+        return;
+    }
+    
+    NSURL *url;
+    
+    if ([NSString instancesRespondToSelector:@selector(stringByAddingPercentEncodingWithAllowedCharacters:)]) {
+        url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+    } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    }
+#pragma clang diagnostic pop
+    
+    [Adjust appWillOpenUrl:url];
 }
 
 - (void)getAttribution:(FlutterMethodCall*)call withResult:(FlutterResult)result {
