@@ -153,49 +153,46 @@
 }
 
 - (void)trackEvent:(FlutterMethodCall*)call withResult:(FlutterResult)result {
-//    NSArray *jsonObject = [NSJSONSerialization JSONObjectWithData:[arguments dataUsingEncoding:NSUTF8StringEncoding]
-//                                                          options:0
-//                                                            error:NULL];
-    
     NSString *eventToken = call.arguments[@"eventToken"];
     NSString *revenue = call.arguments[@"revenue"];
     NSString *currency = call.arguments[@"currency"];
     NSString *receipt = call.arguments[@"receipt"];
     NSString *transactionId = call.arguments[@"transactionId"];
     NSString *isReceiptSet = call.arguments[@"isReceiptSet"];
-    
-    NSMutableArray *callbackParameters = [[NSMutableArray alloc] init];
-    NSMutableArray *partnerParameters = [[NSMutableArray alloc] init];
-    
-    // callbackParameters
-    //////////////////////////////////////////
-//    for (id item in [[jsonObject valueForKey:@"callbackParameters"] objectAtIndex:0]) {
-//        [callbackParameters addObject:item];
-//    }
-
-    // partnerParameters
-    //////////////////////////////////////////
-//    for (id item in [[jsonObject valueForKey:@"partnerParameters"] objectAtIndex:0]) {
-//        [partnerParameters addObject:item];
-//    }
-    
+    NSString *callbackParametersJsonStr = call.arguments[@"callbackParameters"];
+    NSString *partnerParametersJsonStr = call.arguments[@"partnerParameters"];
+   
     ADJEvent *adjustEvent = [ADJEvent eventWithEventToken:eventToken];
+    
+    // callbackParameters //////////////
+    if(callbackParametersJsonStr != nil) {
+        id callbackParametersJson = [NSJSONSerialization
+                                           JSONObjectWithData:[callbackParametersJsonStr dataUsingEncoding:NSUTF8StringEncoding]
+                                           options:0 error:NULL];
+        
+        for (id key in callbackParametersJson) {
+            NSString *value = [callbackParametersJson objectForKey:key];
+            [adjustEvent addCallbackParameter:key value:value];
+            NSLog(@"111111 callback added: %@, %@", key, value);
+        }
+    }
+
+    // partnerParameters //////////////
+    if(partnerParametersJsonStr != nil) {
+        id partnerParametersJson = [NSJSONSerialization
+                                          JSONObjectWithData:[partnerParametersJsonStr dataUsingEncoding:NSUTF8StringEncoding]
+                                          options:0 error:NULL];
+        
+        for (id key in partnerParametersJson) {
+            NSString *value = [partnerParametersJson objectForKey:key];
+            [adjustEvent addPartnerParameter:key value:value];
+            NSLog(@"111111 partner added: %@, %@", key, value);
+        }
+    }
     
     if ([self isFieldValid:revenue]) {
         double revenueValue = [revenue doubleValue];
         [adjustEvent setRevenue:revenueValue currency:currency];
-    }
-    
-    for (int i = 0; i < [callbackParameters count]; i += 2) {
-        NSString *key = [callbackParameters objectAtIndex:i];
-        NSObject *value = [callbackParameters objectAtIndex:(i+1)];
-        [adjustEvent addCallbackParameter:key value:[NSString stringWithFormat:@"%@", value]];
-    }
-    
-    for (int i = 0; i < [partnerParameters count]; i += 2) {
-        NSString *key = [partnerParameters objectAtIndex:i];
-        NSObject *value = [partnerParameters objectAtIndex:(i+1)];
-        [adjustEvent addPartnerParameter:key value:[NSString stringWithFormat:@"%@", value]];
     }
     
     // Deprecated
