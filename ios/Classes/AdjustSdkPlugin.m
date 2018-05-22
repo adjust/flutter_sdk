@@ -5,6 +5,7 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
 
 @interface AdjustSdkPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
+@property(nonatomic, retain) FlutterMethodChannel *deeplinkChannel;
 @end
 
 @implementation AdjustSdkPlugin
@@ -12,14 +13,21 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:CHANNEL_API_NAME
                                      binaryMessenger:[registrar messenger]];
+    FlutterMethodChannel* deeplinkChannel = [FlutterMethodChannel
+                                             methodChannelWithName:CHANNEL_DEEPLINK_NAME
+                                             binaryMessenger:[registrar messenger]];
     AdjustSdkPlugin* instance = [[AdjustSdkPlugin alloc] init];
     instance.channel = channel;
+    instance.deeplinkChannel = deeplinkChannel;
     [registrar addMethodCallDelegate:instance channel:channel];
+    [registrar addMethodCallDelegate:instance channel:deeplinkChannel];
 }
 
 - (void)dealloc {
     [self.channel setMethodCallHandler:nil];
+    [self.deeplinkChannel setMethodCallHandler:nil];
     self.channel = nil;
+    self.deeplinkChannel = nil;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -380,6 +388,34 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
                                                                           count:count];
     
     [self.channel invokeMethod:@"session-fail" arguments:adjustFailureSuccessMap];
+}
+
+- (BOOL)adjustDeeplinkResponse:(NSURL *)deeplink {
+    // call non-native flutter part and ask whether deepling should be launched
+    // and return that value
+    id keys[] = { @"uri" };
+    id values[] = { [deeplink absoluteString] };
+    NSUInteger count = sizeof(values) / sizeof(id);
+    NSDictionary *deeplinkUriParamsMap = [NSDictionary dictionaryWithObjects:values
+                                                                        forKeys:keys
+                                                                          count:count];
+    
+    [self.deeplinkChannel invokeMethod:@"should-launch-uri" arguments:deeplinkUriParamsMap result:^(id  _Nullable result) {
+        BOOL launchDeeplink;
+        if(result == nil) {
+            launchDeeplink = false;
+        } else if ([result isMemberOfClass:[FlutterMethodNotImplemented class]]) {
+            launchDeeplink = false;
+        } else if ([result isMemberOfClass:[FlutterError class]]) {
+            launchDeeplink = false;
+        }
+        launchDeeplink = result;
+    }];
+    
+    // ...pretty sure this does not work like this.
+    // probably a callback back to the native part is needed
+    // return launchDeeplink;
+    return true;
 }
 
 //////////// HELPER METHODS ///////////////////////////////////////////////////////////////
