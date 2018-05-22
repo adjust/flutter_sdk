@@ -14,8 +14,13 @@ class AdjustEventSuccess {
       eventSuccess.eventToken = map['eventToken'];
       eventSuccess.jsonResponse = map['jsonResponse'];
     } catch (e) {
-      print(e.toString());
+      print('Error! Failed to map AdjustEventSuccess from incoming data. Details: ' + e.toString());
     }
     return eventSuccess;
+  }
+  
+  @override
+  String toString() {
+    return "EventSuccess[ message: $message, timestamp: $timestamp, adid: $adid, token: $eventToken, jsonResp: $jsonResponse ]";
   }
 }

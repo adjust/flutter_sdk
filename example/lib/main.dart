@@ -196,7 +196,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                           () => AdjustSdkPlugin.getAdid().then((adid) {
                                 print('Received ADID: $adid');
                               })),
-                              
+
                       // get IDFA (iOS)
                       Util.buildRasedButtonRow(
                           'Get IDFA (iOS)',
@@ -265,30 +265,30 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   _setCallbacks() {
     AdjustSdkPlugin
         .setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessData) {
-      print(
-          ' >>>> Reeceived sessionSuccessData: ' + sessionSuccessData.message);
+      print(' >>>> Reeceived sessionSuccessData: ' +
+          sessionSuccessData.toString());
     });
 
     AdjustSdkPlugin
         .setSessionFailureHandler((AdjustSessionFailure sessionFailureData) {
-      print(
-          ' >>>> Reeceived sessionFailureData: ' + sessionFailureData.message);
+      print(' >>>> Reeceived sessionFailureData: ' +
+          sessionFailureData.toString());
     });
 
     AdjustSdkPlugin
         .setEventSuccessHandler((AdjustEventSuccess eventSuccessData) {
-      print(' >>>> Reeceived eventFailureData: ' + eventSuccessData.message);
+      print(' >>>> Reeceived eventFailureData: ' + eventSuccessData.toString());
     });
 
     AdjustSdkPlugin
         .setEventFailureHandler((AdjustEventFailure eventFailureData) {
-      print(' >>>> Reeceived eventFailureData: ' + eventFailureData.message);
+      print(' >>>> Reeceived eventFailureData: ' + eventFailureData.toString());
     });
 
     AdjustSdkPlugin.setAttributionChangedHandler(
         (AdjustAttribution attributionChangedData) {
       print(' >>>> Reeceived attributionChangedData: ' +
-          attributionChangedData.trackerToken);
+          attributionChangedData.toString());
     });
 
     AdjustSdkPlugin.setShouldLaunchReceivedDeeplinkHandler((String uri) {

@@ -17,8 +17,13 @@ class AdjustEventFailure {
       eventFailure.willRetry = willRetry;
       eventFailure.jsonResponse = map['jsonResponse'];
     } catch (e) {
-      print(e.toString());
+      print('Error! Failed to map AdjustEventFailure from incoming data. Details: ' + e.toString());
     }
     return eventFailure;
+  }
+
+  @override
+  String toString() {
+    return "EventFailure [ message: $message, timestamp: $timestamp, adid: $adid, token: $eventToken, willRetry: $willRetry, jsonResp: $jsonResponse ]";
   }
 }

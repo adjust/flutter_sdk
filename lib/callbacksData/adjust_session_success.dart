@@ -12,8 +12,13 @@ class AdjustSessionSuccess {
       sessionSuccess.adid = map['adid'];
       sessionSuccess.jsonResponse = map['jsonResponse'];
     } catch (e) {
-      print(e.toString());
+      print('Error! Failed to map AdjustSessionSuccess from incoming data. Details: ' + e.toString());
     }
     return sessionSuccess;
+  }
+
+  @override
+  String toString() {
+    return "SessionSuccess[ message: $message, timestamp: $timestamp, adid: $adid, jsonResp: $jsonResponse ]";
   }
 }

@@ -15,8 +15,13 @@ class AdjustSessionFailure {
       sessionFailure.willRetry = willRetry;
       sessionFailure.jsonResponse = map['jsonResponse'];
     } catch (e) {
-      print(e.toString());
+      print('Error! Failed to map AdjustSessionFailure from incoming data. Details: ' + e.toString());
     }
     return sessionFailure;
+  }
+
+  @override
+  String toString() {
+    return "SessionFailure [ message: $message, timestamp: $timestamp, adid: $adid, willRetry: $willRetry, jsonResp: $jsonResponse ]";
   }
 }

@@ -19,7 +19,8 @@ typedef bool ShouldLaunchReceivedDeeplinkHandler(String uri);
 class AdjustSdkPlugin {
   // any disadvantages of using multiple channels ??
   static const MethodChannel _channel = const MethodChannel('com.adjust/api');
-  static const MethodChannel _deeplinkChannel = const MethodChannel('com.adjust/deeplink');
+  static const MethodChannel _deeplinkChannel =
+      const MethodChannel('com.adjust/deeplink');
 
   static bool _callbackHandlersInitialized = false;
 
@@ -46,34 +47,39 @@ class AdjustSdkPlugin {
       try {
         switch (call.method) {
           case 'session-success':
-            AdjustSessionSuccess sessionSuccess =
-                AdjustSessionSuccess.fromMap(call.arguments);
-            if (_sessionSuccessHandler != null)
+            if (_sessionSuccessHandler != null) {
+              AdjustSessionSuccess sessionSuccess =
+                  AdjustSessionSuccess.fromMap(call.arguments);
               _sessionSuccessHandler(sessionSuccess);
+            }
             break;
           case 'session-fail':
-            AdjustSessionFailure sessionFailure =
-                AdjustSessionFailure.fromMap(call.arguments);
-            if (_sessionFailureHandler != null)
+            if (_sessionFailureHandler != null) {
+              AdjustSessionFailure sessionFailure =
+                  AdjustSessionFailure.fromMap(call.arguments);
               _sessionFailureHandler(sessionFailure);
+            }
             break;
           case 'event-success':
-            AdjustEventSuccess eventSuccess =
-                AdjustEventSuccess.fromMap(call.arguments);
-            if (_eventSuccessHandler != null)
+            if (_eventSuccessHandler != null) {
+              AdjustEventSuccess eventSuccess =
+                  AdjustEventSuccess.fromMap(call.arguments);
               _eventSuccessHandler(eventSuccess);
+            }
             break;
           case 'event-fail':
-            AdjustEventFailure eventFailure =
-                AdjustEventFailure.fromMap(call.arguments);
-            if (_eventFailureHandler != null)
+            if (_eventFailureHandler != null) {
+              AdjustEventFailure eventFailure =
+                  AdjustEventFailure.fromMap(call.arguments);
               _eventFailureHandler(eventFailure);
+            }
             break;
           case 'attribution-change':
-            AdjustAttribution attribution =
-                AdjustAttribution.fromMap(call.arguments);
-            if (_attributionChangedHandler != null)
+            if (_attributionChangedHandler != null) {
+              AdjustAttribution attribution =
+                  AdjustAttribution.fromMap(call.arguments);
               _attributionChangedHandler(attribution);
+            }
             break;
         }
       } catch (e) {

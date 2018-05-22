@@ -8,14 +8,6 @@ class AdjustAttribution {
   String clickLabel;
   String adid;
 
-  @override
-  toString() {
-    return 
-      """token: $trackerToken, tokenName: $trackerName, network: $network, 
-        campaign: $campaign, adgroup: $adgroup, creative: $creative, 
-        clickLabel: $clickLabel, adid: $adid""";
-  }
-
   static AdjustAttribution fromMap(dynamic map) {
     AdjustAttribution attChange = new AdjustAttribution();
     try {
@@ -28,8 +20,16 @@ class AdjustAttribution {
       attChange.clickLabel = map['clickLabel'];
       attChange.adid = map['adid'];
     } catch (e) {
-      print(e.toString());
+      print('Error! Failed to map AdjustAttribution from incoming data. Details: ' + e.toString());
     }
     return attChange;
+  }
+
+  @override
+  toString() {
+    return 
+      """token: $trackerToken, tokenName: $trackerName, network: $network, 
+        campaign: $campaign, adgroup: $adgroup, creative: $creative, 
+        clickLabel: $clickLabel, adid: $adid""";
   }
 }

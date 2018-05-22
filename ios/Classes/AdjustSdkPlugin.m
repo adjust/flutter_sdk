@@ -1,12 +1,25 @@
 #import "AdjustSdkPlugin.h"
 
+static NSString *const CHANNEL_API_NAME = @"com.adjust/api";
+static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
+
+@interface AdjustSdkPlugin ()
+@property(nonatomic, retain) FlutterMethodChannel *channel;
+@end
+
 @implementation AdjustSdkPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
-                                     methodChannelWithName:@"com.adjust/api"
+                                     methodChannelWithName:CHANNEL_API_NAME
                                      binaryMessenger:[registrar messenger]];
     AdjustSdkPlugin* instance = [[AdjustSdkPlugin alloc] init];
+    instance.channel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
+}
+
+- (void)dealloc {
+    [self.channel setMethodCallHandler:nil];
+    self.channel = nil;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -152,6 +165,9 @@
                              info3:[[NSNumber numberWithLongLong:[info3 longLongValue]] unsignedIntegerValue]
                              info4:[[NSNumber numberWithLongLong:[info4 longLongValue]] unsignedIntegerValue]];
     }
+    
+    // needed for callbacks
+    [adjustConfig setDelegate:self];
     
     [Adjust appDidLaunch:adjustConfig];
     
@@ -305,6 +321,69 @@
     result(idfa);
 }
 
+//////////// CALLBACK METHODS ///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+- (void)adjustAttributionChanged:(ADJAttribution *)attribution {
+    id keys[] = { @"trackerToken", @"trackerName", @"network", @"campaign", @"adgroup", @"creative", @"clickLabel", @"adid" };
+    id values[] = { [attribution trackerToken], [attribution trackerName], [attribution network], [attribution campaign], [attribution adgroup], [attribution creative], [attribution clickLabel], [attribution adid] };
+    NSUInteger count = sizeof(values) / sizeof(id);
+    NSDictionary *adjustAttributionMap = [NSDictionary dictionaryWithObjects:values
+                                                           forKeys:keys
+                                                             count:count];
+    
+    [self.channel invokeMethod:@"attribution-change" arguments:adjustAttributionMap];
+}
+
+- (void)adjustEventTrackingSucceeded:(ADJEventSuccess *)eventSuccessResponseData {
+    id keys[] = { @"message", @"timestamp", @"adid", @"eventToken", @"jsonResponse" };
+    id values[] = { [eventSuccessResponseData message], [eventSuccessResponseData timeStamp], [eventSuccessResponseData adid], [eventSuccessResponseData eventToken], [self toJson:[eventSuccessResponseData jsonResponse]] };
+    NSUInteger count = sizeof(values) / sizeof(id);
+    NSDictionary *adjustSessionSuccessMap = [NSDictionary dictionaryWithObjects:values
+                                                                        forKeys:keys
+                                                                          count:count];
+    
+    [self.channel invokeMethod:@"event-success" arguments:adjustSessionSuccessMap];
+}
+
+- (void)adjustEventTrackingFailed:(ADJEventFailure *)eventFailureResponseData {
+    NSString *willRetryString = [eventFailureResponseData willRetry] ? @"true" : @"false";
+    id keys[] = { @"message", @"timestamp", @"adid", @"eventToken", @"willRetry", @"jsonResponse" };
+    id values[] = { [eventFailureResponseData message], [eventFailureResponseData timeStamp], [eventFailureResponseData adid], [eventFailureResponseData eventToken], willRetryString, [self toJson:[eventFailureResponseData jsonResponse]] };
+    NSUInteger count = sizeof(values) / sizeof(id);
+    NSDictionary *adjustSessionSuccessMap = [NSDictionary dictionaryWithObjects:values
+                                                                        forKeys:keys
+                                                                          count:count];
+    
+    [self.channel invokeMethod:@"event-fail" arguments:adjustSessionSuccessMap];
+}
+
+- (void)adjustSessionTrackingSucceeded:(ADJSessionSuccess *)sessionSuccessResponseData {
+    id keys[] = { @"message", @"timestamp", @"adid", @"jsonResponse" };
+    id values[] = { [sessionSuccessResponseData message], [sessionSuccessResponseData timeStamp], [sessionSuccessResponseData adid],
+        [self toJson:[sessionSuccessResponseData jsonResponse]] };
+    NSUInteger count = sizeof(values) / sizeof(id);
+    NSDictionary *adjustSessionSuccessMap = [NSDictionary dictionaryWithObjects:values
+                                                                     forKeys:keys
+                                                                       count:count];
+    
+    [self.channel invokeMethod:@"session-success" arguments:adjustSessionSuccessMap];
+}
+
+- (void)adjustSessionTrackingFailed:(ADJSessionFailure *)sessionFailureResponseData {
+    NSString *willRetryString = [sessionFailureResponseData willRetry] ? @"true" : @"false";
+    id keys[] = { @"message", @"timestamp", @"adid", @"willRetry", @"jsonResponse" };
+    id values[] = { [sessionFailureResponseData message], [sessionFailureResponseData timeStamp], [sessionFailureResponseData adid], willRetryString,
+        [self toJson:[sessionFailureResponseData jsonResponse]] };
+    NSUInteger count = sizeof(values) / sizeof(id);
+    NSDictionary *adjustFailureSuccessMap = [NSDictionary dictionaryWithObjects:values
+                                                                        forKeys:keys
+                                                                          count:count];
+    
+    [self.channel invokeMethod:@"session-fail" arguments:adjustFailureSuccessMap];
+}
+
+//////////// HELPER METHODS ///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 - (BOOL)isFieldValid:(NSObject *)field {
     if (field == nil) {
         return NO;
@@ -335,5 +414,14 @@
         [dictionary setObject:@"" forKey:key];
     }
 }
+
+-(NSString*)toJson:(id)object
+{
+    NSError *writeError = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:object options:NSJSONWritingPrettyPrinted error:&writeError];
+    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 
 @end
