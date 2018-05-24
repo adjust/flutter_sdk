@@ -29,7 +29,7 @@ class Util {
     );
   }
 
-  static Widget buildRasedButtonRow(String text, Function action) {
+  static Widget buildRaisedButtonRow(String text, Function action) {
     return new Align(
       alignment: const Alignment(0.0, -0.2),
       child: new Container(
@@ -74,5 +74,32 @@ class Util {
     event.addPartnerParameter('foo1', 'bar1');
     event.addPartnerParameter('foo2', 'bar2');
     return event;
+  }
+
+  static void showMessage(
+      BuildContext context, String dialogText, String message) {
+    showDialog<Null>(
+        context: context,
+        builder: (_) => new AlertDialog(
+              title: new Text(dialogText),
+              content: new Text(message),
+            ));
+  }
+
+  static void showDemoDialog<T>({GlobalKey<ScaffoldState> scaffoldKey, BuildContext context, Widget child}) {
+    showDialog<T>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => child,
+    ).then<void>((T value) {
+      // The value passed to Navigator.pop() or null.
+      if (scaffoldKey != null && value != null) {
+        scaffoldKey.currentState.showSnackBar(
+          new SnackBar(
+            content: new Text('You selected: $value'),
+          ),
+        );
+      }
+    });
   }
 }

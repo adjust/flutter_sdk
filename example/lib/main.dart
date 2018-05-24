@@ -1,5 +1,4 @@
 import 'package:adjust_sdk_plugin/adjust_config.dart';
-import 'package:adjust_sdk_plugin/adjust_event.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjust_attribution.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjust_event_failure.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjust_event_success.dart';
@@ -41,7 +40,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     setState(() {
       switch (state) {
         case AppLifecycleState.inactive:
-          //TODO:
+          //TODO: not needed actually ??
           break;
         case AppLifecycleState.resumed:
           AdjustSdkPlugin.onResume();
@@ -50,7 +49,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           AdjustSdkPlugin.onPause();
           break;
         case AppLifecycleState.suspending:
-          //TODO:
+          //TODO: not needed actually ??
           break;
       }
 
@@ -137,7 +136,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return new MaterialApp(
       home: new Scaffold(
           appBar: new AppBar(
-            title: new Text('Plugin example app'),
+            title: new Text('Example App using Adjust Flutter SDK'),
           ),
           body: new CustomScrollView(
             shrinkWrap: true,
@@ -154,35 +153,35 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                           : new Text(
                               'The most recent lifecycle state this widget observed was: $_lastLifecycleState.'),
 
-                      Util.buildRasedButtonRow(
-                          'Is Enabled ?', () => _printIsSdkEnabled()),
+                      Util.buildRaisedButtonRow(
+                          'Is Enabled ?', () => _showIsSdkEnabled(context)),
 
                       // track simple event button
-                      Util.buildRasedButtonRow(
+                      Util.buildRaisedButtonRow(
                           'Track Sample Event',
                           () => AdjustSdkPlugin
                               .trackEvent(Util.buildSimpleEvent())),
 
                       // track revenue event button
-                      Util.buildRasedButtonRow(
+                      Util.buildRaisedButtonRow(
                           'Track Revenue Event',
                           () => AdjustSdkPlugin
                               .trackEvent(Util.buildRevenueEvent())),
 
                       // track callback event button
-                      Util.buildRasedButtonRow(
+                      Util.buildRaisedButtonRow(
                           'Track Callback Event',
                           () => AdjustSdkPlugin
                               .trackEvent(Util.buildCallbackEvent())),
 
                       // track partner event button
-                      Util.buildRasedButtonRow(
+                      Util.buildRaisedButtonRow(
                           'Track Partner Event',
                           () => AdjustSdkPlugin
                               .trackEvent(Util.buildPartnerEvent())),
 
                       // get google AdId
-                      Util.buildRasedButtonRow(
+                      Util.buildRaisedButtonRow(
                           'Get Google AdId',
                           () => AdjustSdkPlugin
                                   .getGoogleAdId()
@@ -191,21 +190,21 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                               })),
 
                       // get ADID (Android)
-                      Util.buildRasedButtonRow(
+                      Util.buildRaisedButtonRow(
                           'Get ADID (Android)',
                           () => AdjustSdkPlugin.getAdid().then((adid) {
                                 print('Received ADID: $adid');
                               })),
 
                       // get IDFA (iOS)
-                      Util.buildRasedButtonRow(
+                      Util.buildRaisedButtonRow(
                           'Get IDFA (iOS)',
                           () => AdjustSdkPlugin.getIdfa().then((idfa) {
                                 print('Received IDFA: $idfa');
                               })),
 
                       // get attribution
-                      Util.buildRasedButtonRow(
+                      Util.buildRaisedButtonRow(
                           'Get Attribution',
                           () => AdjustSdkPlugin
                                   .getAttribution()
@@ -252,13 +251,17 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     );
   }
 
-  _printIsSdkEnabled() {
+  _showIsSdkEnabled(BuildContext context) {
     try {
       AdjustSdkPlugin.isEnabled().then((isEnabled) {
-        print('Adjust is enabled = $isEnabled');
+        String message = 'Adjust is enabled = $isEnabled';
+        print(message);
+        // Util.showMessage(context, 'SDK Enabled?', message);
       });
     } on PlatformException {
       print('no such method found im plugin: isEnabled');
+      // Util.showMessage(context, 'SDK Enabled?',
+      // 'Error - no such method found im plugin: isEnabled');
     }
   }
 
