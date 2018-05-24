@@ -1,4 +1,5 @@
 import 'package:adjust_sdk_plugin/adjust_event.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Util {
@@ -26,6 +27,15 @@ class Util {
           ),
         ],
       ),
+    );
+  }
+
+  static Widget buildCupertinoButton(String text, Function action) {
+    return new CupertinoButton(
+      child: Text(text),
+      color: CupertinoColors.activeBlue,
+      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
+      onPressed: action,
     );
   }
 
@@ -86,7 +96,10 @@ class Util {
             ));
   }
 
-  static void showDemoDialog<T>({GlobalKey<ScaffoldState> scaffoldKey, BuildContext context, Widget child}) {
+  static void showDemoDialog<T>(
+      {GlobalKey<ScaffoldState> scaffoldKey,
+      BuildContext context,
+      Widget child}) {
     showDialog<T>(
       context: context,
       barrierDismissible: false,

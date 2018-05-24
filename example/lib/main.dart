@@ -134,120 +134,124 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      home: new Scaffold(
-          appBar: new AppBar(
-            title: new Text('Example App using Adjust Flutter SDK'),
-          ),
-          body: new CustomScrollView(
-            shrinkWrap: true,
-            slivers: <Widget>[
-              new SliverPadding(
-                padding: const EdgeInsets.all(20.0),
-                sliver: new SliverList(
-                  delegate: new SliverChildListDelegate(
-                    <Widget>[
-                      new Text('Running on: $_platformVersion\n'),
-                      _lastLifecycleState == null
-                          ? const Text(
-                              'This widget has not observed any lifecycle changes.')
-                          : new Text(
-                              'The most recent lifecycle state this widget observed was: $_lastLifecycleState.'),
+        home: new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Example App using Adjust Flutter SDK'),
+      ),
+      body: _buildMainContent(context),
+    ));
+  }
 
-                      Util.buildRaisedButtonRow(
-                          'Is Enabled ?', () => _showIsSdkEnabled(context)),
+  _buildMainContent(BuildContext context) {
+    return new CustomScrollView(
+      shrinkWrap: true,
+      slivers: <Widget>[
+        new SliverPadding(
+          padding: const EdgeInsets.all(20.0),
+          sliver: new SliverList(
+            delegate: new SliverChildListDelegate(
+              <Widget>[
+                new Text('Running on: $_platformVersion\n'),
+                _lastLifecycleState == null
+                    ? const Text(
+                        'This widget has not observed any lifecycle changes.')
+                    : new Text(
+                        'The most recent lifecycle state this widget observed was: $_lastLifecycleState.'),
 
-                      // track simple event button
-                      Util.buildRaisedButtonRow(
-                          'Track Sample Event',
-                          () => AdjustSdkPlugin
-                              .trackEvent(Util.buildSimpleEvent())),
+                const Padding(padding: const EdgeInsets.all(7.0)),
 
-                      // track revenue event button
-                      Util.buildRaisedButtonRow(
-                          'Track Revenue Event',
-                          () => AdjustSdkPlugin
-                              .trackEvent(Util.buildRevenueEvent())),
+                Util.buildCupertinoButton(
+                    'Is Enabled ?', () => _showIsSdkEnabled(context)),
+                const Padding(padding: const EdgeInsets.all(7.0)),
 
-                      // track callback event button
-                      Util.buildRaisedButtonRow(
-                          'Track Callback Event',
-                          () => AdjustSdkPlugin
-                              .trackEvent(Util.buildCallbackEvent())),
+                // track simple event button
+                Util.buildCupertinoButton('Track Sample Event',
+                    () => AdjustSdkPlugin.trackEvent(Util.buildSimpleEvent())),
+                const Padding(padding: const EdgeInsets.all(7.0)),
 
-                      // track partner event button
-                      Util.buildRaisedButtonRow(
-                          'Track Partner Event',
-                          () => AdjustSdkPlugin
-                              .trackEvent(Util.buildPartnerEvent())),
+                // track revenue event button
+                Util.buildCupertinoButton('Track Revenue Event',
+                    () => AdjustSdkPlugin.trackEvent(Util.buildRevenueEvent())),
+                const Padding(padding: const EdgeInsets.all(7.0)),
 
-                      // get google AdId
-                      Util.buildRaisedButtonRow(
-                          'Get Google AdId',
-                          () => AdjustSdkPlugin
-                                  .getGoogleAdId()
-                                  .then((googleAdid) {
-                                print('Received google AdId: $googleAdid');
-                              })),
+                // track callback event button
+                Util.buildCupertinoButton(
+                    'Track Callback Event',
+                    () =>
+                        AdjustSdkPlugin.trackEvent(Util.buildCallbackEvent())),
+                const Padding(padding: const EdgeInsets.all(7.0)),
 
-                      // get ADID (Android)
-                      Util.buildRaisedButtonRow(
-                          'Get ADID (Android)',
-                          () => AdjustSdkPlugin.getAdid().then((adid) {
-                                print('Received ADID: $adid');
-                              })),
+                // track partner event button
+                Util.buildCupertinoButton('Track Partner Event',
+                    () => AdjustSdkPlugin.trackEvent(Util.buildPartnerEvent())),
+                const Padding(padding: const EdgeInsets.all(7.0)),
 
-                      // get IDFA (iOS)
-                      Util.buildRaisedButtonRow(
-                          'Get IDFA (iOS)',
-                          () => AdjustSdkPlugin.getIdfa().then((idfa) {
-                                print('Received IDFA: $idfa');
-                              })),
+                // get google AdId
+                Util.buildCupertinoButton(
+                    'Get Google AdId',
+                    () => AdjustSdkPlugin.getGoogleAdId().then((googleAdid) {
+                          print('Received google AdId: $googleAdid');
+                        })),
+                const Padding(padding: const EdgeInsets.all(7.0)),
 
-                      // get attribution
-                      Util.buildRaisedButtonRow(
-                          'Get Attribution',
-                          () => AdjustSdkPlugin
-                                  .getAttribution()
-                                  .then((attribution) {
-                                print(
-                                    'Received attribution: ${attribution.toString()}');
-                              })),
+                // get ADID (Android)
+                Util.buildCupertinoButton(
+                    'Get ADID (Android)',
+                    () => AdjustSdkPlugin.getAdid().then((adid) {
+                          print('Received ADID: $adid');
+                        })),
+                const Padding(padding: const EdgeInsets.all(7.0)),
 
-                      // SDK enabled/disabled switch
-                      new Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          // is SDK enabled switch
-                          new Text(
-                            _isSdkEnabled ? 'Enabled' : 'Disabled',
-                            style: _isSdkEnabled
-                                ? new TextStyle(
-                                    fontSize: 32.0, color: Colors.green)
-                                : new TextStyle(
-                                    fontSize: 32.0, color: Colors.red),
-                          ),
-                          new CupertinoSwitch(
-                            value: _isSdkEnabled,
-                            onChanged: (bool value) {
-                              setState(() {
-                                AdjustSdkPlugin.setIsEnabled(value);
-                                _isSdkEnabled = value;
-                                print('switch state = $_isSdkEnabled');
-                              });
-                            },
-                          ),
-                        ],
-                      ),
+                // get IDFA (iOS)
+                Util.buildCupertinoButton(
+                    'Get IDFA (iOS)',
+                    () => AdjustSdkPlugin.getIdfa().then((idfa) {
+                          print('Received IDFA: $idfa');
+                        })),
+                const Padding(padding: const EdgeInsets.all(7.0)),
 
-                      // end
-                    ],
-                  ),
+                // get attribution
+                Util.buildCupertinoButton(
+                    'Get Attribution',
+                    () => AdjustSdkPlugin.getAttribution().then((attribution) {
+                          print(
+                              'Received attribution: ${attribution.toString()}');
+                        })),
+                const Padding(padding: const EdgeInsets.all(7.0)),
+
+                // SDK enabled/disabled switch
+                new Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    // is SDK enabled switch
+                    new Text(
+                      _isSdkEnabled ? 'Enabled' : 'Disabled',
+                      style: _isSdkEnabled
+                          ? new TextStyle(fontSize: 32.0, color: Colors.green)
+                          : new TextStyle(fontSize: 32.0, color: Colors.red),
+                    ),
+                    new CupertinoSwitch(
+                      value: _isSdkEnabled,
+                      onChanged: (bool value) {
+                        setState(() {
+                          AdjustSdkPlugin.setIsEnabled(value);
+                          _isSdkEnabled = value;
+                          print('switch state = $_isSdkEnabled');
+                        });
+                      },
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          )),
+                const Padding(padding: const EdgeInsets.all(7.0)),
+
+                // end
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -256,12 +260,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       AdjustSdkPlugin.isEnabled().then((isEnabled) {
         String message = 'Adjust is enabled = $isEnabled';
         print(message);
-        // Util.showMessage(context, 'SDK Enabled?', message);
+        Util.showMessage(context, 'SDK Enabled?', message);
       });
     } on PlatformException {
       print('no such method found im plugin: isEnabled');
-      // Util.showMessage(context, 'SDK Enabled?',
-      // 'Error - no such method found im plugin: isEnabled');
+      Util.showMessage(context, 'SDK Enabled?',
+          'Error - no such method found im plugin: isEnabled');
     }
   }
 
