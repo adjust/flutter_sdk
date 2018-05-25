@@ -201,7 +201,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get Google AdId',
                     () => AdjustSdkPlugin.getGoogleAdId().then((googleAdid) {
-                          _showDialogMessage(
+                          _showDialogMessage('Google AdId', 
                               'Received google AdId: $googleAdid');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
@@ -210,7 +210,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get ADID (Android)',
                     () => AdjustSdkPlugin.getAdid().then((adid) {
-                          _showDialogMessage('Received ADID: $adid');
+                          _showDialogMessage('ADID', 'Received ADID: $adid');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
@@ -218,7 +218,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get IDFA (iOS)',
                     () => AdjustSdkPlugin.getIdfa().then((idfa) {
-                          _showDialogMessage('Received IDFA: $idfa');
+                          _showDialogMessage('IDFA', 'Received IDFA: $idfa');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
@@ -226,7 +226,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get Attribution',
                     () => AdjustSdkPlugin.getAttribution().then((attribution) {
-                          _showDialogMessage(
+                          _showDialogMessage('Attribution', 
                               'Received attribution: ${attribution.toString()}');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
@@ -270,10 +270,10 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   _showIsSdkEnabled() {
     try {
       AdjustSdkPlugin.isEnabled().then((isEnabled) {
-        _showDialogMessage('Adjust is enabled = $isEnabled');
+        _showDialogMessage('SDK Enabled?', 'Adjust is enabled = $isEnabled');
       });
     } on PlatformException {
-      _showDialogMessage('no such method found im plugin: isEnabled');
+      _showDialogMessage('SDK Enabled?', 'no such method found im plugin: isEnabled');
     }
   }
 
@@ -314,7 +314,8 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     });
   }
 
-  void _showDialogMessage(String text, [bool printToConsoleAlso = true]) {
+  void _showDialogMessage(String title, String text,
+      [bool printToConsoleAlso = true]) {
     if (printToConsoleAlso) {
       print(text);
     }
@@ -322,15 +323,16 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: Text(text),
+        return new CupertinoAlertDialog(
+          title: Text(title),
+          content: Text(text),
           actions: <Widget>[
-            new FlatButton(
+            new CupertinoDialogAction(
               child: const Text('OK'),
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(context, 'OK');
               },
-            ),
+            )
           ],
         );
       },
