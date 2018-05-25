@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:adjust_sdk_plugin/adjust_config.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjust_attribution.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjust_event_failure.dart';
@@ -6,18 +7,29 @@ import 'package:adjust_sdk_plugin/callbacksData/adjust_session_failure.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjust_session_success.dart';
 import 'package:adjust_sdk_plugin_example/util.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:adjust_sdk_plugin/adjust_sdk_plugin.dart';
 
-void main() => runApp(new MyApp());
-
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => new _MyAppState();
+void main() {
+  runApp(new AdjustExampleApp());
 }
 
-class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+class AdjustExampleApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: "Adjust Example App",
+      home: new MainScreen(),
+    );
+  }
+}
+
+class MainScreen extends StatefulWidget {
+  @override
+  State createState() => new MainScreenState();
+}
+
+class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   String _platformVersion = 'Unknown';
   AppLifecycleState _lastLifecycleState;
   bool _isSdkEnabled = true;
@@ -133,16 +145,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-        home: new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Example App using Adjust Flutter SDK'),
-      ),
-      body: _buildMainContent(context),
-    ));
+    return new Scaffold(
+      appBar: new AppBar(title: new Text("Adjust SDK Example")),
+      body: _buildMainContent(),
+    );
   }
 
-  _buildMainContent(BuildContext context) {
+  _buildMainContent() {
     return new CustomScrollView(
       shrinkWrap: true,
       slivers: <Widget>[
@@ -151,6 +160,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           sliver: new SliverList(
             delegate: new SliverChildListDelegate(
               <Widget>[
+                //start
+
                 new Text('Running on: $_platformVersion\n'),
                 _lastLifecycleState == null
                     ? const Text(
@@ -161,7 +172,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 Util.buildCupertinoButton(
-                    'Is Enabled ?', () => _showIsSdkEnabled(context)),
+                    'Is Enabled ?', () => _showIsSdkEnabled()),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // track simple event button
@@ -190,7 +201,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get Google AdId',
                     () => AdjustSdkPlugin.getGoogleAdId().then((googleAdid) {
-                          print('Received google AdId: $googleAdid');
+                          _showDialogMessage(
+                              'Received google AdId: $googleAdid');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
@@ -198,7 +210,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get ADID (Android)',
                     () => AdjustSdkPlugin.getAdid().then((adid) {
-                          print('Received ADID: $adid');
+                          _showDialogMessage('Received ADID: $adid');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
@@ -206,7 +218,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get IDFA (iOS)',
                     () => AdjustSdkPlugin.getIdfa().then((idfa) {
-                          print('Received IDFA: $idfa');
+                          _showDialogMessage('Received IDFA: $idfa');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
@@ -214,7 +226,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get Attribution',
                     () => AdjustSdkPlugin.getAttribution().then((attribution) {
-                          print(
+                          _showDialogMessage(
                               'Received attribution: ${attribution.toString()}');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
@@ -255,17 +267,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     );
   }
 
-  _showIsSdkEnabled(BuildContext context) {
+  _showIsSdkEnabled() {
     try {
       AdjustSdkPlugin.isEnabled().then((isEnabled) {
-        String message = 'Adjust is enabled = $isEnabled';
-        print(message);
-        Util.showMessage(context, 'SDK Enabled?', message);
+        _showDialogMessage('Adjust is enabled = $isEnabled');
       });
     } on PlatformException {
-      print('no such method found im plugin: isEnabled');
-      Util.showMessage(context, 'SDK Enabled?',
-          'Error - no such method found im plugin: isEnabled');
+      _showDialogMessage('no such method found im plugin: isEnabled');
     }
   }
 
@@ -304,5 +312,28 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       }
       return false;
     });
+  }
+
+  void _showDialogMessage(String text, [bool printToConsoleAlso = true]) {
+    if (printToConsoleAlso) {
+      print(text);
+    }
+
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: Text(text),
+          actions: <Widget>[
+            new FlatButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
