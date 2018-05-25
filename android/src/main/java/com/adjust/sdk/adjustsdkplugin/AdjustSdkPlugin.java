@@ -118,10 +118,6 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     String appToken = (String) adjustConfigMap.get("appToken");
     String environment = (String) adjustConfigMap.get("environment");
 
-    String logLevel = (String) adjustConfigMap.get("logLevel");
-    String defaultTracker = (String) adjustConfigMap.get("defaultTracker");
-    String processName = (String) adjustConfigMap.get("processName");
-    String delayStartString = (String) adjustConfigMap.get("delayStart");
     String secretIdString = (String) adjustConfigMap.get("secretId");
     String info1String = (String) adjustConfigMap.get("info1");
     String info2String = (String) adjustConfigMap.get("info2");
@@ -129,13 +125,34 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     String info4String = (String) adjustConfigMap.get("info4");
 
     AdjustConfig config = new AdjustConfig(applicationContext, appToken, environment);
-    String userAgent = (String) adjustConfigMap.get("userAgent");
-    config.setUserAgent(userAgent);
-    config.setLogLevel(LogLevel.valueOf(logLevel));
-    config.setDefaultTracker(defaultTracker);
-    config.setProcessName(processName);
 
     AdjustSdkPlugin.log("Calling onCreate with values:");
+    AdjustSdkPlugin.log("\tappToken: " + appToken);
+    AdjustSdkPlugin.log("\tenvironment: " + environment);
+
+    if(adjustConfigMap.containsKey("defaultTracker")) {
+      String processName = (String) adjustConfigMap.get("processName");
+      config.setProcessName(processName);
+      AdjustSdkPlugin.log("\tprocessName: " + processName);
+    }
+
+    if(adjustConfigMap.containsKey("defaultTracker")) {
+      String defaultTracker = (String) adjustConfigMap.get("defaultTracker");
+      config.setDefaultTracker(defaultTracker);
+      AdjustSdkPlugin.log("\tdefaultTracker: " + defaultTracker);
+    }
+
+    if(adjustConfigMap.containsKey("userAgent")) {
+      String userAgent = (String) adjustConfigMap.get("userAgent");
+      config.setUserAgent(userAgent);
+      AdjustSdkPlugin.log("\tuserAgent: " + userAgent);
+    }
+
+    if(adjustConfigMap.containsKey("logLevel")) {
+      String logLevel = (String) adjustConfigMap.get("logLevel");
+      config.setLogLevel(LogLevel.valueOf(logLevel));
+      AdjustSdkPlugin.log("\teventBufferingEnabled: " + logLevel);
+    }
 
     if(adjustConfigMap.containsKey("eventBufferingEnabled")) {
       String eventBufferingEnabledString = (String) adjustConfigMap.get("eventBufferingEnabled");
@@ -165,10 +182,15 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       AdjustSdkPlugin.log("\treadImei: " + readImei);
     }
 
-    if(stringIsNumber(delayStartString)) {
-      double delayStart = Double.valueOf(delayStartString);
-      config.setDelayStart(delayStart);
-      AdjustSdkPlugin.log("\tdelayStart: " + delayStart);
+    if(adjustConfigMap.containsKey("delayStart")) {
+      String delayStartString = (String) adjustConfigMap.get("delayStart");
+      if(stringIsNumber(delayStartString)) {
+        double delayStart = Double.valueOf(delayStartString);
+        config.setDelayStart(delayStart);
+        AdjustSdkPlugin.log("\tdelayStart: " + delayStart);
+      } else {
+        AdjustSdkPlugin.error("DelayStart parameter provided, but not a number!");
+      }
     }
 
     if(stringIsNumber(secretIdString) && stringIsNumber(info1String) && stringIsNumber(info2String)
@@ -182,13 +204,6 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       config.setAppSecret(secretId, info1, info2, info3, info4);
       AdjustSdkPlugin.log(String.format("\tappSecret: %d, %d, %d, %d, %d", secretIdString, info1String, info2String, info3String, info4String));
     }
-
-    AdjustSdkPlugin.log("\tappToken: " + appToken);
-    AdjustSdkPlugin.log("\tenvironment: " + environment);
-    AdjustSdkPlugin.log("\tuserAgent: " + userAgent);
-    AdjustSdkPlugin.log("\tlogLevel: " + logLevel);
-    AdjustSdkPlugin.log("\tdefaultTracker: " + defaultTracker);
-    AdjustSdkPlugin.log("\tprocessName: " + processName);
 
     config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
       @Override
@@ -220,7 +235,10 @@ public class AdjustSdkPlugin implements MethodCallHandler {
           }
         });
 
-        // TODO: this won't work :)
+        // TODO: this won't work. it's even stupid :)
+        // probalby requires changes in the native part, where launchReceivedDeeplink(uri) can be
+        // extended to provide a callback launchReceivedDeeplink(uri, callback) which can be called
+        // after the non-native flutter part `should-launch-uri` is called
         return shouldLaunchUri[0];
       }
     });
@@ -521,8 +539,8 @@ public class AdjustSdkPlugin implements MethodCallHandler {
   }
 
   public static void log(String message) {
-    System.out.println(">>> ADJUST PLUGIN LOG: " + message);
+    System.out.println("ADJUST-PLUGIN-BRIDGE: " + message);
   }
 
-  public static void error(String message) { System.out.println("!!>>> ADJUST PLUGIN ERROR LOG: " + message); }
+  public static void error(String message) { System.out.println("ADJUST-PLUGIN-BRIDGE: ERROR - " + message); }
 }

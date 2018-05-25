@@ -201,7 +201,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get Google AdId',
                     () => AdjustSdkPlugin.getGoogleAdId().then((googleAdid) {
-                          _showDialogMessage('Google AdId', 
+                          _showDialogMessage('Google AdId',
                               'Received google AdId: $googleAdid');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
@@ -226,7 +226,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get Attribution',
                     () => AdjustSdkPlugin.getAttribution().then((attribution) {
-                          _showDialogMessage('Attribution', 
+                          _showDialogMessage('Attribution',
                               'Received attribution: ${attribution.toString()}');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
@@ -270,10 +270,12 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   _showIsSdkEnabled() {
     try {
       AdjustSdkPlugin.isEnabled().then((isEnabled) {
+        _isSdkEnabled = isEnabled;
         _showDialogMessage('SDK Enabled?', 'Adjust is enabled = $isEnabled');
       });
     } on PlatformException {
-      _showDialogMessage('SDK Enabled?', 'no such method found im plugin: isEnabled');
+      _showDialogMessage(
+          'SDK Enabled?', 'no such method found im plugin: isEnabled');
     }
   }
 

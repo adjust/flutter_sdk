@@ -17,10 +17,8 @@ typedef void AttributionChangedHandler(AdjustAttribution attributionData);
 typedef bool ShouldLaunchReceivedDeeplinkHandler(String uri);
 
 class AdjustSdkPlugin {
-  // any disadvantages of using multiple channels ??
   static const MethodChannel _channel = const MethodChannel('com.adjust/api');
-  static const MethodChannel _deeplinkChannel =
-      const MethodChannel('com.adjust/deeplink');
+  static const MethodChannel _deeplinkChannel = const MethodChannel('com.adjust/deeplink');
 
   static bool _callbackHandlersInitialized = false;
 
@@ -29,8 +27,7 @@ class AdjustSdkPlugin {
   static EventSuccessHandler _eventSuccessHandler;
   static EventFailureHandler _eventFailureHandler;
   static AttributionChangedHandler _attributionChangedHandler;
-  static ShouldLaunchReceivedDeeplinkHandler
-      _shouldLaunchReceivedDeeplinkHandler;
+  static ShouldLaunchReceivedDeeplinkHandler _shouldLaunchReceivedDeeplinkHandler;
 
   static void _initCallbackHandlers() {
     if (_callbackHandlersInitialized) {
@@ -42,7 +39,7 @@ class AdjustSdkPlugin {
     _deeplinkChannel.setMethodCallHandler(_deeplinkChannelHandler);
 
     _channel.setMethodCallHandler((MethodCall call) {
-      print(" >>>>> INCOMING METHOD FROM NATIVE: " + call.method);
+      print(" >>>>> INCOMING METHOD FROM NATIVE: ${call.method}");
 
       try {
         switch (call.method) {
@@ -97,6 +94,7 @@ class AdjustSdkPlugin {
         if (_shouldLaunchReceivedDeeplinkHandler != null) {
           return _shouldLaunchReceivedDeeplinkHandler(uri);
         }
+        
         // TODO: what to return in case the client did not implement '_shouldLaunchReceivedDeeplinkHandler'
         return false;
       default:
