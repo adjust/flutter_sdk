@@ -31,6 +31,6 @@ android {
 
 dependencies {
     implementation files('libs/adjust-release.jar')
-    implementation 'com.google.android.gms:play-services-analytics:10.0.1'
+    implementation 'com.google.android.gms:play-services-analytics:15.0.0'
     implementation 'com.android.installreferrer:installreferrer:1.0'
 }
