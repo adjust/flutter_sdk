@@ -5,7 +5,7 @@ author: Srđan Tubin <srdjan@adjust.com>
 homepage: https://www.adjust.com/
 
 environment:
-    sdk: ">=1.19.0 <2.0.0"
+    sdk: ">=1.19.0 <2.1.0"
     
 dependencies:
   flutter:

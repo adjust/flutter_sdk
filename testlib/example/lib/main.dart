@@ -1,8 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:testlib/testlib.dart';
+import 'package:testlib_example/command.dart';
+
+import 'package:adjust_sdk_plugin/adjust_sdk_plugin.dart';
 
 void main() => runApp(new MyApp());
 
@@ -13,11 +17,24 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
+  String _baseUrl = "https://10.0.2.2:8443";
+  String _gdprUrl = "https://10.0.2.2:8443";
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
+
+    // init test library
+    Testlib.init(_baseUrl);
+
+    Testlib.setExecuteCommandHalder((final dynamic callArgs) {
+      Command command = Command.fromMap(callArgs);
+      print('>>> EXECUTING METHOD: [${command.className}.${command.methodName}] <<<');
+
+      // example of using Adjust Flutter SDK Plugin
+      AdjustSdkPlugin.onCreate(null);
+    });
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -45,12 +62,28 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Flutter test app'),
         ),
-        body: new Center(
-          child: new Text('Running on: $_platformVersion\n'),
-        ),
+        body: new CustomScrollView(shrinkWrap: true, slivers: <Widget>[
+          new SliverPadding(
+              padding: const EdgeInsets.all(20.0),
+              sliver: new SliverList(
+                  delegate: new SliverChildListDelegate(<Widget>[
+                new Text('Running on: $_platformVersion\n'),
+                buildCupertinoButton('Start Test Session',
+                    () => Testlib.startTestSession('flutter'))
+              ])))
+        ]),
       ),
+    );
+  }
+
+  static Widget buildCupertinoButton(String text, Function action) {
+    return new CupertinoButton(
+      child: Text(text),
+      color: CupertinoColors.activeBlue,
+      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
+      onPressed: action,
     );
   }
 }
