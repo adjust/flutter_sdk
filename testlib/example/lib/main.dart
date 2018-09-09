@@ -20,8 +20,12 @@ class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   AdjustCommandExecutor _adjustCommandExecutor;
   String _clientSdkPlatform = '';
-  String _baseUrl = 'https://10.0.2.2:8443';
-  String _gdprUrl = 'https://10.0.2.2:8443';
+
+  static String _protocol = 'https';
+  static String _port = '8443';
+  static String _address = '10.0.2.2';
+  String _baseUrl = _protocol + '://' + _address + ':' + _port;
+  String _gdprUrl = _protocol + '://' + _address + ':' + _port;
 
   @override
   void initState() {
@@ -42,6 +46,7 @@ class _MyAppState extends State<MyApp> {
     Testlib.doNotExitAfterEnd();
     
     Testlib.addTest('current/app-secret/Test_AppSecret_with_secret');
+    // Testlib.addTestDirectory('current/event-tracking');
 
     Testlib.setExecuteCommandHalder((final dynamic callArgs) {
       Command command = new Command(callArgs);

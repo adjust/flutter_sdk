@@ -362,6 +362,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
     AdjustBridge.onCreate(config);
     // Todo: call onResume() ?
+    AdjustBridge.onResume();
 
     result.success(null);
   }

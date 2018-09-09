@@ -28,10 +28,10 @@ class AdjustCommandExecutor {
         case "trackEvent": _trackEvent(); break;
         case "resume": _resume(); break;
         case "pause": _pause(); break;
-        // case "setEnabled": setEnabled(); break;
-        // case "setReferrer": setReferrer(); break;
-        // case "setOfflineMode": setOfflineMode(); break;
-        // case "sendFirstPackages": sendFirstPackages(); break;
+        case "setEnabled": _setEnabled(); break;
+        case "setReferrer": _setReferrer(); break;
+        case "setOfflineMode": _setOfflineMode(); break;
+        case "sendFirstPackages": _sendFirstPackages(); break;
         // case "addSessionCallbackParameter": addSessionCallbackParameter(); break;
         // case "addSessionPartnerParameter": addSessionPartnerParameter(); break;
         // case "removeSessionCallbackParameter": removeSessionCallbackParameter(); break;
@@ -75,39 +75,39 @@ class AdjustCommandExecutor {
       List<dynamic> teardownOptions = _command.getParamteters("teardown");
       for (String teardownOption in teardownOptions) {
         if (teardownOption == "resetSdk") {
-            testOptions['teardown'] = 'true';
-            testOptions['basePath'] = _basePath;
-            testOptions['gdprPath'] = _gdprPath;
-            // android specific
-            testOptions['useTestConnectionOptions'] = 'true';
-            testOptions['tryInstallReferrer'] = 'false';
-            // TODO: ios specific
+          testOptions['teardown'] = 'true';
+          testOptions['basePath'] = _basePath;
+          testOptions['gdprPath'] = _gdprPath;
+          // android specific
+          testOptions['useTestConnectionOptions'] = 'true';
+          testOptions['tryInstallReferrer'] = 'false';
+          // TODO: ios specific
         }
         if (teardownOption == "deleteState") {
-            testOptions['deleteState'] = 'true';
+          testOptions['deleteState'] = 'true';
         }
         if (teardownOption == "resetTest") {
-            _savedEvents.clear();
-            _savedConfigs.clear();
-            testOptions['timerIntervalInMilliseconds'] = '-1';
-            testOptions['timerStartInMilliseconds'] = '-1';
-            testOptions['sessionIntervalInMilliseconds'] = '-1';
-            testOptions['subsessionIntervalInMilliseconds'] = '-1';
+          _savedEvents.clear();
+          _savedConfigs.clear();
+          testOptions['timerIntervalInMilliseconds'] = '-1';
+          testOptions['timerStartInMilliseconds'] = '-1';
+          testOptions['sessionIntervalInMilliseconds'] = '-1';
+          testOptions['subsessionIntervalInMilliseconds'] = '-1';
         }
         if (teardownOption == "sdk") {
-            testOptions['teardown'] = 'true';
-            testOptions['basePath'] = null;
-            testOptions['gdprPath'] = null;
-            // android specific
-            testOptions['useTestConnectionOptions'] = 'false';
+          testOptions['teardown'] = 'true';
+          testOptions['basePath'] = null;
+          testOptions['gdprPath'] = null;
+          // android specific
+          testOptions['useTestConnectionOptions'] = 'false';
         }
         if (teardownOption == "test") {
-            _savedEvents = null;
-            _savedConfigs = null;
-            testOptions['timerIntervalInMilliseconds'] = '-1';
-            testOptions['timerStartInMilliseconds'] = '-1';
-            testOptions['sessionIntervalInMilliseconds'] = '-1';
-            testOptions['subsessionIntervalInMilliseconds'] = '-1';
+          _savedEvents = null;
+          _savedConfigs = null;
+          testOptions['timerIntervalInMilliseconds'] = '-1';
+          testOptions['timerStartInMilliseconds'] = '-1';
+          testOptions['sessionIntervalInMilliseconds'] = '-1';
+          testOptions['subsessionIntervalInMilliseconds'] = '-1';
         }
       }
     }
@@ -123,14 +123,14 @@ class AdjustCommandExecutor {
 
     AdjustConfig adjustConfig;
     if (_savedConfigs[configNumber] != null) {
-        adjustConfig = _savedConfigs[configNumber];
+      adjustConfig = _savedConfigs[configNumber];
     } else {
       adjustConfig = new AdjustConfig();
-        String environmentString = _command.getFirstParameterValue("environment");
-        adjustConfig.environment = environmentString == 'sandbox' ? AdjustEnvironment.sandbox : AdjustEnvironment.production;
-        adjustConfig.appToken = _command.getFirstParameterValue("appToken");
-        adjustConfig.logLevel = AdjustLogLevel.VERBOSE;
-        _savedConfigs.putIfAbsent(configNumber, () => adjustConfig);
+      String environmentString = _command.getFirstParameterValue("environment");
+      adjustConfig.environment = environmentString == 'sandbox' ? AdjustEnvironment.sandbox : AdjustEnvironment.production;
+      adjustConfig.appToken = _command.getFirstParameterValue("appToken");
+      adjustConfig.logLevel = AdjustLogLevel.VERBOSE;
+      _savedConfigs.putIfAbsent(configNumber, () => adjustConfig);
     }
 
     if (_command.containsParameter("logLevel")) {
@@ -161,7 +161,7 @@ class AdjustCommandExecutor {
     }
 
     if (_command.containsParameter("defaultTracker")) {
-        adjustConfig.defaultTracker = _command.getFirstParameterValue("defaultTracker");
+      adjustConfig.defaultTracker = _command.getFirstParameterValue("defaultTracker");
     }
 
     if (_command.containsParameter("appSecret")) {
@@ -175,8 +175,8 @@ class AdjustCommandExecutor {
     }
 
     if (_command.containsParameter("delayStart")) {
-        double delayStart = double.parse(_command.getFirstParameterValue("delayStart"));
-        adjustConfig.delayStart = new Nullable<double>(delayStart);
+      double delayStart = double.parse(_command.getFirstParameterValue("delayStart"));
+      adjustConfig.delayStart = new Nullable<double>(delayStart);
     }
 
     if (_command.containsParameter("deviceKnown")) {
@@ -227,8 +227,8 @@ class AdjustCommandExecutor {
     _config();
     int configNumber = 0;
     if (_command.containsParameter("configName")) {
-        String configName = _command.getFirstParameterValue("configName");
-        configNumber = int.parse(configName.substring(configName.length - 1));
+      String configName = _command.getFirstParameterValue("configName");
+      configNumber = int.parse(configName.substring(configName.length - 1));
     }
 
     AdjustConfig adjustConfig = _savedConfigs[configNumber];
@@ -237,18 +237,89 @@ class AdjustCommandExecutor {
   }
 
   void _event() {
+    int eventNumber = 0;
+    if (_command.containsParameter("eventNumber")) {
+      String eventName = _command.getFirstParameterValue("eventName");
+      eventNumber = int.parse(eventName.substring(eventName.length - 1));
+    }
 
+    AdjustEvent adjustEvent;
+    if (_savedConfigs[eventNumber] != null) {
+        adjustEvent = _savedEvents[eventNumber];
+    } else {
+      String eventToken = _command.getFirstParameterValue("eventToken");
+      adjustEvent = new AdjustEvent(eventToken);
+      _savedEvents.putIfAbsent(eventNumber, () => adjustEvent);
+    }
+
+    if (_command.containsParameter("revenue")) {
+      List<String> revenueParams = _command.getParamteters("revenue");
+      adjustEvent.currency = revenueParams[0];
+      adjustEvent.revenue = new Nullable<num>(num.parse(revenueParams[1]));
+    }
+    if (_command.containsParameter("callbackParams")) {
+      List<String> callbackParams = _command.getParamteters("callbackParams");
+      for (int i = 0; i < callbackParams.length; i = i + 2) {
+        String key = callbackParams[i];
+        String value = callbackParams[i + 1];
+        adjustEvent.addCallbackParameter(key, value);
+      }
+    }
+    if (_command.containsParameter("partnerParams")) {
+      List<String> partnerParams = _command.getParamteters("partnerParams");
+      for (int i = 0; i < partnerParams.length; i = i + 2) {
+        String key = partnerParams[i];
+        String value = partnerParams[i + 1];
+        adjustEvent.addPartnerParameter(key, value);
+      }
+    }
+    if (_command.containsParameter("orderId")) {
+      adjustEvent.orderId = _command.getFirstParameterValue("orderId");
+    }
+    // from 4.15.0
+    if (_command.containsParameter("callbackId")) {
+      // adjustEvent.callbackId = _command.getFirstParameterValue("callbackId");
+    }
   }
 
   void _trackEvent() {
+    _event();
+    int eventNumber = 0;
+    if (_command.containsParameter("eventName")) {
+      String eventName = _command.getFirstParameterValue("eventName");
+      eventNumber = int.parse(eventName.substring(eventName.length - 1));
+    }
 
+    AdjustEvent adjustEvent = _savedEvents[eventNumber];
+    AdjustSdkPlugin.trackEvent(adjustEvent);
+
+    _savedConfigs.remove(eventNumber);
   }
 
   void _resume() {
-
+    AdjustSdkPlugin.onResume();
   }
 
   void _pause() {
+    AdjustSdkPlugin.onPause();
+  }
 
+  void _setEnabled() {
+    bool isEnabled = _command.getFirstParameterValue("enabled") == 'true';
+    AdjustSdkPlugin.setIsEnabled(isEnabled);
+  }
+
+  void _setReferrer() {
+    String referrer = _command.getFirstParameterValue("referrer");
+    AdjustSdkPlugin.setReferrer(referrer);
+  }
+
+  void _setOfflineMode() {
+    bool isEnabled = _command.getFirstParameterValue("enabled") == 'true';
+    AdjustSdkPlugin.setOfflineMode(isEnabled);
+  }
+
+  void _sendFirstPackages() {
+    AdjustSdkPlugin.sendFirstPackages();
   }
 }
