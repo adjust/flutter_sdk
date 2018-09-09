@@ -7,6 +7,7 @@ import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
+import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.OnDeviceIdsRead;
 
 import java.util.HashMap;
@@ -115,5 +116,9 @@ public class AdjustBridgeInstance {
 
     public static void resetSessionPartnerParameters() {
         Adjust.resetSessionPartnerParameters();
+    }
+
+    public static void setTestOptions(AdjustTestOptions testOptions) {
+        Adjust.setTestOptions(testOptions);
     }
 }

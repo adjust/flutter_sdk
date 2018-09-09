@@ -240,4 +240,9 @@ class AdjustSdkPlugin {
   static void resetSessionPartnerParameters() {
     _channel.invokeMethod('resetSessionPartnerParameters');
   }
+
+  // for integration testing only
+  static void setTestOptions(final dynamic testOptions) {
+    _channel.invokeMethod('setTestOptions', testOptions);
+  }
 }

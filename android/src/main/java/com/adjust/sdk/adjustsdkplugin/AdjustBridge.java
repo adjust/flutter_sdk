@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
+import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.OnDeviceIdsRead;
 
 import java.util.HashMap;
@@ -108,5 +109,9 @@ public class AdjustBridge {
 
     public static void resetSessionPartnerParameters() {
         getDefaultInstance().resetSessionPartnerParameters();
+    }
+
+    public static void setTestOptions(AdjustTestOptions testOptions) {
+        getDefaultInstance().setTestOptions(testOptions);
     }
 }

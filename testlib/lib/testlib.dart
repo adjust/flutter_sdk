@@ -13,7 +13,13 @@ class Testlib {
     return version;
   }
 
-  Testlib() {
+  static void setExecuteCommandHalder(ExecuteCommandHandler handler) {
+    _executeCommandHandler = handler;
+  }
+
+  static void init(String baseUrl) {
+    print(' >>>>> Test Lib Initializing...');
+    
     _channel.setMethodCallHandler((MethodCall call) {
       print(' >>>>> INCOMING METHOD FROM NATIVE: ${call.method}');
 
@@ -29,13 +35,7 @@ class Testlib {
         print(e.toString());
       }
     });
-  }
 
-  static void setExecuteCommandHalder(ExecuteCommandHandler handler) {
-    _executeCommandHandler = handler;
-  }
-
-  static void init(String baseUrl) {
     _channel.invokeMethod('init', {'baseUrl': baseUrl});
   }
 
@@ -57,5 +57,9 @@ class Testlib {
 
   static void addTestDirectory(String testDirectory) {
     _channel.invokeMethod('addTestDirectory', {'testDirectory': testDirectory});
+  }
+
+  static void doNotExitAfterEnd() {
+    _channel.invokeMethod('doNotExitAfterEnd');
   }
 }

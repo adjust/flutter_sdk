@@ -41,6 +41,7 @@ public class TestlibPlugin implements MethodCallHandler {
             case "sendInfoToServer": sendInfoToServer(call, result); break;
             case "addTest": addTest(call, result); break;
             case "addTestDirectory": addTestDirectory(call, result); break;
+            case "doNotExitAfterEnd": doNotExitAfterEnd(result); break;
 
             default:
                 error("Not implemented method: " + call.method);
@@ -69,6 +70,7 @@ public class TestlibPlugin implements MethodCallHandler {
                 methodParams.put("className", className);
                 methodParams.put("methodName", methodName);
                 methodParams.put("jsonParameters", jsonParameters);
+                log("Trying to call a method [execute-method] with: " + className + "." + methodName);
                 channel.invokeMethod("execute-method", methodParams);
             }
         });
@@ -132,6 +134,14 @@ public class TestlibPlugin implements MethodCallHandler {
         String testDirectory = (String) paramsMap.get("testDirectory");
 
         testLibrary.addTestDirectory(testDirectory);
+    }
+
+    private void doNotExitAfterEnd(final Result result) {
+        if(testLibrary == null) {
+            result.error("0", "Test Library not initialized. Call >init< first.", null);
+        }
+
+        testLibrary.doNotExitAfterEnd();
     }
 
     public static void log(String message) {

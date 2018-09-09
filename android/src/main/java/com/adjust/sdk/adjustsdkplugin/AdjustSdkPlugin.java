@@ -3,6 +3,7 @@ package com.adjust.sdk.adjustsdkplugin;
 import android.content.Context;
 import android.net.Uri;
 
+import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
@@ -10,6 +11,7 @@ import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
@@ -92,6 +94,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       case "removeSessionPartnerParameter": removeSessionPartnerParameter(call, result); break;
       case "resetSessionCallbackParameters": resetSessionCallbackParameters(result); break;
       case "resetSessionPartnerParameters": resetSessionPartnerParameters(result); break;
+      case "setTestOptions": setTestOptions(call, result); break;
 
       default:
         error("Not implemented method: " + call.method);
@@ -102,6 +105,47 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
   private void getPlatformVersion(final Result result) {
     result.success("Android " + android.os.Build.VERSION.RELEASE);
+  }
+
+  private void setTestOptions(final MethodCall call, final Result result) {
+    AdjustTestOptions testOptions = new AdjustTestOptions();
+    Map testOptionsMap = (Map)call.arguments;
+
+    if(testOptionsMap.containsKey("baseUrl")) {
+      testOptions.baseUrl = (String) testOptionsMap.get("baseUrl");
+    }
+    if(testOptionsMap.containsKey("gdprUrl")) {
+      testOptions.gdprUrl = (String) testOptionsMap.get("gdprUrl");
+    }
+    if(testOptionsMap.containsKey("basePath")) {
+      testOptions.basePath = (String) testOptionsMap.get("basePath");
+    }
+    if(testOptionsMap.containsKey("gdprPath")) {
+      testOptions.gdprPath = (String) testOptionsMap.get("gdprPath");
+    }
+    if(testOptionsMap.containsKey("useTestConnectionOptions")) {
+      testOptions.useTestConnectionOptions = testOptionsMap.get("useTestConnectionOptions").toString() == "true";
+    }
+    if(testOptionsMap.containsKey("teardown")) {
+      testOptions.teardown = testOptionsMap.get("teardown").toString() == "true";
+    }
+    if(testOptionsMap.containsKey("tryInstallReferrer")) {
+      testOptions.tryInstallReferrer = testOptionsMap.get("tryInstallReferrer").toString() == "true";
+    }
+    if(testOptionsMap.containsKey("timerIntervalInMilliseconds")) {
+      testOptions.timerIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("timerIntervalInMilliseconds").toString());
+    }
+    if(testOptionsMap.containsKey("timerStartInMilliseconds")) {
+      testOptions.timerStartInMilliseconds = Long.parseLong(testOptionsMap.get("timerStartInMilliseconds").toString());
+    }
+    if(testOptionsMap.containsKey("sessionIntervalInMilliseconds")) {
+      testOptions.sessionIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("sessionIntervalInMilliseconds").toString());
+    }
+    if(testOptionsMap.containsKey("subsessionIntervalInMilliseconds")) {
+      testOptions.subsessionIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("subsessionIntervalInMilliseconds").toString());
+    }
+
+    Adjust.setTestOptions(testOptions);
   }
 
   private void onCreate(final MethodCall call, final Result result) {
@@ -130,7 +174,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     AdjustSdkPlugin.log("\tappToken: " + appToken);
     AdjustSdkPlugin.log("\tenvironment: " + environment);
 
-    if(adjustConfigMap.containsKey("defaultTracker")) {
+    if(adjustConfigMap.containsKey("processName")) {
       String processName = (String) adjustConfigMap.get("processName");
       config.setProcessName(processName);
       AdjustSdkPlugin.log("\tprocessName: " + processName);
@@ -151,7 +195,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     if(adjustConfigMap.containsKey("logLevel")) {
       String logLevel = (String) adjustConfigMap.get("logLevel");
       config.setLogLevel(LogLevel.valueOf(logLevel));
-      AdjustSdkPlugin.log("\teventBufferingEnabled: " + logLevel);
+      AdjustSdkPlugin.log("\tlogLevel: " + logLevel);
     }
 
     if(adjustConfigMap.containsKey("eventBufferingEnabled")) {
@@ -189,7 +233,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
         config.setDelayStart(delayStart);
         AdjustSdkPlugin.log("\tdelayStart: " + delayStart);
       } else {
-        AdjustSdkPlugin.error("DelayStart parameter provided, but not a number!");
+        AdjustSdkPlugin.error("DelayStart parameter provided, but not a number! DelatStartString = " + delayStartString);
       }
     }
 
@@ -202,7 +246,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       long info4 = Long.valueOf(info4String);
 
       config.setAppSecret(secretId, info1, info2, info3, info4);
-      AdjustSdkPlugin.log(String.format("\tappSecret: %d, %d, %d, %d, %d", secretIdString, info1String, info2String, info3String, info4String));
+      AdjustSdkPlugin.log(String.format("\tappSecret: %d, %d, %d, %d, %d", secretId, info1, info2, info3, info4));
     }
 
     config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {

@@ -1,12 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:testlib/testlib.dart';
+import 'package:testlib_example/adjustCommandExecutor.dart';
 import 'package:testlib_example/command.dart';
-
-import 'package:adjust_sdk_plugin/adjust_sdk_plugin.dart';
 
 void main() => runApp(new MyApp());
 
@@ -17,8 +18,10 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  String _baseUrl = "https://10.0.2.2:8443";
-  String _gdprUrl = "https://10.0.2.2:8443";
+  AdjustCommandExecutor _adjustCommandExecutor;
+  String _clientSdkPlatform = '';
+  String _baseUrl = 'https://10.0.2.2:8443';
+  String _gdprUrl = 'https://10.0.2.2:8443';
 
   @override
   void initState() {
@@ -28,12 +31,22 @@ class _MyAppState extends State<MyApp> {
     // init test library
     Testlib.init(_baseUrl);
 
-    Testlib.setExecuteCommandHalder((final dynamic callArgs) {
-      Command command = Command.fromMap(callArgs);
-      print('>>> EXECUTING METHOD: [${command.className}.${command.methodName}] <<<');
+    _adjustCommandExecutor = new AdjustCommandExecutor(_baseUrl, _gdprUrl);
 
-      // example of using Adjust Flutter SDK Plugin
-      AdjustSdkPlugin.onCreate(null);
+    if (Platform.isAndroid) {
+      _clientSdkPlatform = 'android4.14.0';
+    } else if (Platform.isIOS) {
+      _clientSdkPlatform = 'ios4.14.0';
+    }
+
+    Testlib.doNotExitAfterEnd();
+    
+    Testlib.addTest('current/app-secret/Test_AppSecret_with_secret');
+
+    Testlib.setExecuteCommandHalder((final dynamic callArgs) {
+      Command command = new Command(callArgs);
+      print('>>> EXECUTING METHOD: [${command.className}.${command.methodName}] <<<');
+      _adjustCommandExecutor.executeCommand(command);
     });
   }
 
@@ -70,8 +83,10 @@ class _MyAppState extends State<MyApp> {
               sliver: new SliverList(
                   delegate: new SliverChildListDelegate(<Widget>[
                 new Text('Running on: $_platformVersion\n'),
-                buildCupertinoButton('Start Test Session',
-                    () => Testlib.startTestSession('flutter'))
+                buildCupertinoButton(
+                    'Start Test Session',
+                    () => Testlib.startTestSession(
+                        'flutter4.14.0@$_clientSdkPlatform'))
               ])))
         ]),
       ),
