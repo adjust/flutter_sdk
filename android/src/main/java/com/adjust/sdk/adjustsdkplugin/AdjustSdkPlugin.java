@@ -326,7 +326,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
           adjustEventSuccessMap.put("jsonResponse", adjustEventSuccess.jsonResponse.toString());
         }
 
-        channel.invokeMethod("event-success", adjustEventSuccess);
+        channel.invokeMethod("event-success", adjustEventSuccessMap);
       }
     });
 
@@ -365,7 +365,6 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     });
 
     AdjustBridge.onCreate(config);
-    // Todo: call onResume() ?
     AdjustBridge.onResume();
 
     result.success(null);
@@ -477,7 +476,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
   private void appWillOpenUrl(final MethodCall call, final Result result) {
     Map urlParamsMap = (Map)call.arguments;
-    if(!urlParamsMap.containsKey("token")) {
+    if(!urlParamsMap.containsKey("url")) {
       result.error("0", "Arguments null or wrong (missing argument >url<", null);
       return;
     }

@@ -87,8 +87,12 @@ class AdjustCommandExecutor {
           testOptions['deleteState'] = 'true';
         }
         if (teardownOption == "resetTest") {
-          _savedEvents.clear();
-          _savedConfigs.clear();
+          if (_savedEvents != null) {
+            _savedEvents.clear();
+          }
+          if (_savedConfigs != null) {
+            _savedConfigs.clear();
+          }
           testOptions['timerIntervalInMilliseconds'] = '-1';
           testOptions['timerStartInMilliseconds'] = '-1';
           testOptions['sessionIntervalInMilliseconds'] = '-1';

@@ -86,7 +86,7 @@ class AdjustSdkPlugin {
   }
 
   static Future<dynamic> _deeplinkChannelHandler(MethodCall call) async {
-    print(" >>>>> INCOMING DEEPLINK METHOD FROM NATIVE: " + call.method);
+    print(' >>>>> INCOMING DEEPLINK METHOD FROM NATIVE: ' + call.method);
 
     switch (call.method) {
       case 'should-launch-uri':

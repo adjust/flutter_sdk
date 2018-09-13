@@ -20,6 +20,7 @@ class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   AdjustCommandExecutor _adjustCommandExecutor;
   String _clientSdkPlatform = '';
+  String _clientSdk = '';
 
   static String _protocol = 'https';
   static String _port = '8443';
@@ -42,6 +43,9 @@ class _MyAppState extends State<MyApp> {
     } else if (Platform.isIOS) {
       _clientSdkPlatform = 'ios4.14.0';
     }
+
+    // _clientSdk = 'flutter4.14.0@$_clientSdkPlatform';
+    _clientSdk = 'android4.13.0';
 
     Testlib.doNotExitAfterEnd();
     
@@ -90,8 +94,7 @@ class _MyAppState extends State<MyApp> {
                 new Text('Running on: $_platformVersion\n'),
                 buildCupertinoButton(
                     'Start Test Session',
-                    () => Testlib.startTestSession(
-                        'flutter4.14.0@$_clientSdkPlatform'))
+                    () => Testlib.startTestSession(_clientSdk))
               ])))
         ]),
       ),
