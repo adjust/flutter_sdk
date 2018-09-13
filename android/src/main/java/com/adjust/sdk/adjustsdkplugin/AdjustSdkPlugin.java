@@ -144,6 +144,9 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     if(testOptionsMap.containsKey("subsessionIntervalInMilliseconds")) {
       testOptions.subsessionIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("subsessionIntervalInMilliseconds").toString());
     }
+    if(testOptionsMap.containsKey("deleteState")) {
+      testOptions.context = applicationContext;
+    }
 
     Adjust.setTestOptions(testOptions);
   }
