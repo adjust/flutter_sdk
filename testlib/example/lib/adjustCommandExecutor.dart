@@ -29,19 +29,19 @@ class AdjustCommandExecutor {
         case "resume": _resume(); break;
         case "pause": _pause(); break;
         case "setEnabled": _setEnabled(); break;
-        case "setReferrer": _setReferrer(); break;
+        case "setReferrer": _setReferrer(); break; //TODO: check
+        case "sendReferrer": _setReferrer(); break; //TODO: check
         case "setOfflineMode": _setOfflineMode(); break;
         case "sendFirstPackages": _sendFirstPackages(); break;
-        // case "addSessionCallbackParameter": addSessionCallbackParameter(); break;
-        // case "addSessionPartnerParameter": addSessionPartnerParameter(); break;
-        // case "removeSessionCallbackParameter": removeSessionCallbackParameter(); break;
-        // case "removeSessionPartnerParameter": removeSessionPartnerParameter(); break;
-        // case "resetSessionCallbackParameters": resetSessionCallbackParameters(); break;
-        // case "resetSessionPartnerParameters": resetSessionPartnerParameters(); break;
-        // case "setPushToken": setPushToken(); break;
-        // case "openDeeplink": openDeeplink(); break;
-        // case "sendReferrer": sendReferrer(); break;
-        // case "gdprForgetMe": gdprForgetMe(); break;
+        case "addSessionCallbackParameter": _addSessionCallbackParameter(); break;
+        case "addSessionPartnerParameter": _addSessionPartnerParameter(); break;
+        case "removeSessionCallbackParameter": _removeSessionCallbackParameter(); break;
+        case "removeSessionPartnerParameter": _removeSessionPartnerParameter(); break;
+        case "resetSessionCallbackParameters": _resetSessionCallbackParameters(); break;
+        case "resetSessionPartnerParameters": _resetSessionPartnerParameters(); break;
+        case "setPushToken": _setPushToken(); break;
+        case "openDeeplink": _openDeeplink(); break;
+        case "gdprForgetMe": _gdprForgetMe(); break;
     }
   }
 
@@ -321,5 +321,77 @@ class AdjustCommandExecutor {
 
   void _sendFirstPackages() {
     AdjustSdkPlugin.sendFirstPackages();
+  }
+
+  void _setPushToken() {
+    String token = _command.getFirstParameterValue("pushToken");
+    AdjustSdkPlugin.setPushToken(token);
+  }
+
+  void _openDeeplink() {
+    String deeplink = _command.getFirstParameterValue("deeplink");
+    AdjustSdkPlugin.appWillOpenUrl(deeplink);
+  }
+
+  void _gdprForgetMe() {
+    AdjustSdkPlugin.gdprForgetMe();
+  }
+
+  void _addSessionCallbackParameter() {
+    if (!_command.containsParameter("KeyValue")) {
+      return;
+    }
+
+    List<String> keyValuePairs = _command.getParamteters("KeyValue");
+    for (int i = 0; i<keyValuePairs.length; i = i + 2) {
+      String key = keyValuePairs[i];
+      String value = keyValuePairs[i + 1];
+      AdjustSdkPlugin.addSessionCallbackParameter(key, value);
+    }
+  }
+
+  void _addSessionPartnerParameter() {
+    if (!_command.containsParameter("KeyValue")) {
+      return;
+    }
+
+    List<String> keyValuePairs = _command.getParamteters("KeyValue");
+    for (int i = 0; i<keyValuePairs.length; i = i + 2) {
+      String key = keyValuePairs[i];
+      String value = keyValuePairs[i + 1];
+      AdjustSdkPlugin.addSessionPartnerParameter(key, value);
+    }
+  }
+
+  void _removeSessionCallbackParameter() {
+    if (!_command.containsParameter("key")) {
+      return;
+    }
+
+    List<String> keys = _command.getParamteters("key");
+    for (int i = 0; i<keys.length; i = i + 1) {
+      String key = keys[i];
+      AdjustSdkPlugin.removeSessionCallbackParameter(key);
+    }
+  }
+
+  void _removeSessionPartnerParameter() {
+    if (!_command.containsParameter("key")) {
+      return;
+    }
+    
+    List<String> keys = _command.getParamteters("key");
+    for (int i = 0; i<keys.length; i = i + 1) {
+      String key = keys[i];
+      AdjustSdkPlugin.removeSessionPartnerParameter(key);
+    }
+  }
+
+  void _resetSessionCallbackParameters() {
+    AdjustSdkPlugin.resetSessionCallbackParameters();
+  }
+
+  void _resetSessionPartnerParameters() {
+    AdjustSdkPlugin.resetSessionPartnerParameters();
   }
 }

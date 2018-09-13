@@ -124,13 +124,13 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       testOptions.gdprPath = (String) testOptionsMap.get("gdprPath");
     }
     if(testOptionsMap.containsKey("useTestConnectionOptions")) {
-      testOptions.useTestConnectionOptions = testOptionsMap.get("useTestConnectionOptions").toString() == "true";
+      testOptions.useTestConnectionOptions = testOptionsMap.get("useTestConnectionOptions").toString().equals("true");
     }
     if(testOptionsMap.containsKey("teardown")) {
-      testOptions.teardown = testOptionsMap.get("teardown").toString() == "true";
+      testOptions.teardown = testOptionsMap.get("teardown").toString().equals("true");
     }
     if(testOptionsMap.containsKey("tryInstallReferrer")) {
-      testOptions.tryInstallReferrer = testOptionsMap.get("tryInstallReferrer").toString() == "true";
+      testOptions.tryInstallReferrer = testOptionsMap.get("tryInstallReferrer").toString().equals("true");
     }
     if(testOptionsMap.containsKey("timerIntervalInMilliseconds")) {
       testOptions.timerIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("timerIntervalInMilliseconds").toString());
@@ -322,7 +322,9 @@ public class AdjustSdkPlugin implements MethodCallHandler {
         adjustEventSuccessMap.put("timestamp", adjustEventSuccess.timestamp);
         adjustEventSuccessMap.put("adid", adjustEventSuccess.adid);
         adjustEventSuccessMap.put("eventToken", adjustEventSuccess.eventToken);
-        adjustEventSuccessMap.put("jsonResponse", adjustEventSuccess.jsonResponse.toString());
+        if (adjustEventSuccess.jsonResponse != null) {
+          adjustEventSuccessMap.put("jsonResponse", adjustEventSuccess.jsonResponse.toString());
+        }
 
         channel.invokeMethod("event-success", adjustEventSuccess);
       }
@@ -337,7 +339,9 @@ public class AdjustSdkPlugin implements MethodCallHandler {
         adjustEventFailureMap.put("adid", adjustEventFailure.adid);
         adjustEventFailureMap.put("eventToken", adjustEventFailure.eventToken);
         adjustEventFailureMap.put("willRetry", Boolean.toString(adjustEventFailure.willRetry));
-        adjustEventFailureMap.put("jsonResponse", adjustEventFailure.jsonResponse.toString());
+        if (adjustEventFailure.jsonResponse != null) {
+          adjustEventFailureMap.put("jsonResponse", adjustEventFailure.jsonResponse.toString());
+        }
 
         channel.invokeMethod("event-fail", adjustEventFailureMap);
       }
@@ -384,14 +388,19 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       return;
     }
 
-    String revenue = (String) eventParamsMap.get("revenue");
-    String currency = (String) eventParamsMap.get("currency");
-    String orderId = (String) eventParamsMap.get("orderId");
     String eventToken = (String) eventParamsMap.get("eventToken");
-
     AdjustEvent event = new AdjustEvent(eventToken);
-    event.setRevenue(Double.valueOf(revenue), currency);
-    event.setOrderId(orderId);
+
+    if(eventParamsMap.containsKey("revenue") && eventParamsMap.containsKey("currency")) {
+      String revenue = (String) eventParamsMap.get("revenue");
+      String currency = (String) eventParamsMap.get("currency");
+      event.setRevenue(Double.valueOf(revenue), currency);
+    }
+
+    if(eventParamsMap.containsKey("orderId")) {
+      String orderId = (String) eventParamsMap.get("orderId");
+      event.setOrderId(orderId);
+    }
 
     // get callback parameters
     if(eventParamsMap.containsKey("callbackParameters")) {
