@@ -44,8 +44,9 @@ class _MyAppState extends State<MyApp> {
       _clientSdkPlatform = 'ios4.14.0';
     }
 
+    // SDK Test Server has to be extended with 'flutter' info
     // _clientSdk = 'flutter4.14.0@$_clientSdkPlatform';
-    _clientSdk = 'android4.13.0';
+    _clientSdk = 'android4.15.0';
 
     Testlib.doNotExitAfterEnd();
     
