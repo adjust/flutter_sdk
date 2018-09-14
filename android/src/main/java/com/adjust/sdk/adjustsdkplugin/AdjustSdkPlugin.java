@@ -325,6 +325,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
         adjustEventSuccessMap.put("timestamp", adjustEventSuccess.timestamp);
         adjustEventSuccessMap.put("adid", adjustEventSuccess.adid);
         adjustEventSuccessMap.put("eventToken", adjustEventSuccess.eventToken);
+        adjustEventSuccessMap.put("callbackId", adjustEventSuccess.callbackId);
         if (adjustEventSuccess.jsonResponse != null) {
           adjustEventSuccessMap.put("jsonResponse", adjustEventSuccess.jsonResponse.toString());
         }
@@ -341,6 +342,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
         adjustEventFailureMap.put("timestamp", adjustEventFailure.timestamp);
         adjustEventFailureMap.put("adid", adjustEventFailure.adid);
         adjustEventFailureMap.put("eventToken", adjustEventFailure.eventToken);
+        adjustEventFailureMap.put("callbackId", adjustEventFailure.callbackId);
         adjustEventFailureMap.put("willRetry", Boolean.toString(adjustEventFailure.willRetry));
         if (adjustEventFailure.jsonResponse != null) {
           adjustEventFailureMap.put("jsonResponse", adjustEventFailure.jsonResponse.toString());
@@ -402,6 +404,11 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     if(eventParamsMap.containsKey("orderId")) {
       String orderId = (String) eventParamsMap.get("orderId");
       event.setOrderId(orderId);
+    }
+
+    if(eventParamsMap.containsKey("callbackId")) {
+      String callbackId = (String) eventParamsMap.get("callbackId");
+      event.setCallbackId(callbackId);
     }
 
     // get callback parameters

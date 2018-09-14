@@ -7,6 +7,7 @@ class AdjustEvent {
   Nullable<num> revenue;
   String currency;
   String orderId;
+  String callbackId;
 
   Map<String, String> callbackParameters;
   Map<String, String> partnerParameters;
@@ -38,6 +39,9 @@ class AdjustEvent {
     }
     if (orderId != null) {
       adjustEventParamsMap['orderId'] = orderId;
+    }
+    if (callbackId != null) {
+      adjustEventParamsMap['callbackId'] = callbackId;
     }
 
     if (callbackParameters.length > 0) {

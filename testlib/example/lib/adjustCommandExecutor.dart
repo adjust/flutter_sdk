@@ -1,7 +1,13 @@
 import 'package:adjust_sdk_plugin/adjust_config.dart';
 import 'package:adjust_sdk_plugin/adjust_event.dart';
 import 'package:adjust_sdk_plugin/adjust_sdk_plugin.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjust_attribution.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjust_session_failure.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjust_session_success.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjust_event_failure.dart';
+import 'package:adjust_sdk_plugin/callbacksData/adjust_event_success.dart';
 import 'package:adjust_sdk_plugin/nullable.dart';
+import 'package:testlib/testlib.dart';
 import 'package:testlib_example/command.dart';
 
 class AdjustCommandExecutor {
@@ -87,12 +93,8 @@ class AdjustCommandExecutor {
           testOptions['deleteState'] = 'true';
         }
         if (teardownOption == "resetTest") {
-          if (_savedEvents != null) {
-            _savedEvents.clear();
-          }
-          if (_savedConfigs != null) {
-            _savedConfigs.clear();
-          }
+          _savedEvents.clear();
+          _savedConfigs.clear();
           testOptions['timerIntervalInMilliseconds'] = '-1';
           testOptions['timerStartInMilliseconds'] = '-1';
           testOptions['sessionIntervalInMilliseconds'] = '-1';
@@ -106,8 +108,8 @@ class AdjustCommandExecutor {
           testOptions['useTestConnectionOptions'] = 'false';
         }
         if (teardownOption == "test") {
-          _savedEvents = null;
-          _savedConfigs = null;
+          _savedEvents.clear();
+          _savedConfigs.clear();
           testOptions['timerIntervalInMilliseconds'] = '-1';
           testOptions['timerStartInMilliseconds'] = '-1';
           testOptions['sessionIntervalInMilliseconds'] = '-1';
@@ -170,12 +172,22 @@ class AdjustCommandExecutor {
 
     if (_command.containsParameter("appSecret")) {
       List<dynamic> appSecretArray = _command.getParamteters("appSecret");
-      num secretId = num.parse(appSecretArray[0]);
-      num info1 = num.parse(appSecretArray[1]);
-      num info2 = num.parse(appSecretArray[2]);
-      num info3 = num.parse(appSecretArray[3]);
-      num info4 = num.parse(appSecretArray[4]);
-      adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
+      bool appSecretValid = true;
+      for (String appSecretData in appSecretArray) {
+        if (appSecretData.length == 0) {
+          appSecretValid = false;
+          break;
+        }
+      }
+
+      if(appSecretValid) {
+        num secretId = num.parse(appSecretArray[0]);
+        num info1 = num.parse(appSecretArray[1]);
+        num info2 = num.parse(appSecretArray[2]);
+        num info3 = num.parse(appSecretArray[3]);
+        num info4 = num.parse(appSecretArray[4]);
+        adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
+      }
     }
 
     if (_command.containsParameter("delayStart")) {
@@ -203,27 +215,95 @@ class AdjustCommandExecutor {
     }
 
     if(_command.containsParameter("deferredDeeplinkCallback")) {
-      
+      //TODO: frist fix deeplinking
+
     }
 
+    // first clear all previous callback handlers
+    AdjustSdkPlugin.setAttributionChangedHandler(null);
+    AdjustSdkPlugin.setSessionSuccessHandler(null);
+    AdjustSdkPlugin.setSessionFailureHandler(null);
+    AdjustSdkPlugin.setEventSuccessHandler(null);
+    AdjustSdkPlugin.setEventFailureHandler(null);
+    AdjustSdkPlugin.setShouldLaunchReceivedDeeplinkHandler(null);
+
     if(_command.containsParameter("attributionCallbackSendAll")) {
-      
+      // String localBasePath = _basePath;
+      AdjustSdkPlugin.setAttributionChangedHandler((AdjustAttribution attribution) {
+        print('-----> Attribution Callback: $attribution');
+        Testlib.addInfoToSend("trackerToken", attribution.trackerToken);
+        Testlib.addInfoToSend("trackerName", attribution.trackerName);
+        Testlib.addInfoToSend("network", attribution.network);
+        Testlib.addInfoToSend("campaign", attribution.campaign);
+        Testlib.addInfoToSend("adgroup", attribution.adgroup);
+        Testlib.addInfoToSend("creative", attribution.creative);
+        Testlib.addInfoToSend("clickLabel", attribution.clickLabel);
+        Testlib.addInfoToSend("adid", attribution.adid);
+        print('---> sending info to server with path: $_basePath');
+        Testlib.sendInfoToServer(_basePath);
+      });
     }
 
     if(_command.containsParameter("sessionCallbackSendSuccess")) {
-      
+      String localBasePath = _basePath;
+      AdjustSdkPlugin.setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessResponseData) {
+        print('-----> Session Callback Success: $sessionSuccessResponseData');
+        Testlib.addInfoToSend("message", sessionSuccessResponseData.message);
+        Testlib.addInfoToSend("timestamp", sessionSuccessResponseData.timestamp);
+        Testlib.addInfoToSend("adid", sessionSuccessResponseData.adid);
+        if (sessionSuccessResponseData.jsonResponse != null) {
+            Testlib.addInfoToSend("jsonResponse", sessionSuccessResponseData.jsonResponse);
+        }
+        Testlib.sendInfoToServer(localBasePath);
+      });
     }
 
     if(_command.containsParameter("sessionCallbackSendFailure")) {
-      
+      String localBasePath = _basePath;
+      AdjustSdkPlugin.setSessionFailureHandler((AdjustSessionFailure sessionFailureResponseData) {
+        print('-----> Session Callback Failure: $sessionFailureResponseData');
+        Testlib.addInfoToSend("message", sessionFailureResponseData.message);
+        Testlib.addInfoToSend("timestamp", sessionFailureResponseData.timestamp);
+        Testlib.addInfoToSend("adid", sessionFailureResponseData.adid);
+        Testlib.addInfoToSend("willRetry", sessionFailureResponseData.willRetry.toString());
+        if (sessionFailureResponseData.jsonResponse != null) {
+            Testlib.addInfoToSend("jsonResponse", sessionFailureResponseData.jsonResponse);
+        }
+        Testlib.sendInfoToServer(localBasePath);
+      });
     }
 
     if(_command.containsParameter("eventCallbackSendSuccess")) {
-      
+      String localBasePath = _basePath;
+      AdjustSdkPlugin.setEventSuccessHandler((AdjustEventSuccess eventSuccessResponseData) {
+        print('-----> Event Callback Success: $eventSuccessResponseData');
+        Testlib.addInfoToSend("message", eventSuccessResponseData.message);
+        Testlib.addInfoToSend("timestamp", eventSuccessResponseData.timestamp);
+        Testlib.addInfoToSend("adid", eventSuccessResponseData.adid);
+        Testlib.addInfoToSend("eventToken", eventSuccessResponseData.eventToken);
+        Testlib.addInfoToSend("callbackId", eventSuccessResponseData.callbackId);
+        if (eventSuccessResponseData.jsonResponse != null ) {
+            Testlib.addInfoToSend("jsonResponse", eventSuccessResponseData.jsonResponse);
+        }
+        Testlib.sendInfoToServer(localBasePath);
+      });
     }
 
     if(_command.containsParameter("eventCallbackSendFailure")) {
-      
+      String localBasePath = _basePath;
+      AdjustSdkPlugin.setEventFailureHandler((AdjustEventFailure eventFailureResponseData) {
+        print('-----> Event Callback Failure: $eventFailureResponseData');
+        Testlib.addInfoToSend("message", eventFailureResponseData.message);
+        Testlib.addInfoToSend("timestamp", eventFailureResponseData.timestamp);
+        Testlib.addInfoToSend("adid", eventFailureResponseData.adid);
+        Testlib.addInfoToSend("eventToken", eventFailureResponseData.eventToken);
+        Testlib.addInfoToSend("callbackId", eventFailureResponseData.callbackId);
+        Testlib.addInfoToSend("willRetry", eventFailureResponseData.willRetry.toString());
+        if (eventFailureResponseData.jsonResponse != null) {
+            Testlib.addInfoToSend("jsonResponse", eventFailureResponseData.jsonResponse.toString());
+        }
+        Testlib.sendInfoToServer(localBasePath);
+      });
     }
   }
 
@@ -280,9 +360,8 @@ class AdjustCommandExecutor {
     if (_command.containsParameter("orderId")) {
       adjustEvent.orderId = _command.getFirstParameterValue("orderId");
     }
-    // from 4.15.0
     if (_command.containsParameter("callbackId")) {
-      // adjustEvent.callbackId = _command.getFirstParameterValue("callbackId");
+      adjustEvent.callbackId = _command.getFirstParameterValue("callbackId");
     }
   }
 
@@ -297,7 +376,7 @@ class AdjustCommandExecutor {
     AdjustEvent adjustEvent = _savedEvents[eventNumber];
     AdjustSdkPlugin.trackEvent(adjustEvent);
 
-    _savedConfigs.remove(eventNumber);
+    _savedEvents.remove(eventNumber);
   }
 
   void _resume() {

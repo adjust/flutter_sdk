@@ -3,6 +3,7 @@ class AdjustEventFailure {
   String timestamp;
   String adid;
   String eventToken;
+  String callbackId;
   bool willRetry;
   String jsonResponse;
 
@@ -13,6 +14,7 @@ class AdjustEventFailure {
       eventFailure.timestamp = map['timestamp'];
       eventFailure.adid = map['adid'];
       eventFailure.eventToken = map['eventToken'];
+      eventFailure.callbackId = map['callbackId'];
       bool willRetry = map['willRetry'].toString().toLowerCase() == 'true';
       eventFailure.willRetry = willRetry;
       eventFailure.jsonResponse = map['jsonResponse'];
@@ -24,6 +26,6 @@ class AdjustEventFailure {
 
   @override
   String toString() {
-    return "EventFailure [ message: $message, timestamp: $timestamp, adid: $adid, token: $eventToken, willRetry: $willRetry, jsonResp: $jsonResponse ]";
+    return "EventFailure [ message: $message, timestamp: $timestamp, adid: $adid, token: $eventToken, callbackId: $callbackId, willRetry: $willRetry, jsonResp: $jsonResponse ]";
   }
 }

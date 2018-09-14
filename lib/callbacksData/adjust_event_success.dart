@@ -3,6 +3,7 @@ class AdjustEventSuccess {
   String timestamp;
   String adid;
   String eventToken;
+  String callbackId;
   String jsonResponse;
 
   static AdjustEventSuccess fromMap(dynamic map) {
@@ -12,6 +13,7 @@ class AdjustEventSuccess {
       eventSuccess.timestamp = map['timestamp'];
       eventSuccess.adid = map['adid'];
       eventSuccess.eventToken = map['eventToken'];
+      eventSuccess.callbackId = map['callbackId'];
       eventSuccess.jsonResponse = map['jsonResponse'];
     } catch (e) {
       print('Error! Failed to map AdjustEventSuccess from incoming data. Details: ' + e.toString());
@@ -21,6 +23,6 @@ class AdjustEventSuccess {
   
   @override
   String toString() {
-    return "EventSuccess[ message: $message, timestamp: $timestamp, adid: $adid, token: $eventToken, jsonResp: $jsonResponse ]";
+    return "EventSuccess[ message: $message, timestamp: $timestamp, adid: $adid, token: $eventToken, callbackId: $callbackId, jsonResp: $jsonResponse ]";
   }
 }
