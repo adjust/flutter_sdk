@@ -1,3 +1,4 @@
+import 'package:adjust_sdk_plugin/nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:adjust_sdk_plugin/adjust_config.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjust_attribution.dart';
@@ -71,11 +72,9 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   initPlatformState() async {
-    AdjustConfig config = new AdjustConfig();
-    config.appToken = "2fm9gkqubvpc";
-    config.environment = AdjustEnvironment.sandbox;
+    AdjustConfig config = new AdjustConfig("2fm9gkqubvpc", AdjustEnvironment.sandbox);
     config.logLevel = AdjustLogLevel.VERBOSE;
-    config.isDeviceKnown = false;
+    config.isDeviceKnown = new Nullable<bool>(false);
 
     // Set default tracker
     // config.defaultTracker = "def_tracker";
@@ -84,7 +83,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     // config.processName = "com.adjust.examples";
 
     // Allow to send in the background.
-    config.sendInBackground = true;
+    config.sendInBackground = new Nullable<bool>(true);
 
     // Enable event buffering.
     // config.eventBufferingEnabled = true;

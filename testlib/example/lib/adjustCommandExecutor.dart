@@ -131,10 +131,10 @@ class AdjustCommandExecutor {
     if (_savedConfigs[configNumber] != null) {
       adjustConfig = _savedConfigs[configNumber];
     } else {
-      adjustConfig = new AdjustConfig();
+      String appToken = _command.getFirstParameterValue("appToken");
       String environmentString = _command.getFirstParameterValue("environment");
-      adjustConfig.environment = environmentString == 'sandbox' ? AdjustEnvironment.sandbox : AdjustEnvironment.production;
-      adjustConfig.appToken = _command.getFirstParameterValue("appToken");
+      AdjustEnvironment environment = environmentString == 'sandbox' ? AdjustEnvironment.sandbox : AdjustEnvironment.production;
+      adjustConfig = new AdjustConfig(appToken, environment);
       adjustConfig.logLevel = AdjustLogLevel.VERBOSE;
       _savedConfigs.putIfAbsent(configNumber, () => adjustConfig);
     }

@@ -164,6 +164,10 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
     String appToken = (String) adjustConfigMap.get("appToken");
     String environment = (String) adjustConfigMap.get("environment");
+    if(!environment.equals("production") && !environment.equals("sandbox")) {
+      result.error("0", "Argument >environment< received with wrong value: [" + environment + "]", null);
+      return;
+    }
 
     String secretIdString = (String) adjustConfigMap.get("secretId");
     String info1String = (String) adjustConfigMap.get("info1");
@@ -220,13 +224,6 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       boolean isDeviceKnown = Boolean.valueOf(isDeviceKnownString);
       config.setDeviceKnown(isDeviceKnown);
       AdjustSdkPlugin.log("\tisDeviceKnown: " + isDeviceKnown);
-    }
-
-    if(adjustConfigMap.containsKey("readImei")) {
-      String readImeiString = (String) adjustConfigMap.get("readImei");
-      boolean readImei = Boolean.valueOf(readImeiString);
-      config.setReadMobileEquipmentIdentity(readImei);
-      AdjustSdkPlugin.log("\treadImei: " + readImei);
     }
 
     if(adjustConfigMap.containsKey("delayStart")) {

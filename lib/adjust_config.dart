@@ -28,7 +28,8 @@ class AdjustConfig {
 
   // Android specific members
   String processName;
-  Nullable<bool> readImei;
+  
+  AdjustConfig(this.appToken, this.environment);
   
   String get environmentString {
     return environment
@@ -91,10 +92,7 @@ class AdjustConfig {
     if (delayStart != null) {
       configParamsMap['delayStart'] = delayStart.strValue;
     }
-    if (readImei != null) {
-      configParamsMap['readImei'] = readImei.strValue;
-    }
-
+    
     return configParamsMap;
   }
 }
