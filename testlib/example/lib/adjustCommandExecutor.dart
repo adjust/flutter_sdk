@@ -425,7 +425,7 @@ class AdjustCommandExecutor {
       return;
     }
 
-    List<String> keyValuePairs = _command.getParamteters("KeyValue");
+    List<dynamic> keyValuePairs = _command.getParamteters("KeyValue");
     for (int i = 0; i<keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
@@ -438,7 +438,7 @@ class AdjustCommandExecutor {
       return;
     }
 
-    List<String> keyValuePairs = _command.getParamteters("KeyValue");
+    List<dynamic> keyValuePairs = _command.getParamteters("KeyValue");
     for (int i = 0; i<keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
@@ -451,7 +451,7 @@ class AdjustCommandExecutor {
       return;
     }
 
-    List<String> keys = _command.getParamteters("key");
+    List<dynamic> keys = _command.getParamteters("key");
     for (int i = 0; i<keys.length; i = i + 1) {
       String key = keys[i];
       AdjustSdkPlugin.removeSessionCallbackParameter(key);
@@ -463,7 +463,7 @@ class AdjustCommandExecutor {
       return;
     }
     
-    List<String> keys = _command.getParamteters("key");
+    List<dynamic> keys = _command.getParamteters("key");
     for (int i = 0; i<keys.length; i = i + 1) {
       String key = keys[i];
       AdjustSdkPlugin.removeSessionPartnerParameter(key);
