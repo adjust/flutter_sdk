@@ -23,6 +23,7 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
     [registrar addMethodCallDelegate:instance channel:deeplinkChannel];
 }
 
+// TODO: check if needed
 - (void)dealloc {
     [self.channel setMethodCallHandler:nil];
     [self.deeplinkChannel setMethodCallHandler:nil];

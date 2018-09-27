@@ -35,13 +35,13 @@ public class TestlibPlugin implements MethodCallHandler {
 
         switch (call.method) {
             case "getPlatformVersion": getPlatformVersion(result); break;
-            case "init": init(call, result); break;
-            case "startTestSession": startTestSession(call, result); break;
-            case "addInfoToSend": addInfoToSend(call, result); break;
-            case "sendInfoToServer": sendInfoToServer(call, result); break;
-            case "addTest": addTest(call, result); break;
-            case "addTestDirectory": addTestDirectory(call, result); break;
-            case "doNotExitAfterEnd": doNotExitAfterEnd(result); break;
+            case "init":                init(call, result); break;
+            case "startTestSession":    startTestSession(call, result); break;
+            case "addInfoToSend":       addInfoToSend(call, result); break;
+            case "sendInfoToServer":    sendInfoToServer(call, result); break;
+            case "addTest":             addTest(call, result); break;
+            case "addTestDirectory":    addTestDirectory(call, result); break;
+            case "doNotExitAfterEnd":   doNotExitAfterEnd(result); break;
 
             default:
                 error("Not implemented method: " + call.method);

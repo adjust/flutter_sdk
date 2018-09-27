@@ -32,7 +32,7 @@ target 'Runner' do
   system('rm -rf Pods/.symlinks')
   system('mkdir -p Pods/.symlinks/plugins')
 
-  pod 'Adjust', '~> 4.13.0'
+  pod 'Adjust', '~> 4.15.0'
 
   # Flutter Pods
   generated_xcode_build_settings = parse_KV_file('./Flutter/Generated.xcconfig')
