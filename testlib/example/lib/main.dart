@@ -51,7 +51,11 @@ class _MyAppState extends State<MyApp> {
     Testlib.doNotExitAfterEnd();
     
     Testlib.addTest('current/app-secret/Test_AppSecret_with_secret');
-    // Testlib.addTestDirectory('current/event-tracking');
+    // Testlib.addTestDirectory('current/init-malformed');
+    // Testlib.addTestDirectory('current/event-callbacks');
+    // Testlib.addTest('current/init-malformed/Test_Init_Malformed_wrong_environment');
+    // Testlib.addTestDirectory('current/session-parameters');
+    // Testlib.addTest('current/event-callbacks/Test_EventCallback_failure');
 
     Testlib.setExecuteCommandHalder((final dynamic callArgs) {
       Command command = new Command(callArgs);

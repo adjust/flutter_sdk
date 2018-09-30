@@ -1,4 +1,5 @@
 import 'package:adjust_sdk_plugin/adjust_event.dart';
+import 'package:adjust_sdk_plugin/nullable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -63,24 +64,23 @@ class Util {
   }
 
   static AdjustEvent buildSimpleEvent() {
-    return new AdjustEvent(EVENT_TOKEN_SIMPLE, 10, 'EUR', '');
+    return new AdjustEvent(EVENT_TOKEN_SIMPLE, new Nullable<num>(10), 'EUR', '');
   }
 
   static AdjustEvent buildRevenueEvent() {
-    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_REVENUE, 220, 'EUR', '');
-    event.revenue = 100.0;
+    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_REVENUE, new Nullable<num>(100.0), 'EUR', '');
     return event;
   }
 
   static AdjustEvent buildCallbackEvent() {
-    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_CALLBACK, 100, 'EUR');
+    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_CALLBACK, new Nullable<num>(100), 'EUR');
     event.addCallbackParameter('key1', 'value1');
     event.addCallbackParameter('key2', 'value2');
     return event;
   }
 
   static AdjustEvent buildPartnerEvent() {
-    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_PARTNER, 100, 'EUR');
+    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_PARTNER, new Nullable<num>(100), 'EUR');
     event.addPartnerParameter('foo1', 'bar1');
     event.addPartnerParameter('foo2', 'bar2');
     return event;
