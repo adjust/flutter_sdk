@@ -2,6 +2,7 @@
 
 @interface TestlibPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
+@property(nonatomic, retain) ATLTestLibrary *testLibrary;
 @end
 
 @implementation TestlibPlugin

@@ -17,5 +17,9 @@ A new flutter plugin project.
   s.dependency 'Flutter'
   
   s.ios.deployment_target = '8.0'
+
+  s.preserve_paths = 'AdjustTestLibrary.framework'
+  s.xcconfig = { 'OTHER_LDFLAGS' => '-framework AdjustTestLibrary' }
+  s.vendored_frameworks = 'AdjustTestLibrary.framework'
 end
 
