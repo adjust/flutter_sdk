@@ -19,6 +19,8 @@
     
     self.channel = channel;
     
+    NSLog(@"Initializing Test Library with Method Channel...");
+    
     return self;
 }
 

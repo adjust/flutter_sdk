@@ -52,14 +52,14 @@
 }
 
 - (void)init:(FlutterMethodCall*)call withResult:(FlutterResult)result {
-    if(![call.arguments containsValueForKey:@"baseUrl"]) {
+    NSString *baseUrl = call.arguments[@"baseUrl"];
+    if (![self isFieldValid:baseUrl]) {
         result([FlutterError errorWithCode:@"WRONG-ARGS"
                                    message:@"Arguments null or wrong (missing argument >baseUrl<"
                                    details:nil]);
         return;
     }
     
-    NSString *baseUrl = call.arguments[@"baseUrl"];
     AdjustCommandExecutor *adjustCommandExecutor = [[AdjustCommandExecutor alloc]initWithMethodChannel:self.channel];
     self.testLibrary = [ATLTestLibrary testLibraryWithBaseUrl:baseUrl
                                            andCommandDelegate:adjustCommandExecutor];
@@ -70,14 +70,15 @@
         return;
     }
     
-    if(![call.arguments containsValueForKey:@"clientSdk"]) {
+    NSString *clientSdk = call.arguments[@"clientSdk"];
+    if (![self isFieldValid:clientSdk]) {
         result([FlutterError errorWithCode:@"WRONG-CLIENT-SDK"
                                    message:@"Arguments null or wrong (missing argument >clientSdk<"
                                    details:nil]);
         return;
     }
     
-    NSString *clientSdk = call.arguments[@"clientSdk"];
+    NSLog(@"Starting test session. Client SDK %@", clientSdk);
     [self.testLibrary startTestSession:clientSdk];
 }
 

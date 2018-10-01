@@ -22,31 +22,39 @@ class _MyAppState extends State<MyApp> {
   String _clientSdkPlatform = '';
   String _clientSdk = '';
 
-  static String _protocol = 'https';
-  static String _port = '8443';
-  static String _address = '10.0.2.2';
-  String _baseUrl = _protocol + '://' + _address + ':' + _port;
-  String _gdprUrl = _protocol + '://' + _address + ':' + _port;
+  String _baseUrl;
+  String _gdprUrl;
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
 
+    if (Platform.isAndroid) {
+      _clientSdkPlatform = 'android4.14.0';
+      String _protocol = 'https';
+      String _port = '8443';
+      String _address = '10.0.2.2';
+      _baseUrl = _protocol + '://' + _address + ':' + _port;
+      _gdprUrl = _protocol + '://' + _address + ':' + _port;
+    } else {
+      _clientSdkPlatform = 'ios4.14.0';
+      String _protocol = 'http';
+      String _port = '8080';
+      String _address = '127.0.0.1';
+      _baseUrl = _protocol + '://' + _address + ':' + _port;
+      _gdprUrl = _protocol + '://' + _address + ':' + _port;
+    }
+
     // init test library
     Testlib.init(_baseUrl);
 
     _adjustCommandExecutor = new AdjustCommandExecutor(_baseUrl, _gdprUrl);
 
-    if (Platform.isAndroid) {
-      _clientSdkPlatform = 'android4.14.0';
-    } else if (Platform.isIOS) {
-      _clientSdkPlatform = 'ios4.14.0';
-    }
-
     // SDK Test Server has to be extended with 'flutter' info
     // _clientSdk = 'flutter4.14.0@$_clientSdkPlatform';
-    _clientSdk = 'android4.15.0';
+    // _clientSdk = 'android4.15.0';
+    _clientSdk = 'ios4.15.0';
 
     Testlib.doNotExitAfterEnd();
     

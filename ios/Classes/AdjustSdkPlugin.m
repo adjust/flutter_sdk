@@ -179,6 +179,7 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
     [adjustConfig setDelegate:self];
     
     [Adjust appDidLaunch:adjustConfig];
+    [Adjust trackSubsessionStart];
     
     result(nil);
 }
