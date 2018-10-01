@@ -79,6 +79,7 @@ public class TestlibPlugin implements MethodCallHandler {
     private void startTestSession(final MethodCall call, final Result result) {
         if(testLibrary == null) {
             result.error("0", "Test Library not initialized. Call >init< first.", null);
+            return;
         }
 
         Map paramsMap = (Map)call.arguments;
@@ -94,6 +95,7 @@ public class TestlibPlugin implements MethodCallHandler {
     private void addInfoToSend(final MethodCall call, final Result result) {
         if(testLibrary == null) {
             result.error("0", "Test Library not initialized. Call >init< first.", null);
+            return;
         }
 
         Map paramsMap = (Map)call.arguments;
@@ -106,6 +108,7 @@ public class TestlibPlugin implements MethodCallHandler {
     private void sendInfoToServer(final MethodCall call, final Result result) {
         if(testLibrary == null) {
             result.error("0", "Test Library not initialized. Call >init< first.", null);
+            return;
         }
 
         Map paramsMap = (Map)call.arguments;
@@ -117,6 +120,7 @@ public class TestlibPlugin implements MethodCallHandler {
     private void addTest(final MethodCall call, final Result result) {
         if(testLibrary == null) {
             result.error("0", "Test Library not initialized. Call >init< first.", null);
+            return;
         }
 
         Map paramsMap = (Map)call.arguments;
@@ -128,6 +132,7 @@ public class TestlibPlugin implements MethodCallHandler {
     private void addTestDirectory(final MethodCall call, final Result result) {
         if(testLibrary == null) {
             result.error("0", "Test Library not initialized. Call >init< first.", null);
+            return;
         }
 
         Map paramsMap = (Map)call.arguments;
@@ -139,6 +144,7 @@ public class TestlibPlugin implements MethodCallHandler {
     private void doNotExitAfterEnd(final Result result) {
         if(testLibrary == null) {
             result.error("0", "Test Library not initialized. Call >init< first.", null);
+            return;
         }
 
         testLibrary.doNotExitAfterEnd();
