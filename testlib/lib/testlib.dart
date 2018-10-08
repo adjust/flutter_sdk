@@ -44,6 +44,10 @@ class Testlib {
   }
 
   static void addInfoToSend(String key, String value) {
+    if (value == null) {
+      print('TestLib: Skip adding info to server for key [${key}]. Value is null.');
+      return;
+    }
     _channel.invokeMethod('addInfoToSend', {'key': key, 'value': value});
   }
 
