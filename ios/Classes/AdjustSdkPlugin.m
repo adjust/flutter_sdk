@@ -191,6 +191,7 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
     NSString *revenue = call.arguments[@"revenue"];
     NSString *currency = call.arguments[@"currency"];
     NSString *receipt = call.arguments[@"receipt"];
+    NSString *callbackId = call.arguments[@"callbackId"];
     NSString *transactionId = call.arguments[@"transactionId"];
     NSString *isReceiptSet = call.arguments[@"isReceiptSet"];
     NSString *callbackParametersJsonStr = call.arguments[@"callbackParameters"];
@@ -225,6 +226,10 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
     if ([self isFieldValid:revenue]) {
         double revenueValue = [revenue doubleValue];
         [adjustEvent setRevenue:revenueValue currency:currency];
+    }
+    
+    if ([self isFieldValid:callbackId]) {
+        [adjustEvent setCallbackId:callbackId];
     }
     
     // Deprecated
@@ -417,12 +422,13 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
 
 - (void)adjustEventTrackingSucceeded:(ADJEventSuccess *)eventSuccessResponseData {
     @try {
-        id keys[] = { @"message", @"timestamp", @"adid", @"eventToken", @"jsonResponse" };
+        id keys[] = { @"message", @"timestamp", @"adid", @"eventToken", @"callbackId", @"jsonResponse" };
         id values[] = {
             [self getValueOrEmpty:[eventSuccessResponseData message]],
             [self getValueOrEmpty:[eventSuccessResponseData timeStamp]],
             [self getValueOrEmpty:[eventSuccessResponseData adid]],
             [self getValueOrEmpty:[eventSuccessResponseData eventToken]],
+            [self getValueOrEmpty:[eventSuccessResponseData callbackId]],
             [self toJson:[eventSuccessResponseData jsonResponse]]
         };
         NSUInteger count = sizeof(values) / sizeof(id);
@@ -440,12 +446,13 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
 - (void)adjustEventTrackingFailed:(ADJEventFailure *)eventFailureResponseData {
     @try {
         NSString *willRetryString = [eventFailureResponseData willRetry] ? @"true" : @"false";
-        id keys[] = { @"message", @"timestamp", @"adid", @"eventToken", @"willRetry", @"jsonResponse" };
+        id keys[] = { @"message", @"timestamp", @"adid", @"eventToken", @"callbackId", @"willRetry", @"jsonResponse" };
         id values[] = {
             [self getValueOrEmpty:[eventFailureResponseData message]],
             [self getValueOrEmpty:[eventFailureResponseData timeStamp]],
             [self getValueOrEmpty:[eventFailureResponseData adid]],
             [self getValueOrEmpty:[eventFailureResponseData eventToken]],
+            [self getValueOrEmpty:[eventFailureResponseData callbackId]],
             willRetryString,
             [self toJson:[eventFailureResponseData jsonResponse]]
         };
