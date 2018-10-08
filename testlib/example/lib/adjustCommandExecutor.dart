@@ -77,6 +77,9 @@ class AdjustCommandExecutor {
     if (_command.containsParameter("noBackoffWait")) {
       testOptions['noBackoffWait'] = _command.getFirstParameterValue("noBackoffWait");
     }
+    if (_command.containsParameter("iAdFrameworkEnabled")) {
+      testOptions['iAdFrameworkEnabled'] = _command.getFirstParameterValue("iAdFrameworkEnabled");
+    }
     if (_command.containsParameter("teardown")) {
       List<dynamic> teardownOptions = _command.getParamteters("teardown");
       for (String teardownOption in teardownOptions) {
@@ -87,9 +90,8 @@ class AdjustCommandExecutor {
           // android specific
           testOptions['useTestConnectionOptions'] = 'true';
           testOptions['tryInstallReferrer'] = 'false';
-          // TODO: ios specific
         }
-        if (teardownOption == "deleteState") {
+        if (teardownOption == 'deleteState') {
           testOptions['deleteState'] = 'true';
         }
         if (teardownOption == "resetTest") {

@@ -31,17 +31,18 @@ class _MyAppState extends State<MyApp> {
     initPlatformState();
 
     if (Platform.isAndroid) {
-      _clientSdkPlatform = 'android4.14.0';
+      _clientSdkPlatform = 'android4.15.0';
       String _protocol = 'https';
       String _port = '8443';
       String _address = '10.0.2.2';
       _baseUrl = _protocol + '://' + _address + ':' + _port;
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
     } else {
-      _clientSdkPlatform = 'ios4.14.0';
+      _clientSdkPlatform = 'ios4.15.0';
       String _protocol = 'http';
       String _port = '8080';
-      String _address = '127.0.0.1';
+      // String _address = '127.0.0.1';
+      String _address = '192.168.8.191';
       _baseUrl = _protocol + '://' + _address + ':' + _port;
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
     }
@@ -50,11 +51,10 @@ class _MyAppState extends State<MyApp> {
     Testlib.init(_baseUrl);
 
     _adjustCommandExecutor = new AdjustCommandExecutor(_baseUrl, _gdprUrl);
-
+    
     // SDK Test Server has to be extended with 'flutter' info
     // _clientSdk = 'flutter4.14.0@$_clientSdkPlatform';
-    // _clientSdk = 'android4.15.0';
-    _clientSdk = 'ios4.15.0';
+    _clientSdk = _clientSdkPlatform;
 
     Testlib.doNotExitAfterEnd();
     

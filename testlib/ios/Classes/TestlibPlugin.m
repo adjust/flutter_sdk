@@ -11,6 +11,7 @@
 @interface TestlibPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @property(nonatomic, strong) ATLTestLibrary *testLibrary;
+@property(nonatomic, strong) AdjustCommandExecutor *adjustCommandExecutor;
 @end
 
 @implementation TestlibPlugin
@@ -52,6 +53,7 @@
 }
 
 - (void)init:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+    NSLog(@"Initializing test lib bridge ...");
     NSString *baseUrl = call.arguments[@"baseUrl"];
     if (![self isFieldValid:baseUrl]) {
         result([FlutterError errorWithCode:@"WRONG-ARGS"
@@ -60,13 +62,15 @@
         return;
     }
     
-    AdjustCommandExecutor *adjustCommandExecutor = [[AdjustCommandExecutor alloc]initWithMethodChannel:self.channel];
+    self.adjustCommandExecutor = [[AdjustCommandExecutor alloc]initWithMethodChannel:self.channel];
     self.testLibrary = [ATLTestLibrary testLibraryWithBaseUrl:baseUrl
-                                           andCommandDelegate:adjustCommandExecutor];
+                                           andCommandDelegate:self.adjustCommandExecutor];
+    NSLog(@"Test lib bridge initialized.");
 }
 
 - (void)startTestSession:(FlutterMethodCall*)call withResult:(FlutterResult)result {
     if ([self testLibOk:result] == NO) {
+        NSLog(@"Error. Cannot start test session. Test lib bridge not initialized.");
         return;
     }
     

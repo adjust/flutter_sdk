@@ -1,17 +1,25 @@
 import 'dart:convert';
+import 'dart:io';
 
 class Command {
   String _className;
   String _methodName;
   String _jsonParameters;
-  Map<String, dynamic> _parameters;
+  // Map<String, dynamic> _parameters;
+  Map<dynamic, dynamic> _parameters;
 
   Command(dynamic map) {
    try {
       _className = map['className'];
       _methodName = map['methodName'];
-      _jsonParameters = map['jsonParameters'];
-      _parameters = json.decode(_jsonParameters);
+
+      if (Platform.isAndroid) {
+        _jsonParameters = map['jsonParameters'];
+        _parameters = json.decode(_jsonParameters);
+      } else {
+        _parameters = map['jsonParameters'];
+        _jsonParameters = json.encode(_parameters);
+      }
     } catch (e) {
       print('Error! Failed to map Command from incoming data. Details: ' +
           e.toString());

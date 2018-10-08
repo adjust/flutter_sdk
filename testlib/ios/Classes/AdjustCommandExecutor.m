@@ -28,10 +28,10 @@
             methodName:(NSString *)methodName
             parameters:(NSString *)jsonParameters {
     NSLog(@"executeCommand className: %@, methodName: %@, parameters: %@", className, methodName, jsonParameters);
-    NSDictionary *methodParams = [NSDictionary dictionary];
-    [methodParams setValue:className forKey:@"className"];
-    [methodParams setValue:methodName forKey:@"methodName"];
-    [methodParams setValue:jsonParameters forKey:@"jsonParameters"];
+    NSMutableDictionary *methodParams = [[NSMutableDictionary alloc] init];
+    [methodParams setObject:className forKey:@"className"];
+    [methodParams setObject:methodName forKey:@"methodName"];
+    [methodParams setObject:jsonParameters forKey:@"jsonParameters"];
     [self.channel invokeMethod:@"execute-method" arguments:methodParams];
 }
 

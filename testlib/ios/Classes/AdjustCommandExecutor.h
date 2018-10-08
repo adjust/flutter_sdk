@@ -11,4 +11,7 @@
 
 @interface AdjustCommandExecutor : NSObject<AdjustCommandDelegate>
 - (id)initWithMethodChannel:(FlutterMethodChannel *)channel;
+- (void)executeCommand:(NSString *)className
+            methodName:(NSString *)methodName
+            parameters:(NSString *)jsonParameters;
 @end
