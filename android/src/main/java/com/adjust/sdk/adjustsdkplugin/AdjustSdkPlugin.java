@@ -199,6 +199,12 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       AdjustSdkPlugin.log("\tuserAgent: " + userAgent);
     }
 
+    if(adjustConfigMap.containsKey("sdkPrefix")) {
+      String sdkPrefix = (String) adjustConfigMap.get("sdkPrefix");
+      config.setSdkPrefix(sdkPrefix);
+      AdjustSdkPlugin.log("\tsdkPrefix: " + sdkPrefix);
+    }
+
     if(adjustConfigMap.containsKey("logLevel")) {
       String logLevel = (String) adjustConfigMap.get("logLevel");
       config.setLogLevel(LogLevel.valueOf(logLevel));

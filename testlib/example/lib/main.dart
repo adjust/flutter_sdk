@@ -35,6 +35,7 @@ class _MyAppState extends State<MyApp> {
       String _protocol = 'https';
       String _port = '8443';
       String _address = '10.0.2.2';
+      // String _address = '192.168.8.152';
       _baseUrl = _protocol + '://' + _address + ':' + _port;
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
     } else {
@@ -51,10 +52,7 @@ class _MyAppState extends State<MyApp> {
     Testlib.init(_baseUrl);
 
     _adjustCommandExecutor = new AdjustCommandExecutor(_baseUrl, _gdprUrl);
-    
-    // SDK Test Server has to be extended with 'flutter' info
-    // _clientSdk = 'flutter4.14.0@$_clientSdkPlatform';
-    _clientSdk = _clientSdkPlatform;
+    _clientSdk = 'flutter4.15.0@$_clientSdkPlatform';
 
     Testlib.doNotExitAfterEnd();
     

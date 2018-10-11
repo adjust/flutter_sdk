@@ -5,6 +5,7 @@ enum AdjustLogLevel { VERBOSE, DEBUG, INFO, WARN, ERROR, ASSERT, SUPRESS }
 enum AdjustEnvironment { production, sandbox }
 
 class AdjustConfig {
+  String _sdkPrefix = "flutter4.15.0";
   String appToken;
   String userAgent;
   String defaultTracker;
@@ -51,6 +52,7 @@ class AdjustConfig {
 
   Map<String, String> get configParamsMap {
     Map<String, String> configParamsMap = {
+      'sdkPrefix': _sdkPrefix,
       'appToken': appToken,
       'environment': environmentString,
       'userAgent': 'flutter',
