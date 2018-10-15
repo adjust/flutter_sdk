@@ -6,6 +6,7 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
 @interface AdjustSdkPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @property(nonatomic, retain) FlutterMethodChannel *deeplinkChannel;
+@property(nonatomic) BOOL launchDeferredDeeplink;
 @end
 
 @implementation AdjustSdkPlugin
@@ -111,17 +112,18 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
     
     BOOL allowSuppressLogLevel = NO;
     
-    NSString *userAgent             = call.arguments[@"userAgent"];
-    NSString *secretId              = call.arguments[@"secretId"];
-    NSString *info1                 = call.arguments[@"info1"];
-    NSString *info2                 = call.arguments[@"info2"];
-    NSString *info3                 = call.arguments[@"info3"];
-    NSString *info4                 = call.arguments[@"info4"];
+    NSString *userAgent              = call.arguments[@"userAgent"];
+    NSString *secretId               = call.arguments[@"secretId"];
+    NSString *info1                  = call.arguments[@"info1"];
+    NSString *info2                  = call.arguments[@"info2"];
+    NSString *info3                  = call.arguments[@"info3"];
+    NSString *info4                  = call.arguments[@"info4"];
     
-    NSString *delayStart            = call.arguments[@"delayStart"];
-    NSString *isDeviceKnown         = call.arguments[@"isDeviceKnown"];
-    NSString *eventBufferingEnabled = call.arguments[@"eventBufferingEnabled"];
-    NSString *sendInBackground      = call.arguments[@"sendInBackground"];
+    NSString *delayStart             = call.arguments[@"delayStart"];
+    NSString *isDeviceKnown          = call.arguments[@"isDeviceKnown"];
+    NSString *eventBufferingEnabled  = call.arguments[@"eventBufferingEnabled"];
+    NSString *sendInBackground       = call.arguments[@"sendInBackground"];
+    NSString *launchDeferredDeeplink = call.arguments[@"launchDeferredDeeplink"];
     
     if ([self isFieldValid:logLevel]) {
         if ([ADJLogger logLevelFromString:[logLevel lowercaseString]] == ADJLogLevelSuppress) {
@@ -135,6 +137,10 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
     
     if ([self isFieldValid:logLevel]) {
         [adjustConfig setLogLevel:[ADJLogger logLevelFromString:[logLevel lowercaseString]]];
+    }
+    
+    if ([self isFieldValid:launchDeferredDeeplink]) {
+        self.launchDeferredDeeplink = [launchDeferredDeeplink boolValue];
     }
     
     if ([self isFieldValid:eventBufferingEnabled]) {
@@ -290,61 +296,6 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
         [Adjust setDeviceToken:[token dataUsingEncoding:NSUTF8StringEncoding]];
     }
     result(nil);
-}
-
-- (void)setTestOptions:(FlutterMethodCall*)call withResult:(FlutterResult)result {
-    AdjustTestOptions *testOptions = [[AdjustTestOptions alloc] init];
-    NSString *baseUrl = call.arguments[@"baseUrl"];
-    NSString *gdprUrl = call.arguments[@"gdprUrl"];
-    NSString *basePath = call.arguments[@"basePath"];
-    NSString *gdprPath = call.arguments[@"gdprPath"];
-    NSString *timerIntervalInMilliseconds = call.arguments[@"timerIntervalInMilliseconds"];
-    NSString *timerStartInMilliseconds = call.arguments[@"timerStartInMilliseconds"];
-    NSString *sessionIntervalInMilliseconds = call.arguments[@"sessionIntervalInMilliseconds"];
-    NSString *subsessionIntervalInMilliseconds = call.arguments[@"subsessionIntervalInMilliseconds"];
-    NSString *teardown = call.arguments[@"teardown"];
-    NSString *deleteState = call.arguments[@"deleteState"];
-    NSString *noBackoffWait = call.arguments[@"noBackoffWait"];
-    NSString *iAdFrameworkEnabled = call.arguments[@"iAdFrameworkEnabled"];
-    
-    if ([self isFieldValid:baseUrl]) {
-        testOptions.baseUrl = baseUrl;
-    }
-    if ([self isFieldValid:gdprUrl]) {
-        testOptions.gdprUrl = gdprUrl;
-    }
-    if ([self isFieldValid:basePath]) {
-        testOptions.basePath = basePath;
-    }
-    if ([self isFieldValid:gdprPath]) {
-        testOptions.gdprPath = gdprPath;
-    }
-    if ([self isFieldValid:timerIntervalInMilliseconds]) {
-        testOptions.timerIntervalInMilliseconds = [NSNumber numberWithLongLong:[timerIntervalInMilliseconds longLongValue]];
-    }
-    if ([self isFieldValid:timerStartInMilliseconds]) {
-        testOptions.timerStartInMilliseconds = [NSNumber numberWithLongLong:[timerStartInMilliseconds longLongValue]];
-    }
-    if ([self isFieldValid:sessionIntervalInMilliseconds]) {
-        testOptions.sessionIntervalInMilliseconds = [NSNumber numberWithLongLong:[sessionIntervalInMilliseconds longLongValue]];
-    }
-    if ([self isFieldValid:subsessionIntervalInMilliseconds]) {
-        testOptions.subsessionIntervalInMilliseconds = [NSNumber numberWithLongLong:[subsessionIntervalInMilliseconds longLongValue]];
-    }
-    if ([self isFieldValid:teardown]) {
-        testOptions.teardown = [teardown boolValue];
-    }
-    if ([self isFieldValid:deleteState]) {
-        testOptions.deleteState = [deleteState boolValue];
-    }
-    if ([self isFieldValid:noBackoffWait]) {
-        testOptions.noBackoffWait = [noBackoffWait boolValue];
-    }
-    if ([self isFieldValid:iAdFrameworkEnabled]) {
-        testOptions.iAdFrameworkEnabled = [iAdFrameworkEnabled boolValue];
-    }
-    
-    [Adjust setTestOptions:testOptions];
 }
 
 - (void)appWillOpenUrl:(FlutterMethodCall*)call withResult:(FlutterResult)result {
@@ -522,22 +473,81 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
                                                                         forKeys:keys
                                                                           count:count];
     
-    [self.deeplinkChannel invokeMethod:@"should-launch-uri" arguments:deeplinkUriParamsMap result:^(id  _Nullable result) {
-        BOOL launchDeeplink;
-        if(result == nil) {
-            launchDeeplink = false;
-        } else if ([result isMemberOfClass:[FlutterMethodNotImplemented class]]) {
-            launchDeeplink = false;
-        } else if ([result isMemberOfClass:[FlutterError class]]) {
-            launchDeeplink = false;
-        }
-        launchDeeplink = result;
-    }];
+    [self.deeplinkChannel invokeMethod:@"receive-deferred-deeplink" arguments:deeplinkUriParamsMap];
+    
+//    [self.deeplinkChannel invokeMethod:@"should-launch-uri" arguments:deeplinkUriParamsMap result:^(id  _Nullable result) {
+//        BOOL launchDeeplink;
+//        if(result == nil) {
+//            launchDeeplink = false;
+//        } else if ([result isMemberOfClass:[FlutterMethodNotImplemented class]]) {
+//            launchDeeplink = false;
+//        } else if ([result isMemberOfClass:[FlutterError class]]) {
+//            launchDeeplink = false;
+//        }
+//        launchDeeplink = result;
+//    }];
     
     // ...pretty sure this does not work like this.
     // probably a callback back to the native part is needed
     // return launchDeeplink;
-    return true;
+    // return true;
+    
+    return self.launchDeferredDeeplink;
+}
+
+- (void)setTestOptions:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+    AdjustTestOptions *testOptions = [[AdjustTestOptions alloc] init];
+    NSString *baseUrl = call.arguments[@"baseUrl"];
+    NSString *gdprUrl = call.arguments[@"gdprUrl"];
+    NSString *basePath = call.arguments[@"basePath"];
+    NSString *gdprPath = call.arguments[@"gdprPath"];
+    NSString *timerIntervalInMilliseconds = call.arguments[@"timerIntervalInMilliseconds"];
+    NSString *timerStartInMilliseconds = call.arguments[@"timerStartInMilliseconds"];
+    NSString *sessionIntervalInMilliseconds = call.arguments[@"sessionIntervalInMilliseconds"];
+    NSString *subsessionIntervalInMilliseconds = call.arguments[@"subsessionIntervalInMilliseconds"];
+    NSString *teardown = call.arguments[@"teardown"];
+    NSString *deleteState = call.arguments[@"deleteState"];
+    NSString *noBackoffWait = call.arguments[@"noBackoffWait"];
+    NSString *iAdFrameworkEnabled = call.arguments[@"iAdFrameworkEnabled"];
+    
+    if ([self isFieldValid:baseUrl]) {
+        testOptions.baseUrl = baseUrl;
+    }
+    if ([self isFieldValid:gdprUrl]) {
+        testOptions.gdprUrl = gdprUrl;
+    }
+    if ([self isFieldValid:basePath]) {
+        testOptions.basePath = basePath;
+    }
+    if ([self isFieldValid:gdprPath]) {
+        testOptions.gdprPath = gdprPath;
+    }
+    if ([self isFieldValid:timerIntervalInMilliseconds]) {
+        testOptions.timerIntervalInMilliseconds = [NSNumber numberWithLongLong:[timerIntervalInMilliseconds longLongValue]];
+    }
+    if ([self isFieldValid:timerStartInMilliseconds]) {
+        testOptions.timerStartInMilliseconds = [NSNumber numberWithLongLong:[timerStartInMilliseconds longLongValue]];
+    }
+    if ([self isFieldValid:sessionIntervalInMilliseconds]) {
+        testOptions.sessionIntervalInMilliseconds = [NSNumber numberWithLongLong:[sessionIntervalInMilliseconds longLongValue]];
+    }
+    if ([self isFieldValid:subsessionIntervalInMilliseconds]) {
+        testOptions.subsessionIntervalInMilliseconds = [NSNumber numberWithLongLong:[subsessionIntervalInMilliseconds longLongValue]];
+    }
+    if ([self isFieldValid:teardown]) {
+        testOptions.teardown = [teardown boolValue];
+    }
+    if ([self isFieldValid:deleteState]) {
+        testOptions.deleteState = [deleteState boolValue];
+    }
+    if ([self isFieldValid:noBackoffWait]) {
+        testOptions.noBackoffWait = [noBackoffWait boolValue];
+    }
+    if ([self isFieldValid:iAdFrameworkEnabled]) {
+        testOptions.iAdFrameworkEnabled = [iAdFrameworkEnabled boolValue];
+    }
+    
+    [Adjust setTestOptions:testOptions];
 }
 
 //////////// HELPER METHODS ///////////////////////////////////////////////////////////////

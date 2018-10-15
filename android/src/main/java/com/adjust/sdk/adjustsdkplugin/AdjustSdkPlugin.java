@@ -44,6 +44,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
   private static MethodChannel channel;
   private static MethodChannel deeplinkChannel;
   private Context applicationContext;
+  private boolean launchDeferredDeeplink = true;
 
   public AdjustSdkPlugin(Context context) {
     this.applicationContext = context;
@@ -107,50 +108,6 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     result.success("Android " + android.os.Build.VERSION.RELEASE);
   }
 
-  private void setTestOptions(final MethodCall call, final Result result) {
-    AdjustTestOptions testOptions = new AdjustTestOptions();
-    Map testOptionsMap = (Map)call.arguments;
-
-    if(testOptionsMap.containsKey("baseUrl")) {
-      testOptions.baseUrl = (String) testOptionsMap.get("baseUrl");
-    }
-    if(testOptionsMap.containsKey("gdprUrl")) {
-      testOptions.gdprUrl = (String) testOptionsMap.get("gdprUrl");
-    }
-    if(testOptionsMap.containsKey("basePath")) {
-      testOptions.basePath = (String) testOptionsMap.get("basePath");
-    }
-    if(testOptionsMap.containsKey("gdprPath")) {
-      testOptions.gdprPath = (String) testOptionsMap.get("gdprPath");
-    }
-    if(testOptionsMap.containsKey("useTestConnectionOptions")) {
-      testOptions.useTestConnectionOptions = testOptionsMap.get("useTestConnectionOptions").toString().equals("true");
-    }
-    if(testOptionsMap.containsKey("teardown")) {
-      testOptions.teardown = testOptionsMap.get("teardown").toString().equals("true");
-    }
-    if(testOptionsMap.containsKey("tryInstallReferrer")) {
-      testOptions.tryInstallReferrer = testOptionsMap.get("tryInstallReferrer").toString().equals("true");
-    }
-    if(testOptionsMap.containsKey("timerIntervalInMilliseconds")) {
-      testOptions.timerIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("timerIntervalInMilliseconds").toString());
-    }
-    if(testOptionsMap.containsKey("timerStartInMilliseconds")) {
-      testOptions.timerStartInMilliseconds = Long.parseLong(testOptionsMap.get("timerStartInMilliseconds").toString());
-    }
-    if(testOptionsMap.containsKey("sessionIntervalInMilliseconds")) {
-      testOptions.sessionIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("sessionIntervalInMilliseconds").toString());
-    }
-    if(testOptionsMap.containsKey("subsessionIntervalInMilliseconds")) {
-      testOptions.subsessionIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("subsessionIntervalInMilliseconds").toString());
-    }
-    if(testOptionsMap.containsKey("deleteState")) {
-      testOptions.context = applicationContext;
-    }
-
-    Adjust.setTestOptions(testOptions);
-  }
-
   private void onCreate(final MethodCall call, final Result result) {
     Map adjustConfigMap = (Map)call.arguments;
     if(!adjustConfigMap.containsKey("appToken")) {
@@ -167,6 +124,12 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     if(!environment.equals("production") && !environment.equals("sandbox")) {
       result.error("0", "Argument >environment< received with wrong value: [" + environment + "]", null);
       return;
+    }
+
+    if(adjustConfigMap.containsKey("launchDeferredDeeplink")) {
+      String launchDeferredDeeplinkString = (String) adjustConfigMap.get("launchDeferredDeeplink");
+      this.launchDeferredDeeplink = launchDeferredDeeplinkString == "true";
+      AdjustSdkPlugin.log("\tlaunchDeferredDeeplink: " + launchDeferredDeeplink);
     }
 
     String secretIdString = (String) adjustConfigMap.get("secretId");
@@ -263,33 +226,37 @@ public class AdjustSdkPlugin implements MethodCallHandler {
         HashMap uriParamsMap = new HashMap();
         uriParamsMap.put("uri", uri);
 
-        final boolean[] shouldLaunchUri = new boolean[1];
-        deeplinkChannel.invokeMethod("should-launch-uri", uriParamsMap, new Result() {
-          @Override
-          public void success(Object o) {
-            if(o instanceof Boolean) {
-              shouldLaunchUri[0] = (Boolean)o;
-            } else {
-              shouldLaunchUri[0] = false;
-            }
-          }
+        deeplinkChannel.invokeMethod("receive-deferred-deeplink", uriParamsMap);
 
-          @Override
-          public void error(String s, String s1, Object o) {
-            shouldLaunchUri[0] = false;
-          }
-
-          @Override
-          public void notImplemented() {
-            shouldLaunchUri[0] = false;
-          }
-        });
+//        final boolean[] shouldLaunchUri = new boolean[1];
+//        deeplinkChannel.invokeMethod("should-launch-uri", uriParamsMap, new Result() {
+//          @Override
+//          public void success(Object o) {
+//            if(o instanceof Boolean) {
+//              shouldLaunchUri[0] = (Boolean)o;
+//            } else {
+//              shouldLaunchUri[0] = false;
+//            }
+//          }
+//
+//          @Override
+//          public void error(String s, String s1, Object o) {
+//            shouldLaunchUri[0] = false;
+//          }
+//
+//          @Override
+//          public void notImplemented() {
+//            shouldLaunchUri[0] = false;
+//          }
+//        });
 
         // TODO: this won't work. it's even stupid :)
         // probalby requires changes in the native part, where launchReceivedDeeplink(uri) can be
         // extended to provide a callback launchReceivedDeeplink(uri, callback) which can be called
         // after the non-native flutter part `should-launch-uri` is called
-        return shouldLaunchUri[0];
+        // return shouldLaunchUri[0];
+
+        return launchDeferredDeeplink;
       }
     });
 
@@ -603,6 +570,50 @@ public class AdjustSdkPlugin implements MethodCallHandler {
   private void resetSessionPartnerParameters(final Result result) {
     AdjustBridge.resetSessionPartnerParameters();
     result.success(null);
+  }
+
+  private void setTestOptions(final MethodCall call, final Result result) {
+    AdjustTestOptions testOptions = new AdjustTestOptions();
+    Map testOptionsMap = (Map)call.arguments;
+
+    if(testOptionsMap.containsKey("baseUrl")) {
+      testOptions.baseUrl = (String) testOptionsMap.get("baseUrl");
+    }
+    if(testOptionsMap.containsKey("gdprUrl")) {
+      testOptions.gdprUrl = (String) testOptionsMap.get("gdprUrl");
+    }
+    if(testOptionsMap.containsKey("basePath")) {
+      testOptions.basePath = (String) testOptionsMap.get("basePath");
+    }
+    if(testOptionsMap.containsKey("gdprPath")) {
+      testOptions.gdprPath = (String) testOptionsMap.get("gdprPath");
+    }
+    if(testOptionsMap.containsKey("useTestConnectionOptions")) {
+      testOptions.useTestConnectionOptions = testOptionsMap.get("useTestConnectionOptions").toString().equals("true");
+    }
+    if(testOptionsMap.containsKey("teardown")) {
+      testOptions.teardown = testOptionsMap.get("teardown").toString().equals("true");
+    }
+    if(testOptionsMap.containsKey("tryInstallReferrer")) {
+      testOptions.tryInstallReferrer = testOptionsMap.get("tryInstallReferrer").toString().equals("true");
+    }
+    if(testOptionsMap.containsKey("timerIntervalInMilliseconds")) {
+      testOptions.timerIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("timerIntervalInMilliseconds").toString());
+    }
+    if(testOptionsMap.containsKey("timerStartInMilliseconds")) {
+      testOptions.timerStartInMilliseconds = Long.parseLong(testOptionsMap.get("timerStartInMilliseconds").toString());
+    }
+    if(testOptionsMap.containsKey("sessionIntervalInMilliseconds")) {
+      testOptions.sessionIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("sessionIntervalInMilliseconds").toString());
+    }
+    if(testOptionsMap.containsKey("subsessionIntervalInMilliseconds")) {
+      testOptions.subsessionIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("subsessionIntervalInMilliseconds").toString());
+    }
+    if(testOptionsMap.containsKey("deleteState")) {
+      testOptions.context = applicationContext;
+    }
+
+    Adjust.setTestOptions(testOptions);
   }
 
   public static void log(String message) {

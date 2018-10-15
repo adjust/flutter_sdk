@@ -14,7 +14,7 @@ class AdjustConfig {
   Nullable<bool> sendInBackground;
   Nullable<bool> eventBufferingEnabled;
   Nullable<bool> allowSuppressLogLevel;
-  // Nullable<bool> launchDeferredDeeplink;
+  Nullable<bool> launchDeferredDeeplink;
 
   AdjustLogLevel logLevel;
   AdjustEnvironment environment;
@@ -75,6 +75,9 @@ class AdjustConfig {
     }
     if (allowSuppressLogLevel != null) {
       configParamsMap['allowSuppressLogLevel'] = allowSuppressLogLevel.strValue;
+    }
+    if (launchDeferredDeeplink != null) {
+      configParamsMap['launchDeferredDeeplink'] = launchDeferredDeeplink.strValue;
     }
     if (info1 != null) {
       configParamsMap['info1'] = info1.strValue;

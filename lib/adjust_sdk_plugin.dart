@@ -15,6 +15,7 @@ typedef void EventSuccessHandler(AdjustEventSuccess successData);
 typedef void EventFailureHandler(AdjustEventFailure failureData);
 typedef void AttributionChangedHandler(AdjustAttribution attributionData);
 typedef bool ShouldLaunchReceivedDeeplinkHandler(String uri);
+typedef void ReceivedDeeplinkHandler(String uri);
 
 class AdjustSdkPlugin {
   static const MethodChannel _channel = const MethodChannel('com.adjust/api');
@@ -28,6 +29,7 @@ class AdjustSdkPlugin {
   static EventFailureHandler _eventFailureHandler;
   static AttributionChangedHandler _attributionChangedHandler;
   static ShouldLaunchReceivedDeeplinkHandler _shouldLaunchReceivedDeeplinkHandler;
+  static ReceivedDeeplinkHandler _receivedDeeplinkHandler;
 
   static void _initCallbackHandlers() {
     if (_callbackHandlersInitialized) {
@@ -97,6 +99,12 @@ class AdjustSdkPlugin {
         
         // TODO: what to return in case the client did not implement '_shouldLaunchReceivedDeeplinkHandler'
         return false;
+      case 'receive-deferred-deeplink':
+        String uri = call.arguments['uri'];
+        if (_receivedDeeplinkHandler != null) {
+          _receivedDeeplinkHandler(uri);
+        }
+        break;
       default:
         throw new UnsupportedError('Unknown method: ${call.method}');
     }
@@ -131,6 +139,11 @@ class AdjustSdkPlugin {
       ShouldLaunchReceivedDeeplinkHandler handler) {
     _initCallbackHandlers();
     _shouldLaunchReceivedDeeplinkHandler = handler;
+  }
+
+  static void setReceivedDeeplinkHandler(ReceivedDeeplinkHandler handler) {
+    _initCallbackHandlers();
+    _receivedDeeplinkHandler = handler;
   }
 
   static Future<String> get platformVersion async {

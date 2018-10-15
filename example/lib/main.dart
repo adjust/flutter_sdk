@@ -313,6 +313,10 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       }
       return false;
     });
+
+    AdjustSdkPlugin.setReceivedDeeplinkHandler((String uri) {
+      print(' >>>> Reeceived deferred deeplink: ' + uri);
+    });
   }
 
   void _showDialogMessage(String title, String text,
