@@ -101,8 +101,12 @@ class AdjustSdkPlugin {
         return false;
       case 'receive-deferred-deeplink':
         String uri = call.arguments['uri'];
+        print(' >>>>> Received deferred deeplink: $uri');
         if (_receivedDeeplinkHandler != null) {
+          print(' >>>>> calling recevied deeplink hanlder');
           _receivedDeeplinkHandler(uri);
+        } else {
+          print(' >>>>> recevied deeplink hanlder is NULL');
         }
         break;
       default:

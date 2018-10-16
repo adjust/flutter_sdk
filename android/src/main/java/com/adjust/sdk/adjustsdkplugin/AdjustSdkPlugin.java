@@ -224,7 +224,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       // in that case, this could work like a charm
       public boolean launchReceivedDeeplink(Uri uri) {
         HashMap uriParamsMap = new HashMap();
-        uriParamsMap.put("uri", uri);
+        uriParamsMap.put("uri", uri.toString());
 
         deeplinkChannel.invokeMethod("receive-deferred-deeplink", uriParamsMap);
 

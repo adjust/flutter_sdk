@@ -59,9 +59,11 @@ class _MyAppState extends State<MyApp> {
     Testlib.addTest('current/app-secret/Test_AppSecret_with_secret');
     // Testlib.addTestDirectory('current/init-malformed');
     // Testlib.addTestDirectory('current/event-callbacks');
+    Testlib.addTestDirectory('current/deeplink-deferred');
     // Testlib.addTest('current/init-malformed/Test_Init_Malformed_wrong_environment');
     // Testlib.addTestDirectory('current/session-parameters');
     // Testlib.addTest('current/event-callbacks/Test_EventCallback_failure');
+    // Testlib.addTest('current/deeplink/Test_Deeplink_beforeStart');
 
     Testlib.setExecuteCommandHalder((final dynamic callArgs) {
       Command command = new Command(callArgs);

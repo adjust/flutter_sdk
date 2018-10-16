@@ -204,7 +204,7 @@ class AdjustCommandExecutor {
 
     if (_command.containsParameter("eventBufferingEnabled")) {
       bool eventBufferingEnabled = _command.getFirstParameterValue("eventBufferingEnabled") == 'true';
-      adjustConfig.sendInBackground = new Nullable<bool>(eventBufferingEnabled);
+      adjustConfig.eventBufferingEnabled = new Nullable<bool>(eventBufferingEnabled);
     }
 
     if (_command.containsParameter("sendInBackground")) {
@@ -216,12 +216,8 @@ class AdjustCommandExecutor {
       adjustConfig.userAgent = _command.getFirstParameterValue("userAgent");
     }
 
-    if(_command.containsParameter("deferredDeeplinkCallback")) {
-      //TODO: frist fix deeplinking
-
-    }
-
     // first clear all previous callback handlers
+    AdjustSdkPlugin.setReceivedDeeplinkHandler(null);
     AdjustSdkPlugin.setAttributionChangedHandler(null);
     AdjustSdkPlugin.setSessionSuccessHandler(null);
     AdjustSdkPlugin.setSessionFailureHandler(null);
@@ -229,8 +225,20 @@ class AdjustCommandExecutor {
     AdjustSdkPlugin.setEventFailureHandler(null);
     AdjustSdkPlugin.setShouldLaunchReceivedDeeplinkHandler(null);
 
+    if(_command.containsParameter("deferredDeeplinkCallback")) {
+      String localBasePath = _basePath;
+      bool launchDeferredDeeplink = _command.getFirstParameterValue("deferredDeeplinkCallback") == "true";
+      adjustConfig.launchDeferredDeeplink = new Nullable<bool>(launchDeferredDeeplink);
+      print('-----> Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink.strValue}');
+      AdjustSdkPlugin.setReceivedDeeplinkHandler((String uri) {
+        print('-----> Sending deeplink info to server: $uri');
+        Testlib.addInfoToSend("deeplink", uri);
+        Testlib.sendInfoToServer(localBasePath);
+      });
+    }
+
     if(_command.containsParameter("attributionCallbackSendAll")) {
-      // String localBasePath = _basePath;
+      String localBasePath = _basePath;
       AdjustSdkPlugin.setAttributionChangedHandler((AdjustAttribution attribution) {
         print('-----> Attribution Callback: $attribution');
         Testlib.addInfoToSend("trackerToken", attribution.trackerToken);
@@ -241,8 +249,7 @@ class AdjustCommandExecutor {
         Testlib.addInfoToSend("creative", attribution.creative);
         Testlib.addInfoToSend("clickLabel", attribution.clickLabel);
         Testlib.addInfoToSend("adid", attribution.adid);
-        print('---> sending info to server with path: $_basePath');
-        Testlib.sendInfoToServer(_basePath);
+        Testlib.sendInfoToServer(localBasePath);
       });
     }
 
