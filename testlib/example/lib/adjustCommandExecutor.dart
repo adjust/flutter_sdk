@@ -225,6 +225,8 @@ class AdjustCommandExecutor {
     AdjustSdkPlugin.setEventFailureHandler(null);
     AdjustSdkPlugin.setShouldLaunchReceivedDeeplinkHandler(null);
 
+    // TODO: deeplinking in flutter example
+    // https://github.com/flutter/flutter/issues/8711#issuecomment-304681212
     if(_command.containsParameter("deferredDeeplinkCallback")) {
       String localBasePath = _basePath;
       bool launchDeferredDeeplink = _command.getFirstParameterValue("deferredDeeplinkCallback") == "true";
