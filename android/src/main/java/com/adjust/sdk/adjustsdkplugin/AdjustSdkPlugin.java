@@ -591,6 +591,9 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     if(testOptionsMap.containsKey("useTestConnectionOptions")) {
       testOptions.useTestConnectionOptions = testOptionsMap.get("useTestConnectionOptions").toString().equals("true");
     }
+    if(testOptionsMap.containsKey("noBackoffWait")) {
+      testOptions.noBackoffWait = testOptionsMap.get("noBackoffWait").toString().equals("true");
+    }
     if(testOptionsMap.containsKey("teardown")) {
       testOptions.teardown = testOptionsMap.get("teardown").toString().equals("true");
     }
