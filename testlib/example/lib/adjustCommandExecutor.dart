@@ -348,12 +348,12 @@ class AdjustCommandExecutor {
     }
 
     if (_command.containsParameter("revenue")) {
-      List<String> revenueParams = _command.getParamteters("revenue");
+      List<dynamic> revenueParams = _command.getParamteters("revenue");
       adjustEvent.currency = revenueParams[0];
       adjustEvent.revenue = new Nullable<num>(num.parse(revenueParams[1]));
     }
     if (_command.containsParameter("callbackParams")) {
-      List<String> callbackParams = _command.getParamteters("callbackParams");
+      List<dynamic> callbackParams = _command.getParamteters("callbackParams");
       for (int i = 0; i < callbackParams.length; i = i + 2) {
         String key = callbackParams[i];
         String value = callbackParams[i + 1];
@@ -361,7 +361,7 @@ class AdjustCommandExecutor {
       }
     }
     if (_command.containsParameter("partnerParams")) {
-      List<String> partnerParams = _command.getParamteters("partnerParams");
+      List<dynamic> partnerParams = _command.getParamteters("partnerParams");
       for (int i = 0; i < partnerParams.length; i = i + 2) {
         String key = partnerParams[i];
         String value = partnerParams[i + 1];
