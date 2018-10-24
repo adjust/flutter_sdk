@@ -37,7 +37,7 @@ class AdjustEvent {
     if (currency != null) {
       adjustEventParamsMap['currency'] = currency;
     }
-    if (orderId != null) {
+    if (orderId != null && orderId.length > 0) {
       adjustEventParamsMap['orderId'] = orderId;
     }
     if (callbackId != null) {
