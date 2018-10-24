@@ -33,12 +33,12 @@ public class AdjustBridgeInstance {
         Adjust.setOfflineMode(isOffline);
     }
 
-    public void setPushToken(String token) {
-        Adjust.setPushToken(token);
+    public void setPushToken(String token, Context context) {
+        Adjust.setPushToken(token, context);
     }
 
-    public void appWillOpenUrl(String url) {
-        Adjust.appWillOpenUrl(Uri.parse(url));
+    public void appWillOpenUrl(String url, Context context) {
+        Adjust.appWillOpenUrl(Uri.parse(url), context);
     }
 
     public void onResume() {

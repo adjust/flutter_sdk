@@ -47,16 +47,16 @@ public class AdjustBridge {
         getDefaultInstance().setEnabled(isEnabled);
     }
 
-    public static void setPushToken(String token) {
-        getDefaultInstance().setPushToken(token);
+    public static void setPushToken(String token, Context context) {
+        getDefaultInstance().setPushToken(token, context);
     }
 
     public static void setOfflineMode(boolean isOffline) {
         getDefaultInstance().setOfflineMode(isOffline);
     }
 
-    public static void appWillOpenUrl(String url) {
-        getDefaultInstance().appWillOpenUrl(url);
+    public static void appWillOpenUrl(String url, Context context) {
+        getDefaultInstance().appWillOpenUrl(url, context);
     }
 
     public static void sendFirstPackages() {

@@ -438,7 +438,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     }
 
     String pushToken = tokenParamsMap.get("token").toString();
-    AdjustBridge.setPushToken(pushToken);
+    AdjustBridge.setPushToken(pushToken, applicationContext);
     result.success(null);
   }
 
@@ -462,7 +462,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     }
 
     String url = urlParamsMap.get("url").toString();
-    AdjustBridge.appWillOpenUrl(url);
+    AdjustBridge.appWillOpenUrl(url, applicationContext);
     result.success(null);
   }
 

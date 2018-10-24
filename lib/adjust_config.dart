@@ -55,9 +55,11 @@ class AdjustConfig {
       'sdkPrefix': _sdkPrefix,
       'appToken': appToken,
       'environment': environmentString,
-      'userAgent': 'flutter',
     };
 
+    if (userAgent != null) {
+      configParamsMap['userAgent'] = userAgent;
+    }
     if (logLevelString != null) {
       configParamsMap['logLevel'] = logLevelString;
     }

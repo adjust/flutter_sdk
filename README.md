@@ -1,6 +1,6 @@
 # adjust_sdk_plugin
 
-Adjust Flutter iOS SDK.
+Adjust Flutter SDK.
 
 ## Getting Started
 
