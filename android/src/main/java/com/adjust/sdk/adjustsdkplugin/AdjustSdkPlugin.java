@@ -129,7 +129,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
     if(adjustConfigMap.containsKey("launchDeferredDeeplink")) {
       String launchDeferredDeeplinkString = (String) adjustConfigMap.get("launchDeferredDeeplink");
-      this.launchDeferredDeeplink = launchDeferredDeeplinkString == "true";
+      this.launchDeferredDeeplink = launchDeferredDeeplinkString.equals("true");
       AdjustSdkPlugin.log("\tlaunchDeferredDeeplink: " + launchDeferredDeeplink);
     }
 
