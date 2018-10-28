@@ -43,12 +43,8 @@ import static com.adjust.sdk.adjustsdkplugin.AdjustPluginUtils.*;
 public class AdjustSdkPlugin implements MethodCallHandler {
   private static MethodChannel channel;
   private static MethodChannel deeplinkChannel;
-  private Context applicationContext;
+  private static Context applicationContext;
   private boolean launchDeferredDeeplink = true;
-
-  public AdjustSdkPlugin(Context context) {
-    this.applicationContext = context;
-  }
 
   /**
    * Plugin registration.
@@ -58,7 +54,8 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       throw new IllegalStateException("You should not call registerWith more than once.");
     }
 
-    AdjustSdkPlugin adjustSdkPlugin = new AdjustSdkPlugin(registrar.context());
+    AdjustSdkPlugin adjustSdkPlugin = new AdjustSdkPlugin();
+    applicationContext = registrar.context();
     channel = new MethodChannel(registrar.messenger(), "com.adjust/api");
     channel.setMethodCallHandler(adjustSdkPlugin);
 
@@ -106,6 +103,10 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
   private void getPlatformVersion(final Result result) {
     result.success("Android " + android.os.Build.VERSION.RELEASE);
+  }
+
+  public static void appWillOpenUrl(String url) {
+    AdjustBridge.appWillOpenUrl(url, applicationContext);
   }
 
   private void onCreate(final MethodCall call, final Result result) {
