@@ -1,11 +1,14 @@
 name: adjust_sdk_plugin
 description: Adjust Flutter SDK
 version: 0.9.0
-author: Srđan Tubin <srdjan@adjust.com>
+author: adjust GmbH <srdjan@adjust.com>
 homepage: https://www.adjust.com/
 
+# more info at:
+# https://www.dartlang.org/tools/pub/pubspec
 environment:
-    sdk: ">=1.19.0 <2.1.0"
+    # the following constraint says that this package works with any Dart 2 SDK that’s version 2.0.0 or higher
+    sdk: ">=2.0.0 <3.0.0"
     
 dependencies:
   flutter:
