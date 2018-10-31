@@ -20,8 +20,8 @@
       <sourceFolder url="file://$MODULE_DIR$/android/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/android/gen" isTestSource="false" generated="true" />
     </content>
-    <content url="file://$MODULE_DIR$/example/android">
-      <sourceFolder url="file://$MODULE_DIR$/example/android/app/src/main/java" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/testapp/android">
+      <sourceFolder url="file://$MODULE_DIR$/testapp/android/app/src/main/java" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 25 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -1,4 +1,4 @@
-# testlib_example
+# testapp
 
 Adjust Test (CI) App for Flutter SDK.
 
