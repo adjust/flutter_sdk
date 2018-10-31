@@ -1,6 +1,6 @@
 # testlib_example
 
-Demonstrates how to use the testlib plugin.
+Adjust Test (CI) App for Flutter SDK.
 
 ## Getting Started
 

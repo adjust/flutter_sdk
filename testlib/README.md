@@ -1,6 +1,6 @@
 # testlib
 
-A new flutter plugin project.
+Flutter Plugin for Adjust Testing Library.
 
 ## Getting Started
 

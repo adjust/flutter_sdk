@@ -1,7 +1,7 @@
 name: testlib
-description: A new flutter plugin project.
-version: 0.0.1
-author:
+description: Flutter plugin for Adjust Testing Library. Intended exclusively for internal use.
+version: 1.0.0
+author: Serj
 homepage:
 
 environment:

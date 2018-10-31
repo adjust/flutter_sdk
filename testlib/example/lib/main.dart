@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
     initPlatformState();
 
     if (Platform.isAndroid) {
-      _clientSdkPlatform = 'android4.15.0';
+      _clientSdkPlatform = 'android4.15.1';
       String _protocol = 'https';
       String _port = '8443';
       String _address = '10.0.2.2';
