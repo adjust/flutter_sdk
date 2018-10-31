@@ -1,6 +1,6 @@
-# adjust_sdk_plugin
+# Adjust SDK plugin for Flutter
 
-Adjust Flutter SDK.
+Work in progress ...
 
 ## Getting Started
 
