@@ -229,6 +229,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
         deeplinkChannel.invokeMethod("receive-deferred-deeplink", uriParamsMap);
 
+        // TODO: left out as a reminder for discussion with Ugljesa and Pedro
 //        final boolean[] shouldLaunchUri = new boolean[1];
 //        deeplinkChannel.invokeMethod("should-launch-uri", uriParamsMap, new Result() {
 //          @Override
