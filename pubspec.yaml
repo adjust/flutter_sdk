@@ -1,7 +1,9 @@
 name: adjust_sdk_plugin
-description: Adjust Flutter SDK
-version: 0.9.0
-author: adjust GmbH <srdjan@adjust.com>
+description: >-
+  This is the Flutter SDK of Adjust™. You can read more about Adjust™ at adjust.com.
+version: 4.16.0
+author: Srdjan (Serj) Tubin <srdjan@adjust.com>
+# homepage: https://github.com/adjust/flutter_sdk
 homepage: https://www.adjust.com/
 
 # more info at:
@@ -9,6 +11,7 @@ homepage: https://www.adjust.com/
 environment:
     # the following constraint says that this package works with any Dart 2 SDK that’s version 2.0.0 or higher
     sdk: ">=2.0.0 <3.0.0"
+    flutter: ">=0.1.4 <2.0.0"
     
 dependencies:
   flutter:
@@ -21,6 +24,7 @@ dependencies:
 flutter:
   plugin:
     androidPackage: com.adjust.sdk.adjustsdkplugin
+    # iosPrefix: ADJ
     pluginClass: AdjustSdkPlugin
 
   # To add assets to your plugin package, add an assets section, like this:

@@ -20,6 +20,9 @@ flutter:
     androidPackage: com.adjust.test.testlib
     pluginClass: TestlibPlugin
 
+# we don't want to publish the test lib plugin, used only privately for integration testing
+publish_to: none
+
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg
