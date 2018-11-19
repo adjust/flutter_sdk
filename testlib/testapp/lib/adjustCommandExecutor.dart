@@ -6,7 +6,6 @@ import 'package:adjust_sdk_plugin/callbacksData/adjust_session_failure.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjust_session_success.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjust_event_failure.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjust_event_success.dart';
-import 'package:adjust_sdk_plugin/nullable.dart';
 import 'package:testlib/testlib.dart';
 import 'package:testapp/command.dart';
 

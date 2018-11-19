@@ -1,5 +1,3 @@
-import 'package:adjust_sdk_plugin/nullable.dart';
-
 enum AdjustLogLevel { VERBOSE, DEBUG, INFO, WARN, ERROR, ASSERT, SUPRESS }
 
 enum AdjustEnvironment { production, sandbox }
@@ -10,22 +8,22 @@ class AdjustConfig {
   String userAgent;
   String defaultTracker;
 
-  Nullable<bool> _isDeviceKnown;
-  Nullable<bool> _sendInBackground;
-  Nullable<bool> _eventBufferingEnabled;
-  Nullable<bool> _allowSuppressLogLevel;
-  Nullable<bool> _launchDeferredDeeplink;
+  bool isDeviceKnown;
+  bool sendInBackground;
+  bool eventBufferingEnabled;
+  bool allowSuppressLogLevel;
+  bool launchDeferredDeeplink;
 
   AdjustLogLevel logLevel;
   AdjustEnvironment environment;
 
-  Nullable<num> _info1;
-  Nullable<num> _info2;
-  Nullable<num> _info3;
-  Nullable<num> _info4;
-  Nullable<num> _secretId;
+  num _info1;
+  num _info2;
+  num _info3;
+  num _info4;
+  num _secretId;
 
-  Nullable<double> _delayStart;
+  double delayStart;
 
   // Android specific members
   String processName;
@@ -43,37 +41,11 @@ class AdjustConfig {
   }
 
   void setAppSecret(num secretId, num info1, num info2, num info3, num info4) {
-    _secretId = new Nullable<num>(secretId);
-    _info1 = new Nullable<num>(info1);
-    _info2 = new Nullable<num>(info2);
-    _info3 = new Nullable<num>(info3);
-    _info4 = new Nullable<num>(info4);
-  }
-
-  get isDeviceKnown => _isDeviceKnown != null ? _isDeviceKnown.value : null;
-  set isDeviceKnown(bool isDeviceKnown) {
-    _isDeviceKnown = new Nullable<bool>(isDeviceKnown);
-  }
-
-  set sendInBackground(bool sendInBackground) {
-    _sendInBackground = new Nullable<bool>(sendInBackground);
-  }
-
-  set eventBufferingEnabled(bool eventBufferingEnabled) {
-    _eventBufferingEnabled = new Nullable<bool>(eventBufferingEnabled);
-  }
-
-  set allowSuppressLogLevel(bool allowSuppressLogLevel) {
-    _allowSuppressLogLevel = new Nullable<bool>(allowSuppressLogLevel);
-  }
-
-  get launchDeferredDeeplink => _launchDeferredDeeplink.value;
-  set launchDeferredDeeplink(bool launchDeferredDeeplink) {
-    _launchDeferredDeeplink = new Nullable<bool>(launchDeferredDeeplink);
-  }
-
-  set delayStart(double delayStart) {
-    _delayStart = new Nullable<double>(delayStart);
+    _secretId = secretId;
+    _info1 = info1;
+    _info2 = info2;
+    _info3 = info3;
+    _info4 = info4;
   }
 
   Map<String, String> get configParamsMap {
@@ -92,38 +64,38 @@ class AdjustConfig {
     if (defaultTracker != null) {
       configParamsMap['defaultTracker'] = defaultTracker;
     }
-    if (_isDeviceKnown != null) {
-      configParamsMap['isDeviceKnown'] = _isDeviceKnown.strValue;
+    if (isDeviceKnown != null) {
+      configParamsMap['isDeviceKnown'] = isDeviceKnown.toString();
     }
-    if (_sendInBackground != null) {
-      configParamsMap['sendInBackground'] = _sendInBackground.strValue;
+    if (sendInBackground != null) {
+      configParamsMap['sendInBackground'] = sendInBackground.toString();
     }
-    if (_eventBufferingEnabled != null) {
-      configParamsMap['eventBufferingEnabled'] = _eventBufferingEnabled.strValue;
+    if (eventBufferingEnabled != null) {
+      configParamsMap['eventBufferingEnabled'] = eventBufferingEnabled.toString();
     }
-    if (_allowSuppressLogLevel != null) {
-      configParamsMap['allowSuppressLogLevel'] = _allowSuppressLogLevel.strValue;
+    if (allowSuppressLogLevel != null) {
+      configParamsMap['allowSuppressLogLevel'] = allowSuppressLogLevel.toString();
     }
-    if (_launchDeferredDeeplink != null) {
-      configParamsMap['launchDeferredDeeplink'] = _launchDeferredDeeplink.strValue;
+    if (launchDeferredDeeplink != null) {
+      configParamsMap['launchDeferredDeeplink'] = launchDeferredDeeplink.toString();
     }
     if (_info1 != null) {
-      configParamsMap['info1'] = _info1.strValue;
+      configParamsMap['info1'] = _info1.toString();
     }
     if (_info2 != null) {
-      configParamsMap['info2'] = _info2.strValue;
+      configParamsMap['info2'] = _info2.toString();
     }
     if (_info3 != null) {
-      configParamsMap['info3'] = _info3.strValue;
+      configParamsMap['info3'] = _info3.toString();
     }
     if (_info4 != null) {
-      configParamsMap['info4'] = _info4.strValue;
+      configParamsMap['info4'] = _info4.toString();
     }
     if (_secretId != null) {
-      configParamsMap['secretId'] = _secretId.strValue;
+      configParamsMap['secretId'] = _secretId.toString();
     }
-    if (_delayStart != null) {
-      configParamsMap['delayStart'] = _delayStart.strValue;
+    if (delayStart != null) {
+      configParamsMap['delayStart'] = delayStart.toString();
     }
     
     return configParamsMap;

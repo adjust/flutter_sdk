@@ -1,4 +1,3 @@
-import 'package:adjust_sdk_plugin/nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:adjust_sdk_plugin/adjust_config.dart';
 import 'package:adjust_sdk_plugin/callbacksData/adjust_attribution.dart';
