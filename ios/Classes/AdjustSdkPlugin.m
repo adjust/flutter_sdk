@@ -464,8 +464,6 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
 }
 
 - (BOOL)adjustDeeplinkResponse:(NSURL *)deeplink {
-    // call non-native flutter part and ask whether deepling should be launched
-    // and return that value
     id keys[] = { @"uri" };
     id values[] = { [deeplink absoluteString] };
     NSUInteger count = sizeof(values) / sizeof(id);
@@ -474,23 +472,6 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
                                                                           count:count];
     
     [self.deeplinkChannel invokeMethod:@"receive-deferred-deeplink" arguments:deeplinkUriParamsMap];
-    
-//    [self.deeplinkChannel invokeMethod:@"should-launch-uri" arguments:deeplinkUriParamsMap result:^(id  _Nullable result) {
-//        BOOL launchDeeplink;
-//        if(result == nil) {
-//            launchDeeplink = false;
-//        } else if ([result isMemberOfClass:[FlutterMethodNotImplemented class]]) {
-//            launchDeeplink = false;
-//        } else if ([result isMemberOfClass:[FlutterError class]]) {
-//            launchDeeplink = false;
-//        }
-//        launchDeeplink = result;
-//    }];
-    
-    // ...pretty sure this does not work like this.
-    // probably a callback back to the native part is needed
-    // return launchDeeplink;
-    // return true;
     
     return self.launchDeferredDeeplink;
 }

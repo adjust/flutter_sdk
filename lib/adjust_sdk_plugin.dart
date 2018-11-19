@@ -28,7 +28,6 @@ class AdjustSdkPlugin {
   static EventSuccessHandler _eventSuccessHandler;
   static EventFailureHandler _eventFailureHandler;
   static AttributionChangedHandler _attributionChangedHandler;
-  static ShouldLaunchReceivedDeeplinkHandler _shouldLaunchReceivedDeeplinkHandler;
   static ReceivedDeeplinkHandler _receivedDeeplinkHandler;
 
   static void _initCallbackHandlers() {
@@ -41,7 +40,7 @@ class AdjustSdkPlugin {
     _deeplinkChannel.setMethodCallHandler(_deeplinkChannelHandler);
 
     _channel.setMethodCallHandler((MethodCall call) {
-      print(" >>>>> INCOMING METHOD FROM NATIVE: ${call.method}");
+      print(" >>>>> INCOMING METHOD CALL FROM NATIVE: ${call.method}");
 
       try {
         switch (call.method) {
@@ -88,25 +87,14 @@ class AdjustSdkPlugin {
   }
 
   static Future<dynamic> _deeplinkChannelHandler(MethodCall call) async {
-    print(' >>>>> INCOMING DEEPLINK METHOD FROM NATIVE: ' + call.method);
+    print(' >>>>> INCOMING DEEPLINK METHOD CALL FROM NATIVE: ' + call.method);
 
     switch (call.method) {
-      case 'should-launch-uri':
-        String uri = call.arguments['uri'];
-        if (_shouldLaunchReceivedDeeplinkHandler != null) {
-          return _shouldLaunchReceivedDeeplinkHandler(uri);
-        }
-        
-        // TODO: what to return in case the client did not implement '_shouldLaunchReceivedDeeplinkHandler'
-        return false;
       case 'receive-deferred-deeplink':
         String uri = call.arguments['uri'];
         print(' >>>>> Received deferred deeplink: $uri');
         if (_receivedDeeplinkHandler != null) {
-          print(' >>>>> calling recevied deeplink hanlder');
           _receivedDeeplinkHandler(uri);
-        } else {
-          print(' >>>>> recevied deeplink hanlder is NULL');
         }
         break;
       default:
@@ -137,12 +125,6 @@ class AdjustSdkPlugin {
   static void setAttributionChangedHandler(AttributionChangedHandler handler) {
     _initCallbackHandlers();
     _attributionChangedHandler = handler;
-  }
-
-  static void setShouldLaunchReceivedDeeplinkHandler(
-      ShouldLaunchReceivedDeeplinkHandler handler) {
-    _initCallbackHandlers();
-    _shouldLaunchReceivedDeeplinkHandler = handler;
   }
 
   static void setReceivedDeeplinkHandler(ReceivedDeeplinkHandler handler) {

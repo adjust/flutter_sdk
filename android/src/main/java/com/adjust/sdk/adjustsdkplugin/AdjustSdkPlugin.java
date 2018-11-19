@@ -221,42 +221,11 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
     config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
       @Override
-      // maybe also implement a `launchReceivedDeeplink` method which returns void, but provides a callback
-      // in that case, this could work like a charm
       public boolean launchReceivedDeeplink(Uri uri) {
         HashMap uriParamsMap = new HashMap();
         uriParamsMap.put("uri", uri.toString());
 
         deeplinkChannel.invokeMethod("receive-deferred-deeplink", uriParamsMap);
-
-        // TODO: left out as a reminder for discussion with Ugljesa and Pedro
-//        final boolean[] shouldLaunchUri = new boolean[1];
-//        deeplinkChannel.invokeMethod("should-launch-uri", uriParamsMap, new Result() {
-//          @Override
-//          public void success(Object o) {
-//            if(o instanceof Boolean) {
-//              shouldLaunchUri[0] = (Boolean)o;
-//            } else {
-//              shouldLaunchUri[0] = false;
-//            }
-//          }
-//
-//          @Override
-//          public void error(String s, String s1, Object o) {
-//            shouldLaunchUri[0] = false;
-//          }
-//
-//          @Override
-//          public void notImplemented() {
-//            shouldLaunchUri[0] = false;
-//          }
-//        });
-
-        // TODO: this won't work. it's even stupid :)
-        // probalby requires changes in the native part, where launchReceivedDeeplink(uri) can be
-        // extended to provide a callback launchReceivedDeeplink(uri, callback) which can be called
-        // after the non-native flutter part `should-launch-uri` is called
-        // return shouldLaunchUri[0];
 
         return launchDeferredDeeplink;
       }

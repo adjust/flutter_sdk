@@ -19,7 +19,7 @@ class AdjustExampleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: "Adjust Example App",
+      title: "Adjust Flutter Example App",
       home: new MainScreen(),
     );
   }
@@ -305,13 +305,6 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         (AdjustAttribution attributionChangedData) {
       print(' >>>> Reeceived attributionChangedData: ' +
           attributionChangedData.toString());
-    });
-
-    AdjustSdkPlugin.setShouldLaunchReceivedDeeplinkHandler((String uri) {
-      if (uri.startsWith('adjust.')) {
-        return true;
-      }
-      return false;
     });
 
     AdjustSdkPlugin.setReceivedDeeplinkHandler((String uri) {
