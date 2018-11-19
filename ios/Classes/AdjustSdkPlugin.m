@@ -3,13 +3,13 @@
 static NSString *const CHANNEL_API_NAME = @"com.adjust/api";
 static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
 
-@interface AdjustSdkPlugin ()
+@interface ADJAdjustSdkPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @property(nonatomic, retain) FlutterMethodChannel *deeplinkChannel;
 @property(nonatomic) BOOL launchDeferredDeeplink;
 @end
 
-@implementation AdjustSdkPlugin
+@implementation ADJAdjustSdkPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:CHANNEL_API_NAME
@@ -17,7 +17,7 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
     FlutterMethodChannel* deeplinkChannel = [FlutterMethodChannel
                                              methodChannelWithName:CHANNEL_DEEPLINK_NAME
                                              binaryMessenger:[registrar messenger]];
-    AdjustSdkPlugin* instance = [[AdjustSdkPlugin alloc] init];
+    ADJAdjustSdkPlugin* instance = [[ADJAdjustSdkPlugin alloc] init];
     instance.channel = channel;
     instance.deeplinkChannel = deeplinkChannel;
     [registrar addMethodCallDelegate:instance channel:channel];

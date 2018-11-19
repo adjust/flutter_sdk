@@ -1,5 +1,5 @@
 #import <Flutter/Flutter.h>
 #import <Adjust/Adjust.h>
 
-@interface AdjustSdkPlugin : NSObject<FlutterPlugin, AdjustDelegate>
+@interface ADJAdjustSdkPlugin : NSObject<FlutterPlugin, AdjustDelegate>
 @end
