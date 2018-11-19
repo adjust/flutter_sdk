@@ -15,7 +15,7 @@ Adjust Flutter iOS SDK.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'Adjust', '~> 4.15.0'
+  s.dependency 'Adjust', '~> 4.16.0'
   
   s.ios.deployment_target = '8.0'
 end
