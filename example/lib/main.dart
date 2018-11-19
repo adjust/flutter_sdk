@@ -32,7 +32,6 @@ class MainScreen extends StatefulWidget {
 
 class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   String _platformVersion = 'Unknown';
-  AppLifecycleState _lastLifecycleState;
   bool _isSdkEnabled = true;
 
   @override
@@ -53,7 +52,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     setState(() {
       switch (state) {
         case AppLifecycleState.inactive:
-          //TODO: not needed actually ??
+          // not needed
           break;
         case AppLifecycleState.resumed:
           AdjustSdkPlugin.onResume();
@@ -62,11 +61,9 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           AdjustSdkPlugin.onPause();
           break;
         case AppLifecycleState.suspending:
-          //TODO: not needed actually ??
+          // not needed
           break;
       }
-
-      _lastLifecycleState = state;
     });
   }
 
@@ -74,7 +71,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   initPlatformState() async {
     AdjustConfig config = new AdjustConfig("2fm9gkqubvpc", AdjustEnvironment.sandbox);
     config.logLevel = AdjustLogLevel.VERBOSE;
-    config.isDeviceKnown = new Nullable<bool>(false);
+    config.isDeviceKnown = false;
 
     // Set default tracker
     // config.defaultTracker = "def_tracker";
@@ -83,13 +80,16 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     // config.processName = "com.adjust.examples";
 
     // Allow to send in the background.
-    config.sendInBackground = new Nullable<bool>(true);
+    config.sendInBackground = true;
 
     // Enable event buffering.
     // config.eventBufferingEnabled = true;
 
     // Delay first session.
     // config.delayStart = 7.0;
+
+    // Set app secret.
+    // config.setAppSecret(1000, 1, 2, 3, 4);
 
     // Add session callback parameters.
     AdjustSdkPlugin.addSessionCallbackParameter("scp_foo_1", "scp_bar");
@@ -162,11 +162,6 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 //start
 
                 new Text('Running on: $_platformVersion\n'),
-                _lastLifecycleState == null
-                    ? const Text(
-                        'This widget has not observed any lifecycle changes.')
-                    : new Text(
-                        'The most recent lifecycle state this widget observed was: $_lastLifecycleState.'),
 
                 const Padding(padding: const EdgeInsets.all(7.0)),
 

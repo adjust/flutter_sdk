@@ -5,33 +5,33 @@ enum AdjustLogLevel { VERBOSE, DEBUG, INFO, WARN, ERROR, ASSERT, SUPRESS }
 enum AdjustEnvironment { production, sandbox }
 
 class AdjustConfig {
-  String _sdkPrefix = "flutter4.15.0";
+  String _sdkPrefix = "flutter4.16.0";
   String appToken;
   String userAgent;
   String defaultTracker;
 
-  Nullable<bool> isDeviceKnown;
-  Nullable<bool> sendInBackground;
-  Nullable<bool> eventBufferingEnabled;
-  Nullable<bool> allowSuppressLogLevel;
-  Nullable<bool> launchDeferredDeeplink;
+  Nullable<bool> _isDeviceKnown;
+  Nullable<bool> _sendInBackground;
+  Nullable<bool> _eventBufferingEnabled;
+  Nullable<bool> _allowSuppressLogLevel;
+  Nullable<bool> _launchDeferredDeeplink;
 
   AdjustLogLevel logLevel;
   AdjustEnvironment environment;
 
-  Nullable<num> info1;
-  Nullable<num> info2;
-  Nullable<num> info3;
-  Nullable<num> info4;
-  Nullable<num> secretId;
+  Nullable<num> _info1;
+  Nullable<num> _info2;
+  Nullable<num> _info3;
+  Nullable<num> _info4;
+  Nullable<num> _secretId;
 
-  Nullable<double> delayStart;
+  Nullable<double> _delayStart;
 
   // Android specific members
   String processName;
   
   AdjustConfig(this.appToken, this.environment);
-  
+
   String get environmentString {
     return environment
         .toString()
@@ -43,11 +43,37 @@ class AdjustConfig {
   }
 
   void setAppSecret(num secretId, num info1, num info2, num info3, num info4) {
-    this.secretId = new Nullable<num>(secretId);
-    this.info1 = new Nullable<num>(info1);
-    this.info2 = new Nullable<num>(info2);
-    this.info3 = new Nullable<num>(info3);
-    this.info4 = new Nullable<num>(info4);
+    _secretId = new Nullable<num>(secretId);
+    _info1 = new Nullable<num>(info1);
+    _info2 = new Nullable<num>(info2);
+    _info3 = new Nullable<num>(info3);
+    _info4 = new Nullable<num>(info4);
+  }
+
+  get isDeviceKnown => _isDeviceKnown != null ? _isDeviceKnown.value : null;
+  set isDeviceKnown(bool isDeviceKnown) {
+    _isDeviceKnown = new Nullable<bool>(isDeviceKnown);
+  }
+
+  set sendInBackground(bool sendInBackground) {
+    _sendInBackground = new Nullable<bool>(sendInBackground);
+  }
+
+  set eventBufferingEnabled(bool eventBufferingEnabled) {
+    _eventBufferingEnabled = new Nullable<bool>(eventBufferingEnabled);
+  }
+
+  set allowSuppressLogLevel(bool allowSuppressLogLevel) {
+    _allowSuppressLogLevel = new Nullable<bool>(allowSuppressLogLevel);
+  }
+
+  get launchDeferredDeeplink => _launchDeferredDeeplink.value;
+  set launchDeferredDeeplink(bool launchDeferredDeeplink) {
+    _launchDeferredDeeplink = new Nullable<bool>(launchDeferredDeeplink);
+  }
+
+  set delayStart(double delayStart) {
+    _delayStart = new Nullable<double>(delayStart);
   }
 
   Map<String, String> get configParamsMap {
@@ -66,38 +92,38 @@ class AdjustConfig {
     if (defaultTracker != null) {
       configParamsMap['defaultTracker'] = defaultTracker;
     }
-    if (isDeviceKnown != null) {
-      configParamsMap['isDeviceKnown'] = isDeviceKnown.strValue;
+    if (_isDeviceKnown != null) {
+      configParamsMap['isDeviceKnown'] = _isDeviceKnown.strValue;
     }
-    if (sendInBackground != null) {
-      configParamsMap['sendInBackground'] = sendInBackground.strValue;
+    if (_sendInBackground != null) {
+      configParamsMap['sendInBackground'] = _sendInBackground.strValue;
     }
-    if (eventBufferingEnabled != null) {
-      configParamsMap['eventBufferingEnabled'] = eventBufferingEnabled.strValue;
+    if (_eventBufferingEnabled != null) {
+      configParamsMap['eventBufferingEnabled'] = _eventBufferingEnabled.strValue;
     }
-    if (allowSuppressLogLevel != null) {
-      configParamsMap['allowSuppressLogLevel'] = allowSuppressLogLevel.strValue;
+    if (_allowSuppressLogLevel != null) {
+      configParamsMap['allowSuppressLogLevel'] = _allowSuppressLogLevel.strValue;
     }
-    if (launchDeferredDeeplink != null) {
-      configParamsMap['launchDeferredDeeplink'] = launchDeferredDeeplink.strValue;
+    if (_launchDeferredDeeplink != null) {
+      configParamsMap['launchDeferredDeeplink'] = _launchDeferredDeeplink.strValue;
     }
-    if (info1 != null) {
-      configParamsMap['info1'] = info1.strValue;
+    if (_info1 != null) {
+      configParamsMap['info1'] = _info1.strValue;
     }
-    if (info2 != null) {
-      configParamsMap['info2'] = info2.strValue;
+    if (_info2 != null) {
+      configParamsMap['info2'] = _info2.strValue;
     }
-    if (info3 != null) {
-      configParamsMap['info3'] = info3.strValue;
+    if (_info3 != null) {
+      configParamsMap['info3'] = _info3.strValue;
     }
-    if (info4 != null) {
-      configParamsMap['info4'] = info4.strValue;
+    if (_info4 != null) {
+      configParamsMap['info4'] = _info4.strValue;
     }
-    if (secretId != null) {
-      configParamsMap['secretId'] = secretId.strValue;
+    if (_secretId != null) {
+      configParamsMap['secretId'] = _secretId.strValue;
     }
-    if (delayStart != null) {
-      configParamsMap['delayStart'] = delayStart.strValue;
+    if (_delayStart != null) {
+      configParamsMap['delayStart'] = _delayStart.strValue;
     }
     
     return configParamsMap;

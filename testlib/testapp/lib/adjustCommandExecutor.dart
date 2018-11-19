@@ -194,22 +194,22 @@ class AdjustCommandExecutor {
 
     if (_command.containsParameter("delayStart")) {
       double delayStart = double.parse(_command.getFirstParameterValue("delayStart"));
-      adjustConfig.delayStart = new Nullable<double>(delayStart);
+      adjustConfig.delayStart = delayStart;
     }
 
     if (_command.containsParameter("deviceKnown")) {
       bool isDeviceKnown = _command.getFirstParameterValue("deviceKnown") == 'true';
-      adjustConfig.isDeviceKnown = new Nullable<bool>(isDeviceKnown);
+      adjustConfig.isDeviceKnown = isDeviceKnown;
     }
 
     if (_command.containsParameter("eventBufferingEnabled")) {
       bool eventBufferingEnabled = _command.getFirstParameterValue("eventBufferingEnabled") == 'true';
-      adjustConfig.eventBufferingEnabled = new Nullable<bool>(eventBufferingEnabled);
+      adjustConfig.eventBufferingEnabled = eventBufferingEnabled;
     }
 
     if (_command.containsParameter("sendInBackground")) {
       bool sendInBackground = _command.getFirstParameterValue("sendInBackground") == 'true';
-      adjustConfig.sendInBackground = new Nullable<bool>(sendInBackground);
+      adjustConfig.sendInBackground = sendInBackground;
     }
 
     if (_command.containsParameter("userAgent")) {
@@ -223,15 +223,14 @@ class AdjustCommandExecutor {
     AdjustSdkPlugin.setSessionFailureHandler(null);
     AdjustSdkPlugin.setEventSuccessHandler(null);
     AdjustSdkPlugin.setEventFailureHandler(null);
-    AdjustSdkPlugin.setShouldLaunchReceivedDeeplinkHandler(null);
 
     // TODO: deeplinking in flutter example
     // https://github.com/flutter/flutter/issues/8711#issuecomment-304681212
     if(_command.containsParameter("deferredDeeplinkCallback")) {
       String localBasePath = _basePath;
       bool launchDeferredDeeplink = _command.getFirstParameterValue("deferredDeeplinkCallback") == "true";
-      adjustConfig.launchDeferredDeeplink = new Nullable<bool>(launchDeferredDeeplink);
-      print('-----> Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink.strValue}');
+      adjustConfig.launchDeferredDeeplink = launchDeferredDeeplink;
+      print('-----> Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink}');
       AdjustSdkPlugin.setReceivedDeeplinkHandler((String uri) {
         print('-----> Sending deeplink info to server: $uri');
         Testlib.addInfoToSend("deeplink", uri);
@@ -350,7 +349,7 @@ class AdjustCommandExecutor {
     if (_command.containsParameter("revenue")) {
       List<dynamic> revenueParams = _command.getParamteters("revenue");
       adjustEvent.currency = revenueParams[0];
-      adjustEvent.revenue = new Nullable<num>(num.parse(revenueParams[1]));
+      adjustEvent.revenue = num.parse(revenueParams[1]);
     }
     if (_command.containsParameter("callbackParams")) {
       List<dynamic> callbackParams = _command.getParamteters("callbackParams");

@@ -4,7 +4,7 @@ import 'package:adjust_sdk_plugin/nullable.dart';
 
 class AdjustEvent {
   String eventToken;
-  Nullable<num> revenue;
+  Nullable<num> _revenue;
   String currency;
   String orderId;
   String callbackId;
@@ -12,8 +12,11 @@ class AdjustEvent {
   Map<String, String> callbackParameters;
   Map<String, String> partnerParameters;
 
-  AdjustEvent(this.eventToken, [this.revenue, this.currency='',
+  AdjustEvent(this.eventToken, [num revenue=-1, this.currency='',
       this.orderId = '']) {
+    if (revenue >= 0) {
+      _revenue = new Nullable<num>(revenue);
+    }
     callbackParameters = new Map<String, String>();
     partnerParameters = new Map<String, String>();
   }
@@ -26,13 +29,17 @@ class AdjustEvent {
     partnerParameters[key] = value;
   }
 
+  set revenue(num revenue) {
+    _revenue = new Nullable<num>(revenue);
+  }
+
   Map<String, String> get adjustEventParamsMap {
     Map<String, String> adjustEventParamsMap = {
       'eventToken': eventToken
     };
 
-    if (revenue != null) {
-      adjustEventParamsMap['revenue'] = revenue.strValue;
+    if (_revenue != null) {
+      adjustEventParamsMap['revenue'] = _revenue.strValue;
     }
     if (currency != null) {
       adjustEventParamsMap['currency'] = currency;

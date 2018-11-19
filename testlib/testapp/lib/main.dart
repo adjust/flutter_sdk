@@ -30,20 +30,19 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     initPlatformState();
 
+    String _address = '192.168.8.23';
     if (Platform.isAndroid) {
-      _clientSdkPlatform = 'android4.15.1';
+      _clientSdkPlatform = 'android4.16.0';
       String _protocol = 'https';
       String _port = '8443';
       // String _address = '10.0.2.2';
-      String _address = '192.168.8.170';
       _baseUrl = _protocol + '://' + _address + ':' + _port;
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
     } else {
-      _clientSdkPlatform = 'ios4.15.0';
+      _clientSdkPlatform = 'ios4.16.0';
       String _protocol = 'http';
       String _port = '8080';
       // String _address = '127.0.0.1';
-      String _address = '192.168.8.170';
       _baseUrl = _protocol + '://' + _address + ':' + _port;
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
     }
@@ -52,13 +51,13 @@ class _MyAppState extends State<MyApp> {
     Testlib.init(_baseUrl);
 
     _adjustCommandExecutor = new AdjustCommandExecutor(_baseUrl, _gdprUrl);
-    _clientSdk = 'flutter4.15.0@$_clientSdkPlatform';
+    _clientSdk = 'flutter4.16.0@$_clientSdkPlatform';
 
     Testlib.doNotExitAfterEnd();
     
     Testlib.addTest('current/app-secret/Test_AppSecret_with_secret');
-    Testlib.addTestDirectory('current/init-malformed');
-    // Testlib.addTestDirectory('current/event-callbacks');
+    // Testlib.addTestDirectory('current/init-malformed');
+    Testlib.addTestDirectory('current/event-callbacks');
     // Testlib.addTestDirectory('current/deeplink-deferred');
     // Testlib.addTest('current/init-malformed/Test_Init_Malformed_wrong_environment');
     // Testlib.addTestDirectory('current/session-parameters');
