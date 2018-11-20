@@ -1,10 +1,10 @@
-package com.adjust.sdk.adjustsdkplugin;
+package com.adjust.sdk.flutter;
 
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 
 /**
- * com.adjust.sdk.adjustsdkplugin
+ * com.adjust.sdk.flutter
  * Created by 2beens on 05.05.18.
  */
 public class AdjustPluginUtils {

@@ -1,4 +1,4 @@
-group 'com.adjust.sdk.adjustsdkplugin'
+group 'com.adjust.sdk.flutter'
 version '1.0-SNAPSHOT'
 buildscript {
     repositories {

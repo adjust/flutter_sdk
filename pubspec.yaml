@@ -23,7 +23,7 @@ dependencies:
 # The following section is specific to Flutter.
 flutter:
   plugin:
-    androidPackage: com.adjust.sdk.adjustsdkplugin
+    androidPackage: com.adjust.sdk.flutter
     iosPrefix: ADJ
     pluginClass: AdjustSdkPlugin
 

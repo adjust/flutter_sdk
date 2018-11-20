@@ -54,10 +54,10 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           // not needed
           break;
         case AppLifecycleState.resumed:
-          AdjustSdkPlugin.onResume();
+          Adjust.onResume();
           break;
         case AppLifecycleState.paused:
-          AdjustSdkPlugin.onPause();
+          Adjust.onPause();
           break;
         case AppLifecycleState.suspending:
           // not needed
@@ -91,34 +91,34 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     // config.setAppSecret(1000, 1, 2, 3, 4);
 
     // Add session callback parameters.
-    AdjustSdkPlugin.addSessionCallbackParameter("scp_foo_1", "scp_bar");
-    AdjustSdkPlugin.addSessionCallbackParameter("scp_foo_2", "scp_value");
+    Adjust.addSessionCallbackParameter("scp_foo_1", "scp_bar");
+    Adjust.addSessionCallbackParameter("scp_foo_2", "scp_value");
 
     // Add session Partner parameters.
-    AdjustSdkPlugin.addSessionPartnerParameter("scp_foo_1", "scp_bar");
-    AdjustSdkPlugin.addSessionPartnerParameter("scp_foo_2", "scp_value");
+    Adjust.addSessionPartnerParameter("scp_foo_1", "scp_bar");
+    Adjust.addSessionPartnerParameter("scp_foo_2", "scp_value");
 
     // Remove session callback parameters.
-    AdjustSdkPlugin.removeSessionCallbackParameter("scp_foo_1");
-    AdjustSdkPlugin.removeSessionPartnerParameter("scp_foo_1");
+    Adjust.removeSessionCallbackParameter("scp_foo_1");
+    Adjust.removeSessionPartnerParameter("scp_foo_1");
 
     // Clear all session callback parameters.
-    AdjustSdkPlugin.resetSessionCallbackParameters();
+    Adjust.resetSessionCallbackParameters();
 
     // Clear all session partner parameters.
-    AdjustSdkPlugin.resetSessionPartnerParameters();
+    Adjust.resetSessionPartnerParameters();
 
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      platformVersion = await AdjustSdkPlugin.platformVersion;
+      platformVersion = await Adjust.platformVersion;
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
 
     // initialize the Adjust SDK
     print('Calling Adjust onCreate...');
-    AdjustSdkPlugin.onCreate(config);
+    Adjust.onCreate(config);
 
     // set callbacks for session, event, attribution and deeplink
     _setCallbacks();
@@ -132,10 +132,10 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       _platformVersion = platformVersion;
 
       // start the Adjust SDK
-      AdjustSdkPlugin.onResume();
+      Adjust.onResume();
 
       // ask if enabled
-      AdjustSdkPlugin.isEnabled().then((isEnabled) {
+      Adjust.isEnabled().then((isEnabled) {
         _isSdkEnabled = isEnabled;
       });
     });
@@ -170,30 +170,30 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
                 // track simple event button
                 Util.buildCupertinoButton('Track Sample Event',
-                    () => AdjustSdkPlugin.trackEvent(Util.buildSimpleEvent())),
+                    () => Adjust.trackEvent(Util.buildSimpleEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // track revenue event button
                 Util.buildCupertinoButton('Track Revenue Event',
-                    () => AdjustSdkPlugin.trackEvent(Util.buildRevenueEvent())),
+                    () => Adjust.trackEvent(Util.buildRevenueEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // track callback event button
                 Util.buildCupertinoButton(
                     'Track Callback Event',
                     () =>
-                        AdjustSdkPlugin.trackEvent(Util.buildCallbackEvent())),
+                        Adjust.trackEvent(Util.buildCallbackEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // track partner event button
                 Util.buildCupertinoButton('Track Partner Event',
-                    () => AdjustSdkPlugin.trackEvent(Util.buildPartnerEvent())),
+                    () => Adjust.trackEvent(Util.buildPartnerEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // get google AdId
                 Util.buildCupertinoButton(
                     'Get Google AdId',
-                    () => AdjustSdkPlugin.getGoogleAdId().then((googleAdid) {
+                    () => Adjust.getGoogleAdId().then((googleAdid) {
                           _showDialogMessage('Google AdId',
                               'Received google AdId: $googleAdid');
                         })),
@@ -202,7 +202,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 // get ADID (Android)
                 Util.buildCupertinoButton(
                     'Get ADID (Android)',
-                    () => AdjustSdkPlugin.getAdid().then((adid) {
+                    () => Adjust.getAdid().then((adid) {
                           _showDialogMessage('ADID', 'Received ADID: $adid');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
@@ -210,7 +210,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 // get IDFA (iOS)
                 Util.buildCupertinoButton(
                     'Get IDFA (iOS)',
-                    () => AdjustSdkPlugin.getIdfa().then((idfa) {
+                    () => Adjust.getIdfa().then((idfa) {
                           _showDialogMessage('IDFA', 'Received IDFA: $idfa');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
@@ -218,7 +218,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 // get attribution
                 Util.buildCupertinoButton(
                     'Get Attribution',
-                    () => AdjustSdkPlugin.getAttribution().then((attribution) {
+                    () => Adjust.getAttribution().then((attribution) {
                           _showDialogMessage('Attribution',
                               'Received attribution: ${attribution.toString()}');
                         })),
@@ -241,7 +241,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                       value: _isSdkEnabled,
                       onChanged: (bool value) {
                         setState(() {
-                          AdjustSdkPlugin.setIsEnabled(value);
+                          Adjust.setIsEnabled(value);
                           _isSdkEnabled = value;
                           print('switch state = $_isSdkEnabled');
                         });
@@ -262,7 +262,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   _showIsSdkEnabled() {
     try {
-      AdjustSdkPlugin.isEnabled().then((isEnabled) {
+      Adjust.isEnabled().then((isEnabled) {
         _isSdkEnabled = isEnabled;
         _showDialogMessage('SDK Enabled?', 'Adjust is enabled = $isEnabled');
       });
@@ -273,35 +273,35 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   }
 
   _setCallbacks() {
-    AdjustSdkPlugin
+    Adjust
         .setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessData) {
       print(' >>>> Reeceived sessionSuccessData: ' +
           sessionSuccessData.toString());
     });
 
-    AdjustSdkPlugin
+    Adjust
         .setSessionFailureHandler((AdjustSessionFailure sessionFailureData) {
       print(' >>>> Reeceived sessionFailureData: ' +
           sessionFailureData.toString());
     });
 
-    AdjustSdkPlugin
+    Adjust
         .setEventSuccessHandler((AdjustEventSuccess eventSuccessData) {
       print(' >>>> Reeceived eventFailureData: ' + eventSuccessData.toString());
     });
 
-    AdjustSdkPlugin
+    Adjust
         .setEventFailureHandler((AdjustEventFailure eventFailureData) {
       print(' >>>> Reeceived eventFailureData: ' + eventFailureData.toString());
     });
 
-    AdjustSdkPlugin.setAttributionChangedHandler(
+    Adjust.setAttributionChangedHandler(
         (AdjustAttribution attributionChangedData) {
       print(' >>>> Reeceived attributionChangedData: ' +
           attributionChangedData.toString());
     });
 
-    AdjustSdkPlugin.setReceivedDeeplinkHandler((String uri) {
+    Adjust.setReceivedDeeplinkHandler((String uri) {
       print(' >>>> Reeceived deferred deeplink: ' + uri);
     });
   }

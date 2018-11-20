@@ -17,7 +17,7 @@ typedef void AttributionChangedHandler(AdjustAttribution attributionData);
 typedef bool ShouldLaunchReceivedDeeplinkHandler(String uri);
 typedef void ReceivedDeeplinkHandler(String uri);
 
-class AdjustSdkPlugin {
+class Adjust {
   static const MethodChannel _channel = const MethodChannel('com.adjust/api');
   static const MethodChannel _deeplinkChannel = const MethodChannel('com.adjust/deeplink');
 

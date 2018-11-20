@@ -1,4 +1,4 @@
-package com.adjust.sdk.adjustsdkplugin;
+package com.adjust.sdk.flutter;
 
 import android.content.Context;
 import android.net.Uri;
@@ -34,10 +34,10 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-import static com.adjust.sdk.adjustsdkplugin.AdjustPluginUtils.*;
+import static com.adjust.sdk.flutter.AdjustPluginUtils.*;
 
 /**
- * com.adjust.sdk.adjustsdkplugin
+ * com.adjust.sdk.flutter
  * Created by 2beens on 25.04.18.
  */
 public class AdjustSdkPlugin implements MethodCallHandler {

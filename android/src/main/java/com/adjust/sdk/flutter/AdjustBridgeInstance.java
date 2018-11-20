@@ -1,4 +1,4 @@
-package com.adjust.sdk.adjustsdkplugin;
+package com.adjust.sdk.flutter;
 
 import android.content.Context;
 import android.net.Uri;
@@ -13,7 +13,7 @@ import com.adjust.sdk.OnDeviceIdsRead;
 import java.util.HashMap;
 
 /**
- * com.adjust.sdk.adjustsdkplugin
+ * com.adjust.sdk.flutter
  * Created by 2beens on 25.04.18.
  */
 public class AdjustBridgeInstance {

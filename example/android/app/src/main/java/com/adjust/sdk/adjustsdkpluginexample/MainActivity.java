@@ -1,4 +1,4 @@
-package com.adjust.sdk.adjustsdkpluginexample;
+package com.adjust.sdk.flutterexample;
 
 import android.os.Bundle;
 
