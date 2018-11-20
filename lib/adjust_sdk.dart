@@ -19,7 +19,6 @@ typedef void ReceivedDeeplinkHandler(String uri);
 
 class Adjust {
   static const MethodChannel _channel = const MethodChannel('com.adjust/api');
-  static const MethodChannel _deeplinkChannel = const MethodChannel('com.adjust/deeplink');
 
   static bool _callbackHandlersInitialized = false;
 
@@ -36,14 +35,18 @@ class Adjust {
     }
     _callbackHandlersInitialized = true;
 
-    // set deeplink channel handler
-    _deeplinkChannel.setMethodCallHandler(_deeplinkChannelHandler);
-
     _channel.setMethodCallHandler((MethodCall call) {
       print(" >>>>> INCOMING METHOD CALL FROM NATIVE: ${call.method}");
 
       try {
         switch (call.method) {
+          case 'receive-deferred-deeplink':
+            String uri = call.arguments['uri'];
+            print(' >>>>> Received deferred deeplink: $uri');
+            if (_receivedDeeplinkHandler != null) {
+              _receivedDeeplinkHandler(uri);
+            }
+            break;
           case 'session-success':
             if (_sessionSuccessHandler != null) {
               AdjustSessionSuccess sessionSuccess =
@@ -79,27 +82,13 @@ class Adjust {
               _attributionChangedHandler(attribution);
             }
             break;
+          default:
+            throw new UnsupportedError('Unknown method: ${call.method}');
         }
       } catch (e) {
         print(e.toString());
       }
     });
-  }
-
-  static Future<dynamic> _deeplinkChannelHandler(MethodCall call) async {
-    print(' >>>>> INCOMING DEEPLINK METHOD CALL FROM NATIVE: ' + call.method);
-
-    switch (call.method) {
-      case 'receive-deferred-deeplink':
-        String uri = call.arguments['uri'];
-        print(' >>>>> Received deferred deeplink: $uri');
-        if (_receivedDeeplinkHandler != null) {
-          _receivedDeeplinkHandler(uri);
-        }
-        break;
-      default:
-        throw new UnsupportedError('Unknown method: ${call.method}');
-    }
   }
 
   static void setSessionSuccessHandler(SessionSuccessHandler handler) {

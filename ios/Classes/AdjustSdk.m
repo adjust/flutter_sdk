@@ -5,7 +5,6 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
 
 @interface ADJAdjustSdk ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
-@property(nonatomic, retain) FlutterMethodChannel *deeplinkChannel;
 @property(nonatomic) BOOL launchDeferredDeeplink;
 @end
 
@@ -14,22 +13,15 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:CHANNEL_API_NAME
                                      binaryMessenger:[registrar messenger]];
-    FlutterMethodChannel* deeplinkChannel = [FlutterMethodChannel
-                                             methodChannelWithName:CHANNEL_DEEPLINK_NAME
-                                             binaryMessenger:[registrar messenger]];
     ADJAdjustSdk* instance = [[ADJAdjustSdk alloc] init];
     instance.channel = channel;
-    instance.deeplinkChannel = deeplinkChannel;
     [registrar addMethodCallDelegate:instance channel:channel];
-    [registrar addMethodCallDelegate:instance channel:deeplinkChannel];
 }
 
 // TODO: check if needed
 - (void)dealloc {
     [self.channel setMethodCallHandler:nil];
-    [self.deeplinkChannel setMethodCallHandler:nil];
     self.channel = nil;
-    self.deeplinkChannel = nil;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -471,7 +463,7 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
                                                                         forKeys:keys
                                                                           count:count];
     
-    [self.deeplinkChannel invokeMethod:@"receive-deferred-deeplink" arguments:deeplinkUriParamsMap];
+    [self.channel invokeMethod:@"receive-deferred-deeplink" arguments:deeplinkUriParamsMap];
     
     return self.launchDeferredDeeplink;
 }

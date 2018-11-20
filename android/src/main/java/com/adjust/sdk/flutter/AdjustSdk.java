@@ -42,7 +42,6 @@ import static com.adjust.sdk.flutter.AdjustUtils.*;
  */
 public class AdjustSdk implements MethodCallHandler {
   private static MethodChannel channel;
-  private static MethodChannel deeplinkChannel;
   private static Context applicationContext;
   private boolean launchDeferredDeeplink = true;
 
@@ -58,9 +57,6 @@ public class AdjustSdk implements MethodCallHandler {
     applicationContext = registrar.context();
     channel = new MethodChannel(registrar.messenger(), "com.adjust/api");
     channel.setMethodCallHandler(adjustSdk);
-
-    deeplinkChannel = new MethodChannel(registrar.messenger(), "com.adjust/deeplink");
-    deeplinkChannel.setMethodCallHandler(adjustSdk);
   }
 
   @Override
@@ -225,7 +221,7 @@ public class AdjustSdk implements MethodCallHandler {
         HashMap uriParamsMap = new HashMap();
         uriParamsMap.put("uri", uri.toString());
 
-        deeplinkChannel.invokeMethod("receive-deferred-deeplink", uriParamsMap);
+        channel.invokeMethod("receive-deferred-deeplink", uriParamsMap);
 
         return launchDeferredDeeplink;
       }
