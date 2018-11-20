@@ -106,7 +106,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
   }
 
   public static void appWillOpenUrl(String url) {
-    AdjustBridge.appWillOpenUrl(url, applicationContext);
+    Adjust.appWillOpenUrl(Uri.parse(url), applicationContext);
   }
 
   private void onCreate(final MethodCall call, final Result result) {
@@ -310,19 +310,19 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       }
     });
 
-    AdjustBridge.onCreate(config);
-    AdjustBridge.onResume();
+    Adjust.onCreate(config);
+    Adjust.onResume();
 
     result.success(null);
   }
 
   private void onResume(final Result result) {
-    AdjustBridge.onResume();
+    Adjust.onResume();
     result.success(null);
   }
 
   private void onPause(final Result result) {
-    AdjustBridge.onPause();
+    Adjust.onPause();
     result.success(null);
   }
 
@@ -386,18 +386,18 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       }
     }
 
-    AdjustBridge.trackEvent(event);
+    Adjust.trackEvent(event);
     result.success(null);
   }
 
   private void isEnabled(final Result result) {
-    result.success(AdjustBridge.isEnabled());
+    result.success(Adjust.isEnabled());
   }
 
   private void setOfflineMode(final MethodCall call, final Result result) {
     Map isOfflineParamsMap = (Map)call.arguments;
     boolean isOffline = (boolean) isOfflineParamsMap.get("isOffline");
-    AdjustBridge.setOfflineMode(isOffline);
+    Adjust.setOfflineMode(isOffline);
     result.success(null);
   }
 
@@ -409,7 +409,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     }
 
     String pushToken = tokenParamsMap.get("token").toString();
-    AdjustBridge.setPushToken(pushToken, applicationContext);
+    Adjust.setPushToken(pushToken, applicationContext);
     result.success(null);
   }
 
@@ -421,7 +421,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     }
 
     boolean isEnabled = (boolean) isEnabledParamsMap.get("isEnabled");
-    AdjustBridge.setIsEnabled(isEnabled);
+    Adjust.setEnabled(isEnabled);
     result.success(null);
   }
 
@@ -433,17 +433,17 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     }
 
     String url = urlParamsMap.get("url").toString();
-    AdjustBridge.appWillOpenUrl(url, applicationContext);
+    Adjust.appWillOpenUrl(Uri.parse(url), applicationContext);
     result.success(null);
   }
 
   private void sendFirstPackages(final Result result) {
-    AdjustBridge.sendFirstPackages();
+    Adjust.sendFirstPackages();
     result.success(null);
   }
 
   private void getAdid(final Result result) {
-    result.success(AdjustBridge.getAdid());
+    result.success(Adjust.getAdid());
   }
 
   private void getIdfa(final Result result) {
@@ -451,7 +451,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
   }
 
   private void getGoogleAdId(final Result result) {
-    AdjustBridge.getGoogleAdId(applicationContext, new OnDeviceIdsRead() {
+    Adjust.getGoogleAdId(applicationContext, new OnDeviceIdsRead() {
       @Override
       public void onGoogleAdIdRead(String googleAdId) {
         result.success(googleAdId);
@@ -460,16 +460,31 @@ public class AdjustSdkPlugin implements MethodCallHandler {
   }
 
   private void getAmazonAdId(final Result result) {
-    result.success(AdjustBridge.getAmazonAdId(applicationContext));
+    result.success(Adjust.getAmazonAdId(applicationContext));
   }
 
   private void gdprForgetMe(final Result result) {
-    AdjustBridge.gdprForgetMe(applicationContext);
+    Adjust.gdprForgetMe(applicationContext);
     result.success(null);
   }
 
   private void getAttribution(final Result result) {
-    result.success(AdjustBridge.getAttribution());
+    AdjustAttribution adjustAttribution = Adjust.getAttribution();
+    if(adjustAttribution == null) {
+      adjustAttribution = new AdjustAttribution();
+    }
+
+    HashMap<String, String> adjustAttributionMap = new HashMap();
+    adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
+    adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
+    adjustAttributionMap.put("network", adjustAttribution.network);
+    adjustAttributionMap.put("campaign", adjustAttribution.campaign);
+    adjustAttributionMap.put("adgroup", adjustAttribution.adgroup);
+    adjustAttributionMap.put("creative", adjustAttribution.creative);
+    adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
+    adjustAttributionMap.put("adid", adjustAttribution.adid);
+
+    result.success(adjustAttributionMap);
   }
 
   private void setReferrer(final MethodCall call, final Result result) {
@@ -479,7 +494,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     }
 
     String referrer = (String) call.argument("referrer");
-    AdjustBridge.setReferrer(applicationContext, referrer);
+    Adjust.setReferrer(referrer, applicationContext);
     result.success(null);
   }
 
@@ -491,7 +506,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
     String key = (String) call.argument("key");
     String value = (String) call.argument("value");
-    AdjustBridge.addSessionCallbackParameter(key, value);
+    Adjust.addSessionCallbackParameter(key, value);
 
     result.success(null);
   }
@@ -504,7 +519,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
     String key = (String) call.argument("key");
     String value = (String) call.argument("value");
-    AdjustBridge.addSessionPartnerParameter(key, value);
+    Adjust.addSessionPartnerParameter(key, value);
 
     result.success(null);
   }
@@ -516,7 +531,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     }
 
     String key = (String) call.argument("key");
-    AdjustBridge.removeSessionCallbackParameter(key);
+    Adjust.removeSessionCallbackParameter(key);
 
     result.success(null);
   }
@@ -528,18 +543,18 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     }
 
     String key = (String) call.argument("key");
-    AdjustBridge.removeSessionPartnerParameter(key);
+    Adjust.removeSessionPartnerParameter(key);
 
     result.success(null);
   }
 
   private void resetSessionCallbackParameters(final Result result) {
-    AdjustBridge.resetSessionCallbackParameters();
+    Adjust.resetSessionCallbackParameters();
     result.success(null);
   }
 
   private void resetSessionPartnerParameters(final Result result) {
-    AdjustBridge.resetSessionPartnerParameters();
+    Adjust.resetSessionPartnerParameters();
     result.success(null);
   }
 
