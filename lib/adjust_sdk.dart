@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:adjust_sdk_plugin/adjust_config.dart';
-import 'package:adjust_sdk_plugin/adjust_event.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjust_attribution.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjust_event_failure.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjust_event_success.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjust_session_failure.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjust_session_success.dart';
+import 'package:adjust_sdk/adjust_config.dart';
+import 'package:adjust_sdk/adjust_event.dart';
+import 'package:adjust_sdk/callbacksData/adjust_attribution.dart';
+import 'package:adjust_sdk/callbacksData/adjust_event_failure.dart';
+import 'package:adjust_sdk/callbacksData/adjust_event_success.dart';
+import 'package:adjust_sdk/callbacksData/adjust_session_failure.dart';
+import 'package:adjust_sdk/callbacksData/adjust_session_success.dart';
 import 'package:flutter/services.dart';
 
 typedef void SessionSuccessHandler(AdjustSessionSuccess successData);

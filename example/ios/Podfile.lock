@@ -2,13 +2,13 @@ PODS:
   - Adjust (4.16.0):
     - Adjust/Core (= 4.16.0)
   - Adjust/Core (4.16.0)
-  - adjust_sdk_plugin (4.16.0):
+  - adjust_sdk (4.16.0):
     - Adjust (~> 4.16.0)
     - Flutter
   - Flutter (1.0.0)
 
 DEPENDENCIES:
-  - adjust_sdk_plugin (from `Pods/.symlinks/plugins/adjust_sdk_plugin/ios`)
+  - adjust_sdk (from `Pods/.symlinks/plugins/adjust_sdk/ios`)
   - Flutter (from `Pods/.symlinks/flutter/ios`)
 
 SPEC REPOS:
@@ -16,14 +16,14 @@ SPEC REPOS:
     - Adjust
 
 EXTERNAL SOURCES:
-  adjust_sdk_plugin:
-    :path: Pods/.symlinks/plugins/adjust_sdk_plugin/ios
+  adjust_sdk:
+    :path: Pods/.symlinks/plugins/adjust_sdk/ios
   Flutter:
     :path: Pods/.symlinks/flutter/ios
 
 SPEC CHECKSUMS:
   Adjust: 5a7fe307b33d4280f601ffc79ee220255af4fe4c
-  adjust_sdk_plugin: ad520e4e96d823f76e5784cb3859b36631b8782d
+  adjust_sdk: e50a3338c3811f447b78df206bd0bfa69cdbb6ca
   Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
 
 PODFILE CHECKSUM: 13dcf421f4da2e937a57e8ba760ed880beae536f

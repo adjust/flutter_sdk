@@ -1,4 +1,4 @@
-import 'package:adjust_sdk_plugin/adjust_event.dart';
+import 'package:adjust_sdk/adjust_event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

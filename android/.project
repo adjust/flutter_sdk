@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>adjust_sdk_plugin</name>
-	<comment>Project adjust_sdk_plugin created by Buildship.</comment>
+	<name>adjust_sdk</name>
+	<comment>Project adjust_sdk created by Buildship.</comment>
 	<projects>
 	</projects>
 	<buildSpec>

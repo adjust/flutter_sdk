@@ -1,4 +1,4 @@
-# adjust_sdk_plugin_example
+# adjust_sdk_example
 
 Demonstrates how to use the Adjust Flutter SDK plugin.
 
