@@ -1,7 +1,7 @@
 name: testlib
 description: Flutter plugin for Adjust Testing Library. Intended exclusively for internal use.
 version: 1.0.0
-author: Serj
+author: Serj (srdjan@adjust.com)
 homepage:
 
 environment:

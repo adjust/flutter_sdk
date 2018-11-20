@@ -1,11 +1,11 @@
-import 'package:adjust_sdk_plugin/adjust_config.dart';
-import 'package:adjust_sdk_plugin/adjust_event.dart';
-import 'package:adjust_sdk_plugin/adjust_sdk_plugin.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjust_attribution.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjust_session_failure.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjust_session_success.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjust_event_failure.dart';
-import 'package:adjust_sdk_plugin/callbacksData/adjust_event_success.dart';
+import 'package:adjust_sdk/adjust_config.dart';
+import 'package:adjust_sdk/adjust_event.dart';
+import 'package:adjust_sdk/adjust_sdk.dart';
+import 'package:adjust_sdk/callbacksData/adjust_attribution.dart';
+import 'package:adjust_sdk/callbacksData/adjust_session_failure.dart';
+import 'package:adjust_sdk/callbacksData/adjust_session_success.dart';
+import 'package:adjust_sdk/callbacksData/adjust_event_failure.dart';
+import 'package:adjust_sdk/callbacksData/adjust_event_success.dart';
 import 'package:testlib/testlib.dart';
 import 'package:testapp/command.dart';
 
@@ -118,7 +118,7 @@ class AdjustCommandExecutor {
         }
       }
     }
-    AdjustSdkPlugin.setTestOptions(testOptions);
+    Adjust.setTestOptions(testOptions);
   }
 
   void _config() {
@@ -216,12 +216,12 @@ class AdjustCommandExecutor {
     }
 
     // first clear all previous callback handlers
-    AdjustSdkPlugin.setReceivedDeeplinkHandler(null);
-    AdjustSdkPlugin.setAttributionChangedHandler(null);
-    AdjustSdkPlugin.setSessionSuccessHandler(null);
-    AdjustSdkPlugin.setSessionFailureHandler(null);
-    AdjustSdkPlugin.setEventSuccessHandler(null);
-    AdjustSdkPlugin.setEventFailureHandler(null);
+    Adjust.setReceivedDeeplinkHandler(null);
+    Adjust.setAttributionChangedHandler(null);
+    Adjust.setSessionSuccessHandler(null);
+    Adjust.setSessionFailureHandler(null);
+    Adjust.setEventSuccessHandler(null);
+    Adjust.setEventFailureHandler(null);
 
     // TODO: deeplinking in flutter example
     // https://github.com/flutter/flutter/issues/8711#issuecomment-304681212
@@ -230,7 +230,7 @@ class AdjustCommandExecutor {
       bool launchDeferredDeeplink = _command.getFirstParameterValue("deferredDeeplinkCallback") == "true";
       adjustConfig.launchDeferredDeeplink = launchDeferredDeeplink;
       print('-----> Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink}');
-      AdjustSdkPlugin.setReceivedDeeplinkHandler((String uri) {
+      Adjust.setReceivedDeeplinkHandler((String uri) {
         print('-----> Sending deeplink info to server: $uri');
         Testlib.addInfoToSend("deeplink", uri);
         Testlib.sendInfoToServer(localBasePath);
@@ -239,7 +239,7 @@ class AdjustCommandExecutor {
 
     if(_command.containsParameter("attributionCallbackSendAll")) {
       String localBasePath = _basePath;
-      AdjustSdkPlugin.setAttributionChangedHandler((AdjustAttribution attribution) {
+      Adjust.setAttributionChangedHandler((AdjustAttribution attribution) {
         print('-----> Attribution Callback: $attribution');
         Testlib.addInfoToSend("trackerToken", attribution.trackerToken);
         Testlib.addInfoToSend("trackerName", attribution.trackerName);
@@ -255,7 +255,7 @@ class AdjustCommandExecutor {
 
     if(_command.containsParameter("sessionCallbackSendSuccess")) {
       String localBasePath = _basePath;
-      AdjustSdkPlugin.setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessResponseData) {
+      Adjust.setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessResponseData) {
         print('-----> Session Callback Success: $sessionSuccessResponseData');
         Testlib.addInfoToSend("message", sessionSuccessResponseData.message);
         Testlib.addInfoToSend("timestamp", sessionSuccessResponseData.timestamp);
@@ -269,7 +269,7 @@ class AdjustCommandExecutor {
 
     if(_command.containsParameter("sessionCallbackSendFailure")) {
       String localBasePath = _basePath;
-      AdjustSdkPlugin.setSessionFailureHandler((AdjustSessionFailure sessionFailureResponseData) {
+      Adjust.setSessionFailureHandler((AdjustSessionFailure sessionFailureResponseData) {
         print('-----> Session Callback Failure: $sessionFailureResponseData');
         Testlib.addInfoToSend("message", sessionFailureResponseData.message);
         Testlib.addInfoToSend("timestamp", sessionFailureResponseData.timestamp);
@@ -284,7 +284,7 @@ class AdjustCommandExecutor {
 
     if(_command.containsParameter("eventCallbackSendSuccess")) {
       String localBasePath = _basePath;
-      AdjustSdkPlugin.setEventSuccessHandler((AdjustEventSuccess eventSuccessResponseData) {
+      Adjust.setEventSuccessHandler((AdjustEventSuccess eventSuccessResponseData) {
         print('-----> Event Callback Success: $eventSuccessResponseData');
         Testlib.addInfoToSend("message", eventSuccessResponseData.message);
         Testlib.addInfoToSend("timestamp", eventSuccessResponseData.timestamp);
@@ -300,7 +300,7 @@ class AdjustCommandExecutor {
 
     if(_command.containsParameter("eventCallbackSendFailure")) {
       String localBasePath = _basePath;
-      AdjustSdkPlugin.setEventFailureHandler((AdjustEventFailure eventFailureResponseData) {
+      Adjust.setEventFailureHandler((AdjustEventFailure eventFailureResponseData) {
         print('-----> Event Callback Failure: $eventFailureResponseData');
         Testlib.addInfoToSend("message", eventFailureResponseData.message);
         Testlib.addInfoToSend("timestamp", eventFailureResponseData.timestamp);
@@ -325,7 +325,7 @@ class AdjustCommandExecutor {
     }
 
     AdjustConfig adjustConfig = _savedConfigs[configNumber];
-    AdjustSdkPlugin.onCreate(adjustConfig);
+    Adjust.onCreate(adjustConfig);
     _savedConfigs.remove(configNumber);
   }
 
@@ -383,50 +383,50 @@ class AdjustCommandExecutor {
     }
 
     AdjustEvent adjustEvent = _savedEvents[eventNumber];
-    AdjustSdkPlugin.trackEvent(adjustEvent);
+    Adjust.trackEvent(adjustEvent);
 
     _savedEvents.remove(eventNumber);
   }
 
   void _resume() {
-    AdjustSdkPlugin.onResume();
+    Adjust.onResume();
   }
 
   void _pause() {
-    AdjustSdkPlugin.onPause();
+    Adjust.onPause();
   }
 
   void _setEnabled() {
     bool isEnabled = _command.getFirstParameterValue("enabled") == 'true';
-    AdjustSdkPlugin.setIsEnabled(isEnabled);
+    Adjust.setIsEnabled(isEnabled);
   }
 
   void _setReferrer() {
     String referrer = _command.getFirstParameterValue("referrer");
-    AdjustSdkPlugin.setReferrer(referrer);
+    Adjust.setReferrer(referrer);
   }
 
   void _setOfflineMode() {
     bool isEnabled = _command.getFirstParameterValue("enabled") == 'true';
-    AdjustSdkPlugin.setOfflineMode(isEnabled);
+    Adjust.setOfflineMode(isEnabled);
   }
 
   void _sendFirstPackages() {
-    AdjustSdkPlugin.sendFirstPackages();
+    Adjust.sendFirstPackages();
   }
 
   void _setPushToken() {
     String token = _command.getFirstParameterValue("pushToken");
-    AdjustSdkPlugin.setPushToken(token);
+    Adjust.setPushToken(token);
   }
 
   void _openDeeplink() {
     String deeplink = _command.getFirstParameterValue("deeplink");
-    AdjustSdkPlugin.appWillOpenUrl(deeplink);
+    Adjust.appWillOpenUrl(deeplink);
   }
 
   void _gdprForgetMe() {
-    AdjustSdkPlugin.gdprForgetMe();
+    Adjust.gdprForgetMe();
   }
 
   void _addSessionCallbackParameter() {
@@ -438,7 +438,7 @@ class AdjustCommandExecutor {
     for (int i = 0; i<keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
-      AdjustSdkPlugin.addSessionCallbackParameter(key, value);
+      Adjust.addSessionCallbackParameter(key, value);
     }
   }
 
@@ -451,7 +451,7 @@ class AdjustCommandExecutor {
     for (int i = 0; i<keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
-      AdjustSdkPlugin.addSessionPartnerParameter(key, value);
+      Adjust.addSessionPartnerParameter(key, value);
     }
   }
 
@@ -463,7 +463,7 @@ class AdjustCommandExecutor {
     List<dynamic> keys = _command.getParamteters("key");
     for (int i = 0; i<keys.length; i = i + 1) {
       String key = keys[i];
-      AdjustSdkPlugin.removeSessionCallbackParameter(key);
+      Adjust.removeSessionCallbackParameter(key);
     }
   }
 
@@ -475,15 +475,15 @@ class AdjustCommandExecutor {
     List<dynamic> keys = _command.getParamteters("key");
     for (int i = 0; i<keys.length; i = i + 1) {
       String key = keys[i];
-      AdjustSdkPlugin.removeSessionPartnerParameter(key);
+      Adjust.removeSessionPartnerParameter(key);
     }
   }
 
   void _resetSessionCallbackParameters() {
-    AdjustSdkPlugin.resetSessionCallbackParameters();
+    Adjust.resetSessionCallbackParameters();
   }
 
   void _resetSessionPartnerParameters() {
-    AdjustSdkPlugin.resetSessionPartnerParameters();
+    Adjust.resetSessionPartnerParameters();
   }
 }

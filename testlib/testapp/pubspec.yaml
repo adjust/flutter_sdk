@@ -27,7 +27,7 @@ dev_dependencies:
   testlib:
     path: ../
   
-  adjust_sdk_plugin:
+  adjust_sdk:
     path: ../../
 
 # For information on the generic Dart part of this file, see the

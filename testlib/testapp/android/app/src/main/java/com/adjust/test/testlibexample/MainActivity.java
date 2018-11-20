@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.adjust.sdk.adjustsdkplugin.AdjustSdkPlugin;
+import com.adjust.sdk.flutter.AdjustSdk;
 
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.GeneratedPluginRegistrant;
@@ -21,7 +21,7 @@ public class MainActivity extends FlutterActivity {
     if (/*intent.getAction() == Intent.ACTION_VIEW &&*/ intent.getData() != null) {
       Uri data = intent.getData();
       System.out.println(" ====>> ADJUST-PLUGIN-BRIDGE-APP: deeplink URI = " + data.toString());
-      AdjustSdkPlugin.appWillOpenUrl(data.toString());
+      AdjustSdk.appWillOpenUrl(data.toString());
     } else {
       System.out.println(" ====>> ADJUST-PLUGIN-BRIDGE-APP: deeplink URI is null ...");
     }
@@ -36,7 +36,7 @@ public class MainActivity extends FlutterActivity {
     Uri data = intent.getData();
     if (data != null) {
       System.out.println(" ====>> ADJUST-PLUGIN-BRIDGE-APP: deeplink URI = " + data.toString());
-      AdjustSdkPlugin.appWillOpenUrl(data.toString());
+      AdjustSdk.appWillOpenUrl(data.toString());
     } else {
       System.out.println(" ====>> ADJUST-PLUGIN-BRIDGE-APP: deeplink URI is null ...");
     }
