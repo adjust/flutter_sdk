@@ -34,13 +34,13 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-import static com.adjust.sdk.flutter.AdjustPluginUtils.*;
+import static com.adjust.sdk.flutter.AdjustUtils.*;
 
 /**
  * com.adjust.sdk.flutter
  * Created by 2beens on 25.04.18.
  */
-public class AdjustSdkPlugin implements MethodCallHandler {
+public class AdjustSdk implements MethodCallHandler {
   private static MethodChannel channel;
   private static MethodChannel deeplinkChannel;
   private static Context applicationContext;
@@ -54,13 +54,13 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       throw new IllegalStateException("You should not call registerWith more than once.");
     }
 
-    AdjustSdkPlugin adjustSdkPlugin = new AdjustSdkPlugin();
+    AdjustSdk adjustSdk = new AdjustSdk();
     applicationContext = registrar.context();
     channel = new MethodChannel(registrar.messenger(), "com.adjust/api");
-    channel.setMethodCallHandler(adjustSdkPlugin);
+    channel.setMethodCallHandler(adjustSdk);
 
     deeplinkChannel = new MethodChannel(registrar.messenger(), "com.adjust/deeplink");
-    deeplinkChannel.setMethodCallHandler(adjustSdkPlugin);
+    deeplinkChannel.setMethodCallHandler(adjustSdk);
   }
 
   @Override
@@ -130,7 +130,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
     if(adjustConfigMap.containsKey("launchDeferredDeeplink")) {
       String launchDeferredDeeplinkString = (String) adjustConfigMap.get("launchDeferredDeeplink");
       this.launchDeferredDeeplink = launchDeferredDeeplinkString.equals("true");
-      AdjustSdkPlugin.log("\tlaunchDeferredDeeplink: " + launchDeferredDeeplink);
+      AdjustSdk.log("\tlaunchDeferredDeeplink: " + launchDeferredDeeplink);
     }
 
     String secretIdString = (String) adjustConfigMap.get("secretId");
@@ -141,59 +141,59 @@ public class AdjustSdkPlugin implements MethodCallHandler {
 
     AdjustConfig config = new AdjustConfig(applicationContext, appToken, environment);
 
-    AdjustSdkPlugin.log("Calling onCreate with values:");
-    AdjustSdkPlugin.log("\tappToken: " + appToken);
-    AdjustSdkPlugin.log("\tenvironment: " + environment);
+    AdjustSdk.log("Calling onCreate with values:");
+    AdjustSdk.log("\tappToken: " + appToken);
+    AdjustSdk.log("\tenvironment: " + environment);
 
     if(adjustConfigMap.containsKey("processName")) {
       String processName = (String) adjustConfigMap.get("processName");
       config.setProcessName(processName);
-      AdjustSdkPlugin.log("\tprocessName: " + processName);
+      AdjustSdk.log("\tprocessName: " + processName);
     }
 
     if(adjustConfigMap.containsKey("defaultTracker")) {
       String defaultTracker = (String) adjustConfigMap.get("defaultTracker");
       config.setDefaultTracker(defaultTracker);
-      AdjustSdkPlugin.log("\tdefaultTracker: " + defaultTracker);
+      AdjustSdk.log("\tdefaultTracker: " + defaultTracker);
     }
 
     if(adjustConfigMap.containsKey("userAgent")) {
       String userAgent = (String) adjustConfigMap.get("userAgent");
       config.setUserAgent(userAgent);
-      AdjustSdkPlugin.log("\tuserAgent: " + userAgent);
+      AdjustSdk.log("\tuserAgent: " + userAgent);
     }
 
     if(adjustConfigMap.containsKey("sdkPrefix")) {
       String sdkPrefix = (String) adjustConfigMap.get("sdkPrefix");
       config.setSdkPrefix(sdkPrefix);
-      AdjustSdkPlugin.log("\tsdkPrefix: " + sdkPrefix);
+      AdjustSdk.log("\tsdkPrefix: " + sdkPrefix);
     }
 
     if(adjustConfigMap.containsKey("logLevel")) {
       String logLevel = (String) adjustConfigMap.get("logLevel");
       config.setLogLevel(LogLevel.valueOf(logLevel));
-      AdjustSdkPlugin.log("\tlogLevel: " + logLevel);
+      AdjustSdk.log("\tlogLevel: " + logLevel);
     }
 
     if(adjustConfigMap.containsKey("eventBufferingEnabled")) {
       String eventBufferingEnabledString = (String) adjustConfigMap.get("eventBufferingEnabled");
       boolean eventBufferingEnabled = Boolean.valueOf(eventBufferingEnabledString);
       config.setEventBufferingEnabled(eventBufferingEnabled);
-      AdjustSdkPlugin.log("\teventBufferingEnabled: " + eventBufferingEnabled);
+      AdjustSdk.log("\teventBufferingEnabled: " + eventBufferingEnabled);
     }
 
     if(adjustConfigMap.containsKey("sendInBackground")) {
       String sendInBackgroundString = (String) adjustConfigMap.get("sendInBackground");
       boolean sendInBackground = Boolean.valueOf(sendInBackgroundString);
       config.setSendInBackground(sendInBackground);
-      AdjustSdkPlugin.log("\tsendInBackground: " + sendInBackground);
+      AdjustSdk.log("\tsendInBackground: " + sendInBackground);
     }
 
     if(adjustConfigMap.containsKey("isDeviceKnown")) {
       String isDeviceKnownString = (String) adjustConfigMap.get("isDeviceKnown");
       boolean isDeviceKnown = Boolean.valueOf(isDeviceKnownString);
       config.setDeviceKnown(isDeviceKnown);
-      AdjustSdkPlugin.log("\tisDeviceKnown: " + isDeviceKnown);
+      AdjustSdk.log("\tisDeviceKnown: " + isDeviceKnown);
     }
 
     if(adjustConfigMap.containsKey("delayStart")) {
@@ -201,9 +201,9 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       if(stringIsNumber(delayStartString)) {
         double delayStart = Double.valueOf(delayStartString);
         config.setDelayStart(delayStart);
-        AdjustSdkPlugin.log("\tdelayStart: " + delayStart);
+        AdjustSdk.log("\tdelayStart: " + delayStart);
       } else {
-        AdjustSdkPlugin.error("DelayStart parameter provided, but not a number! DelatStartString = " + delayStartString);
+        AdjustSdk.error("DelayStart parameter provided, but not a number! DelatStartString = " + delayStartString);
       }
     }
 
@@ -216,7 +216,7 @@ public class AdjustSdkPlugin implements MethodCallHandler {
       long info4 = Long.valueOf(info4String);
 
       config.setAppSecret(secretId, info1, info2, info3, info4);
-      AdjustSdkPlugin.log(String.format("\tappSecret: %d, %d, %d, %d, %d", secretId, info1, info2, info3, info4));
+      AdjustSdk.log(String.format("\tappSecret: %d, %d, %d, %d, %d", secretId, info1, info2, info3, info4));
     }
 
     config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {

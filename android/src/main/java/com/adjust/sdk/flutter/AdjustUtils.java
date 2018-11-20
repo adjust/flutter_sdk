@@ -7,7 +7,7 @@ import java.text.ParsePosition;
  * com.adjust.sdk.flutter
  * Created by 2beens on 05.05.18.
  */
-public class AdjustPluginUtils {
+public class AdjustUtils {
     private static NumberFormat numberFormat = NumberFormat.getInstance();
 
     public static boolean stringIsNumber(String numberString) {

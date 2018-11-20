@@ -25,7 +25,7 @@ flutter:
   plugin:
     androidPackage: com.adjust.sdk.flutter
     iosPrefix: ADJ
-    pluginClass: AdjustSdkPlugin
+    pluginClass: AdjustSdk
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
