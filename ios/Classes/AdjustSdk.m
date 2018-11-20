@@ -292,13 +292,11 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
 
 - (void)appWillOpenUrl:(FlutterMethodCall*)call withResult:(FlutterResult)result {
     NSString *urlString = call.arguments[@"url"];
-    
     if (urlString == nil) {
-        return;
+        urlString = @"";
     }
     
     NSURL *url;
-    
     if ([NSString instancesRespondToSelector:@selector(stringByAddingPercentEncodingWithAllowedCharacters:)]) {
         url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
     } else {
@@ -313,12 +311,11 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
 
 - (void)getAttribution:(FlutterMethodCall*)call withResult:(FlutterResult)result {
     ADJAttribution *attribution = [Adjust attribution];
-    
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     if (attribution == nil) {
-        return;
+        result(dictionary);
     }
     
-    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     [self addValueOrEmpty:attribution.trackerToken withKey:@"trackerToken" toDictionary:dictionary];
     [self addValueOrEmpty:attribution.trackerName withKey:@"trackerName" toDictionary:dictionary];
     [self addValueOrEmpty:attribution.network withKey:@"network" toDictionary:dictionary];

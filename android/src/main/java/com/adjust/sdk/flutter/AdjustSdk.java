@@ -107,22 +107,15 @@ public class AdjustSdk implements MethodCallHandler {
 
   private void onCreate(final MethodCall call, final Result result) {
     Map adjustConfigMap = (Map)call.arguments;
-    if(!adjustConfigMap.containsKey("appToken")) {
-      result.error("0", "Arguments null or wrong (missing argument >appToken<", null);
-      return;
+    String appToken = null;
+    String environment = null;
+    if(adjustConfigMap.containsKey("appToken")) {
+      appToken = (String) adjustConfigMap.get("appToken");  
     }
-    if(!adjustConfigMap.containsKey("environment")) {
-      result.error("0", "Arguments null or wrong (missing argument >environment<", null);
-      return;
+    if(adjustConfigMap.containsKey("environment")) {
+      environment = (String) adjustConfigMap.get("environment");
     }
-
-    String appToken = (String) adjustConfigMap.get("appToken");
-    String environment = (String) adjustConfigMap.get("environment");
-    if(!environment.equals("production") && !environment.equals("sandbox")) {
-      result.error("0", "Argument >environment< received with wrong value: [" + environment + "]", null);
-      return;
-    }
-
+    
     if(adjustConfigMap.containsKey("launchDeferredDeeplink")) {
       String launchDeferredDeeplinkString = (String) adjustConfigMap.get("launchDeferredDeeplink");
       this.launchDeferredDeeplink = launchDeferredDeeplinkString.equals("true");
@@ -324,12 +317,12 @@ public class AdjustSdk implements MethodCallHandler {
 
   private void trackEvent(final MethodCall call, final Result result) {
     Map eventParamsMap = (Map)call.arguments;
-    if(!eventParamsMap.containsKey("eventToken")) {
-      result.error("0", "Arguments null or wrong (missing argument >eventToken<", null);
-      return;
+
+    String eventToken = null;
+    if(eventParamsMap.containsKey("eventToken")) {
+      eventToken = (String) eventParamsMap.get("eventToken");
     }
 
-    String eventToken = (String) eventParamsMap.get("eventToken");
     AdjustEvent event = new AdjustEvent(eventToken);
 
     if(eventParamsMap.containsKey("revenue") && eventParamsMap.containsKey("currency")) {
@@ -399,12 +392,10 @@ public class AdjustSdk implements MethodCallHandler {
 
   private void setPushToken(final MethodCall call, final Result result) {
     Map tokenParamsMap = (Map)call.arguments;
-    if(!tokenParamsMap.containsKey("token")) {
-      result.error("0", "Arguments null or wrong (missing argument >token<", null);
-      return;
+    String pushToken = null;
+    if(tokenParamsMap.containsKey("token")) {
+      pushToken = tokenParamsMap.get("token").toString();
     }
-
-    String pushToken = tokenParamsMap.get("token").toString();
     Adjust.setPushToken(pushToken, applicationContext);
     result.success(null);
   }
@@ -423,12 +414,10 @@ public class AdjustSdk implements MethodCallHandler {
 
   private void appWillOpenUrl(final MethodCall call, final Result result) {
     Map urlParamsMap = (Map)call.arguments;
-    if(!urlParamsMap.containsKey("url")) {
-      result.error("0", "Arguments null or wrong (missing argument >url<", null);
-      return;
+    String url = null;
+    if(urlParamsMap.containsKey("url")) {
+      url = urlParamsMap.get("url").toString();
     }
-
-    String url = urlParamsMap.get("url").toString();
     Adjust.appWillOpenUrl(Uri.parse(url), applicationContext);
     result.success(null);
   }
@@ -484,63 +473,52 @@ public class AdjustSdk implements MethodCallHandler {
   }
 
   private void setReferrer(final MethodCall call, final Result result) {
-    if(!call.hasArgument("referrer")) {
-      result.error("0", "Argument [referrer] null or wrong", null);
-      return;
+    String referrer = null;
+    if(call.hasArgument("referrer")) {
+      referrer = (String) call.argument("referrer");
     }
-
-    String referrer = (String) call.argument("referrer");
     Adjust.setReferrer(referrer, applicationContext);
     result.success(null);
   }
 
   private void addSessionCallbackParameter(final MethodCall call, final Result result) {
-    if(!call.hasArgument("key") || !call.hasArgument("value")) {
-      result.error("0", "Arguments null or wrong", null);
-      return;
+    String key = null;
+    String value = null;
+    if(call.hasArgument("key") && call.hasArgument("value")) {
+      key = (String) call.argument("key");
+      value = (String) call.argument("value");      
     }
 
-    String key = (String) call.argument("key");
-    String value = (String) call.argument("value");
     Adjust.addSessionCallbackParameter(key, value);
-
     result.success(null);
   }
 
   private void addSessionPartnerParameter(final MethodCall call, final Result result) {
-    if(!call.hasArgument("key") || !call.hasArgument("value")) {
-      result.error("0", "Arguments null or wrong", null);
-      return;
+    String key = null;
+    String value = null;
+    if(call.hasArgument("key") && call.hasArgument("value")) {
+      key = (String) call.argument("key");
+      value = (String) call.argument("value");      
     }
-
-    String key = (String) call.argument("key");
-    String value = (String) call.argument("value");
     Adjust.addSessionPartnerParameter(key, value);
-
     result.success(null);
   }
 
   private void removeSessionCallbackParameter(final MethodCall call, final Result result) {
-    if(!call.hasArgument("key")) {
-      result.error("0", "Argument [key] null or wrong", null);
-      return;
+    String key = null;
+    if(call.hasArgument("key")) {
+      key = (String) call.argument("key");
     }
-
-    String key = (String) call.argument("key");
     Adjust.removeSessionCallbackParameter(key);
-
     result.success(null);
   }
 
   private void removeSessionPartnerParameter(final MethodCall call, final Result result) {
-    if(!call.hasArgument("key")) {
-      result.error("0", "Argument [key] null or wrong", null);
-      return;
+    String key = null;
+    if(call.hasArgument("key")) {
+      key = (String) call.argument("key");
     }
-
-    String key = (String) call.argument("key");
     Adjust.removeSessionPartnerParameter(key);
-
     result.success(null);
   }
 
