@@ -1,12 +1,38 @@
+import 'package:adjust_sdk/callbacksData/adjust_attribution.dart';
+import 'package:adjust_sdk/callbacksData/adjust_event_failure.dart';
+import 'package:adjust_sdk/callbacksData/adjust_event_success.dart';
+import 'package:adjust_sdk/callbacksData/adjust_session_failure.dart';
+import 'package:adjust_sdk/callbacksData/adjust_session_success.dart';
+import 'package:flutter/services.dart';
+
 enum AdjustLogLevel { VERBOSE, DEBUG, INFO, WARN, ERROR, ASSERT, SUPRESS }
 
 enum AdjustEnvironment { production, sandbox }
 
+typedef void SessionSuccessHandler(AdjustSessionSuccess successData);
+typedef void SessionFailureHandler(AdjustSessionFailure failureData);
+typedef void EventSuccessHandler(AdjustEventSuccess successData);
+typedef void EventFailureHandler(AdjustEventFailure failureData);
+typedef void AttributionChangedHandler(AdjustAttribution attributionData);
+typedef bool ShouldLaunchReceivedDeeplinkHandler(String uri);
+typedef void ReceivedDeeplinkHandler(String uri);
+
 class AdjustConfig {
+  static const MethodChannel _channel = const MethodChannel('com.adjust/api');
+
   String _sdkPrefix = "flutter4.16.0";
   String appToken;
   String userAgent;
   String defaultTracker;
+
+  static bool _callbackHandlersInitialized = false;
+
+  static SessionSuccessHandler _sessionSuccessHandler;
+  static SessionFailureHandler _sessionFailureHandler;
+  static EventSuccessHandler _eventSuccessHandler;
+  static EventFailureHandler _eventFailureHandler;
+  static AttributionChangedHandler _attributionChangedHandler;
+  static ReceivedDeeplinkHandler _receivedDeeplinkHandler;
 
   bool isDeviceKnown;
   bool sendInBackground;
@@ -46,6 +72,98 @@ class AdjustConfig {
     _info2 = info2;
     _info3 = info3;
     _info4 = info4;
+  }
+
+  static void setSessionSuccessHandler(SessionSuccessHandler handler) {
+    _initCallbackHandlers();
+    _sessionSuccessHandler = handler;
+  }
+
+  static void setSessionFailureHandler(SessionFailureHandler handler) {
+    _initCallbackHandlers();
+    _sessionFailureHandler = handler;
+  }
+
+  static void setEventSuccessHandler(EventSuccessHandler handler) {
+    _initCallbackHandlers();
+    _eventSuccessHandler = handler;
+  }
+
+  static void setEventFailureHandler(EventFailureHandler handler) {
+    _initCallbackHandlers();
+    _eventFailureHandler = handler;
+  }
+
+  static void setAttributionChangedHandler(AttributionChangedHandler handler) {
+    _initCallbackHandlers();
+    _attributionChangedHandler = handler;
+  }
+
+  static void setReceivedDeeplinkHandler(ReceivedDeeplinkHandler handler) {
+    _initCallbackHandlers();
+    _receivedDeeplinkHandler = handler;
+  }
+
+  static void _initCallbackHandlers() {
+    if (_callbackHandlersInitialized) {
+      return;
+    }
+    _callbackHandlersInitialized = true;
+
+    _channel.setMethodCallHandler((MethodCall call) {
+      print(" >>>>> INCOMING METHOD CALL FROM NATIVE: ${call.method}");
+
+      try {
+        switch (call.method) {
+          case 'receive-deferred-deeplink':
+            String uri = call.arguments['uri'];
+            print(' >>>>> Received deferred deeplink: $uri');
+            if (_receivedDeeplinkHandler != null) {
+              _receivedDeeplinkHandler(uri);
+            }
+            break;
+          case 'session-success':
+            if (_sessionSuccessHandler != null) {
+              AdjustSessionSuccess sessionSuccess =
+                  AdjustSessionSuccess.fromMap(call.arguments);
+              _sessionSuccessHandler(sessionSuccess);
+            }
+            break;
+          case 'session-fail':
+            if (_sessionFailureHandler != null) {
+              AdjustSessionFailure sessionFailure =
+                  AdjustSessionFailure.fromMap(call.arguments);
+              _sessionFailureHandler(sessionFailure);
+            }
+            break;
+          case 'event-success':
+            if (_eventSuccessHandler != null) {
+              AdjustEventSuccess eventSuccess =
+                  AdjustEventSuccess.fromMap(call.arguments);
+              _eventSuccessHandler(eventSuccess);
+            }
+            break;
+          case 'event-fail':
+            if (_eventFailureHandler != null) {
+              AdjustEventFailure eventFailure =
+                  AdjustEventFailure.fromMap(call.arguments);
+              _eventFailureHandler(eventFailure);
+            }
+            break;
+          case 'attribution-change':
+            if (_attributionChangedHandler != null) {
+              AdjustAttribution attribution =
+                  AdjustAttribution.fromMap(call.arguments);
+              _attributionChangedHandler(attribution);
+            }
+            break;
+          default:
+            throw new UnsupportedError('Unknown method: ${call.method}');
+        }
+      } catch (e) {
+        print(e.toString());
+      }
+    });
   }
 
   Map<String, String> get configParamsMap {

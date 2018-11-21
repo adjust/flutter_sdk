@@ -273,35 +273,35 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   }
 
   _setCallbacks() {
-    Adjust
+    AdjustConfig
         .setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessData) {
       print(' >>>> Reeceived sessionSuccessData: ' +
           sessionSuccessData.toString());
     });
 
-    Adjust
+    AdjustConfig
         .setSessionFailureHandler((AdjustSessionFailure sessionFailureData) {
       print(' >>>> Reeceived sessionFailureData: ' +
           sessionFailureData.toString());
     });
 
-    Adjust
+    AdjustConfig
         .setEventSuccessHandler((AdjustEventSuccess eventSuccessData) {
       print(' >>>> Reeceived eventFailureData: ' + eventSuccessData.toString());
     });
 
-    Adjust
+    AdjustConfig
         .setEventFailureHandler((AdjustEventFailure eventFailureData) {
       print(' >>>> Reeceived eventFailureData: ' + eventFailureData.toString());
     });
 
-    Adjust.setAttributionChangedHandler(
+    AdjustConfig.setAttributionChangedHandler(
         (AdjustAttribution attributionChangedData) {
       print(' >>>> Reeceived attributionChangedData: ' +
           attributionChangedData.toString());
     });
 
-    Adjust.setReceivedDeeplinkHandler((String uri) {
+    AdjustConfig.setReceivedDeeplinkHandler((String uri) {
       print(' >>>> Reeceived deferred deeplink: ' + uri);
     });
   }

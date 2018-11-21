@@ -216,12 +216,12 @@ class AdjustCommandExecutor {
     }
 
     // first clear all previous callback handlers
-    Adjust.setReceivedDeeplinkHandler(null);
-    Adjust.setAttributionChangedHandler(null);
-    Adjust.setSessionSuccessHandler(null);
-    Adjust.setSessionFailureHandler(null);
-    Adjust.setEventSuccessHandler(null);
-    Adjust.setEventFailureHandler(null);
+    AdjustConfig.setReceivedDeeplinkHandler(null);
+    AdjustConfig.setAttributionChangedHandler(null);
+    AdjustConfig.setSessionSuccessHandler(null);
+    AdjustConfig.setSessionFailureHandler(null);
+    AdjustConfig.setEventSuccessHandler(null);
+    AdjustConfig.setEventFailureHandler(null);
 
     // TODO: deeplinking in flutter example
     // https://github.com/flutter/flutter/issues/8711#issuecomment-304681212
@@ -230,7 +230,7 @@ class AdjustCommandExecutor {
       bool launchDeferredDeeplink = _command.getFirstParameterValue("deferredDeeplinkCallback") == "true";
       adjustConfig.launchDeferredDeeplink = launchDeferredDeeplink;
       print('-----> Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink}');
-      Adjust.setReceivedDeeplinkHandler((String uri) {
+      AdjustConfig.setReceivedDeeplinkHandler((String uri) {
         print('-----> Sending deeplink info to server: $uri');
         Testlib.addInfoToSend("deeplink", uri);
         Testlib.sendInfoToServer(localBasePath);
@@ -239,7 +239,7 @@ class AdjustCommandExecutor {
 
     if(_command.containsParameter("attributionCallbackSendAll")) {
       String localBasePath = _basePath;
-      Adjust.setAttributionChangedHandler((AdjustAttribution attribution) {
+      AdjustConfig.setAttributionChangedHandler((AdjustAttribution attribution) {
         print('-----> Attribution Callback: $attribution');
         Testlib.addInfoToSend("trackerToken", attribution.trackerToken);
         Testlib.addInfoToSend("trackerName", attribution.trackerName);
@@ -255,7 +255,7 @@ class AdjustCommandExecutor {
 
     if(_command.containsParameter("sessionCallbackSendSuccess")) {
       String localBasePath = _basePath;
-      Adjust.setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessResponseData) {
+      AdjustConfig.setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessResponseData) {
         print('-----> Session Callback Success: $sessionSuccessResponseData');
         Testlib.addInfoToSend("message", sessionSuccessResponseData.message);
         Testlib.addInfoToSend("timestamp", sessionSuccessResponseData.timestamp);
@@ -269,7 +269,7 @@ class AdjustCommandExecutor {
 
     if(_command.containsParameter("sessionCallbackSendFailure")) {
       String localBasePath = _basePath;
-      Adjust.setSessionFailureHandler((AdjustSessionFailure sessionFailureResponseData) {
+      AdjustConfig.setSessionFailureHandler((AdjustSessionFailure sessionFailureResponseData) {
         print('-----> Session Callback Failure: $sessionFailureResponseData');
         Testlib.addInfoToSend("message", sessionFailureResponseData.message);
         Testlib.addInfoToSend("timestamp", sessionFailureResponseData.timestamp);
@@ -284,7 +284,7 @@ class AdjustCommandExecutor {
 
     if(_command.containsParameter("eventCallbackSendSuccess")) {
       String localBasePath = _basePath;
-      Adjust.setEventSuccessHandler((AdjustEventSuccess eventSuccessResponseData) {
+      AdjustConfig.setEventSuccessHandler((AdjustEventSuccess eventSuccessResponseData) {
         print('-----> Event Callback Success: $eventSuccessResponseData');
         Testlib.addInfoToSend("message", eventSuccessResponseData.message);
         Testlib.addInfoToSend("timestamp", eventSuccessResponseData.timestamp);
@@ -300,7 +300,7 @@ class AdjustCommandExecutor {
 
     if(_command.containsParameter("eventCallbackSendFailure")) {
       String localBasePath = _basePath;
-      Adjust.setEventFailureHandler((AdjustEventFailure eventFailureResponseData) {
+      AdjustConfig.setEventFailureHandler((AdjustEventFailure eventFailureResponseData) {
         print('-----> Event Callback Failure: $eventFailureResponseData');
         Testlib.addInfoToSend("message", eventFailureResponseData.message);
         Testlib.addInfoToSend("timestamp", eventFailureResponseData.timestamp);
