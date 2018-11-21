@@ -34,6 +34,13 @@ class AdjustConfig {
   static AttributionChangedHandler _attributionChangedHandler;
   static ReceivedDeeplinkHandler _receivedDeeplinkHandler;
 
+  static bool _sessionSuccessHandlerImplemented = false;
+  static bool _sessionFailureHandlerImplemented = false;
+  static bool _eventSuccessHandlerImplemented = false;
+  static bool _eventFailureHandlerImplemented = false;
+  static bool _attributionChangedHandlerImplemented = false;
+  static bool _receivedDeeplinkHandlerImplemented = false;
+
   bool isDeviceKnown;
   bool sendInBackground;
   bool eventBufferingEnabled;
@@ -77,31 +84,37 @@ class AdjustConfig {
   static void setSessionSuccessHandler(SessionSuccessHandler handler) {
     _initCallbackHandlers();
     _sessionSuccessHandler = handler;
+    _sessionSuccessHandlerImplemented = true;
   }
 
   static void setSessionFailureHandler(SessionFailureHandler handler) {
     _initCallbackHandlers();
     _sessionFailureHandler = handler;
+    _sessionFailureHandlerImplemented = true;
   }
 
   static void setEventSuccessHandler(EventSuccessHandler handler) {
     _initCallbackHandlers();
     _eventSuccessHandler = handler;
+    _eventSuccessHandlerImplemented = true;
   }
 
   static void setEventFailureHandler(EventFailureHandler handler) {
     _initCallbackHandlers();
     _eventFailureHandler = handler;
+    _eventFailureHandlerImplemented = true;
   }
 
   static void setAttributionChangedHandler(AttributionChangedHandler handler) {
     _initCallbackHandlers();
     _attributionChangedHandler = handler;
+    _attributionChangedHandlerImplemented = true;
   }
 
   static void setReceivedDeeplinkHandler(ReceivedDeeplinkHandler handler) {
     _initCallbackHandlers();
     _receivedDeeplinkHandler = handler;
+    _receivedDeeplinkHandlerImplemented = true;
   }
 
   static void _initCallbackHandlers() {
@@ -215,6 +228,13 @@ class AdjustConfig {
     if (delayStart != null) {
       configParamsMap['delayStart'] = delayStart.toString();
     }
+
+    configParamsMap['sessionSuccessHandlerImplemented'] = _sessionSuccessHandlerImplemented.toString();
+    configParamsMap['sessionFailureHandlerImplemented'] = _sessionFailureHandlerImplemented.toString();
+    configParamsMap['eventSuccessHandlerImplemented'] = _eventSuccessHandlerImplemented.toString();
+    configParamsMap['eventFailureHandlerImplemented'] = _eventFailureHandlerImplemented.toString();
+    configParamsMap['attributionChangedHandlerImplemented'] = _attributionChangedHandlerImplemented.toString();
+    configParamsMap['receivedDeeplinkHandlerImplemented'] = _receivedDeeplinkHandlerImplemented.toString();
     
     return configParamsMap;
   }

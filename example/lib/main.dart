@@ -116,12 +116,13 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       platformVersion = 'Failed to get platform version.';
     }
 
+    // set callbacks for session, event, attribution and deeplink
+    // have to be set BEFORE Adjust.onCreate(...) is called
+    _setCallbacks();
+
     // initialize the Adjust SDK
     print('Calling Adjust onCreate...');
     Adjust.onCreate(config);
-
-    // set callbacks for session, event, attribution and deeplink
-    _setCallbacks();
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling

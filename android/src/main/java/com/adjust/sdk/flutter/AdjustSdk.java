@@ -208,96 +208,115 @@ public class AdjustSdk implements MethodCallHandler {
       AdjustSdk.log(String.format("\tappSecret: %d, %d, %d, %d, %d", secretId, info1, info2, info3, info4));
     }
 
-    config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
-      @Override
-      public boolean launchReceivedDeeplink(Uri uri) {
-        HashMap uriParamsMap = new HashMap();
-        uriParamsMap.put("uri", uri.toString());
+    boolean sessionSuccessHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
+    boolean sessionFailureHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
+    boolean eventSuccessHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
+    boolean eventFailureHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
+    boolean attributionChangedHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
+    boolean receivedDeeplinkHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
 
-        channel.invokeMethod("receive-deferred-deeplink", uriParamsMap);
+    if (receivedDeeplinkHandlerImplemented) {
+      config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+        @Override
+        public boolean launchReceivedDeeplink(Uri uri) {
+          HashMap uriParamsMap = new HashMap();
+          uriParamsMap.put("uri", uri.toString());
 
-        return launchDeferredDeeplink;
-      }
-    });
+          channel.invokeMethod("receive-deferred-deeplink", uriParamsMap);
 
-    config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
-      @Override
-      public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess adjustSessionSuccess) {
-        HashMap adjustSessionSuccessMap = new HashMap();
-        adjustSessionSuccessMap.put("message", adjustSessionSuccess.message);
-        adjustSessionSuccessMap.put("timestamp", adjustSessionSuccess.timestamp);
-        adjustSessionSuccessMap.put("adid", adjustSessionSuccess.adid);
-        adjustSessionSuccessMap.put("jsonResponse", adjustSessionSuccess.jsonResponse.toString());
-
-        channel.invokeMethod("session-success", adjustSessionSuccessMap);
-      }
-    });
-
-    config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
-      @Override
-      public void onFinishedSessionTrackingFailed(AdjustSessionFailure adjustSessionFailure) {
-        HashMap adjustSessionFailureMap = new HashMap();
-        adjustSessionFailureMap.put("message", adjustSessionFailure.message);
-        adjustSessionFailureMap.put("timestamp", adjustSessionFailure.timestamp);
-        adjustSessionFailureMap.put("adid", adjustSessionFailure.adid);
-        adjustSessionFailureMap.put("willRetry", adjustSessionFailure.willRetry);
-        adjustSessionFailureMap.put("jsonResponse", adjustSessionFailure.jsonResponse.toString());
-
-        channel.invokeMethod("session-fail", adjustSessionFailureMap);
-      }
-    });
-
-    config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
-      @Override
-      public void onFinishedEventTrackingSucceeded(AdjustEventSuccess adjustEventSuccess) {
-        HashMap adjustEventSuccessMap = new HashMap();
-        adjustEventSuccessMap.put("message", adjustEventSuccess.message);
-        adjustEventSuccessMap.put("timestamp", adjustEventSuccess.timestamp);
-        adjustEventSuccessMap.put("adid", adjustEventSuccess.adid);
-        adjustEventSuccessMap.put("eventToken", adjustEventSuccess.eventToken);
-        adjustEventSuccessMap.put("callbackId", adjustEventSuccess.callbackId);
-        if (adjustEventSuccess.jsonResponse != null) {
-          adjustEventSuccessMap.put("jsonResponse", adjustEventSuccess.jsonResponse.toString());
+          return launchDeferredDeeplink;
         }
+      });
+    }
 
-        channel.invokeMethod("event-success", adjustEventSuccessMap);
-      }
-    });
+    if (sessionSuccessHandlerImplemented) {
+      config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+        @Override
+        public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess adjustSessionSuccess) {
+          HashMap adjustSessionSuccessMap = new HashMap();
+          adjustSessionSuccessMap.put("message", adjustSessionSuccess.message);
+          adjustSessionSuccessMap.put("timestamp", adjustSessionSuccess.timestamp);
+          adjustSessionSuccessMap.put("adid", adjustSessionSuccess.adid);
+          adjustSessionSuccessMap.put("jsonResponse", adjustSessionSuccess.jsonResponse.toString());
 
-    config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
-      @Override
-      public void onFinishedEventTrackingFailed(AdjustEventFailure adjustEventFailure) {
-        HashMap<String, String> adjustEventFailureMap = new HashMap();
-        adjustEventFailureMap.put("message", adjustEventFailure.message);
-        adjustEventFailureMap.put("timestamp", adjustEventFailure.timestamp);
-        adjustEventFailureMap.put("adid", adjustEventFailure.adid);
-        adjustEventFailureMap.put("eventToken", adjustEventFailure.eventToken);
-        adjustEventFailureMap.put("callbackId", adjustEventFailure.callbackId);
-        adjustEventFailureMap.put("willRetry", Boolean.toString(adjustEventFailure.willRetry));
-        if (adjustEventFailure.jsonResponse != null) {
-          adjustEventFailureMap.put("jsonResponse", adjustEventFailure.jsonResponse.toString());
+          channel.invokeMethod("session-success", adjustSessionSuccessMap);
         }
+      });
+    }
 
-        channel.invokeMethod("event-fail", adjustEventFailureMap);
-      }
-    });
+    if (sessionFailureHandlerImplemented) {
+      config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+        @Override
+        public void onFinishedSessionTrackingFailed(AdjustSessionFailure adjustSessionFailure) {
+          HashMap adjustSessionFailureMap = new HashMap();
+          adjustSessionFailureMap.put("message", adjustSessionFailure.message);
+          adjustSessionFailureMap.put("timestamp", adjustSessionFailure.timestamp);
+          adjustSessionFailureMap.put("adid", adjustSessionFailure.adid);
+          adjustSessionFailureMap.put("willRetry", adjustSessionFailure.willRetry);
+          adjustSessionFailureMap.put("jsonResponse", adjustSessionFailure.jsonResponse.toString());
 
-    config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
-      @Override
-      public void onAttributionChanged(AdjustAttribution adjustAttribution) {
-        HashMap<String, String> adjustAttributionMap = new HashMap();
-        adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
-        adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
-        adjustAttributionMap.put("network", adjustAttribution.network);
-        adjustAttributionMap.put("campaign", adjustAttribution.campaign);
-        adjustAttributionMap.put("adgroup", adjustAttribution.adgroup);
-        adjustAttributionMap.put("creative", adjustAttribution.creative);
-        adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
-        adjustAttributionMap.put("adid", adjustAttribution.adid);
+          channel.invokeMethod("session-fail", adjustSessionFailureMap);
+        }
+      });
+    }
 
-        channel.invokeMethod("attribution-change", adjustAttributionMap);
-      }
-    });
+    if (eventSuccessHandlerImplemented) {
+      config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+        @Override
+        public void onFinishedEventTrackingSucceeded(AdjustEventSuccess adjustEventSuccess) {
+          HashMap adjustEventSuccessMap = new HashMap();
+          adjustEventSuccessMap.put("message", adjustEventSuccess.message);
+          adjustEventSuccessMap.put("timestamp", adjustEventSuccess.timestamp);
+          adjustEventSuccessMap.put("adid", adjustEventSuccess.adid);
+          adjustEventSuccessMap.put("eventToken", adjustEventSuccess.eventToken);
+          adjustEventSuccessMap.put("callbackId", adjustEventSuccess.callbackId);
+          if (adjustEventSuccess.jsonResponse != null) {
+            adjustEventSuccessMap.put("jsonResponse", adjustEventSuccess.jsonResponse.toString());
+          }
+
+          channel.invokeMethod("event-success", adjustEventSuccessMap);
+        }
+      });
+    }
+
+    if (eventFailureHandlerImplemented) {
+      config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+        @Override
+        public void onFinishedEventTrackingFailed(AdjustEventFailure adjustEventFailure) {
+          HashMap<String, String> adjustEventFailureMap = new HashMap();
+          adjustEventFailureMap.put("message", adjustEventFailure.message);
+          adjustEventFailureMap.put("timestamp", adjustEventFailure.timestamp);
+          adjustEventFailureMap.put("adid", adjustEventFailure.adid);
+          adjustEventFailureMap.put("eventToken", adjustEventFailure.eventToken);
+          adjustEventFailureMap.put("callbackId", adjustEventFailure.callbackId);
+          adjustEventFailureMap.put("willRetry", Boolean.toString(adjustEventFailure.willRetry));
+          if (adjustEventFailure.jsonResponse != null) {
+            adjustEventFailureMap.put("jsonResponse", adjustEventFailure.jsonResponse.toString());
+          }
+
+          channel.invokeMethod("event-fail", adjustEventFailureMap);
+        }
+      });
+    }
+
+    if (attributionChangedHandlerImplemented) {
+      config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+        @Override
+        public void onAttributionChanged(AdjustAttribution adjustAttribution) {
+          HashMap<String, String> adjustAttributionMap = new HashMap();
+          adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
+          adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
+          adjustAttributionMap.put("network", adjustAttribution.network);
+          adjustAttributionMap.put("campaign", adjustAttribution.campaign);
+          adjustAttributionMap.put("adgroup", adjustAttribution.adgroup);
+          adjustAttributionMap.put("creative", adjustAttribution.creative);
+          adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
+          adjustAttributionMap.put("adid", adjustAttribution.adid);
+
+          channel.invokeMethod("attribution-change", adjustAttributionMap);
+        }
+      });
+    }
 
     Adjust.onCreate(config);
     Adjust.onResume();
