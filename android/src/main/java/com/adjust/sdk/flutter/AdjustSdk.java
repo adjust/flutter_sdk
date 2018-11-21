@@ -2,6 +2,7 @@ package com.adjust.sdk.flutter;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustAttribution;
@@ -41,6 +42,7 @@ import static com.adjust.sdk.flutter.AdjustUtils.*;
  * Created by 2beens on 25.04.18.
  */
 public class AdjustSdk implements MethodCallHandler {
+  private static boolean loggingEnabled = true;
   private static MethodChannel channel;
   private static Context applicationContext;
   private boolean launchDeferredDeeplink = true;
@@ -119,7 +121,7 @@ public class AdjustSdk implements MethodCallHandler {
     if(adjustConfigMap.containsKey("launchDeferredDeeplink")) {
       String launchDeferredDeeplinkString = (String) adjustConfigMap.get("launchDeferredDeeplink");
       this.launchDeferredDeeplink = launchDeferredDeeplinkString.equals("true");
-      AdjustSdk.log("\tlaunchDeferredDeeplink: " + launchDeferredDeeplink);
+      log("\tlaunchDeferredDeeplink: " + launchDeferredDeeplink);
     }
 
     String secretIdString = (String) adjustConfigMap.get("secretId");
@@ -130,59 +132,59 @@ public class AdjustSdk implements MethodCallHandler {
 
     AdjustConfig config = new AdjustConfig(applicationContext, appToken, environment);
 
-    AdjustSdk.log("Calling onCreate with values:");
-    AdjustSdk.log("\tappToken: " + appToken);
-    AdjustSdk.log("\tenvironment: " + environment);
+    log("Calling onCreate with values:");
+    log("\tappToken: " + appToken);
+    log("\tenvironment: " + environment);
 
     if(adjustConfigMap.containsKey("processName")) {
       String processName = (String) adjustConfigMap.get("processName");
       config.setProcessName(processName);
-      AdjustSdk.log("\tprocessName: " + processName);
+      log("\tprocessName: " + processName);
     }
 
     if(adjustConfigMap.containsKey("defaultTracker")) {
       String defaultTracker = (String) adjustConfigMap.get("defaultTracker");
       config.setDefaultTracker(defaultTracker);
-      AdjustSdk.log("\tdefaultTracker: " + defaultTracker);
+      log("\tdefaultTracker: " + defaultTracker);
     }
 
     if(adjustConfigMap.containsKey("userAgent")) {
       String userAgent = (String) adjustConfigMap.get("userAgent");
       config.setUserAgent(userAgent);
-      AdjustSdk.log("\tuserAgent: " + userAgent);
+      log("\tuserAgent: " + userAgent);
     }
 
     if(adjustConfigMap.containsKey("sdkPrefix")) {
       String sdkPrefix = (String) adjustConfigMap.get("sdkPrefix");
       config.setSdkPrefix(sdkPrefix);
-      AdjustSdk.log("\tsdkPrefix: " + sdkPrefix);
+      log("\tsdkPrefix: " + sdkPrefix);
     }
 
     if(adjustConfigMap.containsKey("logLevel")) {
       String logLevel = (String) adjustConfigMap.get("logLevel");
       config.setLogLevel(LogLevel.valueOf(logLevel));
-      AdjustSdk.log("\tlogLevel: " + logLevel);
+      log("\tlogLevel: " + logLevel);
     }
 
     if(adjustConfigMap.containsKey("eventBufferingEnabled")) {
       String eventBufferingEnabledString = (String) adjustConfigMap.get("eventBufferingEnabled");
       boolean eventBufferingEnabled = Boolean.valueOf(eventBufferingEnabledString);
       config.setEventBufferingEnabled(eventBufferingEnabled);
-      AdjustSdk.log("\teventBufferingEnabled: " + eventBufferingEnabled);
+      log("\teventBufferingEnabled: " + eventBufferingEnabled);
     }
 
     if(adjustConfigMap.containsKey("sendInBackground")) {
       String sendInBackgroundString = (String) adjustConfigMap.get("sendInBackground");
       boolean sendInBackground = Boolean.valueOf(sendInBackgroundString);
       config.setSendInBackground(sendInBackground);
-      AdjustSdk.log("\tsendInBackground: " + sendInBackground);
+      log("\tsendInBackground: " + sendInBackground);
     }
 
     if(adjustConfigMap.containsKey("isDeviceKnown")) {
       String isDeviceKnownString = (String) adjustConfigMap.get("isDeviceKnown");
       boolean isDeviceKnown = Boolean.valueOf(isDeviceKnownString);
       config.setDeviceKnown(isDeviceKnown);
-      AdjustSdk.log("\tisDeviceKnown: " + isDeviceKnown);
+      log("\tisDeviceKnown: " + isDeviceKnown);
     }
 
     if(adjustConfigMap.containsKey("delayStart")) {
@@ -190,9 +192,9 @@ public class AdjustSdk implements MethodCallHandler {
       if(stringIsNumber(delayStartString)) {
         double delayStart = Double.valueOf(delayStartString);
         config.setDelayStart(delayStart);
-        AdjustSdk.log("\tdelayStart: " + delayStart);
+        log("\tdelayStart: " + delayStart);
       } else {
-        AdjustSdk.error("DelayStart parameter provided, but not a number! DelatStartString = " + delayStartString);
+        error("DelayStart parameter provided, but not a number! DelatStartString = " + delayStartString);
       }
     }
 
@@ -205,7 +207,7 @@ public class AdjustSdk implements MethodCallHandler {
       long info4 = Long.valueOf(info4String);
 
       config.setAppSecret(secretId, info1, info2, info3, info4);
-      AdjustSdk.log(String.format("\tappSecret: %d, %d, %d, %d, %d", secretId, info1, info2, info3, info4));
+      log(String.format("\tappSecret: %d, %d, %d, %d, %d", secretId, info1, info2, info3, info4));
     }
 
     boolean sessionSuccessHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
@@ -320,6 +322,7 @@ public class AdjustSdk implements MethodCallHandler {
 
     Adjust.onCreate(config);
     Adjust.onResume();
+    log("onCreate called ...");
 
     result.success(null);
   }
@@ -372,8 +375,7 @@ public class AdjustSdk implements MethodCallHandler {
           event.addCallbackParameter(key, value);
         }
       } catch (JSONException e) {
-        error("Failed to parse event callback parameters!");
-        e.printStackTrace();
+        error("Failed to parse event callback parameters!", e);
       }
     }
 
@@ -389,8 +391,7 @@ public class AdjustSdk implements MethodCallHandler {
           event.addPartnerParameter(key, value);
         }
       } catch (JSONException e) {
-        error("Failed to parse event partner parameters!");
-        e.printStackTrace();
+        error("Failed to parse event partner parameters!", e);
       }
     }
 
@@ -496,6 +497,7 @@ public class AdjustSdk implements MethodCallHandler {
     if(call.hasArgument("referrer")) {
       referrer = (String) call.argument("referrer");
     }
+    log(" >>> Calling setReferrer with referrer value: " + referrer);
     Adjust.setReferrer(referrer, applicationContext);
     result.success(null);
   }
@@ -598,9 +600,18 @@ public class AdjustSdk implements MethodCallHandler {
     Adjust.setTestOptions(testOptions);
   }
 
-  public static void log(String message) {
-    System.out.println("ADJUST-PLUGIN-BRIDGE: " + message);
+  private void log(String message) {
+    if (!loggingEnabled) { return; }
+    Log.d("ADJUST-PLUGIN-BRIDGE", message);
   }
 
-  public static void error(String message) { System.out.println("ADJUST-PLUGIN-BRIDGE: ERROR - " + message); }
+  private void error(String message) {
+    if (!loggingEnabled) { return; }
+    Log.e("ADJUST-PLUGIN-BRIDGE:", message);
+  }
+
+  private void error(String message, Throwable t) {
+    if (!loggingEnabled) { return; }
+    Log.e("ADJUST-PLUGIN-BRIDGE:", message, t);
+  }
 }
