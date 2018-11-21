@@ -25,21 +25,21 @@ class AdjustConfig {
   String userAgent;
   String defaultTracker;
 
-  static bool _callbackHandlersInitialized = false;
+  bool _callbackHandlersInitialized = false;
 
-  static SessionSuccessHandler _sessionSuccessHandler;
-  static SessionFailureHandler _sessionFailureHandler;
-  static EventSuccessHandler _eventSuccessHandler;
-  static EventFailureHandler _eventFailureHandler;
-  static AttributionChangedHandler _attributionChangedHandler;
-  static ReceivedDeeplinkHandler _receivedDeeplinkHandler;
+  SessionSuccessHandler _sessionSuccessHandler;
+  SessionFailureHandler _sessionFailureHandler;
+  EventSuccessHandler _eventSuccessHandler;
+  EventFailureHandler _eventFailureHandler;
+  AttributionChangedHandler _attributionChangedHandler;
+  ReceivedDeeplinkHandler _receivedDeeplinkHandler;
 
-  static bool _sessionSuccessHandlerImplemented = false;
-  static bool _sessionFailureHandlerImplemented = false;
-  static bool _eventSuccessHandlerImplemented = false;
-  static bool _eventFailureHandlerImplemented = false;
-  static bool _attributionChangedHandlerImplemented = false;
-  static bool _receivedDeeplinkHandlerImplemented = false;
+  bool _sessionSuccessHandlerImplemented = false;
+  bool _sessionFailureHandlerImplemented = false;
+  bool _eventSuccessHandlerImplemented = false;
+  bool _eventFailureHandlerImplemented = false;
+  bool _attributionChangedHandlerImplemented = false;
+  bool _receivedDeeplinkHandlerImplemented = false;
 
   bool isDeviceKnown;
   bool sendInBackground;
@@ -81,43 +81,43 @@ class AdjustConfig {
     _info4 = info4;
   }
 
-  static void setSessionSuccessHandler(SessionSuccessHandler handler) {
+  void setSessionSuccessHandler(SessionSuccessHandler handler) {
     _initCallbackHandlers();
     _sessionSuccessHandler = handler;
     _sessionSuccessHandlerImplemented = true;
   }
 
-  static void setSessionFailureHandler(SessionFailureHandler handler) {
+  void setSessionFailureHandler(SessionFailureHandler handler) {
     _initCallbackHandlers();
     _sessionFailureHandler = handler;
     _sessionFailureHandlerImplemented = true;
   }
 
-  static void setEventSuccessHandler(EventSuccessHandler handler) {
+  void setEventSuccessHandler(EventSuccessHandler handler) {
     _initCallbackHandlers();
     _eventSuccessHandler = handler;
     _eventSuccessHandlerImplemented = true;
   }
 
-  static void setEventFailureHandler(EventFailureHandler handler) {
+  void setEventFailureHandler(EventFailureHandler handler) {
     _initCallbackHandlers();
     _eventFailureHandler = handler;
     _eventFailureHandlerImplemented = true;
   }
 
-  static void setAttributionChangedHandler(AttributionChangedHandler handler) {
+  void setAttributionChangedHandler(AttributionChangedHandler handler) {
     _initCallbackHandlers();
     _attributionChangedHandler = handler;
     _attributionChangedHandlerImplemented = true;
   }
 
-  static void setReceivedDeeplinkHandler(ReceivedDeeplinkHandler handler) {
+  void setReceivedDeeplinkHandler(ReceivedDeeplinkHandler handler) {
     _initCallbackHandlers();
     _receivedDeeplinkHandler = handler;
     _receivedDeeplinkHandlerImplemented = true;
   }
 
-  static void _initCallbackHandlers() {
+  void _initCallbackHandlers() {
     if (_callbackHandlersInitialized) {
       return;
     }

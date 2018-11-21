@@ -118,7 +118,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
     // set callbacks for session, event, attribution and deeplink
     // have to be set BEFORE Adjust.onCreate(...) is called
-    _setCallbacks();
+    _setCallbacks(config);
 
     // initialize the Adjust SDK
     print('Calling Adjust onCreate...');
@@ -273,36 +273,36 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     }
   }
 
-  _setCallbacks() {
-    AdjustConfig
+  _setCallbacks(AdjustConfig config) {
+    config
         .setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessData) {
       print(' >>>> Reeceived sessionSuccessData: ' +
           sessionSuccessData.toString());
     });
 
-    AdjustConfig
+    config
         .setSessionFailureHandler((AdjustSessionFailure sessionFailureData) {
       print(' >>>> Reeceived sessionFailureData: ' +
           sessionFailureData.toString());
     });
 
-    AdjustConfig
+    config
         .setEventSuccessHandler((AdjustEventSuccess eventSuccessData) {
       print(' >>>> Reeceived eventFailureData: ' + eventSuccessData.toString());
     });
 
-    AdjustConfig
+    config
         .setEventFailureHandler((AdjustEventFailure eventFailureData) {
       print(' >>>> Reeceived eventFailureData: ' + eventFailureData.toString());
     });
 
-    AdjustConfig.setAttributionChangedHandler(
+    config.setAttributionChangedHandler(
         (AdjustAttribution attributionChangedData) {
       print(' >>>> Reeceived attributionChangedData: ' +
           attributionChangedData.toString());
     });
 
-    AdjustConfig.setReceivedDeeplinkHandler((String uri) {
+    config.setReceivedDeeplinkHandler((String uri) {
       print(' >>>> Reeceived deferred deeplink: ' + uri);
     });
   }
