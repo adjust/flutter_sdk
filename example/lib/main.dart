@@ -180,10 +180,8 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // track callback event button
-                Util.buildCupertinoButton(
-                    'Track Callback Event',
-                    () =>
-                        Adjust.trackEvent(Util.buildCallbackEvent())),
+                Util.buildCupertinoButton('Track Callback Event',
+                    () => Adjust.trackEvent(Util.buildCallbackEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // track partner event button
@@ -274,32 +272,24 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   }
 
   _setCallbacks(AdjustConfig config) {
-    config
-        .setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessData) {
-      print(' >>>> Reeceived sessionSuccessData: ' +
-          sessionSuccessData.toString());
+    config.setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessData) {
+      print(' >>>> Reeceived sessionSuccessData: ' + sessionSuccessData.toString());
     });
 
-    config
-        .setSessionFailureHandler((AdjustSessionFailure sessionFailureData) {
-      print(' >>>> Reeceived sessionFailureData: ' +
-          sessionFailureData.toString());
+    config.setSessionFailureHandler((AdjustSessionFailure sessionFailureData) {
+      print(' >>>> Reeceived sessionFailureData: ' + sessionFailureData.toString());
     });
 
-    config
-        .setEventSuccessHandler((AdjustEventSuccess eventSuccessData) {
+    config.setEventSuccessHandler((AdjustEventSuccess eventSuccessData) {
       print(' >>>> Reeceived eventFailureData: ' + eventSuccessData.toString());
     });
 
-    config
-        .setEventFailureHandler((AdjustEventFailure eventFailureData) {
+    config.setEventFailureHandler((AdjustEventFailure eventFailureData) {
       print(' >>>> Reeceived eventFailureData: ' + eventFailureData.toString());
     });
 
-    config.setAttributionChangedHandler(
-        (AdjustAttribution attributionChangedData) {
-      print(' >>>> Reeceived attributionChangedData: ' +
-          attributionChangedData.toString());
+    config.setAttributionChangedHandler((AdjustAttribution attributionChangedData) {
+      print(' >>>> Reeceived attributionChangedData: ' + attributionChangedData.toString());
     });
 
     config.setReceivedDeeplinkHandler((String uri) {
