@@ -20,7 +20,7 @@ typedef void ReceivedDeeplinkHandler(String uri);
 class AdjustConfig {
   static const MethodChannel _channel = const MethodChannel('com.adjust/api');
 
-  String _sdkPrefix = "flutter4.16.0";
+  String _sdkPrefix = 'flutter4.16.0';
   String appToken;
   String userAgent;
   String defaultTracker;
@@ -124,7 +124,7 @@ class AdjustConfig {
     _callbackHandlersInitialized = true;
 
     _channel.setMethodCallHandler((MethodCall call) {
-      print(" >>>>> INCOMING METHOD CALL FROM NATIVE: ${call.method}");
+      print(' >>>>> INCOMING METHOD CALL FROM NATIVE: ${call.method}');
 
       try {
         switch (call.method) {

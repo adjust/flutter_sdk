@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     initPlatformState();
 
-    String _address = '192.168.8.23';
+    String _address = '192.168.8.224';
     if (Platform.isAndroid) {
       _clientSdkPlatform = 'android4.16.0';
       String _protocol = 'https';
@@ -55,10 +55,15 @@ class _MyAppState extends State<MyApp> {
 
     Testlib.doNotExitAfterEnd();
     
-    Testlib.addTest('current/app-secret/Test_AppSecret_with_secret');
+    // Testlib.addTest('current/app-secret/Test_AppSecret_with_secret');
+    // Testlib.addTestDirectory('current/event-tracking');
     // Testlib.addTestDirectory('current/init-malformed');
-    Testlib.addTestDirectory('current/event-callbacks');
+    // Testlib.addTestDirectory('current/attribution-callback');
+    // Testlib.addTestDirectory('current/event-callbacks');
+    // Testlib.addTestDirectory('current/session-callbacks');
+    // Testlib.addTestDirectory('current/push-token');
     // Testlib.addTestDirectory('current/deeplink-deferred');
+    Testlib.addTest('current/push-token/Test_PushToken_before_install');
     // Testlib.addTest('current/init-malformed/Test_Init_Malformed_wrong_environment');
     // Testlib.addTestDirectory('current/session-parameters');
     // Testlib.addTest('current/event-callbacks/Test_EventCallback_failure');

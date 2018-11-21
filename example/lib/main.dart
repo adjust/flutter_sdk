@@ -18,7 +18,7 @@ class AdjustExampleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: "Adjust Flutter Example App",
+      title: 'Adjust Flutter Example App',
       home: new MainScreen(),
     );
   }
@@ -68,15 +68,15 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   initPlatformState() async {
-    AdjustConfig config = new AdjustConfig("2fm9gkqubvpc", AdjustEnvironment.sandbox);
+    AdjustConfig config = new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
     config.logLevel = AdjustLogLevel.VERBOSE;
     config.isDeviceKnown = false;
 
     // Set default tracker
-    // config.defaultTracker = "def_tracker";
+    // config.defaultTracker = 'def_tracker';
 
     // Set process name.
-    // config.processName = "com.adjust.examples";
+    // config.processName = 'com.adjust.examples';
 
     // Allow to send in the background.
     config.sendInBackground = true;
@@ -91,16 +91,16 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     // config.setAppSecret(1000, 1, 2, 3, 4);
 
     // Add session callback parameters.
-    Adjust.addSessionCallbackParameter("scp_foo_1", "scp_bar");
-    Adjust.addSessionCallbackParameter("scp_foo_2", "scp_value");
+    Adjust.addSessionCallbackParameter('scp_foo_1', 'scp_bar');
+    Adjust.addSessionCallbackParameter('scp_foo_2', 'scp_value');
 
     // Add session Partner parameters.
-    Adjust.addSessionPartnerParameter("scp_foo_1", "scp_bar");
-    Adjust.addSessionPartnerParameter("scp_foo_2", "scp_value");
+    Adjust.addSessionPartnerParameter('scp_foo_1', 'scp_bar');
+    Adjust.addSessionPartnerParameter('scp_foo_2', 'scp_value');
 
     // Remove session callback parameters.
-    Adjust.removeSessionCallbackParameter("scp_foo_1");
-    Adjust.removeSessionPartnerParameter("scp_foo_1");
+    Adjust.removeSessionCallbackParameter('scp_foo_1');
+    Adjust.removeSessionPartnerParameter('scp_foo_1');
 
     // Clear all session callback parameters.
     Adjust.resetSessionCallbackParameters();
@@ -145,7 +145,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(title: new Text("Adjust SDK Example")),
+      appBar: new AppBar(title: new Text('Adjust SDK Example')),
       body: _buildMainContent(),
     );
   }

@@ -3,10 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Util {
-  static const String EVENT_TOKEN_SIMPLE = "g3mfiw";
-  static const String EVENT_TOKEN_REVENUE = "a4fd35";
-  static const String EVENT_TOKEN_CALLBACK = "34vgg9";
-  static const String EVENT_TOKEN_PARTNER = "w788qs";
+  static const String EVENT_TOKEN_SIMPLE = 'g3mfiw';
+  static const String EVENT_TOKEN_REVENUE = 'a4fd35';
+  static const String EVENT_TOKEN_CALLBACK = '34vgg9';
+  static const String EVENT_TOKEN_PARTNER = 'w788qs';
 
   static Widget buildRaisedButton(String text, Function action) {
     return new Align(

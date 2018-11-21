@@ -47,6 +47,6 @@ class Command {
 
   @override
   String toString() {
-    return "Command[ className: $_className, methodName: $_methodName, jsonParameters: $_jsonParameters]";
+    return 'Command[ className: $_className, methodName: $_methodName, jsonParameters: $_jsonParameters]';
   }
 }

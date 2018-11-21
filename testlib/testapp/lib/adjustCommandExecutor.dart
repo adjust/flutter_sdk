@@ -26,27 +26,27 @@ class AdjustCommandExecutor {
   void executeCommand(Command command) {
     _command = command;
     switch (command.methodName) {
-        case "testOptions": _testOptions(); break;
-        case "config": _config(); break;
-        case "start": _start(); break;
-        case "event": _event(); break;
-        case "trackEvent": _trackEvent(); break;
-        case "resume": _resume(); break;
-        case "pause": _pause(); break;
-        case "setEnabled": _setEnabled(); break;
-        case "setReferrer": _setReferrer(); break; //TODO: check
-        case "sendReferrer": _setReferrer(); break; //TODO: check
-        case "setOfflineMode": _setOfflineMode(); break;
-        case "sendFirstPackages": _sendFirstPackages(); break;
-        case "addSessionCallbackParameter": _addSessionCallbackParameter(); break;
-        case "addSessionPartnerParameter": _addSessionPartnerParameter(); break;
-        case "removeSessionCallbackParameter": _removeSessionCallbackParameter(); break;
-        case "removeSessionPartnerParameter": _removeSessionPartnerParameter(); break;
-        case "resetSessionCallbackParameters": _resetSessionCallbackParameters(); break;
-        case "resetSessionPartnerParameters": _resetSessionPartnerParameters(); break;
-        case "setPushToken": _setPushToken(); break;
-        case "openDeeplink": _openDeeplink(); break;
-        case "gdprForgetMe": _gdprForgetMe(); break;
+        case 'testOptions': _testOptions(); break;
+        case 'config': _config(); break;
+        case 'start': _start(); break;
+        case 'event': _event(); break;
+        case 'trackEvent': _trackEvent(); break;
+        case 'resume': _resume(); break;
+        case 'pause': _pause(); break;
+        case 'setEnabled': _setEnabled(); break;
+        case 'setReferrer': _setReferrer(); break; //TODO: check
+        case 'sendReferrer': _setReferrer(); break; //TODO: check
+        case 'setOfflineMode': _setOfflineMode(); break;
+        case 'sendFirstPackages': _sendFirstPackages(); break;
+        case 'addSessionCallbackParameter': _addSessionCallbackParameter(); break;
+        case 'addSessionPartnerParameter': _addSessionPartnerParameter(); break;
+        case 'removeSessionCallbackParameter': _removeSessionCallbackParameter(); break;
+        case 'removeSessionPartnerParameter': _removeSessionPartnerParameter(); break;
+        case 'resetSessionCallbackParameters': _resetSessionCallbackParameters(); break;
+        case 'resetSessionPartnerParameters': _resetSessionPartnerParameters(); break;
+        case 'setPushToken': _setPushToken(); break;
+        case 'openDeeplink': _openDeeplink(); break;
+        case 'gdprForgetMe': _gdprForgetMe(); break;
     }
   }
 
@@ -54,35 +54,35 @@ class AdjustCommandExecutor {
     final dynamic testOptions = {};
     testOptions['baseUrl'] = _baseUrl;
     testOptions['gdprUrl'] = _gdprUrl;
-    if (_command.containsParameter("basePath")) {
-      _basePath = _command.getFirstParameterValue("basePath");
-      _gdprPath = _command.getFirstParameterValue("basePath");
+    if (_command.containsParameter('basePath')) {
+      _basePath = _command.getFirstParameterValue('basePath');
+      _gdprPath = _command.getFirstParameterValue('basePath');
     }
-    if (_command.containsParameter("timerInterval")) {
-      testOptions['timerIntervalInMilliseconds'] = _command.getFirstParameterValue("timerInterval");
+    if (_command.containsParameter('timerInterval')) {
+      testOptions['timerIntervalInMilliseconds'] = _command.getFirstParameterValue('timerInterval');
     }
-    if (_command.containsParameter("timerStart")) {
-      testOptions['timerStartInMilliseconds'] = _command.getFirstParameterValue("timerStart");
+    if (_command.containsParameter('timerStart')) {
+      testOptions['timerStartInMilliseconds'] = _command.getFirstParameterValue('timerStart');
     }
-    if (_command.containsParameter("sessionInterval")) {
-      testOptions['sessionIntervalInMilliseconds'] = _command.getFirstParameterValue("sessionInterval");
+    if (_command.containsParameter('sessionInterval')) {
+      testOptions['sessionIntervalInMilliseconds'] = _command.getFirstParameterValue('sessionInterval');
     }
-    if (_command.containsParameter("subsessionInterval")) {
-      testOptions['subsessionIntervalInMilliseconds'] = _command.getFirstParameterValue("subsessionInterval");
+    if (_command.containsParameter('subsessionInterval')) {
+      testOptions['subsessionIntervalInMilliseconds'] = _command.getFirstParameterValue('subsessionInterval');
     }
-    if (_command.containsParameter("tryInstallReferrer")) {
-      testOptions['tryInstallReferrer'] = _command.getFirstParameterValue("tryInstallReferrer");
+    if (_command.containsParameter('tryInstallReferrer')) {
+      testOptions['tryInstallReferrer'] = _command.getFirstParameterValue('tryInstallReferrer');
     }
-    if (_command.containsParameter("noBackoffWait")) {
-      testOptions['noBackoffWait'] = _command.getFirstParameterValue("noBackoffWait");
+    if (_command.containsParameter('noBackoffWait')) {
+      testOptions['noBackoffWait'] = _command.getFirstParameterValue('noBackoffWait');
     }
-    if (_command.containsParameter("iAdFrameworkEnabled")) {
-      testOptions['iAdFrameworkEnabled'] = _command.getFirstParameterValue("iAdFrameworkEnabled");
+    if (_command.containsParameter('iAdFrameworkEnabled')) {
+      testOptions['iAdFrameworkEnabled'] = _command.getFirstParameterValue('iAdFrameworkEnabled');
     }
-    if (_command.containsParameter("teardown")) {
-      List<dynamic> teardownOptions = _command.getParamteters("teardown");
+    if (_command.containsParameter('teardown')) {
+      List<dynamic> teardownOptions = _command.getParamteters('teardown');
       for (String teardownOption in teardownOptions) {
-        if (teardownOption == "resetSdk") {
+        if (teardownOption == 'resetSdk') {
           testOptions['teardown'] = 'true';
           testOptions['basePath'] = _basePath;
           testOptions['gdprPath'] = _gdprPath;
@@ -93,7 +93,7 @@ class AdjustCommandExecutor {
         if (teardownOption == 'deleteState') {
           testOptions['deleteState'] = 'true';
         }
-        if (teardownOption == "resetTest") {
+        if (teardownOption == 'resetTest') {
           _savedEvents.clear();
           _savedConfigs.clear();
           testOptions['timerIntervalInMilliseconds'] = '-1';
@@ -101,14 +101,14 @@ class AdjustCommandExecutor {
           testOptions['sessionIntervalInMilliseconds'] = '-1';
           testOptions['subsessionIntervalInMilliseconds'] = '-1';
         }
-        if (teardownOption == "sdk") {
+        if (teardownOption == 'sdk') {
           testOptions['teardown'] = 'true';
           testOptions['basePath'] = null;
           testOptions['gdprPath'] = null;
           // android specific
           testOptions['useTestConnectionOptions'] = 'false';
         }
-        if (teardownOption == "test") {
+        if (teardownOption == 'test') {
           _savedEvents.clear();
           _savedConfigs.clear();
           testOptions['timerIntervalInMilliseconds'] = '-1';
@@ -123,8 +123,8 @@ class AdjustCommandExecutor {
 
   void _config() {
     int configNumber = 0;
-    if (_command.containsParameter("configName")) {
-      String configName = _command.getFirstParameterValue("configName");
+    if (_command.containsParameter('configName')) {
+      String configName = _command.getFirstParameterValue('configName');
       configNumber = int.parse(configName.substring(configName.length - 1));
     }
 
@@ -132,47 +132,47 @@ class AdjustCommandExecutor {
     if (_savedConfigs[configNumber] != null) {
       adjustConfig = _savedConfigs[configNumber];
     } else {
-      String appToken = _command.getFirstParameterValue("appToken");
-      String environmentString = _command.getFirstParameterValue("environment");
+      String appToken = _command.getFirstParameterValue('appToken');
+      String environmentString = _command.getFirstParameterValue('environment');
       AdjustEnvironment environment = environmentString == 'sandbox' ? AdjustEnvironment.sandbox : AdjustEnvironment.production;
       adjustConfig = new AdjustConfig(appToken, environment);
       adjustConfig.logLevel = AdjustLogLevel.VERBOSE;
       _savedConfigs.putIfAbsent(configNumber, () => adjustConfig);
     }
 
-    if (_command.containsParameter("logLevel")) {
-      String logLevelString = _command.getFirstParameterValue("logLevel");
+    if (_command.containsParameter('logLevel')) {
+      String logLevelString = _command.getFirstParameterValue('logLevel');
       AdjustLogLevel logLevel;
       switch (logLevelString) {
-          case "verbose": logLevel = AdjustLogLevel.VERBOSE;
+          case 'verbose': logLevel = AdjustLogLevel.VERBOSE;
               break;
-          case "debug": logLevel = AdjustLogLevel.DEBUG;
+          case 'debug': logLevel = AdjustLogLevel.DEBUG;
               break;
-          case "info": logLevel = AdjustLogLevel.INFO;
+          case 'info': logLevel = AdjustLogLevel.INFO;
               break;
-          case "warn": logLevel = AdjustLogLevel.WARN;
+          case 'warn': logLevel = AdjustLogLevel.WARN;
               break;
-          case "error": logLevel = AdjustLogLevel.ERROR;
+          case 'error': logLevel = AdjustLogLevel.ERROR;
               break;
-          case "assert": logLevel = AdjustLogLevel.ASSERT;
+          case 'assert': logLevel = AdjustLogLevel.ASSERT;
               break;
-          case "suppress": logLevel = AdjustLogLevel.SUPRESS;
+          case 'suppress': logLevel = AdjustLogLevel.SUPRESS;
               break;
       }
       adjustConfig.logLevel = logLevel;
     }
 
-    if (_command.containsParameter("sdkPrefix")) {
+    if (_command.containsParameter('sdkPrefix')) {
       // not needed
       print('Setting sdkPrefix not supported!');
     }
 
-    if (_command.containsParameter("defaultTracker")) {
-      adjustConfig.defaultTracker = _command.getFirstParameterValue("defaultTracker");
+    if (_command.containsParameter('defaultTracker')) {
+      adjustConfig.defaultTracker = _command.getFirstParameterValue('defaultTracker');
     }
 
-    if (_command.containsParameter("appSecret")) {
-      List<dynamic> appSecretArray = _command.getParamteters("appSecret");
+    if (_command.containsParameter('appSecret')) {
+      List<dynamic> appSecretArray = _command.getParamteters('appSecret');
       bool appSecretValid = true;
       for (String appSecretData in appSecretArray) {
         if (appSecretData.length == 0) {
@@ -191,28 +191,28 @@ class AdjustCommandExecutor {
       }
     }
 
-    if (_command.containsParameter("delayStart")) {
-      double delayStart = double.parse(_command.getFirstParameterValue("delayStart"));
+    if (_command.containsParameter('delayStart')) {
+      double delayStart = double.parse(_command.getFirstParameterValue('delayStart'));
       adjustConfig.delayStart = delayStart;
     }
 
-    if (_command.containsParameter("deviceKnown")) {
-      bool isDeviceKnown = _command.getFirstParameterValue("deviceKnown") == 'true';
+    if (_command.containsParameter('deviceKnown')) {
+      bool isDeviceKnown = _command.getFirstParameterValue('deviceKnown') == 'true';
       adjustConfig.isDeviceKnown = isDeviceKnown;
     }
 
-    if (_command.containsParameter("eventBufferingEnabled")) {
-      bool eventBufferingEnabled = _command.getFirstParameterValue("eventBufferingEnabled") == 'true';
+    if (_command.containsParameter('eventBufferingEnabled')) {
+      bool eventBufferingEnabled = _command.getFirstParameterValue('eventBufferingEnabled') == 'true';
       adjustConfig.eventBufferingEnabled = eventBufferingEnabled;
     }
 
-    if (_command.containsParameter("sendInBackground")) {
-      bool sendInBackground = _command.getFirstParameterValue("sendInBackground") == 'true';
+    if (_command.containsParameter('sendInBackground')) {
+      bool sendInBackground = _command.getFirstParameterValue('sendInBackground') == 'true';
       adjustConfig.sendInBackground = sendInBackground;
     }
 
-    if (_command.containsParameter("userAgent")) {
-      adjustConfig.userAgent = _command.getFirstParameterValue("userAgent");
+    if (_command.containsParameter('userAgent')) {
+      adjustConfig.userAgent = _command.getFirstParameterValue('userAgent');
     }
 
     // first clear all previous callback handlers
@@ -225,91 +225,91 @@ class AdjustCommandExecutor {
 
     // TODO: deeplinking in flutter example
     // https://github.com/flutter/flutter/issues/8711#issuecomment-304681212
-    if(_command.containsParameter("deferredDeeplinkCallback")) {
+    if(_command.containsParameter('deferredDeeplinkCallback')) {
       String localBasePath = _basePath;
-      bool launchDeferredDeeplink = _command.getFirstParameterValue("deferredDeeplinkCallback") == "true";
+      bool launchDeferredDeeplink = _command.getFirstParameterValue('deferredDeeplinkCallback') == 'true';
       adjustConfig.launchDeferredDeeplink = launchDeferredDeeplink;
       print('-----> Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink}');
       adjustConfig.setReceivedDeeplinkHandler((String uri) {
         print('-----> Sending deeplink info to server: $uri');
-        Testlib.addInfoToSend("deeplink", uri);
+        Testlib.addInfoToSend('deeplink', uri);
         Testlib.sendInfoToServer(localBasePath);
       });
     }
 
-    if(_command.containsParameter("attributionCallbackSendAll")) {
+    if(_command.containsParameter('attributionCallbackSendAll')) {
       String localBasePath = _basePath;
       adjustConfig.setAttributionChangedHandler((AdjustAttribution attribution) {
         print('-----> Attribution Callback: $attribution');
-        Testlib.addInfoToSend("trackerToken", attribution.trackerToken);
-        Testlib.addInfoToSend("trackerName", attribution.trackerName);
-        Testlib.addInfoToSend("network", attribution.network);
-        Testlib.addInfoToSend("campaign", attribution.campaign);
-        Testlib.addInfoToSend("adgroup", attribution.adgroup);
-        Testlib.addInfoToSend("creative", attribution.creative);
-        Testlib.addInfoToSend("clickLabel", attribution.clickLabel);
-        Testlib.addInfoToSend("adid", attribution.adid);
+        Testlib.addInfoToSend('trackerToken', attribution.trackerToken);
+        Testlib.addInfoToSend('trackerName', attribution.trackerName);
+        Testlib.addInfoToSend('network', attribution.network);
+        Testlib.addInfoToSend('campaign', attribution.campaign);
+        Testlib.addInfoToSend('adgroup', attribution.adgroup);
+        Testlib.addInfoToSend('creative', attribution.creative);
+        Testlib.addInfoToSend('clickLabel', attribution.clickLabel);
+        Testlib.addInfoToSend('adid', attribution.adid);
         Testlib.sendInfoToServer(localBasePath);
       });
     }
 
-    if(_command.containsParameter("sessionCallbackSendSuccess")) {
+    if(_command.containsParameter('sessionCallbackSendSuccess')) {
       String localBasePath = _basePath;
       adjustConfig.setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessResponseData) {
         print('-----> Session Callback Success: $sessionSuccessResponseData');
-        Testlib.addInfoToSend("message", sessionSuccessResponseData.message);
-        Testlib.addInfoToSend("timestamp", sessionSuccessResponseData.timestamp);
-        Testlib.addInfoToSend("adid", sessionSuccessResponseData.adid);
+        Testlib.addInfoToSend('message', sessionSuccessResponseData.message);
+        Testlib.addInfoToSend('timestamp', sessionSuccessResponseData.timestamp);
+        Testlib.addInfoToSend('adid', sessionSuccessResponseData.adid);
         if (sessionSuccessResponseData.jsonResponse != null) {
-            Testlib.addInfoToSend("jsonResponse", sessionSuccessResponseData.jsonResponse);
+            Testlib.addInfoToSend('jsonResponse', sessionSuccessResponseData.jsonResponse);
         }
         Testlib.sendInfoToServer(localBasePath);
       });
     }
 
-    if(_command.containsParameter("sessionCallbackSendFailure")) {
+    if(_command.containsParameter('sessionCallbackSendFailure')) {
       String localBasePath = _basePath;
       adjustConfig.setSessionFailureHandler((AdjustSessionFailure sessionFailureResponseData) {
         print('-----> Session Callback Failure: $sessionFailureResponseData');
-        Testlib.addInfoToSend("message", sessionFailureResponseData.message);
-        Testlib.addInfoToSend("timestamp", sessionFailureResponseData.timestamp);
-        Testlib.addInfoToSend("adid", sessionFailureResponseData.adid);
-        Testlib.addInfoToSend("willRetry", sessionFailureResponseData.willRetry.toString());
+        Testlib.addInfoToSend('message', sessionFailureResponseData.message);
+        Testlib.addInfoToSend('timestamp', sessionFailureResponseData.timestamp);
+        Testlib.addInfoToSend('adid', sessionFailureResponseData.adid);
+        Testlib.addInfoToSend('willRetry', sessionFailureResponseData.willRetry.toString());
         if (sessionFailureResponseData.jsonResponse != null) {
-            Testlib.addInfoToSend("jsonResponse", sessionFailureResponseData.jsonResponse);
+            Testlib.addInfoToSend('jsonResponse', sessionFailureResponseData.jsonResponse);
         }
         Testlib.sendInfoToServer(localBasePath);
       });
     }
 
-    if(_command.containsParameter("eventCallbackSendSuccess")) {
+    if(_command.containsParameter('eventCallbackSendSuccess')) {
       String localBasePath = _basePath;
       adjustConfig.setEventSuccessHandler((AdjustEventSuccess eventSuccessResponseData) {
         print('-----> Event Callback Success: $eventSuccessResponseData');
-        Testlib.addInfoToSend("message", eventSuccessResponseData.message);
-        Testlib.addInfoToSend("timestamp", eventSuccessResponseData.timestamp);
-        Testlib.addInfoToSend("adid", eventSuccessResponseData.adid);
-        Testlib.addInfoToSend("eventToken", eventSuccessResponseData.eventToken);
-        Testlib.addInfoToSend("callbackId", eventSuccessResponseData.callbackId);
+        Testlib.addInfoToSend('message', eventSuccessResponseData.message);
+        Testlib.addInfoToSend('timestamp', eventSuccessResponseData.timestamp);
+        Testlib.addInfoToSend('adid', eventSuccessResponseData.adid);
+        Testlib.addInfoToSend('eventToken', eventSuccessResponseData.eventToken);
+        Testlib.addInfoToSend('callbackId', eventSuccessResponseData.callbackId);
         if (eventSuccessResponseData.jsonResponse != null ) {
-            Testlib.addInfoToSend("jsonResponse", eventSuccessResponseData.jsonResponse);
+            Testlib.addInfoToSend('jsonResponse', eventSuccessResponseData.jsonResponse);
         }
         Testlib.sendInfoToServer(localBasePath);
       });
     }
 
-    if(_command.containsParameter("eventCallbackSendFailure")) {
+    if(_command.containsParameter('eventCallbackSendFailure')) {
       String localBasePath = _basePath;
       adjustConfig.setEventFailureHandler((AdjustEventFailure eventFailureResponseData) {
         print('-----> Event Callback Failure: $eventFailureResponseData');
-        Testlib.addInfoToSend("message", eventFailureResponseData.message);
-        Testlib.addInfoToSend("timestamp", eventFailureResponseData.timestamp);
-        Testlib.addInfoToSend("adid", eventFailureResponseData.adid);
-        Testlib.addInfoToSend("eventToken", eventFailureResponseData.eventToken);
-        Testlib.addInfoToSend("callbackId", eventFailureResponseData.callbackId);
-        Testlib.addInfoToSend("willRetry", eventFailureResponseData.willRetry.toString());
+        Testlib.addInfoToSend('message', eventFailureResponseData.message);
+        Testlib.addInfoToSend('timestamp', eventFailureResponseData.timestamp);
+        Testlib.addInfoToSend('adid', eventFailureResponseData.adid);
+        Testlib.addInfoToSend('eventToken', eventFailureResponseData.eventToken);
+        Testlib.addInfoToSend('callbackId', eventFailureResponseData.callbackId);
+        Testlib.addInfoToSend('willRetry', eventFailureResponseData.willRetry.toString());
         if (eventFailureResponseData.jsonResponse != null) {
-            Testlib.addInfoToSend("jsonResponse", eventFailureResponseData.jsonResponse.toString());
+            Testlib.addInfoToSend('jsonResponse', eventFailureResponseData.jsonResponse.toString());
         }
         Testlib.sendInfoToServer(localBasePath);
       });
@@ -319,8 +319,8 @@ class AdjustCommandExecutor {
   void _start() {
     _config();
     int configNumber = 0;
-    if (_command.containsParameter("configName")) {
-      String configName = _command.getFirstParameterValue("configName");
+    if (_command.containsParameter('configName')) {
+      String configName = _command.getFirstParameterValue('configName');
       configNumber = int.parse(configName.substring(configName.length - 1));
     }
 
@@ -331,8 +331,8 @@ class AdjustCommandExecutor {
 
   void _event() {
     int eventNumber = 0;
-    if (_command.containsParameter("eventNumber")) {
-      String eventName = _command.getFirstParameterValue("eventName");
+    if (_command.containsParameter('eventNumber')) {
+      String eventName = _command.getFirstParameterValue('eventName');
       eventNumber = int.parse(eventName.substring(eventName.length - 1));
     }
 
@@ -340,45 +340,45 @@ class AdjustCommandExecutor {
     if (_savedConfigs[eventNumber] != null) {
         adjustEvent = _savedEvents[eventNumber];
     } else {
-      String eventToken = _command.getFirstParameterValue("eventToken");
+      String eventToken = _command.getFirstParameterValue('eventToken');
       adjustEvent = new AdjustEvent(eventToken);
       _savedEvents.putIfAbsent(eventNumber, () => adjustEvent);
     }
 
-    if (_command.containsParameter("revenue")) {
-      List<dynamic> revenueParams = _command.getParamteters("revenue");
+    if (_command.containsParameter('revenue')) {
+      List<dynamic> revenueParams = _command.getParamteters('revenue');
       adjustEvent.currency = revenueParams[0];
       adjustEvent.revenue = num.parse(revenueParams[1]);
     }
-    if (_command.containsParameter("callbackParams")) {
-      List<dynamic> callbackParams = _command.getParamteters("callbackParams");
+    if (_command.containsParameter('callbackParams')) {
+      List<dynamic> callbackParams = _command.getParamteters('callbackParams');
       for (int i = 0; i < callbackParams.length; i = i + 2) {
         String key = callbackParams[i];
         String value = callbackParams[i + 1];
         adjustEvent.addCallbackParameter(key, value);
       }
     }
-    if (_command.containsParameter("partnerParams")) {
-      List<dynamic> partnerParams = _command.getParamteters("partnerParams");
+    if (_command.containsParameter('partnerParams')) {
+      List<dynamic> partnerParams = _command.getParamteters('partnerParams');
       for (int i = 0; i < partnerParams.length; i = i + 2) {
         String key = partnerParams[i];
         String value = partnerParams[i + 1];
         adjustEvent.addPartnerParameter(key, value);
       }
     }
-    if (_command.containsParameter("orderId")) {
-      adjustEvent.orderId = _command.getFirstParameterValue("orderId");
+    if (_command.containsParameter('orderId')) {
+      adjustEvent.orderId = _command.getFirstParameterValue('orderId');
     }
-    if (_command.containsParameter("callbackId")) {
-      adjustEvent.callbackId = _command.getFirstParameterValue("callbackId");
+    if (_command.containsParameter('callbackId')) {
+      adjustEvent.callbackId = _command.getFirstParameterValue('callbackId');
     }
   }
 
   void _trackEvent() {
     _event();
     int eventNumber = 0;
-    if (_command.containsParameter("eventName")) {
-      String eventName = _command.getFirstParameterValue("eventName");
+    if (_command.containsParameter('eventName')) {
+      String eventName = _command.getFirstParameterValue('eventName');
       eventNumber = int.parse(eventName.substring(eventName.length - 1));
     }
 
@@ -397,17 +397,17 @@ class AdjustCommandExecutor {
   }
 
   void _setEnabled() {
-    bool isEnabled = _command.getFirstParameterValue("enabled") == 'true';
+    bool isEnabled = _command.getFirstParameterValue('enabled') == 'true';
     Adjust.setIsEnabled(isEnabled);
   }
 
   void _setReferrer() {
-    String referrer = _command.getFirstParameterValue("referrer");
+    String referrer = _command.getFirstParameterValue('referrer');
     Adjust.setReferrer(referrer);
   }
 
   void _setOfflineMode() {
-    bool isEnabled = _command.getFirstParameterValue("enabled") == 'true';
+    bool isEnabled = _command.getFirstParameterValue('enabled') == 'true';
     Adjust.setOfflineMode(isEnabled);
   }
 
@@ -416,12 +416,12 @@ class AdjustCommandExecutor {
   }
 
   void _setPushToken() {
-    String token = _command.getFirstParameterValue("pushToken");
+    String token = _command.getFirstParameterValue('pushToken');
     Adjust.setPushToken(token);
   }
 
   void _openDeeplink() {
-    String deeplink = _command.getFirstParameterValue("deeplink");
+    String deeplink = _command.getFirstParameterValue('deeplink');
     Adjust.appWillOpenUrl(deeplink);
   }
 
@@ -430,11 +430,11 @@ class AdjustCommandExecutor {
   }
 
   void _addSessionCallbackParameter() {
-    if (!_command.containsParameter("KeyValue")) {
+    if (!_command.containsParameter('KeyValue')) {
       return;
     }
 
-    List<dynamic> keyValuePairs = _command.getParamteters("KeyValue");
+    List<dynamic> keyValuePairs = _command.getParamteters('KeyValue');
     for (int i = 0; i<keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
@@ -443,11 +443,11 @@ class AdjustCommandExecutor {
   }
 
   void _addSessionPartnerParameter() {
-    if (!_command.containsParameter("KeyValue")) {
+    if (!_command.containsParameter('KeyValue')) {
       return;
     }
 
-    List<dynamic> keyValuePairs = _command.getParamteters("KeyValue");
+    List<dynamic> keyValuePairs = _command.getParamteters('KeyValue');
     for (int i = 0; i<keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
@@ -456,11 +456,11 @@ class AdjustCommandExecutor {
   }
 
   void _removeSessionCallbackParameter() {
-    if (!_command.containsParameter("key")) {
+    if (!_command.containsParameter('key')) {
       return;
     }
 
-    List<dynamic> keys = _command.getParamteters("key");
+    List<dynamic> keys = _command.getParamteters('key');
     for (int i = 0; i<keys.length; i = i + 1) {
       String key = keys[i];
       Adjust.removeSessionCallbackParameter(key);
@@ -468,11 +468,11 @@ class AdjustCommandExecutor {
   }
 
   void _removeSessionPartnerParameter() {
-    if (!_command.containsParameter("key")) {
+    if (!_command.containsParameter('key')) {
       return;
     }
     
-    List<dynamic> keys = _command.getParamteters("key");
+    List<dynamic> keys = _command.getParamteters('key');
     for (int i = 0; i<keys.length; i = i + 1) {
       String key = keys[i];
       Adjust.removeSessionPartnerParameter(key);
