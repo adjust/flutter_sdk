@@ -211,11 +211,11 @@ public class AdjustSdk implements MethodCallHandler {
     }
 
     boolean sessionSuccessHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
-    boolean sessionFailureHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
-    boolean eventSuccessHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
-    boolean eventFailureHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
-    boolean attributionChangedHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
-    boolean receivedDeeplinkHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
+    boolean sessionFailureHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionFailureHandlerImplemented"));
+    boolean eventSuccessHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("eventSuccessHandlerImplemented"));
+    boolean eventFailureHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("eventFailureHandlerImplemented"));
+    boolean attributionChangedHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("attributionChangedHandlerImplemented"));
+    boolean receivedDeeplinkHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("receivedDeeplinkHandlerImplemented"));
 
     if (receivedDeeplinkHandlerImplemented) {
       config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
