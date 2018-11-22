@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:adjust_sdk/_logger.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
 import 'package:adjust_sdk/callbacksData/adjust_attribution.dart';
@@ -16,12 +17,12 @@ class Adjust {
   }
 
   static void onResume() {
-    print('Calling "ON RESUME" from flutter...');
+    Logger.d('Calling "ON RESUME" from flutter...');
     _channel.invokeMethod('onResume');
   }
 
   static void onPause() {
-    print('Calling "ON PAUSE" from flutter...');
+    Logger.d('Calling "ON PAUSE" from flutter...');
     _channel.invokeMethod('onPause');
   }
 

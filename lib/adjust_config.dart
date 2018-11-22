@@ -1,3 +1,4 @@
+import 'package:adjust_sdk/_logger.dart';
 import 'package:adjust_sdk/callbacksData/adjust_attribution.dart';
 import 'package:adjust_sdk/callbacksData/adjust_event_failure.dart';
 import 'package:adjust_sdk/callbacksData/adjust_event_success.dart';
@@ -124,13 +125,13 @@ class AdjustConfig {
     _callbackHandlersInitialized = true;
 
     _channel.setMethodCallHandler((MethodCall call) {
-      print(' >>>>> INCOMING METHOD CALL FROM NATIVE: ${call.method}');
+      Logger.d(' >>>>> INCOMING METHOD CALL FROM NATIVE: ${call.method}');
 
       try {
         switch (call.method) {
           case 'receive-deferred-deeplink':
             String uri = call.arguments['uri'];
-            print(' >>>>> Received deferred deeplink: $uri');
+            Logger.d(' >>>>> Received deferred deeplink: $uri');
             if (_receivedDeeplinkHandler != null) {
               _receivedDeeplinkHandler(uri);
             }
