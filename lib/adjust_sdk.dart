@@ -4,10 +4,12 @@ import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
 import 'package:adjust_sdk/callbacksData/adjust_attribution.dart';
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 class Adjust {
   static const MethodChannel _channel = const MethodChannel('com.adjust/api');
 
+  @experimental
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');
     return version;
@@ -116,6 +118,7 @@ class Adjust {
   }
 
   // for integration testing only
+  @visibleForTesting
   static void setTestOptions(final dynamic testOptions) {
     _channel.invokeMethod('setTestOptions', testOptions);
   }
