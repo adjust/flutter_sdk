@@ -122,7 +122,7 @@ static AdjustSdkDelegate *defaultInstance = nil;
         [self getValueOrEmpty:[eventSuccessResponseData adid]],
         [self getValueOrEmpty:[eventSuccessResponseData eventToken]],
         [self getValueOrEmpty:[eventSuccessResponseData callbackId]],
-        [self toJson:[eventSuccessResponseData jsonResponse]]
+        [self toJson:[self getObjectValueOrEmpty:[eventSuccessResponseData jsonResponse]]]
     };
     NSUInteger count = sizeof(values) / sizeof(id);
     NSDictionary *adjustSessionSuccessMap = [NSDictionary dictionaryWithObjects:values
@@ -136,7 +136,7 @@ static AdjustSdkDelegate *defaultInstance = nil;
     if (nil == eventFailureResponseData) {
         return;
     }
-    
+
     NSString *willRetryString = [eventFailureResponseData willRetry] ? @"true" : @"false";
     id keys[] = { @"message", @"timestamp", @"adid", @"eventToken", @"callbackId", @"willRetry", @"jsonResponse" };
     id values[] = {
@@ -146,7 +146,7 @@ static AdjustSdkDelegate *defaultInstance = nil;
         [self getValueOrEmpty:[eventFailureResponseData eventToken]],
         [self getValueOrEmpty:[eventFailureResponseData callbackId]],
         willRetryString,
-        [self toJson:[eventFailureResponseData jsonResponse]]
+        [self toJson:[self getObjectValueOrEmpty:[eventFailureResponseData jsonResponse]]]
     };
     NSUInteger count = sizeof(values) / sizeof(id);
     NSDictionary *adjustSessionSuccessMap = [NSDictionary dictionaryWithObjects:values
@@ -167,7 +167,7 @@ static AdjustSdkDelegate *defaultInstance = nil;
         [self getValueOrEmpty:[sessionSuccessResponseData message]],
         [self getValueOrEmpty:[sessionSuccessResponseData timeStamp]],
         [self getValueOrEmpty:[sessionSuccessResponseData adid]],
-        [self toJson:[sessionSuccessResponseData jsonResponse]]
+        [self toJson:[self getObjectValueOrEmpty:[sessionSuccessResponseData jsonResponse]]]
     };
     NSUInteger count = sizeof(values) / sizeof(id);
     NSDictionary *adjustSessionSuccessMap = [NSDictionary dictionaryWithObjects:values
@@ -189,7 +189,7 @@ static AdjustSdkDelegate *defaultInstance = nil;
         [self getValueOrEmpty:[sessionFailureResponseData timeStamp]],
         [self getValueOrEmpty:[sessionFailureResponseData adid]],
         willRetryString,
-        [self toJson:[sessionFailureResponseData jsonResponse]]
+        [self toJson:[self getObjectValueOrEmpty:[sessionFailureResponseData jsonResponse]]]
     };
     NSUInteger count = sizeof(values) / sizeof(id);
     NSDictionary *adjustFailureSuccessMap = [NSDictionary dictionaryWithObjects:values
@@ -251,8 +251,15 @@ static AdjustSdkDelegate *defaultInstance = nil;
 }
 
 - (NSString*)getValueOrEmpty:(NSString *)value {
-    if (value == nil) {
+    if (value == nil || value == NULL) {
         return @"";
+    }
+    return value;
+}
+
+- (id)getObjectValueOrEmpty:(id)value {
+    if (value == nil || value == NULL) {
+        return [NSDictionary dictionary];
     }
     return value;
 }
