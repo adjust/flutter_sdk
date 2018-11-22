@@ -281,7 +281,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     });
 
     config.setEventSuccessHandler((AdjustEventSuccess eventSuccessData) {
-      print(' >>>> Reeceived eventFailureData: ' + eventSuccessData.toString());
+      print(' >>>> Reeceived eventSuccessData: ' + eventSuccessData.toString());
     });
 
     config.setEventFailureHandler((AdjustEventFailure eventFailureData) {

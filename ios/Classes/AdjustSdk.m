@@ -1,11 +1,18 @@
+//
+//  AdjustSdkDelegate.h
+//  Adjust SDK
+//
+//  Created by Srdjan Tubin (srdjan@adjust.com) on June 2018.
+//  Copyright © 2012-2018 Adjust GmbH. All rights reserved.
+//
+
 #import "AdjustSdk.h"
+#import "AdjustSdkDelegate.h"
 
 static NSString *const CHANNEL_API_NAME = @"com.adjust/api";
-static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
 
 @interface ADJAdjustSdk ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
-@property(nonatomic) BOOL launchDeferredDeeplink;
 @end
 
 @implementation ADJAdjustSdk
@@ -115,7 +122,14 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
     NSString *isDeviceKnown          = call.arguments[@"isDeviceKnown"];
     NSString *eventBufferingEnabled  = call.arguments[@"eventBufferingEnabled"];
     NSString *sendInBackground       = call.arguments[@"sendInBackground"];
-    NSString *launchDeferredDeeplink = call.arguments[@"launchDeferredDeeplink"];
+    
+    bool sessionSuccessHandlerImplemented = [call.arguments[@"sessionSuccessHandlerImplemented"] boolValue];
+    bool sessionFailureHandlerImplemented = [call.arguments[@"sessionFailureHandlerImplemented"] boolValue];
+    bool eventSuccessHandlerImplemented = [call.arguments[@"sessionFailureHandlerImplemented"] boolValue];
+    bool eventFailureHandlerImplemented = [call.arguments[@"sessionFailureHandlerImplemented"] boolValue];
+    bool attributionChangedHandlerImplemented = [call.arguments[@"sessionFailureHandlerImplemented"] boolValue];
+    bool receivedDeeplinkHandlerImplemented = [call.arguments[@"sessionFailureHandlerImplemented"] boolValue];
+    bool launchDeferredDeeplink = [call.arguments[@"launchDeferredDeeplink"] boolValue];
     
     if ([self isFieldValid:logLevel]) {
         if ([ADJLogger logLevelFromString:[logLevel lowercaseString]] == ADJLogLevelSuppress) {
@@ -129,10 +143,6 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
     
     if ([self isFieldValid:logLevel]) {
         [adjustConfig setLogLevel:[ADJLogger logLevelFromString:[logLevel lowercaseString]]];
-    }
-    
-    if ([self isFieldValid:launchDeferredDeeplink]) {
-        self.launchDeferredDeeplink = [launchDeferredDeeplink boolValue];
     }
     
     if ([self isFieldValid:eventBufferingEnabled]) {
@@ -175,8 +185,22 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
                              info4:[[NSNumber numberWithLongLong:[info4 longLongValue]] unsignedIntegerValue]];
     }
     
-    // needed for callbacks
-    [adjustConfig setDelegate:self];
+    if (attributionChangedHandlerImplemented
+        || eventSuccessHandlerImplemented
+        || eventFailureHandlerImplemented
+        || sessionSuccessHandlerImplemented
+        || sessionFailureHandlerImplemented
+        || receivedDeeplinkHandlerImplemented) {
+        [adjustConfig setDelegate:
+         [AdjustSdkDelegate getInstanceWithSwizzleOfAttributionCallback:attributionChangedHandlerImplemented
+                                                 eventSucceededCallback:eventSuccessHandlerImplemented
+                                                    eventFailedCallback:eventFailureHandlerImplemented
+                                               sessionSucceededCallback:sessionSuccessHandlerImplemented
+                                                  sessionFailedCallback:sessionFailureHandlerImplemented
+                                               deferredDeeplinkCallback:receivedDeeplinkHandlerImplemented
+                                           shouldLaunchDeferredDeeplink:launchDeferredDeeplink
+                                                      withMethodChannel:self.channel]];
+    }
     
     [Adjust appDidLaunch:adjustConfig];
     [Adjust trackSubsessionStart];
@@ -333,138 +357,6 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
     result(idfa);
 }
 
-//////////// CALLBACK METHODS ///////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
-- (void)adjustAttributionChanged:(ADJAttribution *)attribution {
-    @try {
-        id keys[] = { @"trackerToken", @"trackerName", @"network", @"campaign", @"adgroup", @"creative", @"clickLabel", @"adid" };
-        id values[] = {
-            [self getValueOrEmpty:[attribution trackerToken]],
-            [self getValueOrEmpty:[attribution trackerName]],
-            [self getValueOrEmpty:[attribution network]],
-            [self getValueOrEmpty:[attribution campaign]],
-            [self getValueOrEmpty:[attribution adgroup]],
-            [self getValueOrEmpty:[attribution creative]],
-            [self getValueOrEmpty:[attribution clickLabel]],
-            [self getValueOrEmpty:[attribution adid]]
-        };
-        NSUInteger count = sizeof(values) / sizeof(id);
-        NSDictionary *adjustAttributionMap = [NSDictionary dictionaryWithObjects:values
-                                                               forKeys:keys
-                                                                 count:count];
-        
-        [self.channel invokeMethod:@"attribution-change" arguments:adjustAttributionMap];
-    }
-    @catch (NSException * e) {
-        NSLog(@" -----> adjustAttributionChanged exception: %@", e);
-    }
-}
-
-- (void)adjustEventTrackingSucceeded:(ADJEventSuccess *)eventSuccessResponseData {
-    @try {
-        id keys[] = { @"message", @"timestamp", @"adid", @"eventToken", @"callbackId", @"jsonResponse" };
-        id values[] = {
-            [self getValueOrEmpty:[eventSuccessResponseData message]],
-            [self getValueOrEmpty:[eventSuccessResponseData timeStamp]],
-            [self getValueOrEmpty:[eventSuccessResponseData adid]],
-            [self getValueOrEmpty:[eventSuccessResponseData eventToken]],
-            [self getValueOrEmpty:[eventSuccessResponseData callbackId]],
-            [self toJson:[eventSuccessResponseData jsonResponse]]
-        };
-        NSUInteger count = sizeof(values) / sizeof(id);
-        NSDictionary *adjustSessionSuccessMap = [NSDictionary dictionaryWithObjects:values
-                                                                            forKeys:keys
-                                                                              count:count];
-        
-        [self.channel invokeMethod:@"event-success" arguments:adjustSessionSuccessMap];
-    }
-    @catch (NSException * e) {
-        NSLog(@" -----> adjustEventTrackingSucceeded exception: %@", e);
-    }
-}
-
-- (void)adjustEventTrackingFailed:(ADJEventFailure *)eventFailureResponseData {
-    @try {
-        NSString *willRetryString = [eventFailureResponseData willRetry] ? @"true" : @"false";
-        id keys[] = { @"message", @"timestamp", @"adid", @"eventToken", @"callbackId", @"willRetry", @"jsonResponse" };
-        id values[] = {
-            [self getValueOrEmpty:[eventFailureResponseData message]],
-            [self getValueOrEmpty:[eventFailureResponseData timeStamp]],
-            [self getValueOrEmpty:[eventFailureResponseData adid]],
-            [self getValueOrEmpty:[eventFailureResponseData eventToken]],
-            [self getValueOrEmpty:[eventFailureResponseData callbackId]],
-            willRetryString,
-            [self toJson:[eventFailureResponseData jsonResponse]]
-        };
-        NSUInteger count = sizeof(values) / sizeof(id);
-        NSDictionary *adjustSessionSuccessMap = [NSDictionary dictionaryWithObjects:values
-                                                                            forKeys:keys
-                                                                              count:count];
-        
-        [self.channel invokeMethod:@"event-fail" arguments:adjustSessionSuccessMap];
-    }
-    @catch (NSException * e) {
-        NSLog(@" -----> adjustEventTrackingFailed exception: %@", e);
-    }
-}
-
-- (void)adjustSessionTrackingSucceeded:(ADJSessionSuccess *)sessionSuccessResponseData {
-    @try {
-        id keys[] = { @"message", @"timestamp", @"adid", @"jsonResponse" };
-        id values[] = {
-            [self getValueOrEmpty:[sessionSuccessResponseData message]],
-            [self getValueOrEmpty:[sessionSuccessResponseData timeStamp]],
-            [self getValueOrEmpty:[sessionSuccessResponseData adid]],
-            [self toJson:[sessionSuccessResponseData jsonResponse]]
-        };
-        NSUInteger count = sizeof(values) / sizeof(id);
-        NSDictionary *adjustSessionSuccessMap = [NSDictionary dictionaryWithObjects:values
-                                                                            forKeys:keys
-                                                                              count:count];
-        
-        [self.channel invokeMethod:@"session-success" arguments:adjustSessionSuccessMap];
-    }
-    @catch (NSException * e) {
-        NSLog(@" -----> adjustSessionTrackingSucceeded exception: %@", e);
-    }
-}
-
-- (void)adjustSessionTrackingFailed:(ADJSessionFailure *)sessionFailureResponseData {
-    @try {
-        NSString *willRetryString = [sessionFailureResponseData willRetry] ? @"true" : @"false";
-        id keys[] = { @"message", @"timestamp", @"adid", @"willRetry", @"jsonResponse" };
-        id values[] = {
-            [self getValueOrEmpty:[sessionFailureResponseData message]],
-            [self getValueOrEmpty:[sessionFailureResponseData timeStamp]],
-            [self getValueOrEmpty:[sessionFailureResponseData adid]],
-            willRetryString,
-            [self toJson:[sessionFailureResponseData jsonResponse]]
-        };
-        NSUInteger count = sizeof(values) / sizeof(id);
-        NSDictionary *adjustFailureSuccessMap = [NSDictionary dictionaryWithObjects:values
-                                                                            forKeys:keys
-                                                                              count:count];
-        
-        [self.channel invokeMethod:@"session-fail" arguments:adjustFailureSuccessMap];
-    }
-    @catch (NSException * e) {
-        NSLog(@" -----> adjustSessionTrackingFailed exception: %@", e);
-    }
-}
-
-- (BOOL)adjustDeeplinkResponse:(NSURL *)deeplink {
-    id keys[] = { @"uri" };
-    id values[] = { [deeplink absoluteString] };
-    NSUInteger count = sizeof(values) / sizeof(id);
-    NSDictionary *deeplinkUriParamsMap = [NSDictionary dictionaryWithObjects:values
-                                                                        forKeys:keys
-                                                                          count:count];
-    
-    [self.channel invokeMethod:@"receive-deferred-deeplink" arguments:deeplinkUriParamsMap];
-    
-    return self.launchDeferredDeeplink;
-}
-
 - (void)setTestOptions:(FlutterMethodCall*)call withResult:(FlutterResult)result {
     AdjustTestOptions *testOptions = [[AdjustTestOptions alloc] init];
     NSString *baseUrl = call.arguments[@"baseUrl"];
@@ -506,6 +398,9 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
     }
     if ([self isFieldValid:teardown]) {
         testOptions.teardown = [teardown boolValue];
+        if (testOptions.teardown) {
+            [AdjustSdkDelegate teardown];
+        }
     }
     if ([self isFieldValid:deleteState]) {
         testOptions.deleteState = [deleteState boolValue];
@@ -552,21 +447,6 @@ static NSString *const CHANNEL_DEEPLINK_NAME = @"com.adjust/deeplink";
         [dictionary setObject:@"" forKey:key];
     }
 }
-
--(NSString*)toJson:(id)object
-{
-    NSError *writeError = nil;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:object options:NSJSONWritingPrettyPrinted error:&writeError];
-    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-}
-
-- (NSString*)getValueOrEmpty:(NSString *)value {
-    if (value == nil) {
-        return @"";
-    }
-    return value;
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
 
