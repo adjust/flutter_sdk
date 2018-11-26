@@ -6,7 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:testlib/testlib.dart';
-import 'package:testapp/adjustCommandExecutor.dart';
+import 'package:testapp/command_executor.dart';
 import 'package:testapp/command.dart';
 
 void main() => runApp(new MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  AdjustCommandExecutor _adjustCommandExecutor;
+  CommandExecutor _commandExecutor;
   String _clientSdkPlatform = '';
   String _clientSdk = '';
 
@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
     // init test library
     Testlib.init(_baseUrl);
 
-    _adjustCommandExecutor = new AdjustCommandExecutor(_baseUrl, _gdprUrl);
+    _commandExecutor = new CommandExecutor(_baseUrl, _gdprUrl);
     _clientSdk = 'flutter4.16.0@$_clientSdkPlatform';
 
     Testlib.doNotExitAfterEnd();
@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
     Testlib.setExecuteCommandHalder((final dynamic callArgs) {
       Command command = new Command(callArgs);
       print('>>> EXECUTING METHOD: [${command.className}.${command.methodName}] <<<');
-      _adjustCommandExecutor.executeCommand(command);
+      _commandExecutor.executeCommand(command);
     });
   }
 

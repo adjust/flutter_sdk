@@ -9,7 +9,7 @@ import 'package:adjust_sdk/callbacksData/adjust_event_success.dart';
 import 'package:testlib/testlib.dart';
 import 'package:testapp/command.dart';
 
-class AdjustCommandExecutor {
+class CommandExecutor {
   String _baseUrl;
   String _basePath;
   String _gdprUrl;
@@ -18,7 +18,7 @@ class AdjustCommandExecutor {
   Map<int, AdjustConfig> _savedConfigs = new Map<int, AdjustConfig>();
   Command _command;
 
-  AdjustCommandExecutor(String baseUrl, String gdprUrl) {
+  CommandExecutor(String baseUrl, String gdprUrl) {
     _baseUrl = baseUrl;
     _gdprUrl = gdprUrl;
   }
