@@ -1,25 +1,29 @@
+//
+//  AdjustUtils.java
+//  Adjust SDK
+//
+//  Created by Srdjan Tubin (@2beens) on 5th May 2018.
+//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//
+
 package com.adjust.sdk.flutter;
 
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 
-/**
- * com.adjust.sdk.flutter
- * Created by 2beens on 05.05.18.
- */
 public class AdjustUtils {
     private static NumberFormat numberFormat = NumberFormat.getInstance();
 
     public static boolean stringIsNumber(String numberString) {
-        if(numberString == null)
+        if (numberString == null) {
             return false;
-
-        if(numberString.length() == 0)
+        }
+        if (numberString.length() == 0) {
             return false;
+        }
 
-        ParsePosition pos = new ParsePosition(0);
-        numberFormat.parse(numberString, pos);
-
-        return numberString.length() == pos.getIndex();
+        ParsePosition position = new ParsePosition(0);
+        numberFormat.parse(numberString, position);
+        return numberString.length() == position.getIndex();
     }
 }
