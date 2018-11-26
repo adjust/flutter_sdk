@@ -1,4 +1,4 @@
-package com.adjust.sdk.adjustsdkpluginexample;
+package com.adjust.sdk.example;
 
 import android.os.Bundle;
 
