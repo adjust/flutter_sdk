@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
-import 'package:adjust_sdk/callbacksData/adjust_attribution.dart';
+import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 

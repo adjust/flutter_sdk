@@ -1,11 +1,11 @@
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
 import 'package:adjust_sdk/adjust_sdk.dart';
-import 'package:adjust_sdk/callbacksData/adjust_attribution.dart';
-import 'package:adjust_sdk/callbacksData/adjust_session_failure.dart';
-import 'package:adjust_sdk/callbacksData/adjust_session_success.dart';
-import 'package:adjust_sdk/callbacksData/adjust_event_failure.dart';
-import 'package:adjust_sdk/callbacksData/adjust_event_success.dart';
+import 'package:adjust_sdk/adjust_attribution.dart';
+import 'package:adjust_sdk/adjust_session_failure.dart';
+import 'package:adjust_sdk/adjust_session_success.dart';
+import 'package:adjust_sdk/adjust_event_failure.dart';
+import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:testlib/testlib.dart';
 import 'package:testapp/command.dart';
 
