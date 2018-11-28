@@ -10,8 +10,7 @@ class AdjustEvent {
   Map<String, String> callbackParameters;
   Map<String, String> partnerParameters;
 
-  AdjustEvent(this.eventToken, [this.revenue, this.currency='',
-      this.orderId = '']) {
+  AdjustEvent(this.eventToken) {
     callbackParameters = new Map<String, String>();
     partnerParameters = new Map<String, String>();
   }

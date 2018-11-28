@@ -63,23 +63,26 @@ class Util {
   }
 
   static AdjustEvent buildSimpleEvent() {
-    return new AdjustEvent(EVENT_TOKEN_SIMPLE, 10, 'EUR', '');
+    return new AdjustEvent(EVENT_TOKEN_SIMPLE);
   }
 
   static AdjustEvent buildRevenueEvent() {
-    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_REVENUE, 100.0, 'EUR', '');
+    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_REVENUE);
+    event.revenue = 100.0;
+    event.currency = 'EUR';
+    event.orderId = 'dummyorderid';
     return event;
   }
 
   static AdjustEvent buildCallbackEvent() {
-    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_CALLBACK, 100, 'EUR');
+    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_CALLBACK);
     event.addCallbackParameter('key1', 'value1');
     event.addCallbackParameter('key2', 'value2');
     return event;
   }
 
   static AdjustEvent buildPartnerEvent() {
-    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_PARTNER, 100, 'EUR');
+    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_PARTNER);
     event.addPartnerParameter('foo1', 'bar1');
     event.addPartnerParameter('foo2', 'bar2');
     return event;
