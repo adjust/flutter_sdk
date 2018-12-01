@@ -1,11 +1,3 @@
-//
-//  main.dart
-//  Adjust SDK
-//
-//  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
-//
-
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
@@ -14,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:testlib/testlib.dart';
 import 'package:testapp/command.dart';
 import 'package:testapp/command_executor.dart';
-import 'package:adjust_sdk/adjust_sdk.dart';
+import 'package:adjust_sdk/adjust.dart';
 
 void main() => runApp(new MyApp());
 
@@ -33,7 +25,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     initPlatformState();
 
-    String _address = '192.168.2.100';
+    String _address = '192.168.8.249';
     if (Platform.isAndroid) {
       String _protocol = 'https';
       String _port = '8443';

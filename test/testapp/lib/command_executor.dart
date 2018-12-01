@@ -1,14 +1,6 @@
-//
-//  command_executor.dart
-//  Adjust SDK
-//
-//  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
-//
-
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
-import 'package:adjust_sdk/adjust_sdk.dart';
+import 'package:adjust_sdk/adjust.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
