@@ -1,5 +1,12 @@
-import 'dart:async';
+//
+//  testlib.dart
+//  Adjust SDK
+//
+//  Created by Srdjan Tubin (@2beens) on 25th April 2018.
+//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//
 
+import 'dart:async';
 import 'package:flutter/services.dart';
 
 typedef void ExecuteCommandHandler(final dynamic callArgs);
@@ -18,10 +25,10 @@ class Testlib {
   }
 
   static void init(String baseUrl) {
-    print(' >>>>> Test Lib Initializing...');
+    print('[TestLibrary]: Test library initialisation.');
     
     _channel.setMethodCallHandler((MethodCall call) {
-      print(' >>>>> INCOMING METHOD FROM NATIVE: ${call.method}');
+      print('[TestLibrary]: Incoming method from native layer: ${call.method}');
 
       try {
         if (call.method == 'execute-method') {
@@ -29,7 +36,7 @@ class Testlib {
             _executeCommandHandler(call.arguments);
           }
         } else {
-          print('Unknown method called: ' + call.method);
+          print('[Test Library]: Unknown method called: ' + call.method);
         }
       } catch (e) {
         print(e.toString());
@@ -45,7 +52,7 @@ class Testlib {
 
   static void addInfoToSend(String key, String value) {
     if (value == null) {
-      print('TestLib: Skip adding info to server for key [${key}]. Value is null.');
+      print('[TestLibrary]: Skip adding info to server for key [${key}]. Value is null.');
       return;
     }
     _channel.invokeMethod('addInfoToSend', {'key': key, 'value': value});

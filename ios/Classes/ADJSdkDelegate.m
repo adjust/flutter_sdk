@@ -1,81 +1,85 @@
 //
-//  AdjustSdkDelegate.h
+//  AdjustSdkDelegate.m
 //  Adjust SDK
 //
-//  Created by Srdjan Tubin (srdjan@adjust.com) on 22nd November 2018.
-//  Copyright © 2012-2018 Adjust GmbH. All rights reserved.
+//  Created by Srdjan Tubin (2beens) on 22nd November 2018.
+//  Copyright © 2018 Adjust GmbH. All rights reserved.
 //
 
 #import <objc/runtime.h>
-#import "AdjustSdkDelegate.h"
+#import "ADJSdkDelegate.h"
 
 static dispatch_once_t onceToken;
-static AdjustSdkDelegate *defaultInstance = nil;
+static ADJSdkDelegate *defaultInstance = nil;
+static NSString *dartAttributionCallback;
+static NSString *dartSessionSuccessCallback;
+static NSString *dartSessionFailureCallback;
+static NSString *dartEventSuccessCallback;
+static NSString *dartEventFailureCallback;
+static NSString *dartDeferredDeeplinkCallback;
 
-@implementation AdjustSdkDelegate
+@implementation ADJSdkDelegate
 
 #pragma mark - Object lifecycle methods
 
 - (id)init {
     self = [super init];
-    
     if (nil == self) {
         return nil;
     }
-    
     return self;
 }
 
 #pragma mark - Public methods
 
-+ (id)getInstanceWithSwizzleOfAttributionCallback:(BOOL)swizzleAttributionCallback
-                           eventSucceededCallback:(BOOL)swizzleEventSucceededCallback
-                              eventFailedCallback:(BOOL)swizzleEventFailedCallback
-                         sessionSucceededCallback:(BOOL)swizzleSessionSucceededCallback
-                            sessionFailedCallback:(BOOL)swizzleSessionFailedCallback
-                         deferredDeeplinkCallback:(BOOL)swizzleDeferredDeeplinkCallback
++ (id)getInstanceWithSwizzleOfAttributionCallback:(NSString *)swizzleAttributionCallback
+                           sessionSuccessCallback:(NSString *)swizzleSessionSuccessCallback
+                           sessionFailureCallback:(NSString *)swizzleSessionFailureCallback
+                             eventSuccessCallback:(NSString *)swizzleEventSuccessCallback
+                             eventFailureCallback:(NSString *)swizzleEventFailureCallback
+                         deferredDeeplinkCallback:(NSString *)swizzleDeferredDeeplinkCallback
                      shouldLaunchDeferredDeeplink:(BOOL)shouldLaunchDeferredDeeplink
-                                withMethodChannel:(FlutterMethodChannel*)channel {
+                                 andMethodChannel:(FlutterMethodChannel *)channel {
     
     dispatch_once(&onceToken, ^{
-        defaultInstance = [[AdjustSdkDelegate alloc] init];
+        defaultInstance = [[ADJSdkDelegate alloc] init];
         
         // Do the swizzling where and if needed.
-        if (swizzleAttributionCallback) {
+        if (swizzleAttributionCallback != nil) {
             [defaultInstance swizzleCallbackMethod:@selector(adjustAttributionChanged:)
                                   swizzledSelector:@selector(adjustAttributionChangedWannabe:)];
+            dartAttributionCallback = swizzleAttributionCallback;
         }
-        
-        if (swizzleEventSucceededCallback) {
-            [defaultInstance swizzleCallbackMethod:@selector(adjustEventTrackingSucceeded:)
-                                  swizzledSelector:@selector(adjustEventTrackingSucceededWannabe:)];
-        }
-        
-        if (swizzleEventFailedCallback) {
-            [defaultInstance swizzleCallbackMethod:@selector(adjustEventTrackingFailed:)
-                                  swizzledSelector:@selector(adjustEventTrackingFailedWannabe:)];
-        }
-        
-        if (swizzleSessionSucceededCallback) {
+        if (swizzleSessionSuccessCallback != nil) {
             [defaultInstance swizzleCallbackMethod:@selector(adjustSessionTrackingSucceeded:)
                                   swizzledSelector:@selector(adjustSessionTrackingSucceededWannabe:)];
+            dartSessionSuccessCallback = swizzleSessionSuccessCallback;
         }
-        
-        if (swizzleSessionFailedCallback) {
+        if (swizzleSessionFailureCallback != nil) {
             [defaultInstance swizzleCallbackMethod:@selector(adjustSessionTrackingFailed:)
                                   swizzledSelector:@selector(adjustSessionTrackingFailedWananbe:)];
+            dartSessionFailureCallback = swizzleSessionFailureCallback;
         }
-        
-        if (swizzleDeferredDeeplinkCallback) {
+        if (swizzleEventSuccessCallback != nil) {
+            [defaultInstance swizzleCallbackMethod:@selector(adjustEventTrackingSucceeded:)
+                                  swizzledSelector:@selector(adjustEventTrackingSucceededWannabe:)];
+            dartEventSuccessCallback = swizzleEventSuccessCallback;
+        }
+        if (swizzleEventFailureCallback != nil) {
+            [defaultInstance swizzleCallbackMethod:@selector(adjustEventTrackingFailed:)
+                                  swizzledSelector:@selector(adjustEventTrackingFailedWannabe:)];
+            dartEventFailureCallback = swizzleEventFailureCallback;
+        }
+        if (swizzleDeferredDeeplinkCallback != nil) {
             [defaultInstance swizzleCallbackMethod:@selector(adjustDeeplinkResponse:)
                                   swizzledSelector:@selector(adjustDeeplinkResponseWannabe:)];
+            dartDeferredDeeplinkCallback = swizzleDeferredDeeplinkCallback;
         }
-        
+
         [defaultInstance setShouldLaunchDeferredDeeplink:shouldLaunchDeferredDeeplink];
-        
         [defaultInstance setChannel:channel];
     });
-    
+
     return defaultInstance;
 }
 
@@ -103,11 +107,50 @@ static AdjustSdkDelegate *defaultInstance = nil;
         [self getValueOrEmpty:[attribution adid]]
     };
     NSUInteger count = sizeof(values) / sizeof(id);
-    NSDictionary *adjustAttributionMap = [NSDictionary dictionaryWithObjects:values
+    NSDictionary *attributionMap = [NSDictionary dictionaryWithObjects:values
                                                                      forKeys:keys
                                                                        count:count];
-    
-    [self.channel invokeMethod:@"attribution-change" arguments:adjustAttributionMap];
+    [self.channel invokeMethod:dartAttributionCallback arguments:attributionMap];
+}
+
+- (void)adjustSessionTrackingSucceededWannabe:(ADJSessionSuccess *)sessionSuccessResponseData {
+    if (nil == sessionSuccessResponseData) {
+        return;
+    }
+
+    id keys[] = { @"message", @"timestamp", @"adid", @"jsonResponse" };
+    id values[] = {
+        [self getValueOrEmpty:[sessionSuccessResponseData message]],
+        [self getValueOrEmpty:[sessionSuccessResponseData timeStamp]],
+        [self getValueOrEmpty:[sessionSuccessResponseData adid]],
+        [self toJson:[self getObjectValueOrEmpty:[sessionSuccessResponseData jsonResponse]]]
+    };
+    NSUInteger count = sizeof(values) / sizeof(id);
+    NSDictionary *sessionSuccessMap = [NSDictionary dictionaryWithObjects:values
+                                                                  forKeys:keys
+                                                                    count:count];
+    [self.channel invokeMethod:dartSessionSuccessCallback arguments:sessionSuccessMap];
+}
+
+- (void)adjustSessionTrackingFailedWananbe:(ADJSessionFailure *)sessionFailureResponseData {
+    if (nil == sessionFailureResponseData) {
+        return;
+    }
+
+    NSString *willRetryString = [sessionFailureResponseData willRetry] ? @"true" : @"false";
+    id keys[] = { @"message", @"timestamp", @"adid", @"willRetry", @"jsonResponse" };
+    id values[] = {
+        [self getValueOrEmpty:[sessionFailureResponseData message]],
+        [self getValueOrEmpty:[sessionFailureResponseData timeStamp]],
+        [self getValueOrEmpty:[sessionFailureResponseData adid]],
+        willRetryString,
+        [self toJson:[self getObjectValueOrEmpty:[sessionFailureResponseData jsonResponse]]]
+    };
+    NSUInteger count = sizeof(values) / sizeof(id);
+    NSDictionary *sessionFailureMap = [NSDictionary dictionaryWithObjects:values
+                                                                  forKeys:keys
+                                                                    count:count];
+    [self.channel invokeMethod:dartSessionFailureCallback arguments:sessionFailureMap];
 }
 
 - (void)adjustEventTrackingSucceededWannabe:(ADJEventSuccess *)eventSuccessResponseData {
@@ -125,11 +168,10 @@ static AdjustSdkDelegate *defaultInstance = nil;
         [self toJson:[self getObjectValueOrEmpty:[eventSuccessResponseData jsonResponse]]]
     };
     NSUInteger count = sizeof(values) / sizeof(id);
-    NSDictionary *adjustSessionSuccessMap = [NSDictionary dictionaryWithObjects:values
-                                                                        forKeys:keys
-                                                                          count:count];
-    
-    [self.channel invokeMethod:@"event-success" arguments:adjustSessionSuccessMap];
+    NSDictionary *eventSuccessMap = [NSDictionary dictionaryWithObjects:values
+                                                                forKeys:keys
+                                                                  count:count];
+    [self.channel invokeMethod:dartEventSuccessCallback arguments:eventSuccessMap];
 }
 
 - (void)adjustEventTrackingFailedWannabe:(ADJEventFailure *)eventFailureResponseData {
@@ -149,66 +191,20 @@ static AdjustSdkDelegate *defaultInstance = nil;
         [self toJson:[self getObjectValueOrEmpty:[eventFailureResponseData jsonResponse]]]
     };
     NSUInteger count = sizeof(values) / sizeof(id);
-    NSDictionary *adjustSessionSuccessMap = [NSDictionary dictionaryWithObjects:values
-                                                                        forKeys:keys
-                                                                          count:count];
-    
-    [self.channel invokeMethod:@"event-fail" arguments:adjustSessionSuccessMap];
-}
-
-
-- (void)adjustSessionTrackingSucceededWannabe:(ADJSessionSuccess *)sessionSuccessResponseData {
-    if (nil == sessionSuccessResponseData) {
-        return;
-    }
-    
-    id keys[] = { @"message", @"timestamp", @"adid", @"jsonResponse" };
-    id values[] = {
-        [self getValueOrEmpty:[sessionSuccessResponseData message]],
-        [self getValueOrEmpty:[sessionSuccessResponseData timeStamp]],
-        [self getValueOrEmpty:[sessionSuccessResponseData adid]],
-        [self toJson:[self getObjectValueOrEmpty:[sessionSuccessResponseData jsonResponse]]]
-    };
-    NSUInteger count = sizeof(values) / sizeof(id);
-    NSDictionary *adjustSessionSuccessMap = [NSDictionary dictionaryWithObjects:values
-                                                                        forKeys:keys
-                                                                          count:count];
-    
-    [self.channel invokeMethod:@"session-success" arguments:adjustSessionSuccessMap];
-}
-
-- (void)adjustSessionTrackingFailedWananbe:(ADJSessionFailure *)sessionFailureResponseData {
-    if (nil == sessionFailureResponseData) {
-        return;
-    }
-    
-    NSString *willRetryString = [sessionFailureResponseData willRetry] ? @"true" : @"false";
-    id keys[] = { @"message", @"timestamp", @"adid", @"willRetry", @"jsonResponse" };
-    id values[] = {
-        [self getValueOrEmpty:[sessionFailureResponseData message]],
-        [self getValueOrEmpty:[sessionFailureResponseData timeStamp]],
-        [self getValueOrEmpty:[sessionFailureResponseData adid]],
-        willRetryString,
-        [self toJson:[self getObjectValueOrEmpty:[sessionFailureResponseData jsonResponse]]]
-    };
-    NSUInteger count = sizeof(values) / sizeof(id);
-    NSDictionary *adjustFailureSuccessMap = [NSDictionary dictionaryWithObjects:values
-                                                                        forKeys:keys
-                                                                          count:count];
-    
-    [self.channel invokeMethod:@"session-fail" arguments:adjustFailureSuccessMap];
+    NSDictionary *eventFailureMap = [NSDictionary dictionaryWithObjects:values
+                                                                forKeys:keys
+                                                                  count:count];
+    [self.channel invokeMethod:dartEventFailureCallback arguments:eventFailureMap];
 }
 
 - (BOOL)adjustDeeplinkResponseWannabe:(NSURL *)deeplink {
     id keys[] = { @"uri" };
     id values[] = { [deeplink absoluteString] };
     NSUInteger count = sizeof(values) / sizeof(id);
-    NSDictionary *deeplinkUriParamsMap = [NSDictionary dictionaryWithObjects:values
-                                                                     forKeys:keys
-                                                                       count:count];
-    
-    [self.channel invokeMethod:@"receive-deferred-deeplink" arguments:deeplinkUriParamsMap];
-    
+    NSDictionary *deeplinkMap = [NSDictionary dictionaryWithObjects:values
+                                                            forKeys:keys
+                                                              count:count];
+    [self.channel invokeMethod:dartDeferredDeeplinkCallback arguments:deeplinkMap];
     return self.shouldLaunchDeferredDeeplink;
 }
 
@@ -217,12 +213,10 @@ static AdjustSdkDelegate *defaultInstance = nil;
     Class class = [self class];
     Method originalMethod = class_getInstanceMethod(class, originalSelector);
     Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
-    
     BOOL didAddMethod = class_addMethod(class,
                                         originalSelector,
                                         method_getImplementation(swizzledMethod),
                                         method_getTypeEncoding(swizzledMethod));
-    
     if (didAddMethod) {
         class_replaceMethod(class,
                             swizzledSelector,
@@ -243,14 +237,15 @@ static AdjustSdkDelegate *defaultInstance = nil;
     }
 }
 
--(NSString*)toJson:(id)object
-{
+- (NSString *)toJson:(id)object {
     NSError *writeError = nil;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:object options:NSJSONWritingPrettyPrinted error:&writeError];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:object
+                                                       options:NSJSONWritingPrettyPrinted
+                                                         error:&writeError];
     return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
-- (NSString*)getValueOrEmpty:(NSString *)value {
+- (NSString *)getValueOrEmpty:(NSString *)value {
     if (value == nil || value == NULL) {
         return @"";
     }

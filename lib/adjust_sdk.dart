@@ -1,45 +1,34 @@
+//
+//  adjust_sdk.dart
+//  Adjust SDK
+//
+//  Created by Srdjan Tubin (@2beens) on 25th April 2018.
+//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//
+
 import 'dart:async';
 
+import 'package:meta/meta.dart';
+import 'package:flutter/services.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
-import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
 
 class Adjust {
+  static const String _sdkPrefix = 'flutter4.17.0';
   static const MethodChannel _channel = const MethodChannel('com.adjust/api');
 
-  @experimental
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
-  }
-
-  static void onResume() {
-    print('Calling "ON RESUME" from flutter...');
-    _channel.invokeMethod('onResume');
-  }
-
-  static void onPause() {
-    print('Calling "ON PAUSE" from flutter...');
-    _channel.invokeMethod('onPause');
-  }
-
-  static Future<bool> isEnabled() async {
-    final bool isEnabled = await _channel.invokeMethod('isEnabled');
-    return isEnabled;
-  }
-
-  static void setIsEnabled(bool isEnabled) {
-    _channel.invokeMethod('setIsEnabled', {'isEnabled': isEnabled});
-  }
-
   static void onCreate(AdjustConfig config) {
-    _channel.invokeMethod('onCreate', config.configParamsMap);
+    config.sdkPrefix = _sdkPrefix;
+    _channel.invokeMethod('onCreate', config.toMap);
   }
 
-  static void trackEvent(AdjustEvent adjustEvent) {
-    _channel.invokeMethod('trackEvent', adjustEvent.adjustEventParamsMap);
+  static void trackEvent(AdjustEvent event) {
+    _channel.invokeMethod('trackEvent', event.toMap);
+  }
+
+  static void setEnabled(bool isEnabled) {
+    _channel.invokeMethod('setEnabled', {'isEnabled': isEnabled});
   }
 
   static void setOfflineMode(bool isOffline) {
@@ -47,7 +36,11 @@ class Adjust {
   }
 
   static void setPushToken(String token) {
-    _channel.invokeMethod('setPushToken', {'token': token});
+    _channel.invokeMethod('setPushToken', {'pushToken': token});
+  }
+
+  static void setReferrer(String referrer) {
+    _channel.invokeMethod('setReferrer', {'referrer': referrer});
   }
 
   static void appWillOpenUrl(String url) {
@@ -60,6 +53,19 @@ class Adjust {
 
   static void gdprForgetMe() {
     _channel.invokeMethod('gdprForgetMe');
+  }
+
+  static void onResume() {
+    _channel.invokeMethod('onResume');
+  }
+
+  static void onPause() {
+    _channel.invokeMethod('onPause');
+  }
+
+  static Future<bool> isEnabled() async {
+    final bool isEnabled = await _channel.invokeMethod('isEnabled');
+    return isEnabled;
   }
 
   static Future<String> getAdid() async {
@@ -77,10 +83,6 @@ class Adjust {
     return amazonAdId;
   }
 
-  static void setReferrer(String referrer) {
-    _channel.invokeMethod('setReferrer', {'referrer': referrer});
-  }
-
   static Future<String> getGoogleAdId() async {
     final String googleAdId = await _channel.invokeMethod('getGoogleAdId');
     return googleAdId;
@@ -91,14 +93,17 @@ class Adjust {
     return AdjustAttribution.fromMap(attributionMap);
   }
 
+  static Future<String> getSdkVersion() async {
+    final String sdkVersion = await _channel.invokeMethod('getSdkVersion');
+    return _sdkPrefix + '@' + sdkVersion;
+  }
+
   static void addSessionCallbackParameter(String key, String value) {
-    _channel.invokeMethod(
-        'addSessionCallbackParameter', {'key': key, 'value': value});
+    _channel.invokeMethod('addSessionCallbackParameter', {'key': key, 'value': value});
   }
 
   static void addSessionPartnerParameter(String key, String value) {
-    _channel.invokeMethod(
-        'addSessionPartnerParameter', {'key': key, 'value': value});
+    _channel.invokeMethod('addSessionPartnerParameter', {'key': key, 'value': value});
   }
 
   static void removeSessionCallbackParameter(String key) {
@@ -117,7 +122,7 @@ class Adjust {
     _channel.invokeMethod('resetSessionPartnerParameters');
   }
 
-  // for integration testing only
+  // For testing purposes only. Do not use in production.
   @visibleForTesting
   static void setTestOptions(final dynamic testOptions) {
     _channel.invokeMethod('setTestOptions', testOptions);

@@ -1,3 +1,11 @@
+//
+//  command.dart
+//  Adjust SDK
+//
+//  Created by Srdjan Tubin (@2beens) on 25th April 2018.
+//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -5,7 +13,6 @@ class Command {
   String _className;
   String _methodName;
   String _jsonParameters;
-  // Map<String, dynamic> _parameters;
   Map<dynamic, dynamic> _parameters;
 
   Command(dynamic map) {
@@ -21,8 +28,7 @@ class Command {
         _jsonParameters = json.encode(_parameters);
       }
     } catch (e) {
-      print('Error! Failed to map Command from incoming data. Details: ' +
-          e.toString());
+      print('[Command]: Error! Failed to map Command from incoming data. Details: ' + e.toString());
     }
   }
 
@@ -47,6 +53,6 @@ class Command {
 
   @override
   String toString() {
-    return 'Command[ className: $_className, methodName: $_methodName, jsonParameters: $_jsonParameters]';
+    return 'Command[className: $_className, methodName: $_methodName, jsonParameters: $_jsonParameters]';
   }
 }

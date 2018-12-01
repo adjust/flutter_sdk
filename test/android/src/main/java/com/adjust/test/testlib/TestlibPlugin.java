@@ -1,3 +1,11 @@
+//
+//  TestlibPlugin.java
+//  Adjust SDK
+//
+//  Created by Srdjan Tubin (@2beens) on 1st October 2018.
+//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//
+
 package com.adjust.test.testlib;
 
 import io.flutter.plugin.common.MethodCall;

@@ -14,7 +14,7 @@ import java.text.ParsePosition;
 public class AdjustUtils {
     private static NumberFormat numberFormat = NumberFormat.getInstance();
 
-    public static boolean stringIsNumber(String numberString) {
+    public static boolean isNumber(String numberString) {
         if (numberString == null) {
             return false;
         }

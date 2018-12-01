@@ -1,18 +1,30 @@
+//
+//  adjust_event.dart
+//  Adjust SDK
+//
+//  Created by Srdjan Tubin (@2beens) on 25th April 2018.
+//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//
+
 import 'dart:convert';
 
 class AdjustEvent {
-  String eventToken;
   num revenue;
+  String _eventToken;
   String currency;
-  String orderId;
+  String transactionId;
   String callbackId;
-
   Map<String, String> callbackParameters;
   Map<String, String> partnerParameters;
 
-  AdjustEvent(this.eventToken) {
+  AdjustEvent(this._eventToken) {
     callbackParameters = new Map<String, String>();
     partnerParameters = new Map<String, String>();
+  }
+
+  void setRevenue(num revenue, String currency) {
+    this.revenue = revenue;
+    this.currency = currency;
   }
 
   void addCallbackParameter(String key, String value) {
@@ -23,34 +35,30 @@ class AdjustEvent {
     partnerParameters[key] = value;
   }
 
-  Map<String, String> get adjustEventParamsMap {
-    Map<String, String> adjustEventParamsMap = {
-      'eventToken': eventToken
+  Map<String, String> get toMap {
+    Map<String, String> eventMap = {
+      'eventToken': _eventToken
     };
 
     if (revenue != null) {
-      adjustEventParamsMap['revenue'] = revenue.toString();
+      eventMap['revenue'] = revenue.toString();
     }
     if (currency != null) {
-      adjustEventParamsMap['currency'] = currency;
+      eventMap['currency'] = currency;
     }
-    if (orderId != null) {
-      adjustEventParamsMap['orderId'] = orderId;
+    if (transactionId != null) {
+      eventMap['transactionId'] = transactionId;
     }
     if (callbackId != null) {
-      adjustEventParamsMap['callbackId'] = callbackId;
+      eventMap['callbackId'] = callbackId;
     }
-
     if (callbackParameters.length > 0) {
-      adjustEventParamsMap['callbackParameters'] =
-          json.encode(callbackParameters);
+      eventMap['callbackParameters'] = json.encode(callbackParameters);
+    }
+    if (partnerParameters.length > 0) {
+      eventMap['partnerParameters'] = json.encode(partnerParameters);
     }
 
-    if (partnerParameters.length > 0) {
-      adjustEventParamsMap['partnerParameters'] =
-          json.encode(partnerParameters);
-    }
-    
-    return adjustEventParamsMap;
+    return eventMap;
   }
 }
