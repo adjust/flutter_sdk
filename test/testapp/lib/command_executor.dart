@@ -224,7 +224,7 @@ class CommandExecutor {
       String localBasePath = _basePath;
       bool launchDeferredDeeplink = _command.getFirstParameterValue('deferredDeeplinkCallback') == 'true';
       adjustConfig.setLaunchDeferredDeeplink(launchDeferredDeeplink);
-      print('[CommandExecutor]: Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink}');
+      print('[CommandExecutor]: Deferred deeplink callback, launchDeferredDeeplink: ${launchDeferredDeeplink}');
       adjustConfig.setDeferredDeeplinkCallback((String uri) {
         print('[CommandExecutor]: Sending deeplink info to server: $uri');
         Testlib.addInfoToSend('deeplink', uri);
@@ -342,8 +342,7 @@ class CommandExecutor {
 
     if (_command.containsParameter('revenue')) {
       List<dynamic> revenueParams = _command.getParamteters('revenue');
-      adjustEvent.currency = revenueParams[0];
-      adjustEvent.revenue = num.parse(revenueParams[1]);
+      adjustEvent.setRevenue(num.parse(revenueParams[1]), revenueParams[0]);
     }
     if (_command.containsParameter('callbackParams')) {
       List<dynamic> callbackParams = _command.getParamteters('callbackParams');
@@ -362,10 +361,10 @@ class CommandExecutor {
       }
     }
     if (_command.containsParameter('orderId')) {
-      adjustEvent.transactionId = _command.getFirstParameterValue('orderId');
+      adjustEvent.setTransactionId(_command.getFirstParameterValue('orderId'));
     }
     if (_command.containsParameter('callbackId')) {
-      adjustEvent.callbackId = _command.getFirstParameterValue('callbackId');
+      adjustEvent.setCallbackId(_command.getFirstParameterValue('callbackId'));
     }
   }
 
