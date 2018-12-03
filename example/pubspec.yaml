@@ -1,5 +1,5 @@
-name: adjust_sdk_example
-description: Demonstrates how to use the adjust_sdk plugin.
+name: adjust_example
+description: Example app which demonstrates how to use the adjust_sdk Flutter plugin.
 
 dependencies:
   flutter:

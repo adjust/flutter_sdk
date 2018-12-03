@@ -24,7 +24,7 @@ typedef void EventFailureCallback(AdjustEventFailure failureData);
 typedef void DeferredDeeplinkCallback(String uri);
 
 class AdjustConfig {
-  static const MethodChannel _channel = const MethodChannel('com.adjust/api');
+  static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
 
   num _info1;
   num _info2;

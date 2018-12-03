@@ -8,7 +8,7 @@ import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
-import 'package:adjust_sdk_example/util.dart';
+import 'package:adjust_example/util.dart';
 
 void main() {
   runApp(new AdjustExampleApp());
@@ -30,7 +30,6 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
-  String _platformVersion = 'Unknown';
   bool _isSdkEnabled = true;
 
   @override
@@ -78,54 +77,114 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
     config.setAttributionCallback((AdjustAttribution attributionChangedData) {
       print('[Adjust]: Attribution changed!');
+
       if (attributionChangedData.trackerToken != null) {
         print('[Adjust]: Tracker token: ' + attributionChangedData.trackerToken);
       }
-      print('[Adjust]: Tracker name: ' + attributionChangedData.trackerName);
-      print('[Adjust]: Campaign: ' + attributionChangedData.campaign);
-      print('[Adjust]: Network: ' + attributionChangedData.network);
-      print('[Adjust]: Creative: ' + attributionChangedData.creative);
-      print('[Adjust]: Adgroup: ' + attributionChangedData.adgroup);
-      print('[Adjust]: ADID: ' + attributionChangedData.adid);
+      if (attributionChangedData.trackerName != null) {
+        print('[Adjust]: Tracker name: ' + attributionChangedData.trackerName);
+      }
+      if (attributionChangedData.campaign != null) {
+        print('[Adjust]: Campaign: ' + attributionChangedData.campaign);
+      }
+      if (attributionChangedData.network != null) {
+        print('[Adjust]: Network: ' + attributionChangedData.network);
+      }
+      if (attributionChangedData.creative != null) {
+        print('[Adjust]: Creative: ' + attributionChangedData.creative);
+      }
+      if (attributionChangedData.adgroup != null) {
+        print('[Adjust]: Adgroup: ' + attributionChangedData.adgroup);
+      }
+      if (attributionChangedData.adid != null) {
+        print('[Adjust]: Adid: ' + attributionChangedData.adid);
+      }
     });
 
     config.setSessionSuccessCallback((AdjustSessionSuccess sessionSuccessData) {
       print('[Adjust]: Session tracking success!');
-      print('[Adjust]: Message: ' + sessionSuccessData.message);
-      print('[Adjust]: Timestamp: ' + sessionSuccessData.timestamp);
-      print('[Adjust]: Adid: ' + sessionSuccessData.adid);
-      print('[Adjust]: JSON response: ' + sessionSuccessData.jsonResponse);
+
+      if (sessionSuccessData.message != null) {
+        print('[Adjust]: Message: ' + sessionSuccessData.message);
+      }
+      if (sessionSuccessData.timestamp != null) {
+        print('[Adjust]: Timestamp: ' + sessionSuccessData.timestamp);
+      }
+      if (sessionSuccessData.adid != null) {
+        print('[Adjust]: Adid: ' + sessionSuccessData.adid);
+      }
+      if (sessionSuccessData.jsonResponse != null) {
+        print('[Adjust]: JSON response: ' + sessionSuccessData.jsonResponse);
+      }
     });
 
     config.setSessionFailureCallback((AdjustSessionFailure sessionFailureData) {
       print('[Adjust]: Session tracking failure!');
-      print('[Adjust]: Message: ' + sessionFailureData.message);
-      print('[Adjust]: Timestamp: ' + sessionFailureData.timestamp);
-      print(sessionFailureData.adid);
-      print('[Adjust]: Adid: ' + sessionFailureData.adid);
-      print('[Adjust]: Will retry: ' + sessionFailureData.willRetry.toString());
-      print('[Adjust]: JSON response: ' + sessionFailureData.jsonResponse);
+
+      if (sessionFailureData.message != null) {
+        print('[Adjust]: Message: ' + sessionFailureData.message);
+      }
+      if (sessionFailureData.timestamp != null) {
+        print('[Adjust]: Timestamp: ' + sessionFailureData.timestamp);
+      }
+      if (sessionFailureData.adid != null) {
+        print('[Adjust]: Adid: ' + sessionFailureData.adid);
+      }
+      if (sessionFailureData.willRetry != null) {
+        print('[Adjust]: Will retry: ' + sessionFailureData.willRetry.toString());
+      }
+      if (sessionFailureData.jsonResponse != null) {
+        print('[Adjust]: JSON response: ' + sessionFailureData.jsonResponse);
+      }
     });
 
     config.setEventSuccessCallback((AdjustEventSuccess eventSuccessData) {
       print('[Adjust]: Event tracking success!');
-      print('[Adjust]: Event token: ' + eventSuccessData.eventToken);
-      print('[Adjust]: Message: ' + eventSuccessData.message);
-      print('[Adjust]: Timestamp: ' + eventSuccessData.timestamp);
-      print('[Adjust]: Adid: ' + eventSuccessData.adid);
-      print('[Adjust]: Callback ID: ' + eventSuccessData.callbackId);
-      print('[Adjust]: JSON response: ' + eventSuccessData.jsonResponse);
+
+      if (eventSuccessData.eventToken != null) {
+        print('[Adjust]: Event token: ' + eventSuccessData.eventToken);
+      }
+      if (eventSuccessData.message != null) {
+        print('[Adjust]: Message: ' + eventSuccessData.message);
+      }
+      if (eventSuccessData.timestamp != null) {
+        print('[Adjust]: Timestamp: ' + eventSuccessData.timestamp);
+      }
+      if (eventSuccessData.adid != null) {
+        print('[Adjust]: Adid: ' + eventSuccessData.adid);
+      }
+      if (eventSuccessData.callbackId != null) {
+        print('[Adjust]: Callback ID: ' + eventSuccessData.callbackId);
+      }
+      if (eventSuccessData.jsonResponse != null) {
+        print('[Adjust]: JSON response: ' + eventSuccessData.jsonResponse);
+      }
     });
 
     config.setEventFailureCallback((AdjustEventFailure eventFailureData) {
       print('[Adjust]: Event tracking failure!');
-      print('[Adjust]: Event token: ' + eventFailureData.eventToken);
-      print('[Adjust]: Message: ' + eventFailureData.message);
-      print('[Adjust]: Timestamp: ' + eventFailureData.timestamp);
-      print('[Adjust]: Adid: ' + eventFailureData.adid);
-      print('[Adjust]: Callback ID: ' + eventFailureData.callbackId);
-      print('[Adjust]: Will retry: ' + eventFailureData.willRetry.toString());
-      print('[Adjust]: JSON response: ' + eventFailureData.jsonResponse);
+
+      if (eventSuccessData.eventToken != null) {
+        print('[Adjust]: Event token: ' + eventFailureData.eventToken);
+      }
+      if (eventSuccessData.message != null) {
+        print('[Adjust]: Message: ' + eventFailureData.message);
+      }
+      if (eventSuccessData.timestamp != null) {
+        print('[Adjust]: Timestamp: ' + eventFailureData.timestamp);
+      }
+      if (eventSuccessData.adid != null) {
+        print('[Adjust]: Adid: ' + eventFailureData.adid);
+      }
+      if (eventSuccessData.callbackId != null) {
+        print('[Adjust]: Callback ID: ' + eventFailureData.callbackId);
+      }
+      if (eventSuccessData.willRetry != null) {
+        print('[Adjust]: Will retry: ' + eventFailureData.willRetry.toString());
+      }
+      if (eventSuccessData.jsonResponse != null) {
+        print('[Adjust]: JSON response: ' + eventFailureData.jsonResponse);
+      }
     });
 
     config.setDeferredDeeplinkCallback((String uri) {
