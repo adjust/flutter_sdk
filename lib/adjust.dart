@@ -16,7 +16,7 @@ import 'package:adjust_sdk/adjust_attribution.dart';
 
 class Adjust {
   static const String _sdkPrefix = 'flutter4.17.0';
-  static const MethodChannel _channel = const MethodChannel('com.adjust/api');
+  static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
 
   static void onCreate(AdjustConfig config) {
     config.sdkPrefix = _sdkPrefix;
@@ -74,18 +74,30 @@ class Adjust {
   }
 
   static Future<String> getIdfa() async {
-    final String idfa = await _channel.invokeMethod('getIdfa');
-    return idfa;
+    try {
+      final String idfa = await _channel.invokeMethod('getIdfa');
+      return idfa;
+    } catch (e) {
+      return null;
+    }
   }
 
   static Future<String> getAmazonAdId() async {
-    final String amazonAdId = await _channel.invokeMethod('getAmazonAdId');
-    return amazonAdId;
+    try {
+      final String amazonAdId = await _channel.invokeMethod('getAmazonAdId');
+      return amazonAdId;
+    } catch (e) {
+      return null;
+    }
   }
 
   static Future<String> getGoogleAdId() async {
-    final String googleAdId = await _channel.invokeMethod('getGoogleAdId');
-    return googleAdId;
+    try {
+      final String googleAdId = await _channel.invokeMethod('getGoogleAdId');
+      return googleAdId;
+    } catch (e) {
+      return null;
+    }
   }
 
   static Future<AdjustAttribution> getAttribution() async {

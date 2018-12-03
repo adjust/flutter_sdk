@@ -10,7 +10,7 @@
 #import "ADJSdkDelegate.h"
 #import <Adjust/Adjust.h>
 
-static NSString * const CHANNEL_API_NAME = @"com.adjust/api";
+static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 
 @interface ADJAdjustSdk ()
 
@@ -52,6 +52,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust/api";
         [self getAttribution:call withResult:result];
     } else if ([@"getIdfa" isEqualToString:call.method]) {
         [self getIdfa:call withResult:result];
+    } else if ([@"getGoogleAdId" isEqualToString:call.method]) {
+        [self getGoogleAdId:call withResult:result];
     } else if ([@"getSdkVersion" isEqualToString:call.method]) {
         [self getSdkVersion:call withResult:result];
     } else if ([@"setOfflineMode" isEqualToString:call.method]) {
@@ -344,6 +346,12 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust/api";
 - (void)getIdfa:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *idfa = [Adjust idfa];
     result(idfa);
+}
+
+- (void)getGoogleAdId:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    result([FlutterError errorWithCode:@"non_existing_method"
+                               message:@"getGoogleAdId not available for iOS platform"
+                               details:nil]);
 }
 
 - (void)getSdkVersion:(FlutterMethodCall *)call withResult:(FlutterResult)result {

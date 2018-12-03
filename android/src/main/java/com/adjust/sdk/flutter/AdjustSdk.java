@@ -51,9 +51,7 @@ public class AdjustSdk implements MethodCallHandler {
     private static Context applicationContext;
     private static boolean launchDeferredDeeplink = true;
 
-    /**
-     * Plugin registration.
-     */
+    // Plugin registration.
     public static void registerWith(Registrar registrar) {
         if (channel != null) {
             throw new IllegalStateException("You should not call registerWith more than once!");
@@ -61,7 +59,7 @@ public class AdjustSdk implements MethodCallHandler {
 
         AdjustSdk adjustSdk = new AdjustSdk();
         applicationContext = registrar.context();
-        channel = new MethodChannel(registrar.messenger(), "com.adjust/api");
+        channel = new MethodChannel(registrar.messenger(), "com.adjust.sdk/api");
         channel.setMethodCallHandler(adjustSdk);
     }
 
@@ -398,9 +396,7 @@ public class AdjustSdk implements MethodCallHandler {
         }
 
         // Start SDK.
-        Log.d(TAG, "Calling Adjust.onCreate");
         Adjust.onCreate(adjustConfig);
-        // TODO: Check if this call is needed or not.
         Adjust.onResume();
         result.success(null);
     }
