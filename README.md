@@ -156,7 +156,7 @@ Also, make sure that you have paid attention to the [Proguard settings](#qs-prog
 
 ### <a id="qs-gps-intent"></a>[Android] Google Play Store intent
 
-The Google Play Store `INSTALL_REFERRER` intent should be captured with a broadcast receiver. If you are **not using your own broadcast receiver** to receive the `INSTALL_REFERRER` intent, add the following `receiver` tag inside the `application` tag in your `AndroidManifest.xml`.
+The Google Play Store `INSTALL_REFERRER` intent should be captured with a broadcast receiver. If you are **not using your own broadcast receiver** to receive the `INSTALL_REFERRER` intent, add the following `receiver` tag inside the `application` tag in your `AndroidManifest.xml` file for Android platform.
 
 ```xml
 <receiver
@@ -171,7 +171,7 @@ The Google Play Store `INSTALL_REFERRER` intent should be captured with a broadc
 
 We use this broadcast receiver to retrieve the install referrer and pass it to our backend.
 
-If you are already using a different broadcast receiver for the `INSTALL_REFERRER` intent, follow [these instructions][referrer] to add the Adjust broadcast receiver.
+If you are already using a different broadcast receiver for the `INSTALL_REFERRER` intent, follow [these instructions][multiple-receivers] to add the Adjust broadcast receiver.
 
 ### <a id="qs-integrate-sdk"></a>Integrate the SDK into your app
 
@@ -305,7 +305,7 @@ Unfortunately, in this scenario the information about the deep link can not be d
 
 ### <a id="dl-deferred"></a>Deferred deep linking scenario
 
-In order to get information about the URL content in a deferred deep linking scenario, you should set a callback method on the `AdjustConfig` object which will receive one `string` parameter where the content of the URL will be delivered. You should set this method on the config object by calling the method `setDeferredDeeplinkDelegate`:
+In order to get information about the URL content in a deferred deep linking scenario, you should set a callback method on the config object which will receive one `string` parameter where the content of the URL will be delivered. You should set this method on the config object by calling the method `setDeferredDeeplinkDelegate`:
 
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
@@ -315,11 +315,11 @@ adjustConfig.setDeferredDeeplinkCallback((String uri) {
 Adjust.start(adjustConfig);
 ```
 
-In deferred deep linking scenario, there is one additional setting which can be set on the `AdjustConfig` object. Once the Adjust SDK gets the deferred deep link information, we offer you the possibility to choose whether our SDK should open this URL or not. You can choose to set this option by setting it on `launchDeferredDeeplink` member of `AdjustConfig` object:
+In deferred deep linking scenario, there is one additional setting which can be set on the config object. Once the Adjust SDK gets the deferred deep link information, we offer you the possibility to choose whether our SDK should open this URL or not. You can choose to set this option by calling `setLaunchDeferredDeeplink` method of the config instance:
 
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
-adjustConfig.launchDeferredDeeplink = true;
+adjustConfig.setLaunchDeferredDeeplink(true);
 adjustConfig.setDeferredDeeplinkCallback((String uri) {
       print('[Adjust]: Received deferred deeplink: ' + uri);
     });
@@ -356,6 +356,7 @@ Once everything set up, inside of your native Android activity make a call to `a
 import com.adjust.sdk.flutter.AdjustSdk;
 
 public class MainActivity extends FlutterActivity {
+    // Either call make the call in onCreate.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -366,6 +367,7 @@ public class MainActivity extends FlutterActivity {
         AdjustSdk.appWillOpenUrl(data);
     }
 
+    // Or make the cakll in onNewIntent.
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -374,6 +376,10 @@ public class MainActivity extends FlutterActivity {
     }
 }
 ```
+
+Depending on the `android:launchMode` setting of your Activity in the `AndroidManifest.xml` file, information about the `deep_link` parameter content will be delivered to the appropriate place in the Activity file. For more information about the possible values of the `android:launchMode` property, check [the official Android documentation][android-launch-modes].
+
+There are two places within your desired Activity where information about the deep link content will be delivered via the `Intent` object - either in the Activity's `onCreate` or `onNewIntent` methods. Once your app has launched and one of these methods has been triggered, you will be able to get the actual deep link passed in the `deep_link` parameter in the click URL.
 
 Once everything set up, inside of your native iOS app delegate make a call to `appWillOpenUrl` method in following way:
 
@@ -888,24 +894,19 @@ Upon receiving this information, Adjust will erase the user's data and the Adjus
 
 [example-app]: example
 
-[maven]:                          http://maven.org
-[referrer]:                       doc/english/misc/multiple-receivers.md
-[releases]:                       https://github.com/adjust/android_sdk/releases
+[multiple-receivers]:             https://github.com/adjust/android_sdk/blob/master/doc/english/referrer.md
 [google-ad-id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
 [event-tracking]:                 https://docs.adjust.com/en/event-tracking
 [callbacks-guide]:                https://docs.adjust.com/en/callbacks
+[ios-deeplinking]:                https://github.com/adjust/ios_sdk/#deep-linking
 [new-referrer-api]:               https://developer.android.com/google/play/installreferrer/library.html
 [special-partners]:               https://docs.adjust.com/en/special-partners
 [attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
-[android-dashboard]:              http://developer.android.com/about/dashboards/index.html
 [currency-conversion]:            https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
-[android-application]:            http://developer.android.com/reference/android/app/Application.html
+[android-deeplinking]:            https://github.com/adjust/android_sdk#deep-linking
 [android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
 [google-play-services]:           http://developer.android.com/google/play-services/setup.html
 [reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
-[android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
-[testing_console]: https://docs.adjust.com/en/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
-[dev_api]: https://docs.adjust.com/en/adjust-for-developers/
 
 ## <a id="license"></a>License
 
