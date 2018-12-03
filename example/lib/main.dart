@@ -96,6 +96,9 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       if (attributionChangedData.adgroup != null) {
         print('[Adjust]: Adgroup: ' + attributionChangedData.adgroup);
       }
+      if (attributionChangedData.clickLabel != null) {
+        print('[Adjust]: Click label: ' + attributionChangedData.clickLabel);
+      }
       if (attributionChangedData.adid != null) {
         print('[Adjust]: Adid: ' + attributionChangedData.adid);
       }
