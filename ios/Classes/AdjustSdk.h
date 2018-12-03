@@ -1,5 +1,5 @@
 //
-//  ADJAdjustSdk.h
+//  AdjustSdk.h
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 6th June 2018.

@@ -502,7 +502,7 @@ public class AdjustSdk implements MethodCallHandler {
     private void setEnabled(final MethodCall call, final Result result) {
         Map isEnabledParamsMap = (Map) call.arguments;
         if (!isEnabledParamsMap.containsKey("isEnabled")) {
-            result.error("0", "Arguments null or wrong (missing argument >isEnabled<", null);
+            result.error("0", "Arguments null or wrong (missing argument of 'isEnabled' method.", null);
             return;
         }
 
