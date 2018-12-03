@@ -26,12 +26,22 @@ typedef void DeferredDeeplinkCallback(String uri);
 class AdjustConfig {
   static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
 
+  double _delayStart;
+  bool _isDeviceKnown;
+  bool _sendInBackground;
+  bool _eventBufferingEnabled;
+  bool _launchDeferredDeeplink;
   num _info1;
   num _info2;
   num _info3;
   num _info4;
   num _secretId;
   String _appToken;
+  String _sdkPrefix;
+  String _userAgent;
+  String _defaultTracker;
+  String _processName;
+  AdjustLogLevel _logLevel;
   AdjustEnvironment _environment;
   AttributionCallback _attributionCallback;
   SessionSuccessCallback _sessionSuccessCallback;
@@ -39,21 +49,45 @@ class AdjustConfig {
   EventSuccessCallback _eventSuccessCallback;
   EventFailureCallback _eventFailureCallback;
   DeferredDeeplinkCallback _deferredDeeplinkCallback;
-
-  double delayStart;
-  bool isDeviceKnown;
-  bool sendInBackground;
-  bool eventBufferingEnabled;
-  bool allowSuppressLogLevel;
-  bool launchDeferredDeeplink;
-  String sdkPrefix;
-  String userAgent;
-  String defaultTracker;
-  String processName; // Android only.
-  AdjustLogLevel logLevel;
   
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
+  }
+
+  void setDelayStart(double delayStart) {
+    _delayStart = delayStart;
+  }
+
+  void setDeviceKnown(bool isDeviceKnown) {
+    _isDeviceKnown = isDeviceKnown;
+  }
+
+  void setSendInBackground(bool shouldSend) {
+    _sendInBackground = shouldSend;
+  }
+
+  void setEventBufferingEnabled(bool isEnabled) {
+    _eventBufferingEnabled = isEnabled;
+  }
+
+  void setLaunchDeferredDeeplink(bool shouldLaunch) {
+    _launchDeferredDeeplink = shouldLaunch;
+  }
+
+  void setSdkPrefix(String sdkPrefix) {
+    _sdkPrefix = sdkPrefix;
+  }
+
+  void setUserAgent(String userAgent) {
+    _userAgent = userAgent;
+  }
+
+  void setDefaultTracker(String defaultTracker) {
+    _defaultTracker = defaultTracker;
+  }
+
+  void setLogLevel(AdjustLogLevel logLevel) {
+    _logLevel = logLevel;
   }
 
   void setAppSecret(num secretId, num info1, num info2, num info3, num info4) {
@@ -64,28 +98,28 @@ class AdjustConfig {
     _info4 = info4;
   }
 
-  void setAttributionCallback(AttributionCallback handler) {
-    _attributionCallback = handler;
+  void setAttributionCallback(AttributionCallback callback) {
+    _attributionCallback = callback;
   }
 
-  void setSessionSuccessCallback(SessionSuccessCallback handler) {
-    _sessionSuccessCallback = handler;
+  void setSessionSuccessCallback(SessionSuccessCallback callback) {
+    _sessionSuccessCallback = callback;
   }
 
-  void setSessionFailureCallback(SessionFailureCallback handler) {
-    _sessionFailureCallback = handler;
+  void setSessionFailureCallback(SessionFailureCallback callback) {
+    _sessionFailureCallback = callback;
   }
 
-  void setEventSuccessCallback(EventSuccessCallback handler) {
-    _eventSuccessCallback = handler;
+  void setEventSuccessCallback(EventSuccessCallback callback) {
+    _eventSuccessCallback = callback;
   }
 
-  void setEventFailureCallback(EventFailureCallback handler) {
-    _eventFailureCallback = handler;
+  void setEventFailureCallback(EventFailureCallback callback) {
+    _eventFailureCallback = callback;
   }
 
-  void setDeferredDeeplinkCallback(DeferredDeeplinkCallback handler) {
-    _deferredDeeplinkCallback = handler;
+  void setDeferredDeeplinkCallback(DeferredDeeplinkCallback callback) {
+    _deferredDeeplinkCallback = callback;
   }
 
   void _initCallbackHandlers() {
@@ -139,34 +173,31 @@ class AdjustConfig {
 
   Map<String, String> get toMap {
     Map<String, String> configMap = {
-      'sdkPrefix': sdkPrefix,
+      'sdkPrefix': _sdkPrefix,
       'appToken': _appToken,
       'environment': _environment.toString().toLowerCase().substring(_environment.toString().indexOf('.') + 1),
     };
 
-    if (userAgent != null) {
-      configMap['userAgent'] = userAgent;
+    if (_userAgent != null) {
+      configMap['userAgent'] = _userAgent;
     }
-    if (logLevel != null) {
-      configMap['logLevel'] = logLevel.toString().substring(logLevel.toString().indexOf('.') + 1);
+    if (_logLevel != null) {
+      configMap['logLevel'] = _logLevel.toString().substring(_logLevel.toString().indexOf('.') + 1);
     }
-    if (defaultTracker != null) {
-      configMap['defaultTracker'] = defaultTracker;
+    if (_defaultTracker != null) {
+      configMap['defaultTracker'] = _defaultTracker;
     }
-    if (isDeviceKnown != null) {
-      configMap['isDeviceKnown'] = isDeviceKnown.toString();
+    if (_isDeviceKnown != null) {
+      configMap['isDeviceKnown'] = _isDeviceKnown.toString();
     }
-    if (sendInBackground != null) {
-      configMap['sendInBackground'] = sendInBackground.toString();
+    if (_sendInBackground != null) {
+      configMap['sendInBackground'] = _sendInBackground.toString();
     }
-    if (eventBufferingEnabled != null) {
-      configMap['eventBufferingEnabled'] = eventBufferingEnabled.toString();
+    if (_eventBufferingEnabled != null) {
+      configMap['eventBufferingEnabled'] = _eventBufferingEnabled.toString();
     }
-    if (allowSuppressLogLevel != null) {
-      configMap['allowSuppressLogLevel'] = allowSuppressLogLevel.toString();
-    }
-    if (launchDeferredDeeplink != null) {
-      configMap['launchDeferredDeeplink'] = launchDeferredDeeplink.toString();
+    if (_launchDeferredDeeplink != null) {
+      configMap['launchDeferredDeeplink'] = _launchDeferredDeeplink.toString();
     }
     if (_info1 != null) {
       configMap['info1'] = _info1.toString();
@@ -183,8 +214,8 @@ class AdjustConfig {
     if (_secretId != null) {
       configMap['secretId'] = _secretId.toString();
     }
-    if (delayStart != null) {
-      configMap['delayStart'] = delayStart.toString();
+    if (_delayStart != null) {
+      configMap['delayStart'] = _delayStart.toString();
     }
     if (_attributionCallback != null) {
       configMap['attributionCallback'] = 'adj-attribution-changed';
@@ -204,7 +235,7 @@ class AdjustConfig {
     if (_deferredDeeplinkCallback != null) {
       configMap['deferredDeeplinkCallback'] = 'adj-deferred-deeplink';
     }
-    
+
     return configMap;
   }
 }

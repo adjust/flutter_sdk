@@ -34,8 +34,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-    if ([@"onCreate" isEqualToString:call.method]) {
-        [self onCreate:call withResult:result];
+    if ([@"start" isEqualToString:call.method]) {
+        [self start:call withResult:result];
     } else if ([@"onResume" isEqualToString:call.method]) {
         [Adjust trackSubsessionStart];
     } else if ([@"onPause" isEqualToString:call.method]) {
@@ -102,7 +102,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
 }
 
-- (void)onCreate:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+- (void)start:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *appToken = call.arguments[@"appToken"];
     NSString *environment = call.arguments[@"environment"];
     NSString *logLevel = call.arguments[@"logLevel"];

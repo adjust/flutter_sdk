@@ -136,7 +136,7 @@ class CommandExecutor {
       String environmentString = _command.getFirstParameterValue('environment');
       AdjustEnvironment environment = environmentString == 'sandbox' ? AdjustEnvironment.SANDBOX : AdjustEnvironment.PRODUCTION;
       adjustConfig = new AdjustConfig(appToken, environment);
-      adjustConfig.logLevel = AdjustLogLevel.VERBOSE;
+      adjustConfig.setLogLevel(AdjustLogLevel.VERBOSE);
       _savedConfigs.putIfAbsent(configNumber, () => adjustConfig);
     }
 
@@ -159,11 +159,11 @@ class CommandExecutor {
           case 'suppress': logLevel = AdjustLogLevel.SUPPRESS;
               break;
       }
-      adjustConfig.logLevel = logLevel;
+      adjustConfig.setLogLevel(logLevel);
     }
 
     if (_command.containsParameter('defaultTracker')) {
-      adjustConfig.defaultTracker = _command.getFirstParameterValue('defaultTracker');
+      adjustConfig.setDefaultTracker(_command.getFirstParameterValue('defaultTracker'));
     }
 
     if (_command.containsParameter('appSecret')) {
@@ -188,26 +188,26 @@ class CommandExecutor {
 
     if (_command.containsParameter('delayStart')) {
       double delayStart = double.parse(_command.getFirstParameterValue('delayStart'));
-      adjustConfig.delayStart = delayStart;
+      adjustConfig.setDelayStart(delayStart);
     }
 
     if (_command.containsParameter('deviceKnown')) {
       bool isDeviceKnown = _command.getFirstParameterValue('deviceKnown') == 'true';
-      adjustConfig.isDeviceKnown = isDeviceKnown;
+      adjustConfig.setDeviceKnown(isDeviceKnown);
     }
 
     if (_command.containsParameter('eventBufferingEnabled')) {
       bool eventBufferingEnabled = _command.getFirstParameterValue('eventBufferingEnabled') == 'true';
-      adjustConfig.eventBufferingEnabled = eventBufferingEnabled;
+      adjustConfig.setEventBufferingEnabled(eventBufferingEnabled);
     }
 
     if (_command.containsParameter('sendInBackground')) {
       bool sendInBackground = _command.getFirstParameterValue('sendInBackground') == 'true';
-      adjustConfig.sendInBackground = sendInBackground;
+      adjustConfig.setSendInBackground(sendInBackground);
     }
 
     if (_command.containsParameter('userAgent')) {
-      adjustConfig.userAgent = _command.getFirstParameterValue('userAgent');
+      adjustConfig.setUserAgent(_command.getFirstParameterValue('userAgent'));
     }
 
     // First clear all previous callback handlers.
@@ -223,7 +223,7 @@ class CommandExecutor {
     if (_command.containsParameter('deferredDeeplinkCallback')) {
       String localBasePath = _basePath;
       bool launchDeferredDeeplink = _command.getFirstParameterValue('deferredDeeplinkCallback') == 'true';
-      adjustConfig.launchDeferredDeeplink = launchDeferredDeeplink;
+      adjustConfig.setLaunchDeferredDeeplink(launchDeferredDeeplink);
       print('[CommandExecutor]: Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink}');
       adjustConfig.setDeferredDeeplinkCallback((String uri) {
         print('[CommandExecutor]: Sending deeplink info to server: $uri');
@@ -320,7 +320,7 @@ class CommandExecutor {
     }
 
     AdjustConfig adjustConfig = _savedConfigs[configNumber];
-    Adjust.onCreate(adjustConfig);
+    Adjust.start(adjustConfig);
     _savedConfigs.remove(configNumber);
   }
 

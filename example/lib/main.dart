@@ -66,13 +66,13 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   // Platform messages are asynchronous, so we initialize in an async method.
   initPlatformState() async {
     AdjustConfig config = new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.SANDBOX);
-    config.logLevel = AdjustLogLevel.VERBOSE;
-    config.isDeviceKnown = false;
-    // config.defaultTracker = 'def_tracker';
-    // config.processName = 'com.adjust.examples';
-    // config.sendInBackground = true;
-    // config.eventBufferingEnabled = true;
-    // config.delayStart = 7.0;
+    config.setLogLevel(AdjustLogLevel.VERBOSE);
+    config.setDeviceKnown(false);
+    // config.setDefaultTracker('abc123');
+    // config.setProcessName('com.adjust.examples');
+    // config.setSendInBackground(true);
+    // config.setEventBufferingEnabled(true);
+    // config.setDelayStart(7.0);
     // config.setAppSecret(1000, 1, 2, 3, 4);
 
     config.setAttributionCallback((AdjustAttribution attributionChangedData) {
@@ -210,7 +210,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     Adjust.resetSessionPartnerParameters();
 
     // Start SDK.
-    Adjust.onCreate(config);
+    Adjust.start(config);
   }
 
   @override

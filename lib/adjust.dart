@@ -18,9 +18,9 @@ class Adjust {
   static const String _sdkPrefix = 'flutter4.17.0';
   static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
 
-  static void onCreate(AdjustConfig config) {
+  static void start(AdjustConfig config) {
     config.sdkPrefix = _sdkPrefix;
-    _channel.invokeMethod('onCreate', config.toMap);
+    _channel.invokeMethod('start', config.toMap);
   }
 
   static void trackEvent(AdjustEvent event) {

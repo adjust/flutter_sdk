@@ -68,9 +68,9 @@ class Util {
 
   static AdjustEvent buildRevenueEvent() {
     AdjustEvent event = new AdjustEvent(EVENT_TOKEN_REVENUE);
-    event.revenue = 100.0;
-    event.currency = 'EUR';
-    event.transactionId = 'DummyTransactionId';
+    event.setRevenue(100.0, 'EUR');
+    event.setTransactionId('DummyTransactionId');
+    event.setCallbackId('DummyCallbackId');
     return event;
   }
 

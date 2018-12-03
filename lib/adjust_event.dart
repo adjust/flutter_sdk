@@ -9,30 +9,38 @@
 import 'dart:convert';
 
 class AdjustEvent {
-  num revenue;
+  num _revenue;
   String _eventToken;
-  String currency;
-  String transactionId;
-  String callbackId;
-  Map<String, String> callbackParameters;
-  Map<String, String> partnerParameters;
+  String _currency;
+  String _transactionId;
+  String _callbackId;
+  Map<String, String> _callbackParameters;
+  Map<String, String> _partnerParameters;
 
   AdjustEvent(this._eventToken) {
-    callbackParameters = new Map<String, String>();
-    partnerParameters = new Map<String, String>();
+    _callbackParameters = new Map<String, String>();
+    _partnerParameters = new Map<String, String>();
   }
 
   void setRevenue(num revenue, String currency) {
-    this.revenue = revenue;
-    this.currency = currency;
+    _revenue = revenue;
+    _currency = currency;
+  }
+
+  void setTransactionId(String transactionId) {
+    _transactionId = transactionId;
+  }
+
+  void setCallbackId(String callbackId) {
+    _callbackId = callbackId;
   }
 
   void addCallbackParameter(String key, String value) {
-    callbackParameters[key] = value;
+    _callbackParameters[key] = value;
   }
 
   void addPartnerParameter(String key, String value) {
-    partnerParameters[key] = value;
+    _partnerParameters[key] = value;
   }
 
   Map<String, String> get toMap {
@@ -40,23 +48,23 @@ class AdjustEvent {
       'eventToken': _eventToken
     };
 
-    if (revenue != null) {
-      eventMap['revenue'] = revenue.toString();
+    if (_revenue != null) {
+      eventMap['revenue'] = _revenue.toString();
     }
-    if (currency != null) {
-      eventMap['currency'] = currency;
+    if (_currency != null) {
+      eventMap['currency'] = _currency;
     }
-    if (transactionId != null) {
-      eventMap['transactionId'] = transactionId;
+    if (_transactionId != null) {
+      eventMap['transactionId'] = _transactionId;
     }
-    if (callbackId != null) {
-      eventMap['callbackId'] = callbackId;
+    if (_callbackId != null) {
+      eventMap['callbackId'] = _callbackId;
     }
-    if (callbackParameters.length > 0) {
-      eventMap['callbackParameters'] = json.encode(callbackParameters);
+    if (_callbackParameters.length > 0) {
+      eventMap['callbackParameters'] = json.encode(_callbackParameters);
     }
-    if (partnerParameters.length > 0) {
-      eventMap['partnerParameters'] = json.encode(partnerParameters);
+    if (_partnerParameters.length > 0) {
+      eventMap['partnerParameters'] = json.encode(_partnerParameters);
     }
 
     return eventMap;

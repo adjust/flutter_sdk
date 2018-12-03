@@ -67,8 +67,8 @@ public class AdjustSdk implements MethodCallHandler {
     @Override
     public void onMethodCall(MethodCall call, final Result result) {
         switch (call.method) {
-            case "onCreate":
-                onCreate(call, result);
+            case "start":
+                start(call, result);
                 break;
             case "onPause":
                 onPause(result);
@@ -149,7 +149,7 @@ public class AdjustSdk implements MethodCallHandler {
         }
     }
 
-    private void onCreate(final MethodCall call, final Result result) {
+    private void start(final MethodCall call, final Result result) {
         Map configMap = (Map) call.arguments;
         if (configMap == null) {
             return;
