@@ -164,25 +164,25 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     config.setEventFailureCallback((AdjustEventFailure eventFailureData) {
       print('[Adjust]: Event tracking failure!');
 
-      if (eventSuccessData.eventToken != null) {
+      if (eventFailureData.eventToken != null) {
         print('[Adjust]: Event token: ' + eventFailureData.eventToken);
       }
-      if (eventSuccessData.message != null) {
+      if (eventFailureData.message != null) {
         print('[Adjust]: Message: ' + eventFailureData.message);
       }
-      if (eventSuccessData.timestamp != null) {
+      if (eventFailureData.timestamp != null) {
         print('[Adjust]: Timestamp: ' + eventFailureData.timestamp);
       }
-      if (eventSuccessData.adid != null) {
+      if (eventFailureData.adid != null) {
         print('[Adjust]: Adid: ' + eventFailureData.adid);
       }
-      if (eventSuccessData.callbackId != null) {
+      if (eventFailureData.callbackId != null) {
         print('[Adjust]: Callback ID: ' + eventFailureData.callbackId);
       }
-      if (eventSuccessData.willRetry != null) {
+      if (eventFailureData.willRetry != null) {
         print('[Adjust]: Will retry: ' + eventFailureData.willRetry.toString());
       }
-      if (eventSuccessData.jsonResponse != null) {
+      if (eventFailureData.jsonResponse != null) {
         print('[Adjust]: JSON response: ' + eventFailureData.jsonResponse);
       }
     });
