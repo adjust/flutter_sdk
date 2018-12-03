@@ -2,9 +2,1265 @@
 
 This is the Flutter SDK of Adjust™. You can read more about Adjust™ at [adjust.com].
 
-README is still work in progress ...
+## Table of contents
 
-[adjust.com]:   http://adjust.com
+### Quick start
+
+   * [Example apps](#qs-example-apps)
+   * [Getting started](#qs-getting-started)
+      * [Add the SDK to your project](#qs-add-sdk)
+      * [[Android] Add Google Play Services](#qs-gps)
+      * [[Android] Add permissions](#qs-permissions)
+      * [[Android] Proguard settings](#qs-proguard)
+      * [[Android] Install referrer](#qs-install-referrer)
+         * [[Android] Google Play Referrer API](#qs-gpr-api)
+         * [[Android] Google Play Store intent](#qs-gps-intent)
+   * [Integrate the SDK into your app](#qs-integrate-sdk)
+      * [Basic setup](#qs-basic-setup)
+      * [Session tracking](#qs-session-tracking)
+         * [Session tracking in Android](#qs-session-tracking-android)
+      * [SDK signature](#qs-sdk-signature)
+      * [Adjust logging](#qs-adjust-logging)
+      * [Build your app](#qs-build-the-app)
+
+### Deep linking
+
+   * [Deep linking](#dl)
+   * [Standard deep linking scenario](#dl-standard)
+   * [Deferred deep linking scenario](#dl-deferred)
+   * [Deep linking handling in Android app](#dl-app-android)
+   * [Deep linking handling in iOS app](#dl-app-ios)
+   * [Reattribution via deep links](#dl-reattribution)
+
+### Event tracking
+
+   * [Track event](#et-tracking)
+   * [Track revenue](#et-revenue)
+   * [Revenue deduplication](#et-revenue-deduplication)
+
+### Custom parameters
+
+   * [Event parameters](#cp-event-parameters)
+      * [Event callback parameters](#cp-event-callback-parameters)
+      * [Event partner parameters](#cp-event-partner-parameters)
+      * [Event callback identifier](#cp-event-callback-id)
+   * [Session parameters](#cp-session-parameters)
+      * [Session callback parameters](#cp-session-callback-parameters)
+      * [Session partner parameters](#cp-session-partner-parameters)
+      * [Delay start](#cp-delay-start)
+
+### Additional features
+
+   * [Push token (uninstall tracking)](#af-push-token)
+   * [Attribution callback](#af-attribution-callback)
+   * [Session and event callbacks](#af-session-event-callbacks)
+   * [User attribution](#af-user-attribution)
+   * [Device IDs](#af-device-ids)
+      * [Google Play Services advertising identifier](#af-gps-adid)
+      * [Amazon advertising identifier](#af-amazon-adid)
+      * [Adjust device identifier](#af-adid)
+   * [Pre-installed trackers](#af-pre-installed-trackers)
+   * [Offline mode](#af-offline-mode)
+   * [Disable tracking](#af-disable-tracking)
+   * [Event buffering](#af-event-buffering)
+   * [Background tracking](#af-background-tracking)
+   * [GDPR right to be forgotten](#af-gdpr-forget-me)
+
+### Testing and troubleshooting
+
+   * [I'm seeing the "Session failed (Ignoring too frequent session. ...)" error](#tt-session-failed)
+   * [Is my broadcast receiver capturing the install referrer?](#tt-broadcast-receiver)
+   * [Can I trigger an event at application launch?](#tt-event-at-launch)
+
+### License
+
+
+## Quick start
+
+### <a id="qs-example-apps"></a>Example apps
+
+There are example Flutter app inside the [`example` directory][example-app]. In there you can check how the Adjust SDK can be integrated.
+
+### <a id="qs-getting-started"></a>Getting started
+
+These are the minimal steps required to integrate the Adjust SDK into your Flutter app.
+
+### <a id="qs-add-sdk"></a>Add the SDK to your project
+
+You can add Adjust SDK to your Flutter app by downloading `adjust_sdk` package from Flutter package repository and adding the dependency to your `pubspec.yaml` file.
+
+### <a id="qs-gps"></a>[Android] Add Google Play Services
+
+Since the 1st of August of 2014, apps in the Google Play Store must use the [Google Advertising ID][google-ad-id] to uniquely identify devices. To allow the Adjust SDK to use the Google Advertising ID, you must integrate the [Google Play Services][google-play-services]. If you haven't done this yet, please add dependency to Google Play Services library by adding following dependecy to your `dependencies` block of app's `build.gradle` file for Android platform:
+
+```gradle
+implementation 'com.google.android.gms:play-services-analytics:16.0.4'
+```
+
+**Note**: The Adjust SDK is not tied to any specific version of the `play-services-analytics` part of the Google Play Services library, so feel free to always use the latest version of it (or whichever you might need).
+
+### <a id="qs-permissions"></a>[Android] Add permissions
+
+Please add the following permissions, which the Adjust SDK needs, if they are not already present in your `AndroidManifest.xml` file for Android platform:
+
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+```
+
+If you are **not targeting the Google Play Store**, please also add the following permission:
+
+```xml
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+```
+
+### <a id="qs-proguard"></a>[Android] Proguard settings
+
+If you are using Proguard, add these lines to your Proguard file:
+
+```
+-keep public class com.adjust.sdk.** { *; }
+-keep class com.google.android.gms.common.ConnectionResult {
+    int SUCCESS;
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
+    com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
+    java.lang.String getId();
+    boolean isLimitAdTrackingEnabled();
+}
+-keep public class com.android.installreferrer.** { *; }
+```
+
+If you are **not publishing your app in the Google Play Store**, you can leave just `com.adjust.sdk` package rules:
+
+```
+-keep public class com.adjust.sdk.** { *; }
+```
+
+### <a id="qs-install-referrer"></a>[Android] Install referrer
+
+In order to correctly attribute an install of your app to its source, Adjust needs information about the **install referrer**. This can be obtained by using the **Google Play Referrer API** or by catching the **Google Play Store intent** with a broadcast receiver.
+
+**Important**: The Google Play Referrer API is newly introduced by Google with the express purpose of providing a more reliable and secure way of obtaining install referrer information and to aid attribution providers in the fight against click injection. It is **strongly advised** that you support this in your application. The Google Play Store intent is a less secure way of obtaining install referrer information. It will continue to exist in parallel with the new Google Play Referrer API temporarily, but it is set to be deprecated in future.
+
+### <a id="qs-gpr-api"></a>[Android] Google Play Referrer API
+
+In order to support this in your app, please make sure to add following dependency to your app's `build.gradle` file for Android platform:
+
+```
+implementation 'com.android.installreferrer:installreferrer:1.0'
+```
+
+Also, make sure that you have paid attention to the [Proguard settings](#qs-proguard) chapter and that you have added all the rules mentioned in it, especially the one needed for this feature:
+
+```
+-keep public class com.android.installreferrer.** { *; }
+```
+
+### <a id="qs-gps-intent"></a>[Android] Google Play Store intent
+
+The Google Play Store `INSTALL_REFERRER` intent should be captured with a broadcast receiver. If you are **not using your own broadcast receiver** to receive the `INSTALL_REFERRER` intent, add the following `receiver` tag inside the `application` tag in your `AndroidManifest.xml`.
+
+```xml
+<receiver
+    android:name="com.adjust.sdk.AdjustReferrerReceiver"
+    android:permission="android.permission.INSTALL_PACKAGES"
+    android:exported="true" >
+    <intent-filter>
+        <action android:name="com.android.vending.INSTALL_REFERRER" />
+    </intent-filter>
+</receiver>
+```
+
+We use this broadcast receiver to retrieve the install referrer and pass it to our backend.
+
+If you are already using a different broadcast receiver for the `INSTALL_REFERRER` intent, follow [these instructions][referrer] to add the Adjust broadcast receiver.
+
+### <a id="qs-integrate-sdk"></a>Integrate the SDK into your app
+
+To start with, we'll set up basic session tracking.
+
+### <a id="qs-basic-setup"></a>Basic setup
+
+Make sure to initialise Adjust SDK as soon as possible in your Flutter app (upon loading first widget in your app). You can initialise Adjust SDK like described below:
+
+```dart
+AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.SANDBOX);
+Adjust.onCreate(config);
+```
+
+Replace `{YourAppToken}` with your app token. You can find this in your [dashboard].
+
+Depending on whether you are building your app for testing or for production, you must set `environment` with one of these values:
+
+```dart
+AdjustEnvironment.SANDBOX;
+AdjustEnvironment.PRODUCTION;
+```
+
+**Important:** This value should be set to `AdjustEnvironment.SANDBOX` if and only if you or someone else is testing your app. Make sure to set the environment to `AdjustEnvironment.PRODUCTION` before you publish the app. Set it back to `AdjustEnvironment.SANDBOX` when you start developing and testing it again.
+
+We use this environment to distinguish between real traffic and test traffic from test devices. It is imperative that you keep this value meaningful at all times!
+
+### <a id="qs-session-tracking"></a>Session tracking
+
+**Note**: This step is **really important** and please **make sure that you implement it properly in your app**. By implementing it, you will enable proper session tracking by the Adjust SDK in your app.
+
+Session tracking for iOS platform is supported out of the box, but in order to perform it properly on Android platform, it requires a bit of additional work described in chapter below.
+
+### <a id="qs-session-tracking-android"></a>Session tracking in Android
+
+On Android platform, it is important for you to hook up into app activity lifecycle methods and make a call to `Adjust.onResume()` when ever app enters foreground and a call to `Adjust.onPause()` when ever app leaves foreground. You can do this globally or per widget (call these method upon each transition from one widget to another). For example:
+
+```dart
+class AdjustExampleApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: 'Adjust Flutter Example App',
+      home: new MainScreen(),
+    );
+  }
+}
+
+class MainScreen extends StatefulWidget {
+  @override
+  State createState() => new MainScreenState();
+}
+
+class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
+  @override
+  initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    initPlatformState(); // <-- Initialise SDK in here.
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      switch (state) {
+        case AppLifecycleState.inactive:
+          break;
+        case AppLifecycleState.resumed:
+          Adjust.onResume();
+          break;
+        case AppLifecycleState.paused:
+          Adjust.onPause();
+          break;
+        case AppLifecycleState.suspending:
+          break;
+      }
+    });
+  }
+}
+```
+
+### <a id="qs-sdk-signature"></a>SDK signature
+
+An account manager must activate the Adjust SDK signature. Contact Adjust support (support@adjust.com) if you are interested in using this feature.
+
+If the SDK signature has already been enabled on your account and you have access to App Secrets in your Adjust Dashboard, please use the method below to integrate the SDK signature into your app.
+
+An App Secret is set by calling `setAppSecret` on your config instance:
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
+Adjust.onCreate(adjustConfig);
+```
+
+### <a id="qs-adjust-logging"></a>Adjust logging
+
+You can increase or decrease the amount of logs that you see during testing by calling `setLogLevel` on your config instance with one of the following parameters:
+
+```java
+adjustConfig.setLogLevel(AdjustLogLevel.VERBOSE); // enable all logs
+adjustConfig.setLogLevel(AdjustLogLevel.DEBUG); // disable verbose logs
+adjustConfig.setLogLevel(AdjustLogLevel.INFO); // disable debug logs (default)
+adjustConfig.setLogLevel(AdjustLogLevel.WARN); // disable info logs
+adjustConfig.setLogLevel(AdjustLogLevel.ERROR); // disable warning logs
+adjustConfig.setLogLevel(AdjustLogLevel.ASSERT); // disable error logs
+adjustConfig.setLogLevel(AdjustLogLevel.SUPRESS); // disable all logs
+```
+
+### <a id="qs-build-the-app"></a>Build your app
+
+Build and run your Flutter app. In your Android/iOS log you can check for logs coming from Adjust SDK and in there you should see message: `Install tracked`.
+
+## Deep linking
+
+### <a id="dl"></a>Deep linking
+
+If you are using an Adjust tracker URL with the option to deep link into your app, there is the possibility to get information about the deep link URL and its content. Hitting the URL can happen when the user has your app already installed (standard deep linking scenario) or if they don't have the app on their device (deferred deep linking scenario). In the standard deep linking scenario, the Android platform natively offers the possibility for you to get the information about the deep link content. The deferred deep linking scenario is something which the Android platform doesn't support out of the box, and, in this case, the Adjust SDK will offer you the mechanism you need to get the information about the deep link content.
+
+You need to set up deep linking handling in your app **on native level** - in your generated Xcode project (for iOS) and Android Studio (for Android).
+
+### <a id="dl-standard"></a>Standard deep linking scenario
+
+Unfortunately, in this scenario the information about the deep link can not be delivered to you in your Dart code. Once you enable your app to handle deep linking, you will get information about the deep link on native level. For more information check our chapters below on how to enable deep linking for Android and iOS apps.
+
+### <a id="dl-deferred"></a>Deferred deep linking scenario
+
+In order to get information about the URL content in a deferred deep linking scenario, you should set a callback method on the `AdjustConfig` object which will receive one `string` parameter where the content of the URL will be delivered. You should set this method on the config object by calling the method `setDeferredDeeplinkDelegate`:
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setDeferredDeeplinkCallback((String uri) {
+      print('[Adjust]: Received deferred deeplink: ' + uri);
+    });
+Adjust.onCreate(adjustConfig);
+```
+
+In deferred deep linking scenario, there is one additional setting which can be set on the `AdjustConfig` object. Once the Adjust SDK gets the deferred deep link information, we offer you the possibility to choose whether our SDK should open this URL or not. You can choose to set this option by setting it on `launchDeferredDeeplink` member of `AdjustConfig` object:
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.launchDeferredDeeplink = true;
+adjustConfig.setDeferredDeeplinkCallback((String uri) {
+      print('[Adjust]: Received deferred deeplink: ' + uri);
+    });
+Adjust.onCreate(adjustConfig);
+```
+
+If nothing is set, **the Adjust SDK will always try to launch the URL by default**.
+
+To enable your apps to support deep linking, you should set up schemes for each supported platform.
+
+### <a id="dl-app-android"></a>Deep linking handling in Android app
+
+**This should be done in native Android Studio / Eclipse project.**
+
+To set up your Android app to handle deep linking on native level, please follow our [guide][android-deeplinking] in the official Android SDK README.
+
+### <a id="dl-app-ios"></a>Deep linking handling in iOS app
+
+**This should be done in native Xcode project.**
+
+To set up your iOS app (`Runner` project) to handle deep linking on native level, please follow our [guide][ios-deeplinking] in the official iOS SDK README.
+
+### <a id="dl-reattribution"></a>Reattribution via deep links
+
+Adjust enables you to run re-engagement campaigns through deep links. For more information on how to do that, please check our [official docs][reattribution-with-deeplinks].
+
+If you are using this feature, in order for your user to be properly reattributed, you need to make one additional call to the Adjust SDK in your app.
+
+Once you have received deep link content information in your app, add a call to the `appWillOpenUrl` method. By making this call, the Adjust SDK will try to find if there is any new attribution information inside of the deep link. If there is any, it will be sent to the Adjust backend. If your user should be reattributed due to a click on the adjust tracker URL with deep link content, you will see the [attribution callback](#af-attribution-callback) in your app being triggered with new attribution info for this user.
+
+Once everything set up, inside of your native Android activity make a call to `appWillOpenUrl` method in following way:
+
+```java
+import com.adjust.sdk.flutter.AdjustSdk;
+
+public class MainActivity extends FlutterActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        GeneratedPluginRegistrant.registerWith(this);
+
+        Intent intent = getIntent();
+        Uri data = intent.getData();
+        AdjustSdk.appWillOpenUrl(data);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Uri data = intent.getData();
+        AdjustSdk.appWillOpenUrl(data);
+    }
+}
+```
+
+Once everything set up, inside of your native iOS app delegate make a call to `appWillOpenUrl` method in following way:
+
+```objc
+#import "Adjust.h"
+
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [GeneratedPluginRegistrant registerWithRegistry:self];
+    // Override point for customization after application launch.
+    return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    [Adjust appWillOpenUrl:url];
+    return YES;
+}
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> *restorableObjects))restorationHandler {
+    if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        [Adjust appWillOpenUrl:[userActivity webpageURL]];
+    }
+    return YES;
+}
+
+@end
+```
+
+## Event tracking
+
+### <a id="et-tracking"></a>Track event
+
+You can use adjust to track any event in your app. Suppose you want to track every tap on a button. You would have to create a new event token in your [dashboard]. Let's say that event token is `abc123`. In your button's click handler method you could then add the following lines to track the click:
+
+```dart
+AdjustEvent adjustEvent = new AdjustEvent('abc123');
+Adjust.trackEvent(adjustEvent);
+```
+
+### <a id="et-revenue"></a>Track revenue
+
+If your users can generate revenue by tapping on advertisements or making in-app purchases you can track those revenues with events. Lets say a tap is worth one Euro cent. You could then track the revenue event like this:
+
+```dart
+AdjustEvent adjustEvent = new AdjustEvent('abc123');
+adjustEvent.setRevenue(6, 'EUR');
+Adjust.trackEvent(adjustEvent);
+```
+
+This can be combined with callback parameters of course.
+
+When you set a currency token, Adjust will automatically convert the incoming revenues into a reporting revenue of your choice. Read more about [currency conversion here][currency-conversion].
+
+You can read more about revenue and event tracking in the [event tracking guide][event-tracking].
+
+### <a id="et-revenue-deduplication"></a>Revenue deduplication
+
+You can also add an optional transaction ID to avoid tracking duplicated revenues. The last ten transaction IDs are remembered, and revenue events with duplicated transaction IDs are skipped. This is especially useful for In-App Purchase tracking. You can see an example below.
+
+If you want to track in-app purchases, please make sure to call the `trackEvent` only if the transaction is finished and item is purchased. That way you can avoid tracking revenue that is not actually being generated.
+
+```dart
+AdjustEvent adjustEvent = new AdjustEvent('abc123');
+adjustEvent.setTransactionId('{TransactionId}');
+Adjust.trackEvent(adjustEvent);
+```
+
+## Custom parameters
+
+### <a id="cp"></a>Custom parameters
+
+In addition to the data points that Adjust SDK collects by default, you can use the Adjust SDK to track and add to the event/session as many custom values as you need (user IDs, product IDs, etc.). Custom parameters are only available as raw data (i.e., they won't appear in the Adjust dashboard).
+
+You should use **callback parameters** for the values that you collect for your own internal use, and **partner parameters** for those that you wish to share with external partners. If a value (e.g. product ID) is tracked both for internal use and to forward it to external partners, the best practice would be to track it both as callback and partner parameters.
+
+
+### <a id="cp-event-parameters"></a>Event parameters
+
+### <a id="cp-event-callback-parameters"></a>Event callback parameters
+
+You can register a callback URL for your events in your [dashboard]. We will send a GET request to that URL whenever the event is tracked. You can add callback parameters to that event by calling `addCallbackParameter` to the event instance before tracking it. We will then append these parameters to your callback URL.
+
+For example, suppose you have registered the URL `http://www.adjust.com/callback` then track an event like this:
+
+```dart
+AdjustEvent adjustEvent = new AdjustEvent('abc123');
+adjustEvent.addCallbackParameter('key', 'value');
+adjustEvent.addCallbackParameter('foo', 'bar');
+Adjust.trackEvent(adjustEvent);
+```
+
+In that case we would track the event and send a request to:
+
+```
+http://www.adjust.com/callback?key=value&foo=bar
+```
+
+It should be mentioned that we support a variety of placeholders like `{gps_adid}` that can be used as parameter values. In the resulting callback this placeholder would be replaced with the Google Play Services ID of the current device. Also note that we don't store any of your custom parameters, but only append them to your callbacks. If you haven't registered a callback for an event, these parameters won't even be read.
+
+You can read more about using URL callbacks, including a full list of available values, in our [callbacks guide][callbacks-guide].
+
+### <a id="cp-event-partner-parameters"></a>Event partner parameters
+
+You can also add parameters to be transmitted to network partners, which have been activated in your Adjust dashboard.
+
+This works similarly to the callback parameters mentioned above, but can be added by calling the `addPartnerParameter` method on your event instance.
+
+```dart
+AdjustEvent adjustEvent = new AdjustEvent('abc123');
+adjustEvent.addPartnerParameter('key', 'value');
+adjustEvent.addPartnerParameter('foo', 'bar');
+Adjust.trackEvent(adjustEvent);
+```
+
+You can read more about special partners and these integrations in our [guide to special partners][special-partners].
+
+### <a id="cp-event-callback-id"></a>Event callback identifier
+
+You can also add custom string identifier to each event you want to track. This identifier will later be reported in event success and/or event failure callbacks to enable you to keep track on which event was successfully tracked or not. You can set this identifier by calling the `setCallbackId` method on your event instance:
+
+```dart
+AdjustEvent adjustEvent = new AdjustEvent('abc123');
+adjustEvent.setCallbackId('{CallbackId}');
+Adjust.trackEvent(adjustEvent);
+```
+
+### <a id="cp-session-parameters"></a>Session parameters
+
+Some parameters are saved to be sent in every **event** and **session** of the Adjust SDK. Once you have added any of these parameters, you don't need to add them every time, since they will be saved locally. If you add the same parameter twice, there will be no effect.
+
+These session parameters can be called before the Adjust SDK is launched to make sure they are sent even on install. If you need to send them with an install, but can only obtain the needed values after launch, it's possible to [delay](#delay-start) the first launch of the Adjust SDK to allow this behaviour.
+
+### <a id="cp-session-callback-parameters"></a>Session callback parameters
+
+The same callback parameters that are registered for [events](#event-callback-parameters) can be also saved to be sent in every  event or session of the Adjust SDK.
+
+The session callback parameters have a similar interface to the event callback parameters. Instead of adding the key and it's value to an event, it's added through a call to `Adjust.addSessionCallbackParameter(String key, String value)`:
+
+```dart
+Adjust.addSessionCallbackParameter('foo', 'bar');
+```
+
+The session callback parameters will be merged with the callback parameters added to an event. The callback parameters added to an event have precedence over the session callback parameters. Meaning that, when adding a callback parameter to an event with the same key to one added from the session, the value that prevails is the callback parameter added to the event.
+
+It's possible to remove a specific session callback parameter by passing the desiring key to the method `Adjust.removeSessionCallbackParameter(String key)`.
+
+```dart
+Adjust.removeSessionCallbackParameter('foo');
+```
+
+If you wish to remove all keys and their corresponding values from the session callback parameters, you can reset it with the method `Adjust.resetSessionCallbackParameters()`.
+
+```dart
+Adjust.resetSessionCallbackParameters();
+```
+
+### <a id="cp-session-partner-parameters"></a>Session partner parameters
+
+In the same way that there are [session callback parameters](#session-callback-parameters) sent in every event or session of the Adjust SDK, there is also session partner parameters.
+
+These will be transmitted to network partners, for the integrations that have been activated in your Adjust [dashboard].
+
+The session partner parameters have a similar interface to the event partner parameters. Instead of adding the key and it's value to an event, it's added through a call to `Adjust.addSessionPartnerParameter(String key, String value)`:
+
+```dart
+Adjust.addSessionPartnerParameter('foo', 'bar');
+```
+
+The session partner parameters will be merged with the partner parameters added to an event. The partner parameters added to an event have precedence over the session partner parameters. Meaning that, when adding a partner parameter to an event with the same key to one added from the session, the value that prevails is the partner parameter added to the event.
+
+It's possible to remove a specific session partner parameter by passing the desiring key to the method `Adjust.removeSessionPartnerParameter(String key)`.
+
+```dart
+Adjust.removeSessionPartnerParameter('foo');
+```
+
+If you wish to remove all keys and their corresponding values from the session partner parameters, you can reset it with the method `Adjust.resetSessionPartnerParameters()`.
+
+```dart
+Adjust.resetSessionPartnerParameters();
+```
+
+### <a id="cp-delay-start"></a>Delay start
+
+Delaying the start of the Adjust SDK allows your app some time to obtain session parameters, such as unique identifiers, to be sent on install.
+
+Set the initial delay time in seconds with the method `setDelayStart` in the config instance:
+
+```dart
+adjustConfig.setDelayStart(5.5);
+```
+
+In this case, this will make the Adjust SDK not send the initial install session and any event created for 5.5 seconds. After this time is expired or if you call `Adjust.sendFirstPackages()` in the meanwhile, every session parameter will be added to the delayed install session and events and the Adjust SDK will resume as usual.
+
+**The maximum delay start time of the adjust SDK is 10 seconds**.
+
+
+## Additional features
+
+### <a id="af"></a> Additional features
+
+Once you have integrated the Adjust SDK into your project, you can take advantage of the following features.
+
+### <a id="af-push-token"></a>Push token (uninstall tracking)
+
+Push tokens are used for Audience Builder and client callbacks, and they are required for uninstall and reinstall tracking.
+
+To send us the push notification token, add the following call to Adjust once you have obtained your token or when ever it's value is changed:
+
+<table>
+<tr>
+<td>
+<b>Native SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+Adjust.setPushToken(pushNotificationsToken, context);
+```
+
+This updated signature with `context` added allows the SDK to cover more scenarios to make sure that the push token is sent, and it is advised that you use the signature method above.
+
+We still support the previous signature of the same method:
+
+```java
+Adjust.setPushToken(pushNotificationsToken);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+Adjust.setPushToken(pushNotificationsToken);
+```
+</td>
+</tr>
+</table>
+
+### <a id="af-attribution-callback"></a>Attribution callback
+
+You can register a listener to be notified of tracker attribution changes. Due to the different sources considered for attribution, this information can not be provided synchronously.
+
+Please make sure to consider our [applicable attribution data policies][attribution-data].
+
+With the config instance, before starting the SDK, add the attributioon callback:
+
+<table>
+<tr>
+<td>
+<b>Native SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+    @Override
+    public void onAttributionChanged(AdjustAttribution attribution) {}
+});
+
+Adjust.onCreate(config);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+function attributionCallback(attribution) {}
+
+// ...
+
+let adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setAttributionCallback(attributionCallback);
+Adjust.onCreate(adjustConfig);
+```
+</td>
+</tr>
+</table>
+
+The listener function will be called after the SDK receives the final attribution data. Within the listener function you have access to the `attribution` parameter. Here is a quick summary of its properties:
+
+- `trackerToken` the tracker token string of the current attribution.
+- `trackerName` the tracker name string of the current attribution.
+- `network` the network grouping level string of the current attribution.
+- `campaign` the campaign grouping level string of the current attribution.
+- `adgroup` the ad group grouping level string of the current attribution.
+- `creative` the creative grouping level string of the current attribution.
+- `clickLabel` the click label string of the current attribution.
+- `adid` the Adjust device identifier string.
+
+### <a id="af-session-event-callbacks"></a>Session and event callbacks
+
+You can register a listener to be notified when events or sessions are tracked. There are four listeners: one for tracking successful events, one for tracking failed events, one for tracking successful sessions and one for tracking failed sessions. You can add any number of listeners after creating the config object:
+
+<table>
+<tr>
+<td>
+<b>Native SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+// Set event success tracking delegate.
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+    @Override
+    public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
+        // ...
+    }
+});
+
+// Set event failure tracking delegate.
+config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+    @Override
+    public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
+        // ...
+    }
+});
+
+// Set session success tracking delegate.
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+    @Override
+    public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
+        // ...
+    }
+});
+
+// Set session failure tracking delegate.
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+    @Override
+    public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
+        // ...
+    }
+});
+
+Adjust.onCreate(config);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+function eventSuccessCallback(eventSuccessResponseData) {}
+function eventFailureCallback(eventFailureResponseData) {}
+function sessionSuccessCallback(sessionSuccessResponseData) {}
+function sessionFailureCallback(sessionFailureResponseData) {}
+
+// ...
+
+let adjustConfig = new AdjustConfig(yourAppToken, environment);
+adjustConfig.setEventSuccessCallback(eventSuccessCallback);
+adjustConfig.setEventFailureCallback(eventFailureCallback);
+adjustConfig.setSessionSuccessCallback(sessionSuccessCallback);
+adjustConfig.setSessionFailureCallback(sessionFailureCallback);
+Adjust.onCreate(adjustConfig);
+```
+</td>
+</tr>
+</table>
+
+The listener function will be called after the SDK tries to send a package to the server. Within the listener function you have access to a response data object specifically for the listener. Here is a quick summary of the success session response data object fields:
+
+- `message` message string from the server or the error logged by the SDK.
+- `timestamp` timestamp string from the server.
+- `adid` a unique string device identifier provided by Adjust.
+- `jsonResponse` the JSON object with the reponse from the server.
+
+Both event response data objects contain:
+
+- `eventToken` the event token string, if the package tracked was an event.
+- `callbackId` the custom defined [callback ID](#cp-event-callback-id) string set on event object.
+
+And both event and session failed objects also contain:
+
+- `willRetry` boolean which indicates whether there will be an attempt to resend the package at a later time.
+
+### <a id="af-user-attribution"></a>User attribution
+
+Like described in [attribution callback section](#af-attribution-callback), this callback get triggered providing you info about new attribution when ever it changes. In case you want to access info about your user's current attribution whenever you need it, you can make a call to following method of the `Adjust` instance:
+
+<table>
+<tr>
+<td>
+<b>Native SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+AdjustAttribution attribution = Adjust.getAttribution();
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+let attribution = Adjust.getAttribution();
+```
+</td>
+</tr>
+</table>
+
+**Note**: You can only make this call in the Adjust SDK v4.11.0 and above.
+
+**Note**: Information about current attribution is available after app installation has been tracked by the Adjust backend and attribution callback has been initially triggered. From that moment on, Adjust SDK has information about your user's attribution and you can access it with this method. So, **it is not possible** to access user's attribution value before the SDK has been initialized and attribution callback has been initially triggered.
+
+### <a id="af-device-ids"></a>Device IDs
+
+The Adjust SDK offers you possibility to obtain some of the device identifiers.
+
+### <a id="af-gps-adid"></a>Google Play Services advertising identifier
+
+Certain services (such as Google Analytics) require you to coordinate Device and Client IDs in order to prevent duplicate reporting.
+
+<table>
+<tr>
+<td>
+<b>Native SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+If you need to obtain the Google Advertising ID, there is a restriction that only allows it to be read in a background thread. If you call the function `getGoogleAdId` with the context and a `OnDeviceIdsRead` instance, it will work in any situation:
+
+```java
+Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
+    @Override
+    public void onGoogleAdIdRead(String googleAdId) {}
+});
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+To obtain the device Google Advertising identifier, it's necessary to pass a callback function to `Adjust.getGoogleAdId` that will receive the Google Advertising ID in it's argument, like this:
+
+```js
+Adjust.getGoogleAdId(function(googleAdId) {
+    // ...
+});
+```
+</td>
+</tr>
+</table>
+
+### <a id="af-amazon-adid"></a>Amazon advertising identifier
+
+If you need to obtain the Amazon Advertising ID, you can make a call to following method on `Adjust` instance:
+
+<table>
+<tr>
+<td>
+<b>Native SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+String amazonAdId = Adjust.getAmazonAdId(context);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+let amazonAdId = Adjust.getAmazonAdId();
+```
+</td>
+</tr>
+</table>
+
+### <a id="af-adid"></a>Adjust device identifier
+
+For each device with your app installed on it, Adjust backend generates unique **Adjust device identifier** (**adid**). In order to obtain this identifier, you can make a call to following method on `Adjust` instance:
+
+<table>
+<tr>
+<td>
+<b>Native SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+String adid = Adjust.getAdid();
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+let adid = Adjust.getAdid();
+```
+</td>
+</tr>
+</table>
+
+**Note**: You can only make this call in the Adjust SDK v4.11.0 and above.
+
+**Note**: Information about **adid** is available after app installation has been tracked by the Adjust backend. From that moment on, Adjust SDK has information about your device **adid** and you can access it with this method. So, **it is not possible** to access **adid** value before the SDK has been initialised and installation of your app was tracked successfully.
+
+### <a id="af-pre-installed-trackers"></a>Pre-installed trackers
+
+If you want to use the Adjust SDK to recognize users whose devices came with your app pre-installed, follow these steps.
+
+- Create a new tracker in your [dashboard].
+- Open your app delegate and add set the default tracker of your config:
+
+  <table>
+  <tr>
+  <td>
+  <b>Native SDK</b>
+  </td>
+  </tr>
+  <tr>
+  <td>
+
+  ```java
+  adjustConfig.setDefaultTracker("{TrackerToken}");
+  ```
+  </td>
+  </tr>
+  <tr>
+  <td>
+  <b>Web View SDK</b>
+  </td>
+  </tr>
+  <tr>
+  <td>
+
+  ```js
+  adjustConfig.setDefaultTracker('{TrackerToken}');
+  ```
+  </td>
+  </tr>
+  </table>
+
+  Replace `{TrackerToken}` with the tracker token you created in step 1. Please note that the Dashboard displays a tracker URL (including `http://app.adjust.com/`). In your source code, you should specify only the six-character token and not the entire URL.
+
+- Build and run your app. You should see a line like the following in your LogCat:
+
+  ```
+  Default tracker: 'abc123'
+  ```
+
+### <a id="af-offline-mode"></a>Offline mode
+
+You can put the Adjust SDK in offline mode to suspend transmission to our servers, while retaining tracked data to be sent later. While in offline mode, all information is saved in a file, so be careful not to trigger too many events while in offline mode.
+
+You can activate offline mode by calling `setOfflineMode` with the parameter `true`.
+
+<table>
+<tr>
+<td>
+<b>Native SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+Adjust.setOfflineMode(true);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+Adjust.setOfflineMode(true);
+```
+</td>
+</tr>
+</table>
+
+Conversely, you can deactivate offline mode by calling `setOfflineMode` with `false`. When the Adjust SDK is put back in online mode, all saved information is sent to our servers with the correct time information.
+
+Unlike disabling tracking, this setting is **not remembered** between sessions. This means that the SDK is in online mode whenever it is started, even if the app was terminated in offline mode.
+
+
+### <a id="af-disable-tracking"></a>Disable tracking
+
+You can disable the Adjust SDK from tracking any activities of the current device by calling `setEnabled` with parameter `false`. **This setting is remembered between sessions**.
+
+<table>
+<tr>
+<td>
+<b>Native SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+Adjust.setEnabled(false);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+Adjust.setEnabled(false);
+```
+</td>
+</tr>
+</table>
+
+You can check if the Adjust SDK is currently enabled by calling the function `isEnabled`. It is always possible to activatе the Adjust SDK by invoking `setEnabled` with the enabled parameter as `true`.
+
+### <a id="af-event-buffering"></a>Event buffering
+
+If your app makes heavy use of event tracking, you might want to delay some HTTP requests in order to send them in one batch every minute. You can enable event buffering with your config instance:
+
+<table>
+<tr>
+<td>
+<b>Native SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+adjustConfig.setEventBufferingEnabled(true);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+adjustConfig.setEventBufferingEnabled(true);
+```
+</td>
+</tr>
+</table>
+
+### <a id="af-background-tracking"></a>Background tracking
+
+The default behaviour of the Adjust SDK is to pause sending HTTP requests while the app is in the background. You can change this in your config instance:
+
+<table>
+<tr>
+<td>
+<b>Native SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+adjustConfig.setSendInBackground(true);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+adjustConfig.setSendInBackground(true);
+```
+</td>
+</tr>
+</table>
+
+### <a id="af-gdpr-forget-me"></a>GDPR right to be forgotten
+
+In accordance with article 17 of the EU's General Data Protection Regulation (GDPR), you can notify Adjust when a user has exercised their right to be forgotten. Calling the following method will instruct the Adjust SDK to communicate the user's choice to be forgotten to the Adjust backend:
+
+<table>
+<tr>
+<td>
+<b>Native SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+Adjust.gdprForgetMe(context);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+Adjust.gdprForgetMe();
+```
+</td>
+</tr>
+</table>
+
+Upon receiving this information, Adjust will erase the user's data and the Adjust SDK will stop tracking the user. No requests from this device will be sent to Adjust in the future.
+
+## Testing and troubleshooting
+
+### <a id="tt-session-failed"></a>I'm seeing the "Session failed (Ignoring too frequent session. ...)" error.
+
+This error typically occurs when testing installs. Uninstalling and reinstalling the app is not enough to trigger a new install. The servers will determine that the SDK has lost its locally aggregated session data and ignore the erroneous message, given the information available on the servers about the device.
+
+This behaviour can be cumbersome during tests, but is necessary in order to have the sandbox behaviour match production as much as possible.
+
+You can reset the session data of your app for any device directly from the Adjust Dashboard using our [Testing Console][testing_console], **provided that you have at least an Editor access to the app**. 
+
+When the device is forgotten, the Testing Console just returns `Forgot device`. If the device was already forgotten or the values were incorrect, the link returns `Advertising ID not found`.
+
+If your current package allows it, you can also inspect and forget a device using our [Developer API][dev_api].
+
+### <a id="tt-broadcast-receiver"></a>Is my broadcast receiver capturing the install referrer?
+
+If you followed the instructions in the [guide](#qs-gps-intent), the broadcast receiver should be configured to send the install referrer to our SDK and to our servers.
+
+You can test this by triggering a test install referrer manually. Replace `com.your.appid` with your app ID and run the following command with the [adb](http://developer.android.com/tools/help/adb.html) tool that comes with Android Studio:
+
+```
+adb shell am broadcast -a com.android.vending.INSTALL_REFERRER -n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver --es "referrer" "adjust_reftag%3Dabc1234%26tracking_id%3D123456789%26utm_source%3Dnetwork%26utm_medium%3Dbanner%26utm_campaign%3Dcampaign"
+```
+
+If you are already using a different broadcast receiver for the `INSTALL_REFERRER` intent and followed this [guide][referrer], replace `com.adjust.sdk.AdjustReferrerReceiver` with your broadcast receiver.
+
+You can also remove the `-n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver` parameter so that all the apps in the device will receive the `INSTALL_REFERRER` intent.
+
+If you set the log level to `verbose`, you should be able to see the log from reading the referrer:
+
+```
+V/Adjust: Referrer to parse (adjust_reftag=abc1234&tracking_id=123456789&utm_source=network&utm_medium=banner&utm_campaign=campaign) from reftag
+```
+
+And a click package added to the SDK's package handler:
+
+```
+V/Adjust: Path:      /sdk_click
+    ClientSdk: android4.6.0
+    Parameters:
+      app_token        abc123abc123
+      click_time       yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z
+      created_at       yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z
+      environment      sandbox
+      gps_adid         12345678-0abc-de12-3456-7890abcdef12
+      needs_attribution_data 1
+      referrer         adjust_reftag=abc1234&tracking_id=123456789&utm_source=network&utm_medium=banner&utm_campaign=campaign
+      reftag           abc1234
+      source           reftag
+      tracking_enabled 1
+```
+
+If you perform this test before launching the app, you won't see the package being sent. The package will be sent once the app is launched.
+
+**Important:** Please be aware that usage of `adb` tool for testing this particular feature is not the best way to go. In order to test your full referrer content (in case you have multiple parameters separated with `&`), with `adb` you actually need to encode that content in order to get it into your broadcast receiver. If you don't encode it, `adb` will cut your referrer after first `&` sign and deliver wrong content to your broadcast receiver.
+
+If you would like to see how an app receives unencoded referrer value, you can try our example app and alter content being passed to be fired with intent inside of the `onFireIntentClick` method inside `MainActivity.java` file:
+
+```java
+public void onFireIntentClick(View v) {
+    Intent intent = new Intent("com.android.vending.INSTALL_REFERRER");
+    intent.setPackage("com.adjust.examples");
+    intent.putExtra("referrer", "utm_source=test&utm_medium=test&utm_term=test&utm_content=test&utm_campaign=test");
+    sendBroadcast(intent);
+}
+```
+
+Feel free to alter second parameter of `putExtra` method with content of your choice.
+
+### <a id="tt-event-at-launch"></a>Can I trigger an event at application launch?
+
+Not how you might intuitively think. The `onCreate` method on the global `Application` class is called not only at application launch, but also when a system or application event is captured by the app.
+
+Our SDK is prepared for initialization at this time, but not actually started. This will only happen when an activity is started, i.e., when a user actually launches the app.
+
+That's why triggering an event at this time will not do what you would expect. Such calls will start the Adjust SDK and send the events, even when the app was not launched by the user - at a time that depends on external factors of the app.
+
+Triggering events at application launch will thus result in inaccuracies in the number of installs and sessions tracked.
+
+If you want to trigger an event after the install, use the [attribution callback](#af-attribution-callback).
+
+If you want to trigger an event when the app is launched, use the `onCreate` method of the Activity which is started.
+
+[dashboard]:  http://adjust.com
+[adjust.com]: http://adjust.com
+
+[example-app]: example
+
+[maven]:                          http://maven.org
+[referrer]:                       doc/english/misc/multiple-receivers.md
+[releases]:                       https://github.com/adjust/android_sdk/releases
+[google-ad-id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
+[event-tracking]:                 https://docs.adjust.com/en/event-tracking
+[callbacks-guide]:                https://docs.adjust.com/en/callbacks
+[new-referrer-api]:               https://developer.android.com/google/play/installreferrer/library.html
+[special-partners]:               https://docs.adjust.com/en/special-partners
+[attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
+[android-dashboard]:              http://developer.android.com/about/dashboards/index.html
+[currency-conversion]:            https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[android-application]:            http://developer.android.com/reference/android/app/Application.html
+[android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
+[google-play-services]:           http://developer.android.com/google/play-services/setup.html
+[reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
+[android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
+[testing_console]: https://docs.adjust.com/en/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
+[dev_api]: https://docs.adjust.com/en/adjust-for-developers/
 
 ## <a id="license"></a>License
 
