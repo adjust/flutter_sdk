@@ -54,7 +54,8 @@ public class AdjustSdk implements MethodCallHandler {
     // Plugin registration.
     public static void registerWith(Registrar registrar) {
         if (channel != null) {
-            throw new IllegalStateException("You should not call registerWith more than once!");
+            Log.e(TAG, "You should not call registerWith more than once!");
+            return;
         }
 
         AdjustSdk adjustSdk = new AdjustSdk();
