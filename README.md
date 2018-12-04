@@ -278,12 +278,12 @@ Adjust.start(adjustConfig);
 You can increase or decrease the amount of logs that you see during testing by setting `logLevel` member on your config instance with one of the following parameters:
 
 ```java
-adjustConfig.logLevel = AdjustLogLevel.VERBOSE; // enable all logs
-adjustConfig.logLevel = AdjustLogLevel.DEBUG; // disable verbose logs
-adjustConfig.logLevel = AdjustLogLevel.INFO; // disable debug logs (default)
-adjustConfig.logLevel = AdjustLogLevel.WARN; // disable info logs
-adjustConfig.logLevel = AdjustLogLevel.ERROR; // disable warning logs
-adjustConfig.logLevel = AdjustLogLevel.SUPRESS; // disable all logs
+adjustConfig.logLevel = AdjustLogLevel.verbose; // enable all logs
+adjustConfig.logLevel = AdjustLogLevel.debug; // disable verbose logs
+adjustConfig.logLevel = AdjustLogLevel.info; // disable debug logs (default)
+adjustConfig.logLevel = AdjustLogLevel.warn; // disable info logs
+adjustConfig.logLevel = AdjustLogLevel.error; // disable warning logs
+adjustConfig.logLevel = AdjustLogLevel.suppress; // disable all logs
 ```
 
 ### <a id="qs-build-the-app"></a>Build your app
