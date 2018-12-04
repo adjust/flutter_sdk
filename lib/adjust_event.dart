@@ -10,12 +10,13 @@ import 'dart:convert';
 
 class AdjustEvent {
   num _revenue;
-  String _eventToken;
   String _currency;
-  String _transactionId;
-  String _callbackId;
+  String _eventToken;
   Map<String, String> _callbackParameters;
   Map<String, String> _partnerParameters;
+
+  String transactionId;
+  String callbackId;
 
   AdjustEvent(this._eventToken) {
     _callbackParameters = new Map<String, String>();
@@ -25,14 +26,6 @@ class AdjustEvent {
   void setRevenue(num revenue, String currency) {
     _revenue = revenue;
     _currency = currency;
-  }
-
-  void setTransactionId(String transactionId) {
-    _transactionId = transactionId;
-  }
-
-  void setCallbackId(String callbackId) {
-    _callbackId = callbackId;
   }
 
   void addCallbackParameter(String key, String value) {
@@ -54,11 +47,11 @@ class AdjustEvent {
     if (_currency != null) {
       eventMap['currency'] = _currency;
     }
-    if (_transactionId != null) {
-      eventMap['transactionId'] = _transactionId;
+    if (transactionId != null) {
+      eventMap['transactionId'] = transactionId;
     }
-    if (_callbackId != null) {
-      eventMap['callbackId'] = _callbackId;
+    if (callbackId != null) {
+      eventMap['callbackId'] = callbackId;
     }
     if (_callbackParameters.length > 0) {
       eventMap['callbackParameters'] = json.encode(_callbackParameters);

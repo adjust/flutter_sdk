@@ -15,11 +15,11 @@ import 'package:adjust_sdk/adjust_event.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter0.0.3';
+  static const String _sdkPrefix = 'flutter0.0.4';
   static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
 
   static void start(AdjustConfig config) {
-    config.setSdkPrefix(_sdkPrefix);
+    config.sdkPrefix = _sdkPrefix;
     _channel.invokeMethod('start', config.toMap);
   }
 

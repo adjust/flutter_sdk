@@ -1,3 +1,13 @@
+### Version 0.0.4 (4th December 2018)
+#### Changed
+- Changed SDK API to be more Dart friendly.
+
+#### Native SDKs
+- [iOS@v4.17.0][ios_sdk_v4.17.0]
+- [Android@v4.17.0][android_sdk_v4.17.0]
+
+---
+
 ### Version 0.0.3 (4th December 2018)
 #### Changed
 - Changed SDK dependency in example app from local path to Flutter plugin repository.

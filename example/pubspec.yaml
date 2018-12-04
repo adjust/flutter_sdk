@@ -5,6 +5,7 @@ dependencies:
   flutter:
     sdk: flutter
   adjust_sdk:
+    path: ../
   cupertino_icons: ^0.1.0
 
 dev_dependencies:

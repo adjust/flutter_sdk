@@ -65,17 +65,17 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   initPlatformState() async {
-    AdjustConfig config = new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.SANDBOX);
-    config.setLogLevel(AdjustLogLevel.VERBOSE);
-    config.setDeviceKnown(false);
-    // config.setDefaultTracker('abc123');
-    // config.setProcessName('com.adjust.examples');
-    // config.setSendInBackground(true);
-    // config.setEventBufferingEnabled(true);
-    // config.setDelayStart(7.0);
+    AdjustConfig config = new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
+    config.logLevel = AdjustLogLevel.verbose;
+    config.isDeviceKnown = false;
+    // config.defaultTracker = 'abc123';
+    // config.processName = 'com.adjust.examples';
+    // config.sendInBackground = true;
+    // config.eventBufferingEnabled = true;
+    // config.delayStart = 6.0;
     // config.setAppSecret(1000, 1, 2, 3, 4);
 
-    config.setAttributionCallback((AdjustAttribution attributionChangedData) {
+    config.attributionCallback = (AdjustAttribution attributionChangedData) {
       print('[Adjust]: Attribution changed!');
 
       if (attributionChangedData.trackerToken != null) {
@@ -102,9 +102,9 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       if (attributionChangedData.adid != null) {
         print('[Adjust]: Adid: ' + attributionChangedData.adid);
       }
-    });
+    };
 
-    config.setSessionSuccessCallback((AdjustSessionSuccess sessionSuccessData) {
+    config.sessionSuccessCallback = (AdjustSessionSuccess sessionSuccessData) {
       print('[Adjust]: Session tracking success!');
 
       if (sessionSuccessData.message != null) {
@@ -119,9 +119,9 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       if (sessionSuccessData.jsonResponse != null) {
         print('[Adjust]: JSON response: ' + sessionSuccessData.jsonResponse);
       }
-    });
+    };
 
-    config.setSessionFailureCallback((AdjustSessionFailure sessionFailureData) {
+    config.sessionFailureCallback = (AdjustSessionFailure sessionFailureData) {
       print('[Adjust]: Session tracking failure!');
 
       if (sessionFailureData.message != null) {
@@ -139,9 +139,9 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       if (sessionFailureData.jsonResponse != null) {
         print('[Adjust]: JSON response: ' + sessionFailureData.jsonResponse);
       }
-    });
+    };
 
-    config.setEventSuccessCallback((AdjustEventSuccess eventSuccessData) {
+    config.eventSuccessCallback = (AdjustEventSuccess eventSuccessData) {
       print('[Adjust]: Event tracking success!');
 
       if (eventSuccessData.eventToken != null) {
@@ -162,9 +162,9 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       if (eventSuccessData.jsonResponse != null) {
         print('[Adjust]: JSON response: ' + eventSuccessData.jsonResponse);
       }
-    });
+    };
 
-    config.setEventFailureCallback((AdjustEventFailure eventFailureData) {
+    config.eventFailureCallback = (AdjustEventFailure eventFailureData) {
       print('[Adjust]: Event tracking failure!');
 
       if (eventFailureData.eventToken != null) {
@@ -188,11 +188,11 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       if (eventFailureData.jsonResponse != null) {
         print('[Adjust]: JSON response: ' + eventFailureData.jsonResponse);
       }
-    });
+    };
 
-    config.setDeferredDeeplinkCallback((String uri) {
+    config.deferredDeeplinkCallback = (String uri) {
       print('[Adjust]: Received deferred deeplink: ' + uri);
-    });
+    };
 
     // Add session callback parameters.
     Adjust.addSessionCallbackParameter('scp_foo_1', 'scp_bar');
