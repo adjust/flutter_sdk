@@ -13,8 +13,8 @@ import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
 
-enum AdjustLogLevel { VERBOSE, DEBUG, INFO, WARN, ERROR, ASSERT, SUPPRESS }
-enum AdjustEnvironment { PRODUCTION, SANDBOX }
+enum AdjustLogLevel { verbose, debug, info, warn, error, suppress }
+enum AdjustEnvironment { production, sandbox }
 
 typedef void AttributionCallback(AdjustAttribution attributionData);
 typedef void SessionSuccessCallback(AdjustSessionSuccess successData);
@@ -25,69 +25,40 @@ typedef void DeferredDeeplinkCallback(String uri);
 
 class AdjustConfig {
   static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
+  static const String _attributionCallbackName = 'adj-attribution-changed';
+  static const String _sessionSuccessCallbackName = 'adj-session-success';
+  static const String _sessionFailureCallbackName = 'adj-session-failure';
+  static const String _eventSuccessCallbackName = 'adj-event-success';
+  static const String _eventFailureCallbackName = 'adj-event-failure';
+  static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
 
-  double _delayStart;
-  bool _isDeviceKnown;
-  bool _sendInBackground;
-  bool _eventBufferingEnabled;
-  bool _launchDeferredDeeplink;
   num _info1;
   num _info2;
   num _info3;
   num _info4;
   num _secretId;
   String _appToken;
-  String _sdkPrefix;
-  String _userAgent;
-  String _defaultTracker;
-  String _processName;
-  AdjustLogLevel _logLevel;
   AdjustEnvironment _environment;
-  AttributionCallback _attributionCallback;
-  SessionSuccessCallback _sessionSuccessCallback;
-  SessionFailureCallback _sessionFailureCallback;
-  EventSuccessCallback _eventSuccessCallback;
-  EventFailureCallback _eventFailureCallback;
-  DeferredDeeplinkCallback _deferredDeeplinkCallback;
+
+  double delayStart;
+  bool isDeviceKnown;
+  bool sendInBackground;
+  bool eventBufferingEnabled;
+  bool launchDeferredDeeplink;
+  String sdkPrefix;
+  String userAgent;
+  String defaultTracker;
+  String processName;
+  AdjustLogLevel logLevel;
+  AttributionCallback attributionCallback;
+  SessionSuccessCallback sessionSuccessCallback;
+  SessionFailureCallback sessionFailureCallback;
+  EventSuccessCallback eventSuccessCallback;
+  EventFailureCallback eventFailureCallback;
+  DeferredDeeplinkCallback deferredDeeplinkCallback;
   
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
-  }
-
-  void setDelayStart(double delayStart) {
-    _delayStart = delayStart;
-  }
-
-  void setDeviceKnown(bool isDeviceKnown) {
-    _isDeviceKnown = isDeviceKnown;
-  }
-
-  void setSendInBackground(bool shouldSend) {
-    _sendInBackground = shouldSend;
-  }
-
-  void setEventBufferingEnabled(bool isEnabled) {
-    _eventBufferingEnabled = isEnabled;
-  }
-
-  void setLaunchDeferredDeeplink(bool shouldLaunch) {
-    _launchDeferredDeeplink = shouldLaunch;
-  }
-
-  void setSdkPrefix(String sdkPrefix) {
-    _sdkPrefix = sdkPrefix;
-  }
-
-  void setUserAgent(String userAgent) {
-    _userAgent = userAgent;
-  }
-
-  void setDefaultTracker(String defaultTracker) {
-    _defaultTracker = defaultTracker;
-  }
-
-  void setLogLevel(AdjustLogLevel logLevel) {
-    _logLevel = logLevel;
   }
 
   void setAppSecret(num secretId, num info1, num info2, num info3, num info4) {
@@ -98,68 +69,44 @@ class AdjustConfig {
     _info4 = info4;
   }
 
-  void setAttributionCallback(AttributionCallback callback) {
-    _attributionCallback = callback;
-  }
-
-  void setSessionSuccessCallback(SessionSuccessCallback callback) {
-    _sessionSuccessCallback = callback;
-  }
-
-  void setSessionFailureCallback(SessionFailureCallback callback) {
-    _sessionFailureCallback = callback;
-  }
-
-  void setEventSuccessCallback(EventSuccessCallback callback) {
-    _eventSuccessCallback = callback;
-  }
-
-  void setEventFailureCallback(EventFailureCallback callback) {
-    _eventFailureCallback = callback;
-  }
-
-  void setDeferredDeeplinkCallback(DeferredDeeplinkCallback callback) {
-    _deferredDeeplinkCallback = callback;
-  }
-
   void _initCallbackHandlers() {
     _channel.setMethodCallHandler((MethodCall call) {
       try {
         switch (call.method) {
-          case 'adj-attribution-changed':
-            if (_attributionCallback != null) {
+          case _attributionCallbackName:
+            if (attributionCallback != null) {
               AdjustAttribution attribution = AdjustAttribution.fromMap(call.arguments);
-              _attributionCallback(attribution);
+              attributionCallback(attribution);
             }
             break;
-          case 'adj-session-success':
-            if (_sessionSuccessCallback != null) {
+          case _sessionSuccessCallbackName:
+            if (sessionSuccessCallback != null) {
               AdjustSessionSuccess sessionSuccess = AdjustSessionSuccess.fromMap(call.arguments);
-              _sessionSuccessCallback(sessionSuccess);
+              sessionSuccessCallback(sessionSuccess);
             }
             break;
-          case 'adj-session-failure':
-            if (_sessionFailureCallback != null) {
+          case _sessionFailureCallbackName:
+            if (sessionFailureCallback != null) {
               AdjustSessionFailure sessionFailure = AdjustSessionFailure.fromMap(call.arguments);
-              _sessionFailureCallback(sessionFailure);
+              sessionFailureCallback(sessionFailure);
             }
             break;
-          case 'adj-event-success':
-            if (_eventSuccessCallback != null) {
+          case _eventSuccessCallbackName:
+            if (eventSuccessCallback != null) {
               AdjustEventSuccess eventSuccess = AdjustEventSuccess.fromMap(call.arguments);
-              _eventSuccessCallback(eventSuccess);
+              eventSuccessCallback(eventSuccess);
             }
             break;
-          case 'adj-event-failure':
-            if (_eventFailureCallback != null) {
+          case _eventFailureCallbackName:
+            if (eventFailureCallback != null) {
               AdjustEventFailure eventFailure = AdjustEventFailure.fromMap(call.arguments);
-              _eventFailureCallback(eventFailure);
+              eventFailureCallback(eventFailure);
             }
             break;
-          case 'adj-deferred-deeplink':
+          case _deferredDeeplinkCallbackName:
             String uri = call.arguments['uri'];
-            if (_deferredDeeplinkCallback != null) {
-              _deferredDeeplinkCallback(uri);
+            if (deferredDeeplinkCallback != null) {
+              deferredDeeplinkCallback(uri);
             }
             break;
           default:
@@ -173,34 +120,34 @@ class AdjustConfig {
 
   Map<String, String> get toMap {
     Map<String, String> configMap = {
-      'sdkPrefix': _sdkPrefix,
+      'sdkPrefix': sdkPrefix,
       'appToken': _appToken,
-      'environment': _environment.toString().toLowerCase().substring(_environment.toString().indexOf('.') + 1),
+      'environment': _environment.toString().substring(_environment.toString().indexOf('.') + 1),
     };
 
-    if (_userAgent != null) {
-      configMap['userAgent'] = _userAgent;
+    if (userAgent != null) {
+      configMap['userAgent'] = userAgent;
     }
-    if (_processName != null) {
-      configMap['processName'] = _processName;
+    if (processName != null) {
+      configMap['processName'] = processName;
     }
-    if (_logLevel != null) {
-      configMap['logLevel'] = _logLevel.toString().substring(_logLevel.toString().indexOf('.') + 1);
+    if (logLevel != null) {
+      configMap['logLevel'] = logLevel.toString().substring(logLevel.toString().indexOf('.') + 1);
     }
-    if (_defaultTracker != null) {
-      configMap['defaultTracker'] = _defaultTracker;
+    if (defaultTracker != null) {
+      configMap['defaultTracker'] = defaultTracker;
     }
-    if (_isDeviceKnown != null) {
-      configMap['isDeviceKnown'] = _isDeviceKnown.toString();
+    if (isDeviceKnown != null) {
+      configMap['isDeviceKnown'] = isDeviceKnown.toString();
     }
-    if (_sendInBackground != null) {
-      configMap['sendInBackground'] = _sendInBackground.toString();
+    if (sendInBackground != null) {
+      configMap['sendInBackground'] = sendInBackground.toString();
     }
-    if (_eventBufferingEnabled != null) {
-      configMap['eventBufferingEnabled'] = _eventBufferingEnabled.toString();
+    if (eventBufferingEnabled != null) {
+      configMap['eventBufferingEnabled'] = eventBufferingEnabled.toString();
     }
-    if (_launchDeferredDeeplink != null) {
-      configMap['launchDeferredDeeplink'] = _launchDeferredDeeplink.toString();
+    if (launchDeferredDeeplink != null) {
+      configMap['launchDeferredDeeplink'] = launchDeferredDeeplink.toString();
     }
     if (_info1 != null) {
       configMap['info1'] = _info1.toString();
@@ -217,26 +164,26 @@ class AdjustConfig {
     if (_secretId != null) {
       configMap['secretId'] = _secretId.toString();
     }
-    if (_delayStart != null) {
-      configMap['delayStart'] = _delayStart.toString();
+    if (delayStart != null) {
+      configMap['delayStart'] = delayStart.toString();
     }
-    if (_attributionCallback != null) {
-      configMap['attributionCallback'] = 'adj-attribution-changed';
+    if (attributionCallback != null) {
+      configMap['attributionCallback'] = _attributionCallbackName;
     }
-    if (_sessionSuccessCallback != null) {
-      configMap['sessionSuccessCallback'] = 'adj-session-success';
+    if (sessionSuccessCallback != null) {
+      configMap['sessionSuccessCallback'] = _sessionSuccessCallbackName;
     }
-    if (_sessionFailureCallback != null) {
-      configMap['sessionFailureCallback'] = 'adj-session-failure';
+    if (sessionFailureCallback != null) {
+      configMap['sessionFailureCallback'] = _sessionFailureCallbackName;
     }
-    if (_eventSuccessCallback != null) {
-      configMap['eventSuccessCallback'] = 'adj-event-success';
+    if (eventSuccessCallback != null) {
+      configMap['eventSuccessCallback'] = _eventSuccessCallbackName;
     }
-    if (_eventFailureCallback != null) {
-      configMap['eventFailureCallback'] = 'adj-event-failure';
+    if (eventFailureCallback != null) {
+      configMap['eventFailureCallback'] = _eventFailureCallbackName;
     }
-    if (_deferredDeeplinkCallback != null) {
-      configMap['deferredDeeplinkCallback'] = 'adj-deferred-deeplink';
+    if (deferredDeeplinkCallback != null) {
+      configMap['deferredDeeplinkCallback'] = _deferredDeeplinkCallbackName;
     }
 
     return configMap;

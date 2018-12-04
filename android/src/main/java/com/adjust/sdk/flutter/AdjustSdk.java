@@ -173,7 +173,7 @@ public class AdjustSdk implements MethodCallHandler {
         // Suppress log level.
         if (configMap.containsKey("logLevel")) {
             logLevel = (String) configMap.get("logLevel");
-            if (logLevel.equals("SUPPRESS")) {
+            if (logLevel.equals("suppress")) {
                 isLogLevelSuppress = true;
             }
         }
@@ -190,19 +190,19 @@ public class AdjustSdk implements MethodCallHandler {
         // Log level.
         if (configMap.containsKey("logLevel")) {
             logLevel = (String) configMap.get("logLevel");
-            if (logLevel.equals("VERBOSE")) {
+            if (logLevel.equals("verbose")) {
                 adjustConfig.setLogLevel(LogLevel.VERBOSE);
-            } else if (logLevel.equals("DEBUG")) {
+            } else if (logLevel.equals("debug")) {
                 adjustConfig.setLogLevel(LogLevel.DEBUG);
-            } else if (logLevel.equals("INFO")) {
+            } else if (logLevel.equals("info")) {
                 adjustConfig.setLogLevel(LogLevel.INFO);
-            } else if (logLevel.equals("WARN")) {
+            } else if (logLevel.equals("warn")) {
                 adjustConfig.setLogLevel(LogLevel.WARN);
-            } else if (logLevel.equals("ERROR")) {
+            } else if (logLevel.equals("error")) {
                 adjustConfig.setLogLevel(LogLevel.ERROR);
-            } else if (logLevel.equals("ASSERT")) {
+            } else if (logLevel.equals("assert")) {
                 adjustConfig.setLogLevel(LogLevel.ASSERT);
-            } else if (logLevel.equals("SUPPRESS")) {
+            } else if (logLevel.equals("suppress")) {
                 adjustConfig.setLogLevel(LogLevel.SUPRESS);
             } else {
                 adjustConfig.setLogLevel(LogLevel.INFO);
@@ -290,7 +290,7 @@ public class AdjustSdk implements MethodCallHandler {
             adjustConfig.setOnAttributionChangedListener(new OnAttributionChangedListener() {
                 @Override
                 public void onAttributionChanged(AdjustAttribution adjustAttribution) {
-                    HashMap<String, String> adjustAttributionMap = new HashMap();
+                    HashMap<String, String> adjustAttributionMap = new HashMap<String, String>();
                     adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
                     adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
                     adjustAttributionMap.put("network", adjustAttribution.network);
@@ -310,7 +310,7 @@ public class AdjustSdk implements MethodCallHandler {
             adjustConfig.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
                 @Override
                 public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess adjustSessionSuccess) {
-                    HashMap adjustSessionSuccessMap = new HashMap();
+                    HashMap<String, String> adjustSessionSuccessMap = new HashMap<String, String>();
                     adjustSessionSuccessMap.put("message", adjustSessionSuccess.message);
                     adjustSessionSuccessMap.put("timestamp", adjustSessionSuccess.timestamp);
                     adjustSessionSuccessMap.put("adid", adjustSessionSuccess.adid);
@@ -328,11 +328,11 @@ public class AdjustSdk implements MethodCallHandler {
             adjustConfig.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
                 @Override
                 public void onFinishedSessionTrackingFailed(AdjustSessionFailure adjustSessionFailure) {
-                    HashMap adjustSessionFailureMap = new HashMap();
+                    HashMap<String, String> adjustSessionFailureMap = new HashMap<String, String>();
                     adjustSessionFailureMap.put("message", adjustSessionFailure.message);
                     adjustSessionFailureMap.put("timestamp", adjustSessionFailure.timestamp);
                     adjustSessionFailureMap.put("adid", adjustSessionFailure.adid);
-                    adjustSessionFailureMap.put("willRetry", adjustSessionFailure.willRetry);
+                    adjustSessionFailureMap.put("willRetry", Boolean.toString(adjustSessionFailure.willRetry));
                     if (adjustSessionFailure.jsonResponse != null) {
                         adjustSessionFailureMap.put("jsonResponse", adjustSessionFailure.jsonResponse.toString());
                     }
@@ -347,7 +347,7 @@ public class AdjustSdk implements MethodCallHandler {
             adjustConfig.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
                 @Override
                 public void onFinishedEventTrackingSucceeded(AdjustEventSuccess adjustEventSuccess) {
-                    HashMap adjustEventSuccessMap = new HashMap();
+                    HashMap<String, String> adjustEventSuccessMap = new HashMap<String, String>();
                     adjustEventSuccessMap.put("message", adjustEventSuccess.message);
                     adjustEventSuccessMap.put("timestamp", adjustEventSuccess.timestamp);
                     adjustEventSuccessMap.put("adid", adjustEventSuccess.adid);
@@ -367,7 +367,7 @@ public class AdjustSdk implements MethodCallHandler {
             adjustConfig.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
                 @Override
                 public void onFinishedEventTrackingFailed(AdjustEventFailure adjustEventFailure) {
-                    HashMap<String, String> adjustEventFailureMap = new HashMap();
+                    HashMap<String, String> adjustEventFailureMap = new HashMap<String, String>();
                     adjustEventFailureMap.put("message", adjustEventFailure.message);
                     adjustEventFailureMap.put("timestamp", adjustEventFailure.timestamp);
                     adjustEventFailureMap.put("adid", adjustEventFailure.adid);
@@ -388,7 +388,7 @@ public class AdjustSdk implements MethodCallHandler {
             adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
                 @Override
                 public boolean launchReceivedDeeplink(Uri uri) {
-                    HashMap uriParamsMap = new HashMap();
+                    HashMap<String, String> uriParamsMap = new HashMap<String, String>();
                     uriParamsMap.put("uri", uri.toString());
                     channel.invokeMethod(dartMethodName, uriParamsMap);
                     return launchDeferredDeeplink;
@@ -574,7 +574,7 @@ public class AdjustSdk implements MethodCallHandler {
             adjustAttribution = new AdjustAttribution();
         }
 
-        HashMap<String, String> adjustAttributionMap = new HashMap();
+        HashMap<String, String> adjustAttributionMap = new HashMap<String, String>();
         adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
         adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
         adjustAttributionMap.put("network", adjustAttribution.network);

@@ -19,7 +19,7 @@ class Adjust {
   static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
 
   static void start(AdjustConfig config) {
-    config.setSdkPrefix(_sdkPrefix);
+    config.sdkPrefix = _sdkPrefix;
     _channel.invokeMethod('start', config.toMap);
   }
 
