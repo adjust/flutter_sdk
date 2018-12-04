@@ -1,6 +1,6 @@
-### Version 4.17.0 (4th December 2018)
+### Version 0.0.1 (4th December 2018)
 #### Added
-- Initial release of Flutter SDK.
+- Test release of Flutter SDK.
 - Package available at: https://pub.dartlang.org/packages/adjust_sdk
 
 #### Native SDKs
