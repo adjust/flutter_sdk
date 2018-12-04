@@ -1,13 +1,12 @@
 import 'dart:io';
-
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:testlib/testlib.dart';
-import 'package:testapp/command_executor.dart';
 import 'package:testapp/command.dart';
+import 'package:testapp/command_executor.dart';
+import 'package:adjust_sdk/adjust.dart';
 
 void main() => runApp(new MyApp());
 
@@ -17,61 +16,37 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-  CommandExecutor _commandExecutor;
-  String _clientSdkPlatform = '';
-  String _clientSdk = '';
-
   String _baseUrl;
   String _gdprUrl;
+  CommandExecutor _commandExecutor;
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
 
-    String _address = '192.168.8.224';
+    String _address = '192.168.2.100';
     if (Platform.isAndroid) {
-      _clientSdkPlatform = 'android4.16.0';
       String _protocol = 'https';
       String _port = '8443';
-      // String _address = '10.0.2.2';
       _baseUrl = _protocol + '://' + _address + ':' + _port;
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
     } else {
-      _clientSdkPlatform = 'ios4.16.0';
       String _protocol = 'http';
       String _port = '8080';
-      // String _address = '127.0.0.1';
       _baseUrl = _protocol + '://' + _address + ':' + _port;
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
     }
 
-    // init test library
-    Testlib.init(_baseUrl);
-
+    // Initialise command executor.
     _commandExecutor = new CommandExecutor(_baseUrl, _gdprUrl);
-    _clientSdk = 'flutter4.16.0@$_clientSdkPlatform';
 
+    // Initialise test library.
+    Testlib.init(_baseUrl);
     Testlib.doNotExitAfterEnd();
-    
-    // Testlib.addTest('current/app-secret/Test_AppSecret_with_secret');
-    // Testlib.addTestDirectory('current/event-tracking');
-    // Testlib.addTestDirectory('current/init-malformed');
-    // Testlib.addTestDirectory('current/attribution-callback');
-    // Testlib.addTestDirectory('current/event-callbacks');
-    // Testlib.addTestDirectory('current/session-callbacks');
-    // Testlib.addTestDirectory('current/push-token');
-    // Testlib.addTestDirectory('current/deeplink-deferred');
-    Testlib.addTest('current/push-token/Test_PushToken_before_install');
-    // Testlib.addTest('current/init-malformed/Test_Init_Malformed_wrong_environment');
-    // Testlib.addTestDirectory('current/session-parameters');
-    // Testlib.addTest('current/event-callbacks/Test_EventCallback_failure');
-    // Testlib.addTest('current/deeplink/Test_Deeplink_beforeStart');
-
     Testlib.setExecuteCommandHalder((final dynamic callArgs) {
       Command command = new Command(callArgs);
-      print('>>> EXECUTING METHOD: [${command.className}.${command.methodName}] <<<');
+      print('[AdjustTestApp]: Executing command ${command.className}.${command.methodName}');
       _commandExecutor.executeCommand(command);
     });
   }
@@ -85,15 +60,6 @@ class _MyAppState extends State<MyApp> {
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
@@ -101,17 +67,19 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
-          title: const Text('Flutter test app'),
+          title: const Text('Adjust Flutter SDK Test App'),
         ),
         body: new CustomScrollView(shrinkWrap: true, slivers: <Widget>[
           new SliverPadding(
               padding: const EdgeInsets.all(20.0),
               sliver: new SliverList(
                   delegate: new SliverChildListDelegate(<Widget>[
-                new Text('Running on: $_platformVersion\n'),
+                new Text('Running'),
                 buildCupertinoButton(
                     'Start Test Session',
-                    () => Testlib.startTestSession(_clientSdk))
+                    () => Adjust.getSdkVersion().then((sdkVersion) {
+                      Testlib.startTestSession(sdkVersion);
+                    }))
               ])))
         ]),
       ),

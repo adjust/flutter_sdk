@@ -1,11 +1,19 @@
+//
+//  adjust_event_failure.dart
+//  Adjust SDK
+//
+//  Created by Srdjan Tubin (@2beens) on 25th April 2018.
+//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//
+
 class AdjustEventFailure {
   String message;
   String timestamp;
   String adid;
   String eventToken;
   String callbackId;
-  bool willRetry;
   String jsonResponse;
+  bool willRetry;
 
   static AdjustEventFailure fromMap(dynamic map) {
     AdjustEventFailure eventFailure = new AdjustEventFailure();
@@ -15,17 +23,12 @@ class AdjustEventFailure {
       eventFailure.adid = map['adid'];
       eventFailure.eventToken = map['eventToken'];
       eventFailure.callbackId = map['callbackId'];
+      eventFailure.jsonResponse = map['jsonResponse'];
       bool willRetry = map['willRetry'].toString().toLowerCase() == 'true';
       eventFailure.willRetry = willRetry;
-      eventFailure.jsonResponse = map['jsonResponse'];
     } catch (e) {
-      print('Error! Failed to map AdjustEventFailure from incoming data. Details: ' + e.toString());
+      print('[AdjustFlutter]: Failed to create AdjustEventFailure object from given map object. Details: ' + e.toString());
     }
     return eventFailure;
-  }
-
-  @override
-  String toString() {
-    return "EventFailure [ message: $message, timestamp: $timestamp, adid: $adid, token: $eventToken, callbackId: $callbackId, willRetry: $willRetry, jsonResp: $jsonResponse ]";
   }
 }

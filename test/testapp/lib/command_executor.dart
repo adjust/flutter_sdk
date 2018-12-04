@@ -1,6 +1,6 @@
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
-import 'package:adjust_sdk/adjust_sdk.dart';
+import 'package:adjust_sdk/adjust.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
@@ -14,9 +14,9 @@ class CommandExecutor {
   String _basePath;
   String _gdprUrl;
   String _gdprPath;
+  Command _command;
   Map<int, AdjustEvent> _savedEvents = new Map<int, AdjustEvent>();
   Map<int, AdjustConfig> _savedConfigs = new Map<int, AdjustConfig>();
-  Command _command;
 
   CommandExecutor(String baseUrl, String gdprUrl) {
     _baseUrl = baseUrl;
@@ -34,8 +34,8 @@ class CommandExecutor {
         case 'resume': _resume(); break;
         case 'pause': _pause(); break;
         case 'setEnabled': _setEnabled(); break;
-        case 'setReferrer': _setReferrer(); break; //TODO: check
-        case 'sendReferrer': _setReferrer(); break; //TODO: check
+        case 'setReferrer': _setReferrer(); break;
+        case 'sendReferrer': _setReferrer(); break;
         case 'setOfflineMode': _setOfflineMode(); break;
         case 'sendFirstPackages': _sendFirstPackages(); break;
         case 'addSessionCallbackParameter': _addSessionCallbackParameter(); break;
@@ -105,7 +105,7 @@ class CommandExecutor {
           testOptions['teardown'] = 'true';
           testOptions['basePath'] = null;
           testOptions['gdprPath'] = null;
-          // android specific
+          // Android specific.
           testOptions['useTestConnectionOptions'] = 'false';
         }
         if (teardownOption == 'test') {
@@ -134,9 +134,9 @@ class CommandExecutor {
     } else {
       String appToken = _command.getFirstParameterValue('appToken');
       String environmentString = _command.getFirstParameterValue('environment');
-      AdjustEnvironment environment = environmentString == 'sandbox' ? AdjustEnvironment.sandbox : AdjustEnvironment.production;
+      AdjustEnvironment environment = environmentString == 'sandbox' ? AdjustEnvironment.SANDBOX : AdjustEnvironment.PRODUCTION;
       adjustConfig = new AdjustConfig(appToken, environment);
-      adjustConfig.logLevel = AdjustLogLevel.VERBOSE;
+      adjustConfig.setLogLevel(AdjustLogLevel.VERBOSE);
       _savedConfigs.putIfAbsent(configNumber, () => adjustConfig);
     }
 
@@ -156,19 +156,14 @@ class CommandExecutor {
               break;
           case 'assert': logLevel = AdjustLogLevel.ASSERT;
               break;
-          case 'suppress': logLevel = AdjustLogLevel.SUPRESS;
+          case 'suppress': logLevel = AdjustLogLevel.SUPPRESS;
               break;
       }
-      adjustConfig.logLevel = logLevel;
-    }
-
-    if (_command.containsParameter('sdkPrefix')) {
-      // not needed
-      print('Setting sdkPrefix not supported!');
+      adjustConfig.setLogLevel(logLevel);
     }
 
     if (_command.containsParameter('defaultTracker')) {
-      adjustConfig.defaultTracker = _command.getFirstParameterValue('defaultTracker');
+      adjustConfig.setDefaultTracker(_command.getFirstParameterValue('defaultTracker'));
     }
 
     if (_command.containsParameter('appSecret')) {
@@ -181,7 +176,7 @@ class CommandExecutor {
         }
       }
 
-      if(appSecretValid) {
+      if (appSecretValid) {
         num secretId = num.parse(appSecretArray[0]);
         num info1 = num.parse(appSecretArray[1]);
         num info2 = num.parse(appSecretArray[2]);
@@ -193,54 +188,54 @@ class CommandExecutor {
 
     if (_command.containsParameter('delayStart')) {
       double delayStart = double.parse(_command.getFirstParameterValue('delayStart'));
-      adjustConfig.delayStart = delayStart;
+      adjustConfig.setDelayStart(delayStart);
     }
 
     if (_command.containsParameter('deviceKnown')) {
       bool isDeviceKnown = _command.getFirstParameterValue('deviceKnown') == 'true';
-      adjustConfig.isDeviceKnown = isDeviceKnown;
+      adjustConfig.setDeviceKnown(isDeviceKnown);
     }
 
     if (_command.containsParameter('eventBufferingEnabled')) {
       bool eventBufferingEnabled = _command.getFirstParameterValue('eventBufferingEnabled') == 'true';
-      adjustConfig.eventBufferingEnabled = eventBufferingEnabled;
+      adjustConfig.setEventBufferingEnabled(eventBufferingEnabled);
     }
 
     if (_command.containsParameter('sendInBackground')) {
       bool sendInBackground = _command.getFirstParameterValue('sendInBackground') == 'true';
-      adjustConfig.sendInBackground = sendInBackground;
+      adjustConfig.setSendInBackground(sendInBackground);
     }
 
     if (_command.containsParameter('userAgent')) {
-      adjustConfig.userAgent = _command.getFirstParameterValue('userAgent');
+      adjustConfig.setUserAgent(_command.getFirstParameterValue('userAgent'));
     }
 
-    // first clear all previous callback handlers
-    adjustConfig.setReceivedDeeplinkHandler(null);
-    adjustConfig.setAttributionChangedHandler(null);
-    adjustConfig.setSessionSuccessHandler(null);
-    adjustConfig.setSessionFailureHandler(null);
-    adjustConfig.setEventSuccessHandler(null);
-    adjustConfig.setEventFailureHandler(null);
+    // First clear all previous callback handlers.
+    adjustConfig.setDeferredDeeplinkCallback(null);
+    adjustConfig.setAttributionCallback(null);
+    adjustConfig.setSessionSuccessCallback(null);
+    adjustConfig.setSessionFailureCallback(null);
+    adjustConfig.setEventSuccessCallback(null);
+    adjustConfig.setEventFailureCallback(null);
 
-    // TODO: deeplinking in flutter example
+    // TODO: Deeplinking in Flutter example.
     // https://github.com/flutter/flutter/issues/8711#issuecomment-304681212
-    if(_command.containsParameter('deferredDeeplinkCallback')) {
+    if (_command.containsParameter('deferredDeeplinkCallback')) {
       String localBasePath = _basePath;
       bool launchDeferredDeeplink = _command.getFirstParameterValue('deferredDeeplinkCallback') == 'true';
-      adjustConfig.launchDeferredDeeplink = launchDeferredDeeplink;
-      print('-----> Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink}');
-      adjustConfig.setReceivedDeeplinkHandler((String uri) {
-        print('-----> Sending deeplink info to server: $uri');
+      adjustConfig.setLaunchDeferredDeeplink(launchDeferredDeeplink);
+      print('[CommandExecutor]: Deferred deeplink callback, launchDeferredDeeplink: ${launchDeferredDeeplink}');
+      adjustConfig.setDeferredDeeplinkCallback((String uri) {
+        print('[CommandExecutor]: Sending deeplink info to server: $uri');
         Testlib.addInfoToSend('deeplink', uri);
         Testlib.sendInfoToServer(localBasePath);
       });
     }
 
-    if(_command.containsParameter('attributionCallbackSendAll')) {
+    if (_command.containsParameter('attributionCallbackSendAll')) {
       String localBasePath = _basePath;
-      adjustConfig.setAttributionChangedHandler((AdjustAttribution attribution) {
-        print('-----> Attribution Callback: $attribution');
+      adjustConfig.setAttributionCallback((AdjustAttribution attribution) {
+        print('[CommandExecutor]: Attribution Callback: $attribution');
         Testlib.addInfoToSend('trackerToken', attribution.trackerToken);
         Testlib.addInfoToSend('trackerName', attribution.trackerName);
         Testlib.addInfoToSend('network', attribution.network);
@@ -253,10 +248,10 @@ class CommandExecutor {
       });
     }
 
-    if(_command.containsParameter('sessionCallbackSendSuccess')) {
+    if (_command.containsParameter('sessionCallbackSendSuccess')) {
       String localBasePath = _basePath;
-      adjustConfig.setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessResponseData) {
-        print('-----> Session Callback Success: $sessionSuccessResponseData');
+      adjustConfig.setSessionSuccessCallback((AdjustSessionSuccess sessionSuccessResponseData) {
+        print('[CommandExecutor]: Session Callback Success: $sessionSuccessResponseData');
         Testlib.addInfoToSend('message', sessionSuccessResponseData.message);
         Testlib.addInfoToSend('timestamp', sessionSuccessResponseData.timestamp);
         Testlib.addInfoToSend('adid', sessionSuccessResponseData.adid);
@@ -267,10 +262,10 @@ class CommandExecutor {
       });
     }
 
-    if(_command.containsParameter('sessionCallbackSendFailure')) {
+    if (_command.containsParameter('sessionCallbackSendFailure')) {
       String localBasePath = _basePath;
-      adjustConfig.setSessionFailureHandler((AdjustSessionFailure sessionFailureResponseData) {
-        print('-----> Session Callback Failure: $sessionFailureResponseData');
+      adjustConfig.setSessionFailureCallback((AdjustSessionFailure sessionFailureResponseData) {
+        print('[CommandExecutor]: Session Callback Failure: $sessionFailureResponseData');
         Testlib.addInfoToSend('message', sessionFailureResponseData.message);
         Testlib.addInfoToSend('timestamp', sessionFailureResponseData.timestamp);
         Testlib.addInfoToSend('adid', sessionFailureResponseData.adid);
@@ -282,10 +277,10 @@ class CommandExecutor {
       });
     }
 
-    if(_command.containsParameter('eventCallbackSendSuccess')) {
+    if (_command.containsParameter('eventCallbackSendSuccess')) {
       String localBasePath = _basePath;
-      adjustConfig.setEventSuccessHandler((AdjustEventSuccess eventSuccessResponseData) {
-        print('-----> Event Callback Success: $eventSuccessResponseData');
+      adjustConfig.setEventSuccessCallback((AdjustEventSuccess eventSuccessResponseData) {
+        print('[CommandExecutor]: Event Callback Success: $eventSuccessResponseData');
         Testlib.addInfoToSend('message', eventSuccessResponseData.message);
         Testlib.addInfoToSend('timestamp', eventSuccessResponseData.timestamp);
         Testlib.addInfoToSend('adid', eventSuccessResponseData.adid);
@@ -298,10 +293,10 @@ class CommandExecutor {
       });
     }
 
-    if(_command.containsParameter('eventCallbackSendFailure')) {
+    if (_command.containsParameter('eventCallbackSendFailure')) {
       String localBasePath = _basePath;
-      adjustConfig.setEventFailureHandler((AdjustEventFailure eventFailureResponseData) {
-        print('-----> Event Callback Failure: $eventFailureResponseData');
+      adjustConfig.setEventFailureCallback((AdjustEventFailure eventFailureResponseData) {
+        print('[CommandExecutor]: Event Callback Failure: $eventFailureResponseData');
         Testlib.addInfoToSend('message', eventFailureResponseData.message);
         Testlib.addInfoToSend('timestamp', eventFailureResponseData.timestamp);
         Testlib.addInfoToSend('adid', eventFailureResponseData.adid);
@@ -325,7 +320,7 @@ class CommandExecutor {
     }
 
     AdjustConfig adjustConfig = _savedConfigs[configNumber];
-    Adjust.onCreate(adjustConfig);
+    Adjust.start(adjustConfig);
     _savedConfigs.remove(configNumber);
   }
 
@@ -347,8 +342,7 @@ class CommandExecutor {
 
     if (_command.containsParameter('revenue')) {
       List<dynamic> revenueParams = _command.getParamteters('revenue');
-      adjustEvent.currency = revenueParams[0];
-      adjustEvent.revenue = num.parse(revenueParams[1]);
+      adjustEvent.setRevenue(num.parse(revenueParams[1]), revenueParams[0]);
     }
     if (_command.containsParameter('callbackParams')) {
       List<dynamic> callbackParams = _command.getParamteters('callbackParams');
@@ -367,10 +361,10 @@ class CommandExecutor {
       }
     }
     if (_command.containsParameter('orderId')) {
-      adjustEvent.orderId = _command.getFirstParameterValue('orderId');
+      adjustEvent.setTransactionId(_command.getFirstParameterValue('orderId'));
     }
     if (_command.containsParameter('callbackId')) {
-      adjustEvent.callbackId = _command.getFirstParameterValue('callbackId');
+      adjustEvent.setCallbackId(_command.getFirstParameterValue('callbackId'));
     }
   }
 
@@ -398,7 +392,7 @@ class CommandExecutor {
 
   void _setEnabled() {
     bool isEnabled = _command.getFirstParameterValue('enabled') == 'true';
-    Adjust.setIsEnabled(isEnabled);
+    Adjust.setEnabled(isEnabled);
   }
 
   void _setReferrer() {

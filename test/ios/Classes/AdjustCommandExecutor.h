@@ -1,8 +1,9 @@
 //
 //  AdjustCommandExecutor.h
-//  testlib
+//  Adjust SDK
 //
-//  Created by Srdjan Tubin on 01.10.18.
+//  Created by Srdjan Tubin (@2beens) on 1st October 2018.
+//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
 //
 
 #import <Flutter/Flutter.h>

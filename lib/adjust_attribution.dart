@@ -1,3 +1,11 @@
+//
+//  adjust_attribution.dart
+//  Adjust SDK
+//
+//  Created by Srdjan Tubin (@2beens) on 25th April 2018.
+//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//
+
 class AdjustAttribution {
   String trackerToken;
   String trackerName;
@@ -9,27 +17,19 @@ class AdjustAttribution {
   String adid;
 
   static AdjustAttribution fromMap(dynamic map) {
-    AdjustAttribution attChange = new AdjustAttribution();
+    AdjustAttribution attribution = new AdjustAttribution();
     try {
-      attChange.trackerToken = map['trackerToken'];
-      attChange.trackerName = map['trackerName'];
-      attChange.network = map['network'];
-      attChange.campaign = map['campaign'];
-      attChange.adgroup = map['adgroup'];
-      attChange.creative = map['creative'];
-      attChange.clickLabel = map['clickLabel'];
-      attChange.adid = map['adid'];
+      attribution.trackerToken = map['trackerToken'];
+      attribution.trackerName = map['trackerName'];
+      attribution.network = map['network'];
+      attribution.campaign = map['campaign'];
+      attribution.adgroup = map['adgroup'];
+      attribution.creative = map['creative'];
+      attribution.clickLabel = map['clickLabel'];
+      attribution.adid = map['adid'];
     } catch (e) {
-      print('Error! Failed to map AdjustAttribution from incoming data. Details: ' + e.toString());
+      print('[AdjustFlutter]: Failed to create AdjustAttribution object from given map object. Details: ' + e.toString());
     }
-    return attChange;
-  }
-
-  @override
-  toString() {
-    return 
-      """token: $trackerToken, tokenName: $trackerName, network: $network, 
-        campaign: $campaign, adgroup: $adgroup, creative: $creative, 
-        clickLabel: $clickLabel, adid: $adid""";
+    return attribution;
   }
 }

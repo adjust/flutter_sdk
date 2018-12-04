@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:adjust_sdk/adjust.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
-import 'package:adjust_sdk_example/util.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
-import 'package:adjust_sdk/adjust_sdk.dart';
+import 'package:adjust_example/util.dart';
 
 void main() {
   runApp(new AdjustExampleApp());
@@ -30,7 +30,6 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
-  String _platformVersion = 'Unknown';
   bool _isSdkEnabled = true;
 
   @override
@@ -51,7 +50,6 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     setState(() {
       switch (state) {
         case AppLifecycleState.inactive:
-          // not needed
           break;
         case AppLifecycleState.resumed:
           Adjust.onResume();
@@ -60,7 +58,6 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           Adjust.onPause();
           break;
         case AppLifecycleState.suspending:
-          // not needed
           break;
       }
     });
@@ -68,39 +65,146 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   initPlatformState() async {
-    AdjustConfig config = new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
-    config.logLevel = AdjustLogLevel.VERBOSE;
-    config.isDeviceKnown = false;
-
-    // Set default tracker
-    // config.defaultTracker = 'def_tracker';
-
-    // Set process name.
-    // config.processName = 'com.adjust.examples';
-
-    // Allow to send in the background.
-    config.sendInBackground = true;
-
-    // Enable event buffering.
-    // config.eventBufferingEnabled = true;
-
-    // Delay first session.
-    // config.delayStart = 7.0;
-
-    // Set app secret.
+    AdjustConfig config = new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.SANDBOX);
+    config.setLogLevel(AdjustLogLevel.VERBOSE);
+    config.setDeviceKnown(false);
+    // config.setDefaultTracker('abc123');
+    // config.setProcessName('com.adjust.examples');
+    // config.setSendInBackground(true);
+    // config.setEventBufferingEnabled(true);
+    // config.setDelayStart(7.0);
     // config.setAppSecret(1000, 1, 2, 3, 4);
+
+    config.setAttributionCallback((AdjustAttribution attributionChangedData) {
+      print('[Adjust]: Attribution changed!');
+
+      if (attributionChangedData.trackerToken != null) {
+        print('[Adjust]: Tracker token: ' + attributionChangedData.trackerToken);
+      }
+      if (attributionChangedData.trackerName != null) {
+        print('[Adjust]: Tracker name: ' + attributionChangedData.trackerName);
+      }
+      if (attributionChangedData.campaign != null) {
+        print('[Adjust]: Campaign: ' + attributionChangedData.campaign);
+      }
+      if (attributionChangedData.network != null) {
+        print('[Adjust]: Network: ' + attributionChangedData.network);
+      }
+      if (attributionChangedData.creative != null) {
+        print('[Adjust]: Creative: ' + attributionChangedData.creative);
+      }
+      if (attributionChangedData.adgroup != null) {
+        print('[Adjust]: Adgroup: ' + attributionChangedData.adgroup);
+      }
+      if (attributionChangedData.clickLabel != null) {
+        print('[Adjust]: Click label: ' + attributionChangedData.clickLabel);
+      }
+      if (attributionChangedData.adid != null) {
+        print('[Adjust]: Adid: ' + attributionChangedData.adid);
+      }
+    });
+
+    config.setSessionSuccessCallback((AdjustSessionSuccess sessionSuccessData) {
+      print('[Adjust]: Session tracking success!');
+
+      if (sessionSuccessData.message != null) {
+        print('[Adjust]: Message: ' + sessionSuccessData.message);
+      }
+      if (sessionSuccessData.timestamp != null) {
+        print('[Adjust]: Timestamp: ' + sessionSuccessData.timestamp);
+      }
+      if (sessionSuccessData.adid != null) {
+        print('[Adjust]: Adid: ' + sessionSuccessData.adid);
+      }
+      if (sessionSuccessData.jsonResponse != null) {
+        print('[Adjust]: JSON response: ' + sessionSuccessData.jsonResponse);
+      }
+    });
+
+    config.setSessionFailureCallback((AdjustSessionFailure sessionFailureData) {
+      print('[Adjust]: Session tracking failure!');
+
+      if (sessionFailureData.message != null) {
+        print('[Adjust]: Message: ' + sessionFailureData.message);
+      }
+      if (sessionFailureData.timestamp != null) {
+        print('[Adjust]: Timestamp: ' + sessionFailureData.timestamp);
+      }
+      if (sessionFailureData.adid != null) {
+        print('[Adjust]: Adid: ' + sessionFailureData.adid);
+      }
+      if (sessionFailureData.willRetry != null) {
+        print('[Adjust]: Will retry: ' + sessionFailureData.willRetry.toString());
+      }
+      if (sessionFailureData.jsonResponse != null) {
+        print('[Adjust]: JSON response: ' + sessionFailureData.jsonResponse);
+      }
+    });
+
+    config.setEventSuccessCallback((AdjustEventSuccess eventSuccessData) {
+      print('[Adjust]: Event tracking success!');
+
+      if (eventSuccessData.eventToken != null) {
+        print('[Adjust]: Event token: ' + eventSuccessData.eventToken);
+      }
+      if (eventSuccessData.message != null) {
+        print('[Adjust]: Message: ' + eventSuccessData.message);
+      }
+      if (eventSuccessData.timestamp != null) {
+        print('[Adjust]: Timestamp: ' + eventSuccessData.timestamp);
+      }
+      if (eventSuccessData.adid != null) {
+        print('[Adjust]: Adid: ' + eventSuccessData.adid);
+      }
+      if (eventSuccessData.callbackId != null) {
+        print('[Adjust]: Callback ID: ' + eventSuccessData.callbackId);
+      }
+      if (eventSuccessData.jsonResponse != null) {
+        print('[Adjust]: JSON response: ' + eventSuccessData.jsonResponse);
+      }
+    });
+
+    config.setEventFailureCallback((AdjustEventFailure eventFailureData) {
+      print('[Adjust]: Event tracking failure!');
+
+      if (eventFailureData.eventToken != null) {
+        print('[Adjust]: Event token: ' + eventFailureData.eventToken);
+      }
+      if (eventFailureData.message != null) {
+        print('[Adjust]: Message: ' + eventFailureData.message);
+      }
+      if (eventFailureData.timestamp != null) {
+        print('[Adjust]: Timestamp: ' + eventFailureData.timestamp);
+      }
+      if (eventFailureData.adid != null) {
+        print('[Adjust]: Adid: ' + eventFailureData.adid);
+      }
+      if (eventFailureData.callbackId != null) {
+        print('[Adjust]: Callback ID: ' + eventFailureData.callbackId);
+      }
+      if (eventFailureData.willRetry != null) {
+        print('[Adjust]: Will retry: ' + eventFailureData.willRetry.toString());
+      }
+      if (eventFailureData.jsonResponse != null) {
+        print('[Adjust]: JSON response: ' + eventFailureData.jsonResponse);
+      }
+    });
+
+    config.setDeferredDeeplinkCallback((String uri) {
+      print('[Adjust]: Received deferred deeplink: ' + uri);
+    });
 
     // Add session callback parameters.
     Adjust.addSessionCallbackParameter('scp_foo_1', 'scp_bar');
     Adjust.addSessionCallbackParameter('scp_foo_2', 'scp_value');
 
     // Add session Partner parameters.
-    Adjust.addSessionPartnerParameter('scp_foo_1', 'scp_bar');
-    Adjust.addSessionPartnerParameter('scp_foo_2', 'scp_value');
+    Adjust.addSessionPartnerParameter('spp_foo_1', 'spp_bar');
+    Adjust.addSessionPartnerParameter('spp_foo_2', 'spp_value');
 
     // Remove session callback parameters.
     Adjust.removeSessionCallbackParameter('scp_foo_1');
-    Adjust.removeSessionPartnerParameter('scp_foo_1');
+    Adjust.removeSessionPartnerParameter('spp_foo_1');
 
     // Clear all session callback parameters.
     Adjust.resetSessionCallbackParameters();
@@ -108,44 +212,14 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     // Clear all session partner parameters.
     Adjust.resetSessionPartnerParameters();
 
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await Adjust.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // set callbacks for session, event, attribution and deeplink
-    // have to be set BEFORE Adjust.onCreate(...) is called
-    _setCallbacks(config);
-
-    // initialize the Adjust SDK
-    print('Calling Adjust onCreate...');
-    Adjust.onCreate(config);
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-
-      // start the Adjust SDK
-      Adjust.onResume();
-
-      // ask if enabled
-      Adjust.isEnabled().then((isEnabled) {
-        _isSdkEnabled = isEnabled;
-      });
-    });
+    // Start SDK.
+    Adjust.start(config);
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(title: new Text('Adjust SDK Example')),
+      appBar: new AppBar(title: new Text('Adjust Flutter Example App')),
       body: _buildMainContent(),
     );
   }
@@ -159,77 +233,73 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           sliver: new SliverList(
             delegate: new SliverChildListDelegate(
               <Widget>[
-                //start
-
-                new Text('Running on: $_platformVersion\n'),
-
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 Util.buildCupertinoButton(
                     'Is Enabled ?', () => _showIsSdkEnabled()),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
-                // track simple event button
+                // Track simple event button.
                 Util.buildCupertinoButton('Track Sample Event',
                     () => Adjust.trackEvent(Util.buildSimpleEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
-                // track revenue event button
+                // Track revenue event button.
                 Util.buildCupertinoButton('Track Revenue Event',
                     () => Adjust.trackEvent(Util.buildRevenueEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
-                // track callback event button
+                // Track callback event button.
                 Util.buildCupertinoButton('Track Callback Event',
                     () => Adjust.trackEvent(Util.buildCallbackEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
-                // track partner event button
+                // Track partner event button.
                 Util.buildCupertinoButton('Track Partner Event',
                     () => Adjust.trackEvent(Util.buildPartnerEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
-                // get google AdId
+                // Get Google Advertising Id.
                 Util.buildCupertinoButton(
                     'Get Google AdId',
                     () => Adjust.getGoogleAdId().then((googleAdid) {
-                          _showDialogMessage('Google AdId',
-                              'Received google AdId: $googleAdid');
+                          _showDialogMessage('Get Google Advertising Id',
+                              'Received Google Advertising Id: $googleAdid');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
-                // get ADID (Android)
+                // Get Adjust identifier.
                 Util.buildCupertinoButton(
-                    'Get ADID (Android)',
+                    'Get Adjust identifier',
                     () => Adjust.getAdid().then((adid) {
-                          _showDialogMessage('ADID', 'Received ADID: $adid');
+                          _showDialogMessage('Adjust identifier', 'Received Adjust identifier: $adid');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
-                // get IDFA (iOS)
+                // Get IDFA.
                 Util.buildCupertinoButton(
-                    'Get IDFA (iOS)',
+                    'Get IDFA',
                     () => Adjust.getIdfa().then((idfa) {
                           _showDialogMessage('IDFA', 'Received IDFA: $idfa');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
-                // get attribution
+                // Get attribution.
                 Util.buildCupertinoButton(
-                    'Get Attribution',
+                    'Get attribution',
                     () => Adjust.getAttribution().then((attribution) {
                           _showDialogMessage('Attribution',
                               'Received attribution: ${attribution.toString()}');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
-                // SDK enabled/disabled switch
+                // Enable / disable SDK.
                 new Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
-                    // is SDK enabled switch
+                    // Is SDK enabled switch.
                     new Text(
                       _isSdkEnabled ? 'Enabled' : 'Disabled',
                       style: _isSdkEnabled
@@ -240,9 +310,9 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                       value: _isSdkEnabled,
                       onChanged: (bool value) {
                         setState(() {
-                          Adjust.setIsEnabled(value);
+                          Adjust.setEnabled(value);
                           _isSdkEnabled = value;
-                          print('switch state = $_isSdkEnabled');
+                          print('Switch state = $_isSdkEnabled');
                         });
                       },
                     ),
@@ -269,32 +339,6 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       _showDialogMessage(
           'SDK Enabled?', 'no such method found im plugin: isEnabled');
     }
-  }
-
-  _setCallbacks(AdjustConfig config) {
-    config.setSessionSuccessHandler((AdjustSessionSuccess sessionSuccessData) {
-      print(' >>>> Reeceived sessionSuccessData: ' + sessionSuccessData.toString());
-    });
-
-    config.setSessionFailureHandler((AdjustSessionFailure sessionFailureData) {
-      print(' >>>> Reeceived sessionFailureData: ' + sessionFailureData.toString());
-    });
-
-    config.setEventSuccessHandler((AdjustEventSuccess eventSuccessData) {
-      print(' >>>> Reeceived eventSuccessData: ' + eventSuccessData.toString());
-    });
-
-    config.setEventFailureHandler((AdjustEventFailure eventFailureData) {
-      print(' >>>> Reeceived eventFailureData: ' + eventFailureData.toString());
-    });
-
-    config.setAttributionChangedHandler((AdjustAttribution attributionChangedData) {
-      print(' >>>> Reeceived attributionChangedData: ' + attributionChangedData.toString());
-    });
-
-    config.setReceivedDeeplinkHandler((String uri) {
-      print(' >>>> Reeceived deferred deeplink: ' + uri);
-    });
   }
 
   void _showDialogMessage(String title, String text,

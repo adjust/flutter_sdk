@@ -1,6 +1,6 @@
-import 'package:adjust_sdk/adjust_event.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:adjust_sdk/adjust_event.dart';
 
 class Util {
   static const String EVENT_TOKEN_SIMPLE = 'g3mfiw';
@@ -68,9 +68,9 @@ class Util {
 
   static AdjustEvent buildRevenueEvent() {
     AdjustEvent event = new AdjustEvent(EVENT_TOKEN_REVENUE);
-    event.revenue = 100.0;
-    event.currency = 'EUR';
-    event.orderId = 'dummyorderid';
+    event.setRevenue(100.0, 'EUR');
+    event.setTransactionId('DummyTransactionId');
+    event.setCallbackId('DummyCallbackId');
     return event;
   }
 

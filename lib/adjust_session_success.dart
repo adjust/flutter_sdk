@@ -1,3 +1,11 @@
+//
+//  adjust_session_success.dart
+//  Adjust SDK
+//
+//  Created by Srdjan Tubin (@2beens) on 25th April 2018.
+//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//
+
 class AdjustSessionSuccess {
   String message;
   String timestamp;
@@ -12,13 +20,8 @@ class AdjustSessionSuccess {
       sessionSuccess.adid = map['adid'];
       sessionSuccess.jsonResponse = map['jsonResponse'];
     } catch (e) {
-      print('Error! Failed to map AdjustSessionSuccess from incoming data. Details: ' + e.toString());
+      print('[AdjustFlutter]: Failed to create AdjustSessionSuccess object from given map object. Details: ' + e.toString());
     }
     return sessionSuccess;
-  }
-
-  @override
-  String toString() {
-    return "SessionSuccess[ message: $message, timestamp: $timestamp, adid: $adid, jsonResp: $jsonResponse ]";
   }
 }

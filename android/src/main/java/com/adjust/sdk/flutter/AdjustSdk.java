@@ -1,3 +1,11 @@
+//
+//  AdjustSdk.java
+//  Adjust SDK
+//
+//  Created by Srdjan Tubin (@2beens) on 25th April 2018.
+//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//
+
 package com.adjust.sdk.flutter;
 
 import android.content.Context;
@@ -37,581 +45,654 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import static com.adjust.sdk.flutter.AdjustUtils.*;
 
-/**
- * com.adjust.sdk.flutter
- * Created by 2beens on 25.04.18.
- */
 public class AdjustSdk implements MethodCallHandler {
-  private static boolean loggingEnabled = true;
-  private static MethodChannel channel;
-  private static Context applicationContext;
-  private boolean launchDeferredDeeplink = true;
+    private static String TAG = "AdjustBridge";
+    private static MethodChannel channel;
+    private static Context applicationContext;
+    private static boolean launchDeferredDeeplink = true;
 
-  /**
-   * Plugin registration.
-   */
-  public static void registerWith(Registrar registrar) {
-    if (channel != null) {
-      throw new IllegalStateException("You should not call registerWith more than once.");
-    }
-
-    AdjustSdk adjustSdk = new AdjustSdk();
-    applicationContext = registrar.context();
-    channel = new MethodChannel(registrar.messenger(), "com.adjust/api");
-    channel.setMethodCallHandler(adjustSdk);
-  }
-
-  @Override
-  public void onMethodCall(MethodCall call, final Result result) {
-    log("Trying to call a method: " + call.method);
-
-    switch (call.method) {
-      case "getPlatformVersion": getPlatformVersion(result); break;
-      case "onCreate": onCreate(call, result); break;
-      case "onPause": onPause(result); break;
-      case "onResume": onResume(result); break;
-      case "trackEvent": trackEvent(call, result); break;
-      case "isEnabled": isEnabled(result); break;
-      case "setIsEnabled": setIsEnabled(call, result); break;
-      case "setOfflineMode": setOfflineMode(call, result); break;
-      case "setPushToken": setPushToken(call, result); break;
-      case "appWillOpenUrl": appWillOpenUrl(call, result); break;
-      case "sendFirstPackages": sendFirstPackages(result); break;
-      case "getAdid": getAdid(result); break;
-      case "getIdfa": getIdfa(result); break;
-      case "getGoogleAdId": getGoogleAdId(result); break;
-      case "getAmazonAdId": getAmazonAdId(result); break;
-      case "getAttribution": getAttribution(result); break;
-      case "setReferrer": setReferrer(call, result); break;
-      case "gdprForgetMe": gdprForgetMe(result); break;
-      case "addSessionCallbackParameter": addSessionCallbackParameter(call, result); break;
-      case "addSessionPartnerParameter": addSessionPartnerParameter(call, result); break;
-      case "removeSessionCallbackParameter": removeSessionCallbackParameter(call, result);
-      case "removeSessionPartnerParameter": removeSessionPartnerParameter(call, result); break;
-      case "resetSessionCallbackParameters": resetSessionCallbackParameters(result); break;
-      case "resetSessionPartnerParameters": resetSessionPartnerParameters(result); break;
-      case "setTestOptions": setTestOptions(call, result); break;
-
-      default:
-        error("Not implemented method: " + call.method);
-        result.notImplemented();
-        break;
-    }
-  }
-
-  private void getPlatformVersion(final Result result) {
-    result.success("Android " + android.os.Build.VERSION.RELEASE);
-  }
-
-  public static void appWillOpenUrl(String url) {
-    Adjust.appWillOpenUrl(Uri.parse(url), applicationContext);
-  }
-
-  private void onCreate(final MethodCall call, final Result result) {
-    Map adjustConfigMap = (Map)call.arguments;
-    String appToken = null;
-    String environment = null;
-    if(adjustConfigMap.containsKey("appToken")) {
-      appToken = (String) adjustConfigMap.get("appToken");  
-    }
-    if(adjustConfigMap.containsKey("environment")) {
-      environment = (String) adjustConfigMap.get("environment");
-    }
-    
-    if(adjustConfigMap.containsKey("launchDeferredDeeplink")) {
-      String launchDeferredDeeplinkString = (String) adjustConfigMap.get("launchDeferredDeeplink");
-      this.launchDeferredDeeplink = launchDeferredDeeplinkString.equals("true");
-      log("\tlaunchDeferredDeeplink: " + launchDeferredDeeplink);
-    }
-
-    String secretIdString = (String) adjustConfigMap.get("secretId");
-    String info1String = (String) adjustConfigMap.get("info1");
-    String info2String = (String) adjustConfigMap.get("info2");
-    String info3String = (String) adjustConfigMap.get("info3");
-    String info4String = (String) adjustConfigMap.get("info4");
-
-    AdjustConfig config = new AdjustConfig(applicationContext, appToken, environment);
-
-    log("Calling onCreate with values:");
-    log("\tappToken: " + appToken);
-    log("\tenvironment: " + environment);
-
-    if(adjustConfigMap.containsKey("processName")) {
-      String processName = (String) adjustConfigMap.get("processName");
-      config.setProcessName(processName);
-      log("\tprocessName: " + processName);
-    }
-
-    if(adjustConfigMap.containsKey("defaultTracker")) {
-      String defaultTracker = (String) adjustConfigMap.get("defaultTracker");
-      config.setDefaultTracker(defaultTracker);
-      log("\tdefaultTracker: " + defaultTracker);
-    }
-
-    if(adjustConfigMap.containsKey("userAgent")) {
-      String userAgent = (String) adjustConfigMap.get("userAgent");
-      config.setUserAgent(userAgent);
-      log("\tuserAgent: " + userAgent);
-    }
-
-    if(adjustConfigMap.containsKey("sdkPrefix")) {
-      String sdkPrefix = (String) adjustConfigMap.get("sdkPrefix");
-      config.setSdkPrefix(sdkPrefix);
-      log("\tsdkPrefix: " + sdkPrefix);
-    }
-
-    if(adjustConfigMap.containsKey("logLevel")) {
-      String logLevel = (String) adjustConfigMap.get("logLevel");
-      config.setLogLevel(LogLevel.valueOf(logLevel));
-      log("\tlogLevel: " + logLevel);
-    }
-
-    if(adjustConfigMap.containsKey("eventBufferingEnabled")) {
-      String eventBufferingEnabledString = (String) adjustConfigMap.get("eventBufferingEnabled");
-      boolean eventBufferingEnabled = Boolean.valueOf(eventBufferingEnabledString);
-      config.setEventBufferingEnabled(eventBufferingEnabled);
-      log("\teventBufferingEnabled: " + eventBufferingEnabled);
-    }
-
-    if(adjustConfigMap.containsKey("sendInBackground")) {
-      String sendInBackgroundString = (String) adjustConfigMap.get("sendInBackground");
-      boolean sendInBackground = Boolean.valueOf(sendInBackgroundString);
-      config.setSendInBackground(sendInBackground);
-      log("\tsendInBackground: " + sendInBackground);
-    }
-
-    if(adjustConfigMap.containsKey("isDeviceKnown")) {
-      String isDeviceKnownString = (String) adjustConfigMap.get("isDeviceKnown");
-      boolean isDeviceKnown = Boolean.valueOf(isDeviceKnownString);
-      config.setDeviceKnown(isDeviceKnown);
-      log("\tisDeviceKnown: " + isDeviceKnown);
-    }
-
-    if(adjustConfigMap.containsKey("delayStart")) {
-      String delayStartString = (String) adjustConfigMap.get("delayStart");
-      if(stringIsNumber(delayStartString)) {
-        double delayStart = Double.valueOf(delayStartString);
-        config.setDelayStart(delayStart);
-        log("\tdelayStart: " + delayStart);
-      } else {
-        error("DelayStart parameter provided, but not a number! DelatStartString = " + delayStartString);
-      }
-    }
-
-    if(stringIsNumber(secretIdString) && stringIsNumber(info1String) && stringIsNumber(info2String)
-            && stringIsNumber(info3String) && stringIsNumber(info4String)) {
-      long secretId = Long.valueOf(secretIdString);
-      long info1 = Long.valueOf(info1String);
-      long info2 = Long.valueOf(info2String);
-      long info3 = Long.valueOf(info3String);
-      long info4 = Long.valueOf(info4String);
-
-      config.setAppSecret(secretId, info1, info2, info3, info4);
-      log(String.format("\tappSecret: %d, %d, %d, %d, %d", secretId, info1, info2, info3, info4));
-    }
-
-    boolean sessionSuccessHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionSuccessHandlerImplemented"));
-    boolean sessionFailureHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("sessionFailureHandlerImplemented"));
-    boolean eventSuccessHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("eventSuccessHandlerImplemented"));
-    boolean eventFailureHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("eventFailureHandlerImplemented"));
-    boolean attributionChangedHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("attributionChangedHandlerImplemented"));
-    boolean receivedDeeplinkHandlerImplemented = Boolean.valueOf((String)adjustConfigMap.get("receivedDeeplinkHandlerImplemented"));
-
-    if (receivedDeeplinkHandlerImplemented) {
-      config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
-        @Override
-        public boolean launchReceivedDeeplink(Uri uri) {
-          HashMap uriParamsMap = new HashMap();
-          uriParamsMap.put("uri", uri.toString());
-
-          channel.invokeMethod("receive-deferred-deeplink", uriParamsMap);
-
-          return launchDeferredDeeplink;
+    // Plugin registration.
+    public static void registerWith(Registrar registrar) {
+        if (channel != null) {
+            Log.e(TAG, "You should not call registerWith more than once!");
+            return;
         }
-      });
+
+        AdjustSdk adjustSdk = new AdjustSdk();
+        applicationContext = registrar.context();
+        channel = new MethodChannel(registrar.messenger(), "com.adjust.sdk/api");
+        channel.setMethodCallHandler(adjustSdk);
     }
 
-    if (sessionSuccessHandlerImplemented) {
-      config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
-        @Override
-        public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess adjustSessionSuccess) {
-          HashMap adjustSessionSuccessMap = new HashMap();
-          adjustSessionSuccessMap.put("message", adjustSessionSuccess.message);
-          adjustSessionSuccessMap.put("timestamp", adjustSessionSuccess.timestamp);
-          adjustSessionSuccessMap.put("adid", adjustSessionSuccess.adid);
-          adjustSessionSuccessMap.put("jsonResponse", adjustSessionSuccess.jsonResponse.toString());
-
-          channel.invokeMethod("session-success", adjustSessionSuccessMap);
+    @Override
+    public void onMethodCall(MethodCall call, final Result result) {
+        switch (call.method) {
+            case "start":
+                start(call, result);
+                break;
+            case "onPause":
+                onPause(result);
+                break;
+            case "onResume":
+                onResume(result);
+                break;
+            case "trackEvent":
+                trackEvent(call, result);
+                break;
+            case "isEnabled":
+                isEnabled(result);
+                break;
+            case "setEnabled":
+                setEnabled(call, result);
+                break;
+            case "setOfflineMode":
+                setOfflineMode(call, result);
+                break;
+            case "setPushToken":
+                setPushToken(call, result);
+                break;
+            case "appWillOpenUrl":
+                appWillOpenUrl(call, result);
+                break;
+            case "sendFirstPackages":
+                sendFirstPackages(result);
+                break;
+            case "getAdid":
+                getAdid(result);
+                break;
+            case "getIdfa":
+                getIdfa(result);
+                break;
+            case "getGoogleAdId":
+                getGoogleAdId(result);
+                break;
+            case "getAmazonAdId":
+                getAmazonAdId(result);
+                break;
+            case "getAttribution":
+                getAttribution(result);
+                break;
+            case "getSdkVersion":
+                getSdkVersion(result);
+                break;
+            case "setReferrer":
+                setReferrer(call, result);
+                break;
+            case "gdprForgetMe":
+                gdprForgetMe(result);
+                break;
+            case "addSessionCallbackParameter":
+                addSessionCallbackParameter(call, result);
+                break;
+            case "addSessionPartnerParameter":
+                addSessionPartnerParameter(call, result);
+                break;
+            case "removeSessionCallbackParameter":
+                removeSessionCallbackParameter(call, result);
+                break;
+            case "removeSessionPartnerParameter":
+                removeSessionPartnerParameter(call, result);
+                break;
+            case "resetSessionCallbackParameters":
+                resetSessionCallbackParameters(result);
+                break;
+            case "resetSessionPartnerParameters":
+                resetSessionPartnerParameters(result);
+                break;
+            case "setTestOptions":
+                setTestOptions(call, result);
+                break;
+            default:
+                Log.e(TAG, "Not implemented method: " + call.method);
+                result.notImplemented();
+                break;
         }
-      });
     }
 
-    if (sessionFailureHandlerImplemented) {
-      config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
-        @Override
-        public void onFinishedSessionTrackingFailed(AdjustSessionFailure adjustSessionFailure) {
-          HashMap adjustSessionFailureMap = new HashMap();
-          adjustSessionFailureMap.put("message", adjustSessionFailure.message);
-          adjustSessionFailureMap.put("timestamp", adjustSessionFailure.timestamp);
-          adjustSessionFailureMap.put("adid", adjustSessionFailure.adid);
-          adjustSessionFailureMap.put("willRetry", adjustSessionFailure.willRetry);
-          adjustSessionFailureMap.put("jsonResponse", adjustSessionFailure.jsonResponse.toString());
-
-          channel.invokeMethod("session-fail", adjustSessionFailureMap);
+    private void start(final MethodCall call, final Result result) {
+        Map configMap = (Map) call.arguments;
+        if (configMap == null) {
+            return;
         }
-      });
-    }
 
-    if (eventSuccessHandlerImplemented) {
-      config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
-        @Override
-        public void onFinishedEventTrackingSucceeded(AdjustEventSuccess adjustEventSuccess) {
-          HashMap adjustEventSuccessMap = new HashMap();
-          adjustEventSuccessMap.put("message", adjustEventSuccess.message);
-          adjustEventSuccessMap.put("timestamp", adjustEventSuccess.timestamp);
-          adjustEventSuccessMap.put("adid", adjustEventSuccess.adid);
-          adjustEventSuccessMap.put("eventToken", adjustEventSuccess.eventToken);
-          adjustEventSuccessMap.put("callbackId", adjustEventSuccess.callbackId);
-          if (adjustEventSuccess.jsonResponse != null) {
-            adjustEventSuccessMap.put("jsonResponse", adjustEventSuccess.jsonResponse.toString());
-          }
+        String appToken = null;
+        String environment = null;
+        String logLevel = null;
+        boolean isLogLevelSuppress = false;
 
-          channel.invokeMethod("event-success", adjustEventSuccessMap);
+        // App token.
+        if (configMap.containsKey("appToken")) {
+            appToken = (String) configMap.get("appToken");
         }
-      });
-    }
 
-    if (eventFailureHandlerImplemented) {
-      config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
-        @Override
-        public void onFinishedEventTrackingFailed(AdjustEventFailure adjustEventFailure) {
-          HashMap<String, String> adjustEventFailureMap = new HashMap();
-          adjustEventFailureMap.put("message", adjustEventFailure.message);
-          adjustEventFailureMap.put("timestamp", adjustEventFailure.timestamp);
-          adjustEventFailureMap.put("adid", adjustEventFailure.adid);
-          adjustEventFailureMap.put("eventToken", adjustEventFailure.eventToken);
-          adjustEventFailureMap.put("callbackId", adjustEventFailure.callbackId);
-          adjustEventFailureMap.put("willRetry", Boolean.toString(adjustEventFailure.willRetry));
-          if (adjustEventFailure.jsonResponse != null) {
-            adjustEventFailureMap.put("jsonResponse", adjustEventFailure.jsonResponse.toString());
-          }
-
-          channel.invokeMethod("event-fail", adjustEventFailureMap);
+        // Environment.
+        if (configMap.containsKey("environment")) {
+            environment = (String) configMap.get("environment");
         }
-      });
-    }
 
-    if (attributionChangedHandlerImplemented) {
-      config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
-        @Override
-        public void onAttributionChanged(AdjustAttribution adjustAttribution) {
-          HashMap<String, String> adjustAttributionMap = new HashMap();
-          adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
-          adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
-          adjustAttributionMap.put("network", adjustAttribution.network);
-          adjustAttributionMap.put("campaign", adjustAttribution.campaign);
-          adjustAttributionMap.put("adgroup", adjustAttribution.adgroup);
-          adjustAttributionMap.put("creative", adjustAttribution.creative);
-          adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
-          adjustAttributionMap.put("adid", adjustAttribution.adid);
-
-          channel.invokeMethod("attribution-change", adjustAttributionMap);
+        // Suppress log level.
+        if (configMap.containsKey("logLevel")) {
+            logLevel = (String) configMap.get("logLevel");
+            if (logLevel.equals("SUPPRESS")) {
+                isLogLevelSuppress = true;
+            }
         }
-      });
-    }
 
-    Adjust.onCreate(config);
-    Adjust.onResume();
-    log("onCreate called ...");
+        // Create configuration object.
+        AdjustConfig adjustConfig = new AdjustConfig(applicationContext, appToken, environment, isLogLevelSuppress);
 
-    result.success(null);
-  }
-
-  private void onResume(final Result result) {
-    Adjust.onResume();
-    result.success(null);
-  }
-
-  private void onPause(final Result result) {
-    Adjust.onPause();
-    result.success(null);
-  }
-
-  private void trackEvent(final MethodCall call, final Result result) {
-    Map eventParamsMap = (Map)call.arguments;
-
-    String eventToken = null;
-    if(eventParamsMap.containsKey("eventToken")) {
-      eventToken = (String) eventParamsMap.get("eventToken");
-    }
-
-    AdjustEvent event = new AdjustEvent(eventToken);
-
-    if(eventParamsMap.containsKey("revenue") && eventParamsMap.containsKey("currency")) {
-      String revenue = (String) eventParamsMap.get("revenue");
-      String currency = (String) eventParamsMap.get("currency");
-      event.setRevenue(Double.valueOf(revenue), currency);
-    }
-
-    if(eventParamsMap.containsKey("orderId")) {
-      String orderId = (String) eventParamsMap.get("orderId");
-      event.setOrderId(orderId);
-    }
-
-    if(eventParamsMap.containsKey("callbackId")) {
-      String callbackId = (String) eventParamsMap.get("callbackId");
-      event.setCallbackId(callbackId);
-    }
-
-    // get callback parameters
-    if(eventParamsMap.containsKey("callbackParameters")) {
-      String callbackParametersJsonStr = (String) eventParamsMap.get("callbackParameters");
-      try {
-        JSONObject callbackParametersJson = new JSONObject(callbackParametersJsonStr);
-        JSONArray callbackParamsKeys = callbackParametersJson.names();
-        for (int i = 0; i < callbackParamsKeys.length (); ++i) {
-          String key = callbackParamsKeys.getString(i);
-          String value = callbackParametersJson.getString(key);
-          event.addCallbackParameter(key, value);
+        // SDK prefix.
+        if (configMap.containsKey("sdkPrefix")) {
+            String sdkPrefix = (String) configMap.get("sdkPrefix");
+            adjustConfig.setSdkPrefix(sdkPrefix);
         }
-      } catch (JSONException e) {
-        error("Failed to parse event callback parameters!", e);
-      }
-    }
 
-    // get partner parameters
-    if(eventParamsMap.containsKey("partnerParameters")) {
-      String partnerParametersJsonStr = (String) eventParamsMap.get("partnerParameters");
-      try {
-        JSONObject partnerParametersJson = new JSONObject(partnerParametersJsonStr);
-        JSONArray partnerParamsKeys = partnerParametersJson.names();
-        for (int i = 0; i < partnerParamsKeys.length (); ++i) {
-          String key = partnerParamsKeys.getString(i);
-          String value = partnerParametersJson.getString(key);
-          event.addPartnerParameter(key, value);
+        // Log level.
+        if (configMap.containsKey("logLevel")) {
+            logLevel = (String) configMap.get("logLevel");
+            if (logLevel.equals("VERBOSE")) {
+                adjustConfig.setLogLevel(LogLevel.VERBOSE);
+            } else if (logLevel.equals("DEBUG")) {
+                adjustConfig.setLogLevel(LogLevel.DEBUG);
+            } else if (logLevel.equals("INFO")) {
+                adjustConfig.setLogLevel(LogLevel.INFO);
+            } else if (logLevel.equals("WARN")) {
+                adjustConfig.setLogLevel(LogLevel.WARN);
+            } else if (logLevel.equals("ERROR")) {
+                adjustConfig.setLogLevel(LogLevel.ERROR);
+            } else if (logLevel.equals("ASSERT")) {
+                adjustConfig.setLogLevel(LogLevel.ASSERT);
+            } else if (logLevel.equals("SUPPRESS")) {
+                adjustConfig.setLogLevel(LogLevel.SUPRESS);
+            } else {
+                adjustConfig.setLogLevel(LogLevel.INFO);
+            }
         }
-      } catch (JSONException e) {
-        error("Failed to parse event partner parameters!", e);
-      }
+
+        // Event buffering.
+        if (configMap.containsKey("eventBufferingEnabled")) {
+            String eventBufferingEnabledString = (String) configMap.get("eventBufferingEnabled");
+            boolean eventBufferingEnabled = Boolean.valueOf(eventBufferingEnabledString);
+            adjustConfig.setEventBufferingEnabled(eventBufferingEnabled);
+        }
+
+        // Main process name.
+        if (configMap.containsKey("processName")) {
+            String processName = (String) configMap.get("processName");
+            adjustConfig.setProcessName(processName);
+        }
+
+        // Default tracker.
+        if (configMap.containsKey("defaultTracker")) {
+            String defaultTracker = (String) configMap.get("defaultTracker");
+            adjustConfig.setDefaultTracker(defaultTracker);
+        }
+
+        // User agent.
+        if (configMap.containsKey("userAgent")) {
+            String userAgent = (String) configMap.get("userAgent");
+            adjustConfig.setUserAgent(userAgent);
+        }
+
+        // Background tracking.
+        if (configMap.containsKey("sendInBackground")) {
+            String strSendInBackground = (String) configMap.get("sendInBackground");
+            boolean sendInBackground = Boolean.valueOf(strSendInBackground);
+            adjustConfig.setSendInBackground(sendInBackground);
+        }
+
+        // Set device known.
+        if (configMap.containsKey("isDeviceKnown")) {
+            String strIsDeviceKnown = (String) configMap.get("isDeviceKnown");
+            boolean isDeviceKnown = Boolean.valueOf(strIsDeviceKnown);
+            adjustConfig.setDeviceKnown(isDeviceKnown);
+        }
+
+        // Delayed start.
+        if (configMap.containsKey("delayStart")) {
+            String strDelayStart = (String) configMap.get("delayStart");
+            if (isNumber(strDelayStart)) {
+                double delayStart = Double.valueOf(strDelayStart);
+                adjustConfig.setDelayStart(delayStart);
+            }
+        }
+
+        // App secret.
+        if (configMap.containsKey("secretId")
+                && configMap.containsKey("info1")
+                && configMap.containsKey("info2")
+                && configMap.containsKey("info3")
+                && configMap.containsKey("info4")) {
+            try {
+                String strSecretId = (String) configMap.get("secretId");
+                String strInfo1 = (String) configMap.get("info1");
+                String strInfo2 = (String) configMap.get("info2");
+                String strInfo3 = (String) configMap.get("info3");
+                String strInfo4 = (String) configMap.get("info4");
+                long secretId = Long.parseLong(strSecretId, 10);
+                long info1 = Long.parseLong(strInfo1, 10);
+                long info2 = Long.parseLong(strInfo2, 10);
+                long info3 = Long.parseLong(strInfo3, 10);
+                long info4 = Long.parseLong(strInfo4, 10);
+                adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
+            } catch (NumberFormatException ignore) {}
+        }
+
+        // Launch deferred deep link.
+        if (configMap.containsKey("launchDeferredDeeplink")) {
+            String strLaunchDeferredDeeplink = (String) configMap.get("launchDeferredDeeplink");
+            this.launchDeferredDeeplink = strLaunchDeferredDeeplink.equals("true");
+        }
+
+        // Attribution callback.
+        if (configMap.containsKey("attributionCallback")) {
+            final String dartMethodName = (String) configMap.get("attributionCallback");
+            adjustConfig.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+                @Override
+                public void onAttributionChanged(AdjustAttribution adjustAttribution) {
+                    HashMap<String, String> adjustAttributionMap = new HashMap();
+                    adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
+                    adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
+                    adjustAttributionMap.put("network", adjustAttribution.network);
+                    adjustAttributionMap.put("campaign", adjustAttribution.campaign);
+                    adjustAttributionMap.put("adgroup", adjustAttribution.adgroup);
+                    adjustAttributionMap.put("creative", adjustAttribution.creative);
+                    adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
+                    adjustAttributionMap.put("adid", adjustAttribution.adid);
+                    channel.invokeMethod(dartMethodName, adjustAttributionMap);
+                }
+            });
+        }
+
+        // Session success callback.
+        if (configMap.containsKey("sessionSuccessCallback")) {
+            final String dartMethodName = (String) configMap.get("sessionSuccessCallback");
+            adjustConfig.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+                @Override
+                public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess adjustSessionSuccess) {
+                    HashMap adjustSessionSuccessMap = new HashMap();
+                    adjustSessionSuccessMap.put("message", adjustSessionSuccess.message);
+                    adjustSessionSuccessMap.put("timestamp", adjustSessionSuccess.timestamp);
+                    adjustSessionSuccessMap.put("adid", adjustSessionSuccess.adid);
+                    if (adjustSessionSuccess.jsonResponse != null) {
+                        adjustSessionSuccessMap.put("jsonResponse", adjustSessionSuccess.jsonResponse.toString());
+                    }
+                    channel.invokeMethod(dartMethodName, adjustSessionSuccessMap);
+                }
+            });
+        }
+
+        // Session failure callback.
+        if (configMap.containsKey("sessionFailureCallback")) {
+            final String dartMethodName = (String) configMap.get("sessionFailureCallback");
+            adjustConfig.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+                @Override
+                public void onFinishedSessionTrackingFailed(AdjustSessionFailure adjustSessionFailure) {
+                    HashMap adjustSessionFailureMap = new HashMap();
+                    adjustSessionFailureMap.put("message", adjustSessionFailure.message);
+                    adjustSessionFailureMap.put("timestamp", adjustSessionFailure.timestamp);
+                    adjustSessionFailureMap.put("adid", adjustSessionFailure.adid);
+                    adjustSessionFailureMap.put("willRetry", adjustSessionFailure.willRetry);
+                    if (adjustSessionFailure.jsonResponse != null) {
+                        adjustSessionFailureMap.put("jsonResponse", adjustSessionFailure.jsonResponse.toString());
+                    }
+                    channel.invokeMethod(dartMethodName, adjustSessionFailureMap);
+                }
+            });
+        }
+
+        // Event success callback.
+        if (configMap.containsKey("eventSuccessCallback")) {
+            final String dartMethodName = (String) configMap.get("eventSuccessCallback");
+            adjustConfig.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+                @Override
+                public void onFinishedEventTrackingSucceeded(AdjustEventSuccess adjustEventSuccess) {
+                    HashMap adjustEventSuccessMap = new HashMap();
+                    adjustEventSuccessMap.put("message", adjustEventSuccess.message);
+                    adjustEventSuccessMap.put("timestamp", adjustEventSuccess.timestamp);
+                    adjustEventSuccessMap.put("adid", adjustEventSuccess.adid);
+                    adjustEventSuccessMap.put("eventToken", adjustEventSuccess.eventToken);
+                    adjustEventSuccessMap.put("callbackId", adjustEventSuccess.callbackId);
+                    if (adjustEventSuccess.jsonResponse != null) {
+                        adjustEventSuccessMap.put("jsonResponse", adjustEventSuccess.jsonResponse.toString());
+                    }
+                    channel.invokeMethod(dartMethodName, adjustEventSuccessMap);
+                }
+            });
+        }
+
+        // Event failure callback.
+        if (configMap.containsKey("eventFailureCallback")) {
+            final String dartMethodName = (String) configMap.get("eventFailureCallback");
+            adjustConfig.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+                @Override
+                public void onFinishedEventTrackingFailed(AdjustEventFailure adjustEventFailure) {
+                    HashMap<String, String> adjustEventFailureMap = new HashMap();
+                    adjustEventFailureMap.put("message", adjustEventFailure.message);
+                    adjustEventFailureMap.put("timestamp", adjustEventFailure.timestamp);
+                    adjustEventFailureMap.put("adid", adjustEventFailure.adid);
+                    adjustEventFailureMap.put("eventToken", adjustEventFailure.eventToken);
+                    adjustEventFailureMap.put("callbackId", adjustEventFailure.callbackId);
+                    adjustEventFailureMap.put("willRetry", Boolean.toString(adjustEventFailure.willRetry));
+                    if (adjustEventFailure.jsonResponse != null) {
+                        adjustEventFailureMap.put("jsonResponse", adjustEventFailure.jsonResponse.toString());
+                    }
+                    channel.invokeMethod(dartMethodName, adjustEventFailureMap);
+                }
+            });
+        }
+
+        // Deferred deep link callback.
+        if (configMap.containsKey("deferredDeeplinkCallback")) {
+            final String dartMethodName = (String) configMap.get("deferredDeeplinkCallback");
+            adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+                @Override
+                public boolean launchReceivedDeeplink(Uri uri) {
+                    HashMap uriParamsMap = new HashMap();
+                    uriParamsMap.put("uri", uri.toString());
+                    channel.invokeMethod(dartMethodName, uriParamsMap);
+                    return launchDeferredDeeplink;
+                }
+            });
+        }
+
+        // Start SDK.
+        Adjust.onCreate(adjustConfig);
+        Adjust.onResume();
+        result.success(null);
     }
 
-    Adjust.trackEvent(event);
-    result.success(null);
-  }
+    private void trackEvent(final MethodCall call, final Result result) {
+        Map eventMap = (Map) call.arguments;
+        if (eventMap == null) {
+            return;
+        }
 
-  private void isEnabled(final Result result) {
-    result.success(Adjust.isEnabled());
-  }
+        // Event token.
+        String eventToken = null;
+        if (eventMap.containsKey("eventToken")) {
+            eventToken = (String) eventMap.get("eventToken");
+        }
 
-  private void setOfflineMode(final MethodCall call, final Result result) {
-    Map isOfflineParamsMap = (Map)call.arguments;
-    boolean isOffline = (boolean) isOfflineParamsMap.get("isOffline");
-    Adjust.setOfflineMode(isOffline);
-    result.success(null);
-  }
+        // Create event object.
+        AdjustEvent event = new AdjustEvent(eventToken);
 
-  private void setPushToken(final MethodCall call, final Result result) {
-    Map tokenParamsMap = (Map)call.arguments;
-    String pushToken = null;
-    if(tokenParamsMap.containsKey("token")) {
-      pushToken = tokenParamsMap.get("token").toString();
-    }
-    Adjust.setPushToken(pushToken, applicationContext);
-    result.success(null);
-  }
+        // Revenue.
+        if (eventMap.containsKey("revenue") || eventMap.containsKey("currency")) {
+            double revenue = -1.0;
+            String strRevenue = (String) eventMap.get("revenue");
 
-  private void setIsEnabled(final MethodCall call, final Result result) {
-    Map isEnabledParamsMap = (Map)call.arguments;
-    if(!isEnabledParamsMap.containsKey("isEnabled")) {
-      result.error("0", "Arguments null or wrong (missing argument >isEnabled<", null);
-      return;
-    }
+            try {
+                revenue = Double.parseDouble(strRevenue);
+            } catch (NumberFormatException ignore) {}
 
-    boolean isEnabled = (boolean) isEnabledParamsMap.get("isEnabled");
-    Adjust.setEnabled(isEnabled);
-    result.success(null);
-  }
+            String currency = (String) eventMap.get("currency");
+            event.setRevenue(revenue, currency);
+        }
 
-  private void appWillOpenUrl(final MethodCall call, final Result result) {
-    Map urlParamsMap = (Map)call.arguments;
-    String url = null;
-    if(urlParamsMap.containsKey("url")) {
-      url = urlParamsMap.get("url").toString();
-    }
-    Adjust.appWillOpenUrl(Uri.parse(url), applicationContext);
-    result.success(null);
-  }
+        // Revenue deduplication.
+        if (eventMap.containsKey("transactionId")) {
+            String orderId = (String) eventMap.get("transactionId");
+            event.setOrderId(orderId);
+        }
 
-  private void sendFirstPackages(final Result result) {
-    Adjust.sendFirstPackages();
-    result.success(null);
-  }
+        // Callback ID.
+        if (eventMap.containsKey("callbackId")) {
+            String callbackId = (String) eventMap.get("callbackId");
+            event.setCallbackId(callbackId);
+        }
 
-  private void getAdid(final Result result) {
-    result.success(Adjust.getAdid());
-  }
+        // Callback parameters.
+        if (eventMap.containsKey("callbackParameters")) {
+            String strCallbackParametersJson = (String) eventMap.get("callbackParameters");
+            try {
+                JSONObject jsonCallbackParameters = new JSONObject(strCallbackParametersJson);
+                JSONArray callbackParametersKeys = jsonCallbackParameters.names();
+                for (int i = 0; i < callbackParametersKeys.length(); ++i) {
+                    String key = callbackParametersKeys.getString(i);
+                    String value = jsonCallbackParameters.getString(key);
+                    event.addCallbackParameter(key, value);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to parse event callback parameter! Details: " + e);
+            }
+        }
 
-  private void getIdfa(final Result result) {
-    result.error("0", "Error. No IDFA in Android Plaftorm!", null);
-  }
+        // Partner parameters.
+        if (eventMap.containsKey("partnerParameters")) {
+            String strPartnerParametersJson = (String) eventMap.get("partnerParameters");
+            try {
+                JSONObject jsonPartnerParameters = new JSONObject(strPartnerParametersJson);
+                JSONArray partnerParametersKeys = jsonPartnerParameters.names();
+                for (int i = 0; i < partnerParametersKeys.length(); ++i) {
+                    String key = partnerParametersKeys.getString(i);
+                    String value = jsonPartnerParameters.getString(key);
+                    event.addPartnerParameter(key, value);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to parse event partner parameter! Details: " + e);
+            }
+        }
 
-  private void getGoogleAdId(final Result result) {
-    Adjust.getGoogleAdId(applicationContext, new OnDeviceIdsRead() {
-      @Override
-      public void onGoogleAdIdRead(String googleAdId) {
-        result.success(googleAdId);
-      }
-    });
-  }
-
-  private void getAmazonAdId(final Result result) {
-    result.success(Adjust.getAmazonAdId(applicationContext));
-  }
-
-  private void gdprForgetMe(final Result result) {
-    Adjust.gdprForgetMe(applicationContext);
-    result.success(null);
-  }
-
-  private void getAttribution(final Result result) {
-    AdjustAttribution adjustAttribution = Adjust.getAttribution();
-    if(adjustAttribution == null) {
-      adjustAttribution = new AdjustAttribution();
+        // Track event.
+        Adjust.trackEvent(event);
+        result.success(null);
     }
 
-    HashMap<String, String> adjustAttributionMap = new HashMap();
-    adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
-    adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
-    adjustAttributionMap.put("network", adjustAttribution.network);
-    adjustAttributionMap.put("campaign", adjustAttribution.campaign);
-    adjustAttributionMap.put("adgroup", adjustAttribution.adgroup);
-    adjustAttributionMap.put("creative", adjustAttribution.creative);
-    adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
-    adjustAttributionMap.put("adid", adjustAttribution.adid);
-
-    result.success(adjustAttributionMap);
-  }
-
-  private void setReferrer(final MethodCall call, final Result result) {
-    String referrer = null;
-    if(call.hasArgument("referrer")) {
-      referrer = (String) call.argument("referrer");
-    }
-    log(" >>> Calling setReferrer with referrer value: " + referrer);
-    Adjust.setReferrer(referrer, applicationContext);
-    result.success(null);
-  }
-
-  private void addSessionCallbackParameter(final MethodCall call, final Result result) {
-    String key = null;
-    String value = null;
-    if(call.hasArgument("key") && call.hasArgument("value")) {
-      key = (String) call.argument("key");
-      value = (String) call.argument("value");      
+    private void setOfflineMode(final MethodCall call, final Result result) {
+        Map isOfflineParamsMap = (Map) call.arguments;
+        boolean isOffline = (boolean) isOfflineParamsMap.get("isOffline");
+        Adjust.setOfflineMode(isOffline);
+        result.success(null);
     }
 
-    Adjust.addSessionCallbackParameter(key, value);
-    result.success(null);
-  }
-
-  private void addSessionPartnerParameter(final MethodCall call, final Result result) {
-    String key = null;
-    String value = null;
-    if(call.hasArgument("key") && call.hasArgument("value")) {
-      key = (String) call.argument("key");
-      value = (String) call.argument("value");      
-    }
-    Adjust.addSessionPartnerParameter(key, value);
-    result.success(null);
-  }
-
-  private void removeSessionCallbackParameter(final MethodCall call, final Result result) {
-    String key = null;
-    if(call.hasArgument("key")) {
-      key = (String) call.argument("key");
-    }
-    Adjust.removeSessionCallbackParameter(key);
-    result.success(null);
-  }
-
-  private void removeSessionPartnerParameter(final MethodCall call, final Result result) {
-    String key = null;
-    if(call.hasArgument("key")) {
-      key = (String) call.argument("key");
-    }
-    Adjust.removeSessionPartnerParameter(key);
-    result.success(null);
-  }
-
-  private void resetSessionCallbackParameters(final Result result) {
-    Adjust.resetSessionCallbackParameters();
-    result.success(null);
-  }
-
-  private void resetSessionPartnerParameters(final Result result) {
-    Adjust.resetSessionPartnerParameters();
-    result.success(null);
-  }
-
-  private void setTestOptions(final MethodCall call, final Result result) {
-    AdjustTestOptions testOptions = new AdjustTestOptions();
-    Map testOptionsMap = (Map)call.arguments;
-
-    if(testOptionsMap.containsKey("baseUrl")) {
-      testOptions.baseUrl = (String) testOptionsMap.get("baseUrl");
-    }
-    if(testOptionsMap.containsKey("gdprUrl")) {
-      testOptions.gdprUrl = (String) testOptionsMap.get("gdprUrl");
-    }
-    if(testOptionsMap.containsKey("basePath")) {
-      testOptions.basePath = (String) testOptionsMap.get("basePath");
-    }
-    if(testOptionsMap.containsKey("gdprPath")) {
-      testOptions.gdprPath = (String) testOptionsMap.get("gdprPath");
-    }
-    if(testOptionsMap.containsKey("useTestConnectionOptions")) {
-      testOptions.useTestConnectionOptions = testOptionsMap.get("useTestConnectionOptions").toString().equals("true");
-    }
-    if(testOptionsMap.containsKey("noBackoffWait")) {
-      testOptions.noBackoffWait = testOptionsMap.get("noBackoffWait").toString().equals("true");
-    }
-    if(testOptionsMap.containsKey("teardown")) {
-      testOptions.teardown = testOptionsMap.get("teardown").toString().equals("true");
-    }
-    if(testOptionsMap.containsKey("tryInstallReferrer")) {
-      testOptions.tryInstallReferrer = testOptionsMap.get("tryInstallReferrer").toString().equals("true");
-    }
-    if(testOptionsMap.containsKey("timerIntervalInMilliseconds")) {
-      testOptions.timerIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("timerIntervalInMilliseconds").toString());
-    }
-    if(testOptionsMap.containsKey("timerStartInMilliseconds")) {
-      testOptions.timerStartInMilliseconds = Long.parseLong(testOptionsMap.get("timerStartInMilliseconds").toString());
-    }
-    if(testOptionsMap.containsKey("sessionIntervalInMilliseconds")) {
-      testOptions.sessionIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("sessionIntervalInMilliseconds").toString());
-    }
-    if(testOptionsMap.containsKey("subsessionIntervalInMilliseconds")) {
-      testOptions.subsessionIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("subsessionIntervalInMilliseconds").toString());
-    }
-    if(testOptionsMap.containsKey("deleteState")) {
-      testOptions.context = applicationContext;
+    private void setPushToken(final MethodCall call, final Result result) {
+        Map tokenParamsMap = (Map) call.arguments;
+        String pushToken = null;
+        if (tokenParamsMap.containsKey("pushToken")) {
+            pushToken = tokenParamsMap.get("pushToken").toString();
+        }
+        Adjust.setPushToken(pushToken, applicationContext);
+        result.success(null);
     }
 
-    Adjust.setTestOptions(testOptions);
-  }
+    private void setEnabled(final MethodCall call, final Result result) {
+        Map isEnabledParamsMap = (Map) call.arguments;
+        if (!isEnabledParamsMap.containsKey("isEnabled")) {
+            result.error("0", "Arguments null or wrong (missing argument of 'isEnabled' method.", null);
+            return;
+        }
 
-  private void log(String message) {
-    if (!loggingEnabled) { return; }
-    Log.d("ADJUST-PLUGIN-BRIDGE", message);
-  }
+        boolean isEnabled = (boolean) isEnabledParamsMap.get("isEnabled");
+        Adjust.setEnabled(isEnabled);
+        result.success(null);
+    }
 
-  private void error(String message) {
-    if (!loggingEnabled) { return; }
-    Log.e("ADJUST-PLUGIN-BRIDGE:", message);
-  }
+    private void appWillOpenUrl(final MethodCall call, final Result result) {
+        Map urlParamsMap = (Map) call.arguments;
+        String url = null;
+        if (urlParamsMap.containsKey("url")) {
+            url = urlParamsMap.get("url").toString();
+        }
+        Adjust.appWillOpenUrl(Uri.parse(url), applicationContext);
+        result.success(null);
+    }
 
-  private void error(String message, Throwable t) {
-    if (!loggingEnabled) { return; }
-    Log.e("ADJUST-PLUGIN-BRIDGE:", message, t);
-  }
+    // Exposed for handling deep linking from native layer of the example app.
+    public static void appWillOpenUrl(Uri deeplink) {
+        Adjust.appWillOpenUrl(deeplink, applicationContext);
+    }
+
+    private void sendFirstPackages(final Result result) {
+        Adjust.sendFirstPackages();
+        result.success(null);
+    }
+
+    private void onResume(final Result result) {
+        Adjust.onResume();
+        result.success(null);
+    }
+
+    private void onPause(final Result result) {
+        Adjust.onPause();
+        result.success(null);
+    }
+
+    private void isEnabled(final Result result) {
+        result.success(Adjust.isEnabled());
+    }
+
+    private void getAdid(final Result result) {
+        result.success(Adjust.getAdid());
+    }
+
+    private void getIdfa(final Result result) {
+        result.error("0", "Error. No IDFA for Android plaftorm!", null);
+    }
+
+    private void getGoogleAdId(final Result result) {
+        Adjust.getGoogleAdId(applicationContext, new OnDeviceIdsRead() {
+            @Override
+            public void onGoogleAdIdRead(String googleAdId) {
+                result.success(googleAdId);
+            }
+        });
+    }
+
+    private void getAmazonAdId(final Result result) {
+        result.success(Adjust.getAmazonAdId(applicationContext));
+    }
+
+    private void gdprForgetMe(final Result result) {
+        Adjust.gdprForgetMe(applicationContext);
+        result.success(null);
+    }
+
+    private void getAttribution(final Result result) {
+        AdjustAttribution adjustAttribution = Adjust.getAttribution();
+        if (adjustAttribution == null) {
+            adjustAttribution = new AdjustAttribution();
+        }
+
+        HashMap<String, String> adjustAttributionMap = new HashMap();
+        adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
+        adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
+        adjustAttributionMap.put("network", adjustAttribution.network);
+        adjustAttributionMap.put("campaign", adjustAttribution.campaign);
+        adjustAttributionMap.put("adgroup", adjustAttribution.adgroup);
+        adjustAttributionMap.put("creative", adjustAttribution.creative);
+        adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
+        adjustAttributionMap.put("adid", adjustAttribution.adid);
+        result.success(adjustAttributionMap);
+    }
+
+    private void getSdkVersion(final Result result) {
+        result.success(Adjust.getSdkVersion());
+    }
+
+    private void setReferrer(final MethodCall call, final Result result) {
+        String referrer = null;
+        if (call.hasArgument("referrer")) {
+            referrer = (String) call.argument("referrer");
+        }
+        Adjust.setReferrer(referrer, applicationContext);
+        result.success(null);
+    }
+
+    private void addSessionCallbackParameter(final MethodCall call, final Result result) {
+        String key = null;
+        String value = null;
+        if (call.hasArgument("key") && call.hasArgument("value")) {
+            key = (String) call.argument("key");
+            value = (String) call.argument("value");
+        }
+        Adjust.addSessionCallbackParameter(key, value);
+        result.success(null);
+    }
+
+    private void addSessionPartnerParameter(final MethodCall call, final Result result) {
+        String key = null;
+        String value = null;
+        if (call.hasArgument("key") && call.hasArgument("value")) {
+            key = (String) call.argument("key");
+            value = (String) call.argument("value");
+        }
+        Adjust.addSessionPartnerParameter(key, value);
+        result.success(null);
+    }
+
+    private void removeSessionCallbackParameter(final MethodCall call, final Result result) {
+        String key = null;
+        if (call.hasArgument("key")) {
+            key = (String) call.argument("key");
+        }
+        Adjust.removeSessionCallbackParameter(key);
+        result.success(null);
+    }
+
+    private void removeSessionPartnerParameter(final MethodCall call, final Result result) {
+        String key = null;
+        if (call.hasArgument("key")) {
+            key = (String) call.argument("key");
+        }
+        Adjust.removeSessionPartnerParameter(key);
+        result.success(null);
+    }
+
+    private void resetSessionCallbackParameters(final Result result) {
+        Adjust.resetSessionCallbackParameters();
+        result.success(null);
+    }
+
+    private void resetSessionPartnerParameters(final Result result) {
+        Adjust.resetSessionPartnerParameters();
+        result.success(null);
+    }
+
+    private void setTestOptions(final MethodCall call, final Result result) {
+        AdjustTestOptions testOptions = new AdjustTestOptions();
+        Map testOptionsMap = (Map) call.arguments;
+
+        if (testOptionsMap.containsKey("baseUrl")) {
+            testOptions.baseUrl = (String) testOptionsMap.get("baseUrl");
+        }
+        if (testOptionsMap.containsKey("gdprUrl")) {
+            testOptions.gdprUrl = (String) testOptionsMap.get("gdprUrl");
+        }
+        if (testOptionsMap.containsKey("basePath")) {
+            testOptions.basePath = (String) testOptionsMap.get("basePath");
+        }
+        if (testOptionsMap.containsKey("gdprPath")) {
+            testOptions.gdprPath = (String) testOptionsMap.get("gdprPath");
+        }
+        if (testOptionsMap.containsKey("useTestConnectionOptions")) {
+            testOptions.useTestConnectionOptions = testOptionsMap.get("useTestConnectionOptions").toString().equals("true");
+        }
+        if (testOptionsMap.containsKey("noBackoffWait")) {
+            testOptions.noBackoffWait = testOptionsMap.get("noBackoffWait").toString().equals("true");
+        }
+        if (testOptionsMap.containsKey("teardown")) {
+            testOptions.teardown = testOptionsMap.get("teardown").toString().equals("true");
+        }
+        if (testOptionsMap.containsKey("tryInstallReferrer")) {
+            testOptions.tryInstallReferrer = testOptionsMap.get("tryInstallReferrer").toString().equals("true");
+        }
+        if (testOptionsMap.containsKey("timerIntervalInMilliseconds")) {
+            testOptions.timerIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("timerIntervalInMilliseconds").toString());
+        }
+        if (testOptionsMap.containsKey("timerStartInMilliseconds")) {
+            testOptions.timerStartInMilliseconds = Long.parseLong(testOptionsMap.get("timerStartInMilliseconds").toString());
+        }
+        if (testOptionsMap.containsKey("sessionIntervalInMilliseconds")) {
+            testOptions.sessionIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("sessionIntervalInMilliseconds").toString());
+        }
+        if (testOptionsMap.containsKey("subsessionIntervalInMilliseconds")) {
+            testOptions.subsessionIntervalInMilliseconds = Long.parseLong(testOptionsMap.get("subsessionIntervalInMilliseconds").toString());
+        }
+        if (testOptionsMap.containsKey("deleteState")) {
+            testOptions.context = applicationContext;
+        }
+
+        Adjust.setTestOptions(testOptions);
+    }
 }
