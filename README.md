@@ -182,7 +182,7 @@ To start with, we'll set up basic session tracking.
 Make sure to initialise Adjust SDK as soon as possible in your Flutter app (upon loading first widget in your app). You can initialise Adjust SDK like described below:
 
 ```dart
-AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.SANDBOX);
+AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
 Adjust.start(config);
 ```
 
@@ -191,11 +191,11 @@ Replace `{YourAppToken}` with your app token. You can find this in your [dashboa
 Depending on whether you are building your app for testing or for production, you must set `environment` with one of these values:
 
 ```dart
-AdjustEnvironment.SANDBOX;
-AdjustEnvironment.PRODUCTION;
+AdjustEnvironment.sandbox;
+AdjustEnvironment.production;
 ```
 
-**Important:** This value should be set to `AdjustEnvironment.SANDBOX` if and only if you or someone else is testing your app. Make sure to set the environment to `AdjustEnvironment.PRODUCTION` before you publish the app. Set it back to `AdjustEnvironment.SANDBOX` when you start developing and testing it again.
+**Important:** This value should be set to `AdjustEnvironment.sandbox` if and only if you or someone else is testing your app. Make sure to set the environment to `AdjustEnvironment.production` before you publish the app. Set it back to `AdjustEnvironment.sandbox` when you start developing and testing it again.
 
 We use this environment to distinguish between real traffic and test traffic from test devices. It is imperative that you keep this value meaningful at all times!
 
@@ -275,16 +275,15 @@ Adjust.start(adjustConfig);
 
 ### <a id="qs-adjust-logging"></a>Adjust logging
 
-You can increase or decrease the amount of logs that you see during testing by calling `setLogLevel` on your config instance with one of the following parameters:
+You can increase or decrease the amount of logs that you see during testing by setting `logLevel` member on your config instance with one of the following parameters:
 
 ```java
-adjustConfig.setLogLevel(AdjustLogLevel.VERBOSE); // enable all logs
-adjustConfig.setLogLevel(AdjustLogLevel.DEBUG); // disable verbose logs
-adjustConfig.setLogLevel(AdjustLogLevel.INFO); // disable debug logs (default)
-adjustConfig.setLogLevel(AdjustLogLevel.WARN); // disable info logs
-adjustConfig.setLogLevel(AdjustLogLevel.ERROR); // disable warning logs
-adjustConfig.setLogLevel(AdjustLogLevel.ASSERT); // disable error logs
-adjustConfig.setLogLevel(AdjustLogLevel.SUPRESS); // disable all logs
+adjustConfig.logLevel = AdjustLogLevel.VERBOSE; // enable all logs
+adjustConfig.logLevel = AdjustLogLevel.DEBUG; // disable verbose logs
+adjustConfig.logLevel = AdjustLogLevel.INFO; // disable debug logs (default)
+adjustConfig.logLevel = AdjustLogLevel.WARN; // disable info logs
+adjustConfig.logLevel = AdjustLogLevel.ERROR; // disable warning logs
+adjustConfig.logLevel = AdjustLogLevel.SUPRESS; // disable all logs
 ```
 
 ### <a id="qs-build-the-app"></a>Build your app
@@ -305,24 +304,24 @@ Unfortunately, in this scenario the information about the deep link can not be d
 
 ### <a id="dl-deferred"></a>Deferred deep linking scenario
 
-In order to get information about the URL content in a deferred deep linking scenario, you should set a callback method on the config object which will receive one `string` parameter where the content of the URL will be delivered. You should set this method on the config object by calling the method `setDeferredDeeplinkDelegate`:
+In order to get information about the URL content in a deferred deep linking scenario, you should set a callback method on the config object which will receive one `string` parameter where the content of the URL will be delivered. You should set this method on the config object by assigning the `deferredDeeplinkCallback` member:
 
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
-adjustConfig.setDeferredDeeplinkCallback((String uri) {
-      print('[Adjust]: Received deferred deeplink: ' + uri);
-    });
+adjustConfig.deferredDeeplinkCallback = (String uri) {
+  print('[Adjust]: Received deferred deeplink: ' + uri);
+};
 Adjust.start(adjustConfig);
 ```
 
-In deferred deep linking scenario, there is one additional setting which can be set on the config object. Once the Adjust SDK gets the deferred deep link information, we offer you the possibility to choose whether our SDK should open this URL or not. You can choose to set this option by calling `setLaunchDeferredDeeplink` method of the config instance:
+In deferred deep linking scenario, there is one additional setting which can be set on the config object. Once the Adjust SDK gets the deferred deep link information, we offer you the possibility to choose whether our SDK should open this URL or not. You can choose to set this option by assigning the `launchDeferredDeeplink` member of the config instance:
 
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
-adjustConfig.setLaunchDeferredDeeplink(true);
-adjustConfig.setDeferredDeeplinkCallback((String uri) {
-      print('[Adjust]: Received deferred deeplink: ' + uri);
-    });
+adjustConfig.launchDeferredDeeplink = true;
+adjustConfig.deferredDeeplinkCallback = (String uri) {
+  print('[Adjust]: Received deferred deeplink: ' + uri);
+};
 Adjust.start(adjustConfig);
 ```
 
@@ -444,7 +443,7 @@ If you want to track in-app purchases, please make sure to call the `trackEvent`
 
 ```dart
 AdjustEvent adjustEvent = new AdjustEvent('abc123');
-adjustEvent.setTransactionId('{TransactionId}');
+adjustEvent.transactionId = '{TransactionId}';
 Adjust.trackEvent(adjustEvent);
 ```
 
@@ -499,11 +498,11 @@ You can read more about special partners and these integrations in our [guide to
 
 ### <a id="cp-event-callback-id"></a>Event callback identifier
 
-You can also add custom string identifier to each event you want to track. This identifier will later be reported in event success and/or event failure callbacks to enable you to keep track on which event was successfully tracked or not. You can set this identifier by calling the `setCallbackId` method on your event instance:
+You can also add custom string identifier to each event you want to track. This identifier will later be reported in event success and/or event failure callbacks to enable you to keep track on which event was successfully tracked or not. You can set this identifier by assigning the `callbackId` member of your event instance:
 
 ```dart
 AdjustEvent adjustEvent = new AdjustEvent('abc123');
-adjustEvent.setCallbackId('{CallbackId}');
+adjustEvent.callbackId = '{CallbackId}';
 Adjust.trackEvent(adjustEvent);
 ```
 
@@ -567,10 +566,10 @@ Adjust.resetSessionPartnerParameters();
 
 Delaying the start of the Adjust SDK allows your app some time to obtain session parameters, such as unique identifiers, to be sent on install.
 
-Set the initial delay time in seconds with the method `setDelayStart` in the config instance:
+Set the initial delay time in seconds with the `delayStart` member of the config instance:
 
 ```dart
-adjustConfig.setDelayStart(5.5);
+adjustConfig.delayStart = 5.5;
 ```
 
 In this case, this will make the Adjust SDK not send the initial install session and any event created for 5.5 seconds. After this time is expired or if you call `Adjust.sendFirstPackages()` in the meanwhile, every session parameter will be added to the delayed install session and events and the Adjust SDK will resume as usual.
@@ -600,11 +599,11 @@ You can register a callback to be notified of tracker attribution changes. Due t
 
 Please make sure to consider our [applicable attribution data policies][attribution-data].
 
-With the config instance, before starting the SDK, add the attributioon callback:
+With the config instance, before starting the SDK, add the attribution callback:
 
 ```dart
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
-config.setAttributionCallback((AdjustAttribution attributionChangedData) {
+config.attributionCallback = (AdjustAttribution attributionChangedData) {
   print('[Adjust]: Attribution changed!');
 
   if (attributionChangedData.trackerToken != null) {
@@ -631,7 +630,7 @@ config.setAttributionCallback((AdjustAttribution attributionChangedData) {
   if (attributionChangedData.adid != null) {
     print('[Adjust]: Adid: ' + attributionChangedData.adid);
   }
-});
+};
 Adjust.start(adjustConfig);
 ```
 
@@ -654,7 +653,7 @@ You can register a callback to be notified when events or sessions are tracked. 
 AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
 
 // Set session success tracking delegate.
-config.setSessionSuccessCallback((AdjustSessionSuccess sessionSuccessData) {
+config.sessionSuccessCallback = (AdjustSessionSuccess sessionSuccessData) {
   print('[Adjust]: Session tracking success!');
 
   if (sessionSuccessData.message != null) {
@@ -669,10 +668,10 @@ config.setSessionSuccessCallback((AdjustSessionSuccess sessionSuccessData) {
   if (sessionSuccessData.jsonResponse != null) {
     print('[Adjust]: JSON response: ' + sessionSuccessData.jsonResponse);
   }
-});
+};
 
 // Set session failure tracking delegate.
-config.setSessionFailureCallback((AdjustSessionFailure sessionFailureData) {
+config.sessionFailureCallback = (AdjustSessionFailure sessionFailureData) {
   print('[Adjust]: Session tracking failure!');
 
   if (sessionFailureData.message != null) {
@@ -690,10 +689,10 @@ config.setSessionFailureCallback((AdjustSessionFailure sessionFailureData) {
   if (sessionFailureData.jsonResponse != null) {
     print('[Adjust]: JSON response: ' + sessionFailureData.jsonResponse);
   }
-});
+};
 
 // Set event success tracking delegate.
-config.setEventSuccessCallback((AdjustEventSuccess eventSuccessData) {
+config.eventSuccessCallback = (AdjustEventSuccess eventSuccessData) {
   print('[Adjust]: Event tracking success!');
 
   if (eventSuccessData.eventToken != null) {
@@ -714,10 +713,10 @@ config.setEventSuccessCallback((AdjustEventSuccess eventSuccessData) {
   if (eventSuccessData.jsonResponse != null) {
     print('[Adjust]: JSON response: ' + eventSuccessData.jsonResponse);
   }
-});
+};
 
 // Set event failure tracking delegate.
-config.setEventFailureCallback((AdjustEventFailure eventFailureData) {
+config.eventFailureCallback = (AdjustEventFailure eventFailureData) {
   print('[Adjust]: Event tracking failure!');
 
   if (eventFailureData.eventToken != null) {
@@ -741,7 +740,7 @@ config.setEventFailureCallback((AdjustEventFailure eventFailureData) {
   if (eventFailureData.jsonResponse != null) {
     print('[Adjust]: JSON response: ' + eventFailureData.jsonResponse);
   }
-});
+};
 
 Adjust.start(adjustConfig);
 ```
@@ -825,10 +824,10 @@ Adjust.getAdid().then((adid) {
 If you want to use the Adjust SDK to recognize users whose devices came with your app pre-installed, follow these steps.
 
 - Create a new tracker in your [dashboard].
-- Open your app delegate and add set the default tracker of your config:
+- Set the default tracker of your config object:
 
   ```dart
-  adjustConfig.setDefaultTracker("{TrackerToken}");
+  adjustConfig.defaultTracker = '{TrackerToken}';
   ```
   Replace `{TrackerToken}` with the tracker token you created in step 1. Please note that the Dashboard displays a tracker URL (including `http://app.adjust.com/`). In your source code, you should specify only the six-character token and not the entire URL.
 
@@ -867,7 +866,7 @@ You can check if the Adjust SDK is currently enabled by calling the function `is
 If your app makes heavy use of event tracking, you might want to delay some HTTP requests in order to send them in one batch every minute. You can enable event buffering with your config instance:
 
 ```dart
-adjustConfig.setEventBufferingEnabled(true);
+adjustConfig.eventBufferingEnabled = true;
 ```
 
 ### <a id="af-background-tracking"></a>Background tracking
@@ -875,7 +874,7 @@ adjustConfig.setEventBufferingEnabled(true);
 The default behaviour of the Adjust SDK is to pause sending HTTP requests while the app is in the background. You can change this in your config instance:
 
 ```dart
-adjustConfig.setSendInBackground(true);
+adjustConfig.sendInBackground = true;
 ```
 
 ### <a id="af-gdpr-forget-me"></a>GDPR right to be forgotten
