@@ -181,6 +181,9 @@ class AdjustConfig {
     if (_userAgent != null) {
       configMap['userAgent'] = _userAgent;
     }
+    if (_processName != null) {
+      configMap['processName'] = _processName;
+    }
     if (_logLevel != null) {
       configMap['logLevel'] = _logLevel.toString().substring(_logLevel.toString().indexOf('.') + 1);
     }
