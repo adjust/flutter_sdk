@@ -355,9 +355,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 }
 
 - (void)getSdkVersion:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    // TODO: Bring to life once underlying iOS SDK is on 4.17.0.
-    // NSString *sdkVersion = [Adjust sdkVersion];
-    NSString *sdkVersion = @"ios4.16.0";
+    NSString *sdkVersion = [Adjust sdkVersion];
     result(sdkVersion);
 }
 
