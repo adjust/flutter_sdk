@@ -8,7 +8,7 @@ import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
-import 'package:adjust_example/util.dart';
+import 'util.dart';
 
 void main() {
   runApp(new AdjustExampleApp());
