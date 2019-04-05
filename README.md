@@ -82,7 +82,7 @@ These are the minimal steps required to integrate the Adjust SDK into your Flutt
 
 ### <a id="qs-add-sdk"></a>Add the SDK to your project
 
-You can add Adjust SDK to your Flutter app by adding this to your package's pubspec.yaml file:
+You can add Adjust SDK to your Flutter app by adding following to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
@@ -95,7 +95,7 @@ Then navigate to your project in the terminal and run:
 flutter packages get
 ```
 
-Note: if you are using Visual Studio Code to develop your app, upon editing `pubspec.yaml`, it will automatically run this command, so it is not needed to be ran manually.
+**Note**: If you are using Visual Studio Code to develop your app, upon editing `pubspec.yaml`, it will automatically run this command, so you don't need to run it manually.
 
 ### <a id="qs-gps"></a>[Android] Add Google Play Services
 
