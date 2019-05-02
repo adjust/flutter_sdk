@@ -24,7 +24,7 @@ class Testlib {
     _executeCommandHandler = handler;
   }
 
-  static void init(String baseUrl) {
+  static void init(String baseUrl, String controlUrl) {
     print('[TestLibrary]: Test library initialisation.');
     
     _channel.setMethodCallHandler((MethodCall call) {
@@ -43,7 +43,7 @@ class Testlib {
       }
     });
 
-    _channel.invokeMethod('init', {'baseUrl': baseUrl});
+    _channel.invokeMethod('init', {'baseUrl': baseUrl, 'controlUrl': controlUrl});
   }
 
   static void startTestSession(String clientSdk) {

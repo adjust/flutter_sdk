@@ -17,6 +17,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _baseUrl;
+  String _controlUrl;
   String _gdprUrl;
   CommandExecutor _commandExecutor;
 
@@ -25,7 +26,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     initPlatformState();
 
-    String _address = '192.168.9.180';
+    String _address = '192.168.8.98';
     if (Platform.isAndroid) {
       String _protocol = 'https';
       String _port = '8443';
@@ -37,12 +38,13 @@ class _MyAppState extends State<MyApp> {
       _baseUrl = _protocol + '://' + _address + ':' + _port;
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
     }
+    _controlUrl = 'ws://' + _address + ':1987';
 
     // Initialise command executor.
     _commandExecutor = new CommandExecutor(_baseUrl, _gdprUrl);
 
     // Initialise test library.
-    Testlib.init(_baseUrl);
+    Testlib.init(_baseUrl, _controlUrl);
     Testlib.doNotExitAfterEnd();
     Testlib.setExecuteCommandHalder((final dynamic callArgs) {
       Command command = new Command(callArgs);

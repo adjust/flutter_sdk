@@ -35,5 +35,6 @@ android {
 
 dependencies {
     implementation files('libs/adjust-testing.jar')
+    implementation files('libs/Java-WebSocket-1.3.9.jar')
     implementation files('libs/gson-2.8.1.jar')
 }

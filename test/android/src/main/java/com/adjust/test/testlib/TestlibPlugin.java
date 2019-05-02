@@ -14,8 +14,8 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-import com.adjust.testlibrary.ICommandJsonListener;
-import com.adjust.testlibrary.TestLibrary;
+import com.adjust.test.ICommandJsonListener;
+import com.adjust.test.TestLibrary;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -63,14 +63,15 @@ public class TestlibPlugin implements MethodCallHandler {
 
     private void init(final MethodCall call, final Result result) {
         Map paramsMap = (Map)call.arguments;
-        if(!paramsMap.containsKey("baseUrl")) {
-            result.error("0", "Arguments null or wrong (missing argument >baseUrl<", null);
+        if(!paramsMap.containsKey("baseUrl") || !paramsMap.containsKey("controlUrl")) {
+            result.error("0", "Arguments null or wrong (missing >baseUrl< or >controlUrl<)", null);
             return;
         }
 
         String baseUrl = (String) paramsMap.get("baseUrl");
+        String controlUrl = (String) paramsMap.get("controlUrl");
 
-        testLibrary = new TestLibrary(baseUrl, new ICommandJsonListener() {
+        testLibrary = new TestLibrary(baseUrl, controlUrl, new ICommandJsonListener() {
             @Override
             public void executeCommand(String className, String methodName, String jsonParameters) {
                 HashMap methodParams = new HashMap();
