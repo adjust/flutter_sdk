@@ -56,16 +56,16 @@
 - (void)init:(FlutterMethodCall*)call withResult:(FlutterResult)result {
     NSLog(@"Initializing test lib bridge ...");
     NSString *baseUrl = call.arguments[@"baseUrl"];
-    if (![self isFieldValid:baseUrl]) {
+    NSString *controlUrl = call.arguments[@"controlUrl"];
+    if (![self isFieldValid:baseUrl] || ![self isFieldValid:controlUrl]) {
         result([FlutterError errorWithCode:@"WRONG-ARGS"
-                                   message:@"Arguments null or wrong (missing argument >baseUrl<"
+                                   message:@"Arguments null or wrong (missing argument >baseUrl< or >controlUrl<)"
                                    details:nil]);
         return;
     }
     
     self.adjustCommandExecutor = [[AdjustCommandExecutor alloc]initWithMethodChannel:self.channel];
-    self.testLibrary = [ATLTestLibrary testLibraryWithBaseUrl:baseUrl
-                                           andCommandDelegate:self.adjustCommandExecutor];
+    self.testLibrary = [ATLTestLibrary testLibraryWithBaseUrl:baseUrl andControlUrl:controlUrl andCommandDelegate:self.adjustCommandExecutor];
     NSLog(@"Test lib bridge initialized.");
 }
 
@@ -129,8 +129,7 @@
         return;
     }
     
-    // not awailable for iOS
-    NSLog(@">doNotExitAfterEnd< not available on iOS");
+    [self.testLibrary doNotExitAfterEnd];
 }
 
 //////////// HELPER METHODS ///////////////////////////////////////////////////////////////
