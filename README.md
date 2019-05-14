@@ -376,7 +376,7 @@ public class MainActivity extends FlutterActivity {
 
         Intent intent = getIntent();
         Uri data = intent.getData();
-        AdjustSdk.appWillOpenUrl(data);
+        AdjustSdk.appWillOpenUrl(data, this);
     }
 
     // Or make the cakll in onNewIntent.
@@ -384,7 +384,7 @@ public class MainActivity extends FlutterActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Uri data = intent.getData();
-        AdjustSdk.appWillOpenUrl(data);
+        AdjustSdk.appWillOpenUrl(data, this);
     }
 }
 ```

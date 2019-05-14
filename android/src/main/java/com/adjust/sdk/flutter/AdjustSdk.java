@@ -47,18 +47,19 @@ import static com.adjust.sdk.flutter.AdjustUtils.*;
 
 public class AdjustSdk implements MethodCallHandler {
     private static String TAG = "AdjustBridge";
-    private static MethodChannel channel;
-    private static Context applicationContext;
     private static boolean launchDeferredDeeplink = true;
+    private MethodChannel channel;
+    private Context applicationContext;
 
-    AdjustSdk(Context applicationContext) {
+    AdjustSdk(MethodChannel channel, Context applicationContext) {
+        this.channel = channel;
         this.applicationContext = applicationContext;
     }
 
     // Plugin registration.
     public static void registerWith(Registrar registrar) {
-        channel = new MethodChannel(registrar.messenger(), "com.adjust.sdk/api");
-        channel.setMethodCallHandler(new AdjustSdk(registrar.context()));
+        final MethodChannel channel = new MethodChannel(registrar.messenger(), "com.adjust.sdk/api");
+        channel.setMethodCallHandler(new AdjustSdk(channel, registrar.context()));
     }
 
     @Override
@@ -516,8 +517,8 @@ public class AdjustSdk implements MethodCallHandler {
     }
 
     // Exposed for handling deep linking from native layer of the example app.
-    public static void appWillOpenUrl(Uri deeplink) {
-        Adjust.appWillOpenUrl(deeplink, applicationContext);
+    public static void appWillOpenUrl(Uri deeplink, Context context) {
+        Adjust.appWillOpenUrl(deeplink, context);
     }
 
     private void sendFirstPackages(final Result result) {
