@@ -29,10 +29,6 @@ public class TestlibPlugin implements MethodCallHandler {
 
     /** Plugin registration. */
     public static void registerWith(Registrar registrar) {
-        if (channel != null) {
-          throw new IllegalStateException("You should not call registerWith more than once.");
-        }
-
         channel = new MethodChannel(registrar.messenger(), "testlib");
         channel.setMethodCallHandler(new TestlibPlugin());
     }
