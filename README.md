@@ -86,7 +86,7 @@ You can add Adjust SDK to your Flutter app by adding following to your `pubspec.
 
 ```yaml
 dependencies:
-  adjust_sdk: ^4.17.0
+  adjust_sdk: ^4.17.1
 ```
 
 Then navigate to your project in the terminal and run:
@@ -376,7 +376,7 @@ public class MainActivity extends FlutterActivity {
 
         Intent intent = getIntent();
         Uri data = intent.getData();
-        AdjustSdk.appWillOpenUrl(data);
+        AdjustSdk.appWillOpenUrl(data, this);
     }
 
     // Or make the cakll in onNewIntent.
@@ -384,7 +384,7 @@ public class MainActivity extends FlutterActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Uri data = intent.getData();
-        AdjustSdk.appWillOpenUrl(data);
+        AdjustSdk.appWillOpenUrl(data, this);
     }
 }
 ```

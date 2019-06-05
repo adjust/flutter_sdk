@@ -18,23 +18,22 @@ import com.adjust.testlibrary.ICommandJsonListener;
 import com.adjust.testlibrary.TestLibrary;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /** TestlibPlugin */
 public class TestlibPlugin implements MethodCallHandler {
     private static String TAG = "ADJUST-TESTLIB-PLUGIN-BRIDGE";
-    private static MethodChannel channel;
-    private static TestLibrary testLibrary = null;
+    private TestLibrary testLibrary = null;
+    private MethodChannel channel;
+
+    TestlibPlugin(MethodChannel channel) {
+        this.channel = channel;
+    }
 
     /** Plugin registration. */
     public static void registerWith(Registrar registrar) {
-        if (channel != null) {
-          throw new IllegalStateException("You should not call registerWith more than once.");
-        }
-
-        channel = new MethodChannel(registrar.messenger(), "testlib");
-        channel.setMethodCallHandler(new TestlibPlugin());
+        final MethodChannel channel = new MethodChannel(registrar.messenger(), "testlib");
+        channel.setMethodCallHandler(new TestlibPlugin(channel));
     }
 
     @Override
