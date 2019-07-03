@@ -47,6 +47,7 @@ class CommandExecutor {
         case 'setPushToken': _setPushToken(); break;
         case 'openDeeplink': _openDeeplink(); break;
         case 'gdprForgetMe': _gdprForgetMe(); break;
+        case 'trackAdRevenue': _trackAdRevenue(); break;
     }
   }
 
@@ -422,7 +423,7 @@ class CommandExecutor {
     }
 
     List<dynamic> keyValuePairs = _command.getParamteters('KeyValue');
-    for (int i = 0; i<keyValuePairs.length; i = i + 2) {
+    for (int i = 0; i < keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
       Adjust.addSessionCallbackParameter(key, value);
@@ -435,7 +436,7 @@ class CommandExecutor {
     }
 
     List<dynamic> keyValuePairs = _command.getParamteters('KeyValue');
-    for (int i = 0; i<keyValuePairs.length; i = i + 2) {
+    for (int i = 0; i < keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
       Adjust.addSessionPartnerParameter(key, value);
@@ -448,7 +449,7 @@ class CommandExecutor {
     }
 
     List<dynamic> keys = _command.getParamteters('key');
-    for (int i = 0; i<keys.length; i = i + 1) {
+    for (int i = 0; i < keys.length; i = i + 1) {
       String key = keys[i];
       Adjust.removeSessionCallbackParameter(key);
     }
@@ -460,7 +461,7 @@ class CommandExecutor {
     }
     
     List<dynamic> keys = _command.getParamteters('key');
-    for (int i = 0; i<keys.length; i = i + 1) {
+    for (int i = 0; i < keys.length; i = i + 1) {
       String key = keys[i];
       Adjust.removeSessionPartnerParameter(key);
     }
@@ -472,5 +473,11 @@ class CommandExecutor {
 
   void _resetSessionPartnerParameters() {
     Adjust.resetSessionPartnerParameters();
+  }
+
+  void _trackAdRevenue() {
+    String source = _command.getFirstParameterValue('adRevenueSource');
+    String payload = _command.getFirstParameterValue('adRevenueJsonString');
+    Adjust.trackAdRevenue(source, payload);
   }
 }

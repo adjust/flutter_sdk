@@ -137,6 +137,9 @@ public class AdjustSdk implements MethodCallHandler {
             case "resetSessionPartnerParameters":
                 resetSessionPartnerParameters(result);
                 break;
+            case "trackAdRevenue":
+                trackAdRevenue(call, result);
+                break;
             case "setTestOptions":
                 setTestOptions(call, result);
                 break;
@@ -644,6 +647,22 @@ public class AdjustSdk implements MethodCallHandler {
 
     private void resetSessionPartnerParameters(final Result result) {
         Adjust.resetSessionPartnerParameters();
+        result.success(null);
+    }
+
+    private void trackAdRevenue(final MethodCall call, final Result result) {
+        String source = null;
+        String payload = null;
+        if (call.hasArgument("source") && call.hasArgument("payload")) {
+            source = (String) call.argument("source");
+            payload = (String) call.argument("payload");
+        }
+        try {
+            JSONObject jsonPayload = new JSONObject(payload);
+            Adjust.trackAdRevenue(source, jsonPayload);
+        } catch (JSONException err) {
+            Log.e(TAG, "Give ad revenue payload is not a valid JSON string");
+        }
         result.success(null);
     }
 

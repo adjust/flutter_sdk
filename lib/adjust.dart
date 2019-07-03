@@ -134,6 +134,10 @@ class Adjust {
     _channel.invokeMethod('resetSessionPartnerParameters');
   }
 
+  static void trackAdRevenue(String source, String payload) {
+    _channel.invokeMethod('trackAdRevenue', {'source': source, 'payload': payload});
+  }
+
   // For testing purposes only. Do not use in production.
   @visibleForTesting
   static void setTestOptions(final dynamic testOptions) {

@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     initPlatformState();
 
-    String _address = '192.168.8.98';
+    String _address = '192.168.8.205';
     if (Platform.isAndroid) {
       String _protocol = 'https';
       String _port = '8443';
@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
     } else {
       String _protocol = 'http';
-      String _port = '8080';
+      String _port = '9000';
       _baseUrl = _protocol + '://' + _address + ':' + _port;
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
     }
