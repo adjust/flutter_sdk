@@ -1,4 +1,4 @@
-group 'com.adjust.test.testlib'
+group 'com.adjust.test.lib'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -34,7 +34,7 @@ android {
 }
 
 dependencies {
-    implementation files('libs/adjust-testing.jar')
+    implementation files('libs/adjust-test.jar')
     implementation files('libs/Java-WebSocket-1.3.9.jar')
     implementation files('libs/gson-2.8.1.jar')
 }

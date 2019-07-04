@@ -1,5 +1,5 @@
 //
-//  testlib.dart
+//  test_lib.dart
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 25th April 2018.
@@ -11,8 +11,8 @@ import 'package:flutter/services.dart';
 
 typedef void ExecuteCommandHandler(final dynamic callArgs);
 
-class Testlib {
-  static const MethodChannel _channel = const MethodChannel('testlib');
+class TestLib {
+  static const MethodChannel _channel = const MethodChannel('test_lib');
   static ExecuteCommandHandler _executeCommandHandler;
 
   static Future<String> get platformVersion async {

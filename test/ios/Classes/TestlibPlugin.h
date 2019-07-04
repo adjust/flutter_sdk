@@ -1,5 +1,5 @@
 //
-//  TestlibPlugin.h
+//  TestLibPlugin.h
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 1st October 2018.
@@ -9,5 +9,5 @@
 #import <Flutter/Flutter.h>
 #import <AdjustTestLibrary/ATLTestLibrary.h>
 
-@interface TestlibPlugin : NSObject<FlutterPlugin>
+@interface TestLibPlugin : NSObject<FlutterPlugin>
 @end

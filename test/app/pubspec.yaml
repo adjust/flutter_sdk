@@ -1,4 +1,4 @@
-name: testapp
+name: test_app
 description: Adjust Test (CI) App for Flutter SDK.
 
 # The following defines the version and build number for your application.
@@ -24,7 +24,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  testlib:
+  test_lib:
     path: ../
   
   adjust_sdk:

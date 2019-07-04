@@ -6,8 +6,8 @@ import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
-import 'package:testlib/testlib.dart';
-import 'package:testapp/command.dart';
+import 'package:test_lib/test_lib.dart';
+import 'package:test_app/command.dart';
 
 class CommandExecutor {
   String _baseUrl;
@@ -221,8 +221,8 @@ class CommandExecutor {
       print('[CommandExecutor]: Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink}');
       adjustConfig.deferredDeeplinkCallback = (String uri) {
         print('[CommandExecutor]: Sending deeplink info to server: $uri');
-        Testlib.addInfoToSend('deeplink', uri);
-        Testlib.sendInfoToServer(localBasePath);
+        TestLib.addInfoToSend('deeplink', uri);
+        TestLib.sendInfoToServer(localBasePath);
       };
     }
 
@@ -230,15 +230,15 @@ class CommandExecutor {
       String localBasePath = _basePath;
       adjustConfig.attributionCallback = (AdjustAttribution attribution) {
         print('[CommandExecutor]: Attribution Callback: $attribution');
-        Testlib.addInfoToSend('trackerToken', attribution.trackerToken);
-        Testlib.addInfoToSend('trackerName', attribution.trackerName);
-        Testlib.addInfoToSend('network', attribution.network);
-        Testlib.addInfoToSend('campaign', attribution.campaign);
-        Testlib.addInfoToSend('adgroup', attribution.adgroup);
-        Testlib.addInfoToSend('creative', attribution.creative);
-        Testlib.addInfoToSend('clickLabel', attribution.clickLabel);
-        Testlib.addInfoToSend('adid', attribution.adid);
-        Testlib.sendInfoToServer(localBasePath);
+        TestLib.addInfoToSend('trackerToken', attribution.trackerToken);
+        TestLib.addInfoToSend('trackerName', attribution.trackerName);
+        TestLib.addInfoToSend('network', attribution.network);
+        TestLib.addInfoToSend('campaign', attribution.campaign);
+        TestLib.addInfoToSend('adgroup', attribution.adgroup);
+        TestLib.addInfoToSend('creative', attribution.creative);
+        TestLib.addInfoToSend('clickLabel', attribution.clickLabel);
+        TestLib.addInfoToSend('adid', attribution.adid);
+        TestLib.sendInfoToServer(localBasePath);
       };
     }
 
@@ -246,13 +246,13 @@ class CommandExecutor {
       String localBasePath = _basePath;
       adjustConfig.sessionSuccessCallback = (AdjustSessionSuccess sessionSuccessResponseData) {
         print('[CommandExecutor]: Session Callback Success: $sessionSuccessResponseData');
-        Testlib.addInfoToSend('message', sessionSuccessResponseData.message);
-        Testlib.addInfoToSend('timestamp', sessionSuccessResponseData.timestamp);
-        Testlib.addInfoToSend('adid', sessionSuccessResponseData.adid);
+        TestLib.addInfoToSend('message', sessionSuccessResponseData.message);
+        TestLib.addInfoToSend('timestamp', sessionSuccessResponseData.timestamp);
+        TestLib.addInfoToSend('adid', sessionSuccessResponseData.adid);
         if (sessionSuccessResponseData.jsonResponse != null) {
-            Testlib.addInfoToSend('jsonResponse', sessionSuccessResponseData.jsonResponse);
+            TestLib.addInfoToSend('jsonResponse', sessionSuccessResponseData.jsonResponse);
         }
-        Testlib.sendInfoToServer(localBasePath);
+        TestLib.sendInfoToServer(localBasePath);
       };
     }
 
@@ -260,14 +260,14 @@ class CommandExecutor {
       String localBasePath = _basePath;
       adjustConfig.sessionFailureCallback = (AdjustSessionFailure sessionFailureResponseData) {
         print('[CommandExecutor]: Session Callback Failure: $sessionFailureResponseData');
-        Testlib.addInfoToSend('message', sessionFailureResponseData.message);
-        Testlib.addInfoToSend('timestamp', sessionFailureResponseData.timestamp);
-        Testlib.addInfoToSend('adid', sessionFailureResponseData.adid);
-        Testlib.addInfoToSend('willRetry', sessionFailureResponseData.willRetry.toString());
+        TestLib.addInfoToSend('message', sessionFailureResponseData.message);
+        TestLib.addInfoToSend('timestamp', sessionFailureResponseData.timestamp);
+        TestLib.addInfoToSend('adid', sessionFailureResponseData.adid);
+        TestLib.addInfoToSend('willRetry', sessionFailureResponseData.willRetry.toString());
         if (sessionFailureResponseData.jsonResponse != null) {
-            Testlib.addInfoToSend('jsonResponse', sessionFailureResponseData.jsonResponse);
+            TestLib.addInfoToSend('jsonResponse', sessionFailureResponseData.jsonResponse);
         }
-        Testlib.sendInfoToServer(localBasePath);
+        TestLib.sendInfoToServer(localBasePath);
       };
     }
 
@@ -275,15 +275,15 @@ class CommandExecutor {
       String localBasePath = _basePath;
       adjustConfig.eventSuccessCallback = (AdjustEventSuccess eventSuccessResponseData) {
         print('[CommandExecutor]: Event Callback Success: $eventSuccessResponseData');
-        Testlib.addInfoToSend('message', eventSuccessResponseData.message);
-        Testlib.addInfoToSend('timestamp', eventSuccessResponseData.timestamp);
-        Testlib.addInfoToSend('adid', eventSuccessResponseData.adid);
-        Testlib.addInfoToSend('eventToken', eventSuccessResponseData.eventToken);
-        Testlib.addInfoToSend('callbackId', eventSuccessResponseData.callbackId);
+        TestLib.addInfoToSend('message', eventSuccessResponseData.message);
+        TestLib.addInfoToSend('timestamp', eventSuccessResponseData.timestamp);
+        TestLib.addInfoToSend('adid', eventSuccessResponseData.adid);
+        TestLib.addInfoToSend('eventToken', eventSuccessResponseData.eventToken);
+        TestLib.addInfoToSend('callbackId', eventSuccessResponseData.callbackId);
         if (eventSuccessResponseData.jsonResponse != null ) {
-            Testlib.addInfoToSend('jsonResponse', eventSuccessResponseData.jsonResponse);
+            TestLib.addInfoToSend('jsonResponse', eventSuccessResponseData.jsonResponse);
         }
-        Testlib.sendInfoToServer(localBasePath);
+        TestLib.sendInfoToServer(localBasePath);
       };
     }
 
@@ -291,16 +291,16 @@ class CommandExecutor {
       String localBasePath = _basePath;
       adjustConfig.eventFailureCallback = (AdjustEventFailure eventFailureResponseData) {
         print('[CommandExecutor]: Event Callback Failure: $eventFailureResponseData');
-        Testlib.addInfoToSend('message', eventFailureResponseData.message);
-        Testlib.addInfoToSend('timestamp', eventFailureResponseData.timestamp);
-        Testlib.addInfoToSend('adid', eventFailureResponseData.adid);
-        Testlib.addInfoToSend('eventToken', eventFailureResponseData.eventToken);
-        Testlib.addInfoToSend('callbackId', eventFailureResponseData.callbackId);
-        Testlib.addInfoToSend('willRetry', eventFailureResponseData.willRetry.toString());
+        TestLib.addInfoToSend('message', eventFailureResponseData.message);
+        TestLib.addInfoToSend('timestamp', eventFailureResponseData.timestamp);
+        TestLib.addInfoToSend('adid', eventFailureResponseData.adid);
+        TestLib.addInfoToSend('eventToken', eventFailureResponseData.eventToken);
+        TestLib.addInfoToSend('callbackId', eventFailureResponseData.callbackId);
+        TestLib.addInfoToSend('willRetry', eventFailureResponseData.willRetry.toString());
         if (eventFailureResponseData.jsonResponse != null) {
-            Testlib.addInfoToSend('jsonResponse', eventFailureResponseData.jsonResponse.toString());
+            TestLib.addInfoToSend('jsonResponse', eventFailureResponseData.jsonResponse.toString());
         }
-        Testlib.sendInfoToServer(localBasePath);
+        TestLib.sendInfoToServer(localBasePath);
       };
     }
   }

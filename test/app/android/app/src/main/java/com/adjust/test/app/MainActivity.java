@@ -1,4 +1,4 @@
-package com.adjust.test.testlibexample;
+package com.adjust.test.app;
 
 import android.content.Intent;
 import android.net.Uri;

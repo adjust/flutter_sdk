@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.adjust.test.testlibexample">
+    package="com.adjust.test.app">
 
     <!-- The INTERNET permission is required for development. Specifically,
          flutter needs it to communicate with the running application
@@ -16,7 +16,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="testapp"
+        android:label="test_app"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

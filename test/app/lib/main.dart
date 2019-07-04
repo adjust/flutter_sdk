@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:testlib/testlib.dart';
-import 'package:testapp/command.dart';
-import 'package:testapp/command_executor.dart';
+import 'package:test_lib/test_lib.dart';
+import 'package:test_app/command.dart';
+import 'package:test_app/command_executor.dart';
 import 'package:adjust_sdk/adjust.dart';
 
 void main() => runApp(new MyApp());
@@ -44,9 +44,9 @@ class _MyAppState extends State<MyApp> {
     _commandExecutor = new CommandExecutor(_baseUrl, _gdprUrl);
 
     // Initialise test library.
-    Testlib.init(_baseUrl, _controlUrl);
-    Testlib.doNotExitAfterEnd();
-    Testlib.setExecuteCommandHalder((final dynamic callArgs) {
+    TestLib.init(_baseUrl, _controlUrl);
+    TestLib.doNotExitAfterEnd();
+    TestLib.setExecuteCommandHalder((final dynamic callArgs) {
       Command command = new Command(callArgs);
       print('[AdjustTestApp]: Executing command ${command.className}.${command.methodName}');
       _commandExecutor.executeCommand(command);
@@ -58,7 +58,7 @@ class _MyAppState extends State<MyApp> {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      platformVersion = await Testlib.platformVersion;
+      platformVersion = await TestLib.platformVersion;
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -80,7 +80,7 @@ class _MyAppState extends State<MyApp> {
                 buildCupertinoButton(
                     'Start Test Session',
                     () => Adjust.getSdkVersion().then((sdkVersion) {
-                      Testlib.startTestSession(sdkVersion);
+                      TestLib.startTestSession(sdkVersion);
                     }))
               ])))
         ]),

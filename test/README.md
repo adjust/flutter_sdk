@@ -1,4 +1,4 @@
-# testlib
+# test_lib
 
 Flutter Plugin for Adjust Testing Library.
 

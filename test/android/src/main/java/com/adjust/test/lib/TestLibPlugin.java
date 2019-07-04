@@ -1,12 +1,12 @@
 //
-//  TestlibPlugin.java
+//  TestLibPlugin.java
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 1st October 2018.
 //  Copyright (c) 2018 Adjust GmbH. All rights reserved.
 //
 
-package com.adjust.test.testlib;
+package com.adjust.test.lib;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -20,20 +20,20 @@ import com.adjust.test.TestLibrary;
 import java.util.HashMap;
 import java.util.Map;
 
-/** TestlibPlugin */
-public class TestlibPlugin implements MethodCallHandler {
+/** TestLibPlugin */
+public class TestLibPlugin implements MethodCallHandler {
     private static String TAG = "ADJUST-TESTLIB-PLUGIN-BRIDGE";
     private TestLibrary testLibrary = null;
     private MethodChannel channel;
 
-    TestlibPlugin(MethodChannel channel) {
+    TestLibPlugin(MethodChannel channel) {
         this.channel = channel;
     }
 
     /** Plugin registration. */
     public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "testlib");
-        channel.setMethodCallHandler(new TestlibPlugin(channel));
+        final MethodChannel channel = new MethodChannel(registrar.messenger(), "test_lib");
+        channel.setMethodCallHandler(new TestLibPlugin(channel));
     }
 
     @Override

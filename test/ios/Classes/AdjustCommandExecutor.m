@@ -10,18 +10,20 @@
 #import "AdjustCommandExecutor.h"
 
 @interface AdjustCommandExecutor ()
+
 @property(nonatomic, weak) FlutterMethodChannel *channel;
+
 @end
 
 @implementation AdjustCommandExecutor
 - (id)initWithMethodChannel:(FlutterMethodChannel *)channel {
     self = [super init];
-    if (self == nil) return nil;
+    if (self == nil) {
+        return nil;
+    }
     
+    NSLog(@"Initializing Test Library with Method Channel ...");
     self.channel = channel;
-    
-    NSLog(@"Initializing Test Library with Method Channel...");
-    
     return self;
 }
 
