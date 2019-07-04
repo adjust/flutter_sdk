@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     initPlatformState();
 
-    String _address = '192.168.8.205';
+    String _address = '192.168.8.210';
     if (Platform.isAndroid) {
       String _protocol = 'https';
       String _port = '8443';
