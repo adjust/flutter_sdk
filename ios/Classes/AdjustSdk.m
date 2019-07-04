@@ -62,6 +62,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self setPushToken:call withResult:result];
     } else if ([@"appWillOpenUrl" isEqualToString:call.method]) {
         [self appWillOpenUrl:call withResult:result];
+    } else if ([@"trackAdRevenue" isEqualToString:call.method]) {
+        [self trackAdRevenue:call withResult:result];
     } else if ([@"setTestOptions" isEqualToString:call.method]) {
         [self setTestOptions:call withResult:result];
     } else if ([@"addSessionCallbackParameter" isEqualToString:call.method]) {
@@ -323,6 +325,16 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
 #pragma clang diagnostic pop
     [Adjust appWillOpenUrl:url];
+}
+
+- (void)trackAdRevenue:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *source = call.arguments[@"source"];
+    NSString *payload = call.arguments[@"payload"];
+    if (!([self isFieldValid:source]) || !([self isFieldValid:payload])) {
+        return;
+    }
+    NSData *dataPayload = [payload dataUsingEncoding:NSUTF8StringEncoding];
+    [Adjust trackAdRevenue:source payload:dataPayload];
 }
 
 - (void)getAttribution:(FlutterMethodCall *)call withResult:(FlutterResult)result {

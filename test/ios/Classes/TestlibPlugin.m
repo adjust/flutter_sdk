@@ -1,26 +1,29 @@
 //
-//  TestlibPlugin.m
+//  TestLibPlugin.m
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 1st October 2018.
 //  Copyright (c) 2018 Adjust GmbH. All rights reserved.
 //
 
-#import "TestlibPlugin.h"
+#import "TestLibPlugin.h"
 #import "AdjustCommandExecutor.h"
 
-@interface TestlibPlugin ()
+@interface TestLibPlugin ()
+
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @property(nonatomic, strong) ATLTestLibrary *testLibrary;
 @property(nonatomic, strong) AdjustCommandExecutor *adjustCommandExecutor;
+
 @end
 
-@implementation TestlibPlugin
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+@implementation TestLibPlugin
+
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
-                                     methodChannelWithName:@"testlib"
+                                     methodChannelWithName:@"test_lib"
                                      binaryMessenger:[registrar messenger]];
-    TestlibPlugin* instance = [[TestlibPlugin alloc] init];
+    TestLibPlugin *instance = [[TestLibPlugin alloc] init];
     instance.channel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -31,7 +34,7 @@
     self.channel = nil;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"getPlatformVersion" isEqualToString:call.method]) {
     result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
   } else if ([@"init" isEqualToString:call.method]) {
@@ -53,28 +56,28 @@
   }
 }
 
-- (void)init:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+- (void)init:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSLog(@"Initializing test lib bridge ...");
     NSString *baseUrl = call.arguments[@"baseUrl"];
-    if (![self isFieldValid:baseUrl]) {
+    NSString *controlUrl = call.arguments[@"controlUrl"];
+    if (![self isFieldValid:baseUrl] || ![self isFieldValid:controlUrl]) {
         result([FlutterError errorWithCode:@"WRONG-ARGS"
-                                   message:@"Arguments null or wrong (missing argument >baseUrl<"
+                                   message:@"Arguments null or wrong (missing argument >baseUrl< or >controlUrl<)"
                                    details:nil]);
         return;
     }
-    
+
     self.adjustCommandExecutor = [[AdjustCommandExecutor alloc]initWithMethodChannel:self.channel];
-    self.testLibrary = [ATLTestLibrary testLibraryWithBaseUrl:baseUrl
-                                           andCommandDelegate:self.adjustCommandExecutor];
-    NSLog(@"Test lib bridge initialized.");
+    self.testLibrary = [ATLTestLibrary testLibraryWithBaseUrl:baseUrl andControlUrl:controlUrl andCommandDelegate:self.adjustCommandExecutor];
+    NSLog(@"TestLib bridge initialized.");
 }
 
-- (void)startTestSession:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+- (void)startTestSession:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     if ([self testLibOk:result] == NO) {
         NSLog(@"Error. Cannot start test session. Test lib bridge not initialized.");
         return;
     }
-    
+
     NSString *clientSdk = call.arguments[@"clientSdk"];
     if (![self isFieldValid:clientSdk]) {
         result([FlutterError errorWithCode:@"WRONG-CLIENT-SDK"
@@ -82,59 +85,53 @@
                                    details:nil]);
         return;
     }
-    
+
     NSLog(@"Starting test session. Client SDK %@", clientSdk);
     [self.testLibrary startTestSession:clientSdk];
 }
 
-- (void)addInfoToSend:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+- (void)addInfoToSend:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     if ([self testLibOk:result] == NO) {
         return;
     }
-    
     NSString *key = call.arguments[@"key"];
     NSString *value = call.arguments[@"value"];
     [self.testLibrary addInfoToSend:key value:value];
 }
 
-- (void)sendInfoToServer:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+- (void)sendInfoToServer:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     if ([self testLibOk:result] == NO) {
         return;
     }
-    
     NSString *basePath = call.arguments[@"basePath"];
     [self.testLibrary sendInfoToServer:basePath];
 }
 
-- (void)addTest:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+- (void)addTest:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     if ([self testLibOk:result] == NO) {
         return;
     }
-    
     NSString *testName = call.arguments[@"testName"];
     [self.testLibrary addTest:testName];
 }
 
-- (void)addTestDirectory:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+- (void)addTestDirectory:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     if ([self testLibOk:result] == NO) {
         return;
     }
-    
     NSString *testDirectory = call.arguments[@"testDirectory"];
     [self.testLibrary addTestDirectory:testDirectory];
 }
 
-- (void)doNotExitAfterEnd:(FlutterMethodCall*)call withResult:(FlutterResult)result {
+- (void)doNotExitAfterEnd:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     if ([self testLibOk:result] == NO) {
         return;
     }
-    
-    // not awailable for iOS
-    NSLog(@">doNotExitAfterEnd< not available on iOS");
+    [self.testLibrary doNotExitAfterEnd];
 }
 
-//////////// HELPER METHODS ///////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
+// Helper methods
+
 - (BOOL)testLibOk:(FlutterResult)result {
     if (self.testLibrary == nil) {
         result([FlutterError errorWithCode:@"TEST-LIB-NIL"

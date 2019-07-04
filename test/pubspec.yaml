@@ -1,4 +1,4 @@
-name: testlib
+name: test_lib
 description: Flutter plugin for Adjust Testing Library. Intended exclusively for internal use.
 version: 1.0.0
 author: Serj (srdjan@adjust.com)
@@ -17,8 +17,8 @@ dependencies:
 # The following section is specific to Flutter.
 flutter:
   plugin:
-    androidPackage: com.adjust.test.testlib
-    pluginClass: TestlibPlugin
+    androidPackage: com.adjust.test.lib
+    pluginClass: TestLibPlugin
 
 # we don't want to publish the test lib plugin, used only privately for integration testing
 publish_to: none

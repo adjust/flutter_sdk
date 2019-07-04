@@ -15,7 +15,7 @@ import 'package:adjust_sdk/adjust_event.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter4.17.1';
+  static const String _sdkPrefix = 'flutter4.18.0';
   static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
 
   static void start(AdjustConfig config) {
@@ -132,6 +132,10 @@ class Adjust {
 
   static void resetSessionPartnerParameters() {
     _channel.invokeMethod('resetSessionPartnerParameters');
+  }
+
+  static void trackAdRevenue(String source, String payload) {
+    _channel.invokeMethod('trackAdRevenue', {'source': source, 'payload': payload});
   }
 
   // For testing purposes only. Do not use in production.
