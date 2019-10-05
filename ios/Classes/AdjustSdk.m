@@ -99,6 +99,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     } else if ([@"isEnabled" isEqualToString:call.method]) {
         BOOL isEnabled = [Adjust isEnabled];
         result(@(isEnabled));
+    } else if ([@"getAdid" isEqualToString:call.method]) {
+        result([Adjust adid]);
     } else {
         result(FlutterMethodNotImplemented);
     }
