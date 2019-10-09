@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2018-2019 Adjust GmbH. All rights reserved.
 //
 
 import 'dart:async';
@@ -15,7 +15,7 @@ import 'package:adjust_sdk/adjust_event.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter4.18.0';
+  static const String _sdkPrefix = 'flutter4.18.1';
   static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
 
   static void start(AdjustConfig config) {
@@ -68,6 +68,7 @@ class Adjust {
     return isEnabled;
   }
 
+  // Return value could be `null`
   static Future<String> getAdid() async {
     final String adid = await _channel.invokeMethod('getAdid');
     return adid;
