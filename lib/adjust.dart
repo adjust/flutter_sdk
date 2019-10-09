@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2018-2019 Adjust GmbH. All rights reserved.
 //
 
 import 'dart:async';
@@ -16,8 +16,7 @@ import 'package:adjust_sdk/adjust_attribution.dart';
 
 class Adjust {
   static const String _sdkPrefix = 'flutter4.18.0';
-  static const MethodChannel _channel =
-      const MethodChannel('com.adjust.sdk/api');
+  static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
 
   static void start(AdjustConfig config) {
     config.sdkPrefix = _sdkPrefix;
@@ -69,7 +68,7 @@ class Adjust {
     return isEnabled;
   }
 
-  /// Return value could be `null`
+  // Return value could be `null`
   static Future<String> getAdid() async {
     final String adid = await _channel.invokeMethod('getAdid');
     return adid;
@@ -113,13 +112,11 @@ class Adjust {
   }
 
   static void addSessionCallbackParameter(String key, String value) {
-    _channel.invokeMethod(
-        'addSessionCallbackParameter', {'key': key, 'value': value});
+    _channel.invokeMethod('addSessionCallbackParameter', {'key': key, 'value': value});
   }
 
   static void addSessionPartnerParameter(String key, String value) {
-    _channel.invokeMethod(
-        'addSessionPartnerParameter', {'key': key, 'value': value});
+    _channel.invokeMethod('addSessionPartnerParameter', {'key': key, 'value': value});
   }
 
   static void removeSessionCallbackParameter(String key) {
@@ -139,8 +136,7 @@ class Adjust {
   }
 
   static void trackAdRevenue(String source, String payload) {
-    _channel
-        .invokeMethod('trackAdRevenue', {'source': source, 'payload': payload});
+    _channel.invokeMethod('trackAdRevenue', {'source': source, 'payload': payload});
   }
 
   // For testing purposes only. Do not use in production.
