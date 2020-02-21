@@ -254,20 +254,18 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    setState(() {
-      switch (state) {
-        case AppLifecycleState.inactive:
-          break;
-        case AppLifecycleState.resumed:
-          Adjust.onResume();
-          break;
-        case AppLifecycleState.paused:
-          Adjust.onPause();
-          break;
-        case AppLifecycleState.suspending:
-          break;
-      }
-    });
+    switch (state) {
+      case AppLifecycleState.inactive:
+        break;
+      case AppLifecycleState.resumed:
+        Adjust.onResume();
+        break;
+      case AppLifecycleState.paused:
+        Adjust.onPause();
+        break;
+      case AppLifecycleState.suspending:
+        break;
+    }
   }
 }
 ```
