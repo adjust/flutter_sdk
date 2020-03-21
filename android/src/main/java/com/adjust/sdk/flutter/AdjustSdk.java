@@ -119,6 +119,9 @@ public class AdjustSdk implements MethodCallHandler {
             case "gdprForgetMe":
                 gdprForgetMe(result);
                 break;
+            case "disableThirdPartySharing":
+                disableThirdPartySharing(result);
+                break;
             case "addSessionCallbackParameter":
                 addSessionCallbackParameter(call, result);
                 break;
@@ -566,6 +569,11 @@ public class AdjustSdk implements MethodCallHandler {
 
     private void gdprForgetMe(final Result result) {
         Adjust.gdprForgetMe(applicationContext);
+        result.success(null);
+    }
+
+    private void disableThirdPartySharing(final Result result) {
+        Adjust.disableThirdPartySharing(applicationContext);
         result.success(null);
     }
 

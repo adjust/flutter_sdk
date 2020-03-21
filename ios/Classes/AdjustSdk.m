@@ -48,6 +48,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self sendFirstPackages:call withResult:result];
     } else if ([@"gdprForgetMe" isEqualToString:call.method]) {
         [self gdprForgetMe:call withResult:result];
+    } else if ([@"disableThirdPartySharing" isEqualToString:call.method]) {
+        [self disableThirdPartySharing:call withResult:result];
     } else if ([@"getAttribution" isEqualToString:call.method]) {
         [self getAttribution:call withResult:result];
     } else if ([@"getIdfa" isEqualToString:call.method]) {
@@ -292,6 +294,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 
 - (void)gdprForgetMe:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     [Adjust gdprForgetMe];
+    result(nil);
+}
+
+- (void)disableThirdPartySharing:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    [Adjust disableThirdPartySharing];
     result(nil);
 }
 
