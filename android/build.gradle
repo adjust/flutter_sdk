@@ -36,5 +36,5 @@ android {
 }
 
 dependencies {
-    implementation 'com.adjust.sdk:adjust-android:4.18.3'
+    implementation 'com.adjust.sdk:adjust-android:4.19.0'
 }
