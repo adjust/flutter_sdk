@@ -1,3 +1,11 @@
+### Version 4.19.0 (TBD)
+#### Added
+- Added `disableThirdPartySharing` SDK method
+
+#### Native SDKs
+- [iOS@v4.19.0][ios_sdk_v4.19.0]
+- [Android@4.19.0][android_sdk_v4.19.0]
+
 ### Version 4.18.1 (9th October 2019)
 #### Fixed
 - Fixed lack of `getAdid` method implementation in native iOS bridge (thanks to @HenriBeck).
