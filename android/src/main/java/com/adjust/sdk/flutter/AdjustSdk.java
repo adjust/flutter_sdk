@@ -232,6 +232,12 @@ public class AdjustSdk implements MethodCallHandler {
             adjustConfig.setDefaultTracker(defaultTracker);
         }
 
+        // External device ID.
+        if (configMap.containsKey("externalDeviceId")) {
+            String externalDeviceId = (String) configMap.get("externalDeviceId");
+            adjustConfig.setExternalDeviceId(externalDeviceId);
+        }
+
         // User agent.
         if (configMap.containsKey("userAgent")) {
             String userAgent = (String) configMap.get("userAgent");

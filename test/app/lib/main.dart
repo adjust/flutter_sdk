@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     initPlatformState();
 
-    String _address = '192.168.8.222';
+    String _address = '192.168.2.101';
     if (Platform.isAndroid) {
       String _protocol = 'https';
       String _port = '8443';
@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
 
     // Initialise test library.
     TestLib.init(_baseUrl, _controlUrl);
-    TestLib.doNotExitAfterEnd();
+    // TestLib.doNotExitAfterEnd();
     TestLib.setExecuteCommandHalder((final dynamic callArgs) {
       Command command = new Command(callArgs);
       print('[AdjustTestApp]: Executing command ${command.className}.${command.methodName}');

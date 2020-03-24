@@ -166,6 +166,10 @@ class CommandExecutor {
       adjustConfig.defaultTracker = _command.getFirstParameterValue('defaultTracker');
     }
 
+    if (_command.containsParameter('externalDeviceId')) {
+      adjustConfig.externalDeviceId = _command.getFirstParameterValue('externalDeviceId');
+    }
+
     if (_command.containsParameter('appSecret')) {
       List<dynamic> appSecretArray = _command.getParamteters('appSecret');
       bool appSecretValid = true;
@@ -200,6 +204,14 @@ class CommandExecutor {
 
     if (_command.containsParameter('sendInBackground')) {
       adjustConfig.sendInBackground = _command.getFirstParameterValue('sendInBackground') == 'true';
+    }
+
+    if (_command.containsParameter('allowiAdInfoReading')) {
+      adjustConfig.allowiAdInfoReading = _command.getFirstParameterValue('allowiAdInfoReading') == 'true';
+    }
+
+    if (_command.containsParameter('allowIdfaReading')) {
+      adjustConfig.allowIdfaReading = _command.getFirstParameterValue('allowIdfaReading') == 'true';
     }
 
     if (_command.containsParameter('userAgent')) {
