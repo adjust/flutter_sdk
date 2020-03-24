@@ -1,3 +1,17 @@
+### Version 4.21.0 (25th March 2021)
+#### Added
+- Added `disableThirdPartySharing` method to `Adjust` interface to allow disabling of data sharing with third parties outside of Adjust ecosystem.
+- Added support for signature library as a plugin.
+- Added more aggressive sending retry logic for install session package.
+- Added additional parameters to `ad_revenue` package payload.
+- Added external device ID support.
+
+#### Native SDKs
+- [iOS@v4.21.0][ios_sdk_v4.21.0]
+- [Android@4.21.0][android_sdk_v4.21.0]
+
+---
+
 ### Version 4.18.1 (9th October 2019)
 #### Fixed
 - Fixed lack of `getAdid` method implementation in native iOS bridge (thanks to @HenriBeck).
@@ -83,7 +97,8 @@
 [ios_sdk_v4.17.3]: https://github.com/adjust/ios_sdk/tree/v4.17.3
 [ios_sdk_v4.18.0]: https://github.com/adjust/ios_sdk/tree/v4.18.0
 [ios_sdk_v4.18.3]: https://github.com/adjust/ios_sdk/tree/v4.18.3
+[ios_sdk_v4.21.0]: https://github.com/adjust/ios_sdk/tree/v4.21.0
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
-[android_sdk_v4.18.3]: https://github.com/adjust/android_sdk/tree/v4.18.3
+[android_sdk_v4.21.0]: https://github.com/adjust/android_sdk/tree/v4.21.0

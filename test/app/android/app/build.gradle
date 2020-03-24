@@ -25,7 +25,7 @@ apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 29
 
     lintOptions {
         disable 'InvalidPackage'
@@ -35,10 +35,10 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.adjust.test.app"
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 29
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -55,9 +55,10 @@ flutter {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'com.google.android.gms:play-services-analytics:16.0.4'
-    implementation 'com.android.installreferrer:installreferrer:1.0'
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.google.android.gms:play-services-analytics:17.0.0'
+    implementation 'com.android.installreferrer:installreferrer:1.1.2'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.2'
 }

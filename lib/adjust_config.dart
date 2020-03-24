@@ -44,10 +44,13 @@ class AdjustConfig {
   bool isDeviceKnown;
   bool sendInBackground;
   bool eventBufferingEnabled;
+  bool allowiAdInfoReading;
+  bool allowIdfaReading;
   bool launchDeferredDeeplink;
   String sdkPrefix;
   String userAgent;
   String defaultTracker;
+  String externalDeviceId;
   String processName;
   AdjustLogLevel logLevel;
   AttributionCallback attributionCallback;
@@ -137,6 +140,9 @@ class AdjustConfig {
     if (defaultTracker != null) {
       configMap['defaultTracker'] = defaultTracker;
     }
+    if (externalDeviceId != null) {
+      configMap['externalDeviceId'] = externalDeviceId;
+    }
     if (isDeviceKnown != null) {
       configMap['isDeviceKnown'] = isDeviceKnown.toString();
     }
@@ -145,6 +151,12 @@ class AdjustConfig {
     }
     if (eventBufferingEnabled != null) {
       configMap['eventBufferingEnabled'] = eventBufferingEnabled.toString();
+    }
+    if (allowiAdInfoReading != null) {
+      configMap['allowiAdInfoReading'] = allowiAdInfoReading.toString();
+    }
+    if (allowIdfaReading != null) {
+      configMap['allowIdfaReading'] = allowIdfaReading.toString();
     }
     if (launchDeferredDeeplink != null) {
       configMap['launchDeferredDeeplink'] = launchDeferredDeeplink.toString();

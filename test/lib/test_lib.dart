@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2018-2020 Adjust GmbH. All rights reserved.
 //
 
 import 'dart:async';
@@ -12,37 +12,30 @@ import 'package:flutter/services.dart';
 typedef void ExecuteCommandHandler(final dynamic callArgs);
 
 class TestLib {
-  static const MethodChannel _channel = const MethodChannel('test_lib');
+  static const MethodChannel _channel = const MethodChannel('com.adjust.test.lib/api');
   static ExecuteCommandHandler _executeCommandHandler;
-
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
-  }
 
   static void setExecuteCommandHalder(ExecuteCommandHandler handler) {
     _executeCommandHandler = handler;
-  }
-
-  static void init(String baseUrl, String controlUrl) {
-    print('[TestLibrary]: Test library initialisation.');
-    
     _channel.setMethodCallHandler((MethodCall call) {
-      print('[TestLibrary]: Incoming method from native layer: ${call.method}');
-
+      print('[TestLibrary]: Channel com.adjust.test.lib/api came to life in Dart');
       try {
-        if (call.method == 'execute-method') {
-          if (_executeCommandHandler != null) {
-            _executeCommandHandler(call.arguments);
-          }
-        } else {
-          print('[Test Library]: Unknown method called: ' + call.method);
+        switch (call.method) {
+          case 'adj-test-execute':
+            if (_executeCommandHandler != null) {
+              _executeCommandHandler(call.arguments);
+            }
+            break;
+          default:
+            throw new UnsupportedError('[TestLibrary]: Received unknown native method: ${call.method}');
         }
       } catch (e) {
         print(e.toString());
       }
     });
+  }
 
+  static void init(String baseUrl, String controlUrl) {
     _channel.invokeMethod('init', {'baseUrl': baseUrl, 'controlUrl': controlUrl});
   }
 
@@ -59,14 +52,26 @@ class TestLib {
   }
 
   static void sendInfoToServer(String basePath) {
+    if (basePath == null) {
+      print('[TestLibrary]: Skip sending info to server with base path set to null.');
+      return;
+    }
     _channel.invokeMethod('sendInfoToServer', {'basePath': basePath});
   }
 
   static void addTest(String testName) {
+    if (testName == null) {
+      print('[TestLibrary]: Skip adding test with null value for the name.');
+      return;
+    }
     _channel.invokeMethod('addTest', {'testName': testName});
   }
 
   static void addTestDirectory(String testDirectory) {
+    if (testDirectory == null) {
+      print('[TestLibrary]: Skip adding test directory with null value for the name.');
+      return;
+    }
     _channel.invokeMethod('addTestDirectory', {'testDirectory': testDirectory});
   }
 

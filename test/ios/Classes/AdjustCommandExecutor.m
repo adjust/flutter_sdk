@@ -35,7 +35,7 @@
     [methodParams setObject:className forKey:@"className"];
     [methodParams setObject:methodName forKey:@"methodName"];
     [methodParams setObject:jsonParameters forKey:@"jsonParameters"];
-    [self.channel invokeMethod:@"execute-method" arguments:methodParams];
+    [self.channel invokeMethod:@"adj-test-execute" arguments:methodParams];
 }
 
 @end

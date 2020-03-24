@@ -48,6 +48,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self sendFirstPackages:call withResult:result];
     } else if ([@"gdprForgetMe" isEqualToString:call.method]) {
         [self gdprForgetMe:call withResult:result];
+    } else if ([@"disableThirdPartySharing" isEqualToString:call.method]) {
+        [self disableThirdPartySharing:call withResult:result];
     } else if ([@"getAttribution" isEqualToString:call.method]) {
         [self getAttribution:call withResult:result];
     } else if ([@"getIdfa" isEqualToString:call.method]) {
@@ -112,6 +114,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *logLevel = call.arguments[@"logLevel"];
     NSString *sdkPrefix = call.arguments[@"sdkPrefix"];
     NSString *defaultTracker = call.arguments[@"defaultTracker"];
+    NSString *externalDeviceId = call.arguments[@"externalDeviceId"];
     NSString *userAgent = call.arguments[@"userAgent"];
     NSString *secretId = call.arguments[@"secretId"];
     NSString *info1 = call.arguments[@"info1"];
@@ -122,6 +125,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *isDeviceKnown = call.arguments[@"isDeviceKnown"];
     NSString *eventBufferingEnabled = call.arguments[@"eventBufferingEnabled"];
     NSString *sendInBackground = call.arguments[@"sendInBackground"];
+    NSString *allowiAdInfoReading = call.arguments[@"allowiAdInfoReading"];
+    NSString *allowIdfaReading = call.arguments[@"allowIdfaReading"];
     NSString *dartAttributionCallback = call.arguments[@"attributionCallback"];
     NSString *dartSessionSuccessCallback = call.arguments[@"sessionSuccessCallback"];
     NSString *dartSessionFailureCallback = call.arguments[@"sessionFailureCallback"];
@@ -163,6 +168,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [adjustConfig setDefaultTracker:defaultTracker];
     }
 
+    // External device ID.
+    if ([self isFieldValid:externalDeviceId]) {
+        [adjustConfig setExternalDeviceId:externalDeviceId];
+    }
+
     // User agent.
     if ([self isFieldValid:userAgent]) {
         [adjustConfig setUserAgent:userAgent];
@@ -171,6 +181,16 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     // Background tracking.
     if ([self isFieldValid:sendInBackground]) {
         [adjustConfig setSendInBackground:[sendInBackground boolValue]];
+    }
+
+    // Allow iAd info reading.
+    if ([self isFieldValid:allowiAdInfoReading]) {
+        [adjustConfig setAllowiAdInfoReading:[allowiAdInfoReading boolValue]];
+    }
+
+    // Allow IDFA reading.
+    if ([self isFieldValid:allowIdfaReading]) {
+        [adjustConfig setAllowIdfaReading:[allowIdfaReading boolValue]];
     }
 
     // Set device known.
@@ -292,6 +312,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 
 - (void)gdprForgetMe:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     [Adjust gdprForgetMe];
+    result(nil);
+}
+
+- (void)disableThirdPartySharing:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    [Adjust disableThirdPartySharing];
     result(nil);
 }
 

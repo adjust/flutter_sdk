@@ -47,6 +47,7 @@ class CommandExecutor {
         case 'setPushToken': _setPushToken(); break;
         case 'openDeeplink': _openDeeplink(); break;
         case 'gdprForgetMe': _gdprForgetMe(); break;
+        case 'disableThirdPartySharing': _disableThirdPartySharing(); break;
         case 'trackAdRevenue': _trackAdRevenue(); break;
     }
   }
@@ -87,7 +88,7 @@ class CommandExecutor {
           testOptions['teardown'] = 'true';
           testOptions['basePath'] = _basePath;
           testOptions['gdprPath'] = _gdprPath;
-          // android specific
+          // Android specific
           testOptions['useTestConnectionOptions'] = 'true';
           testOptions['tryInstallReferrer'] = 'false';
         }
@@ -165,6 +166,10 @@ class CommandExecutor {
       adjustConfig.defaultTracker = _command.getFirstParameterValue('defaultTracker');
     }
 
+    if (_command.containsParameter('externalDeviceId')) {
+      adjustConfig.externalDeviceId = _command.getFirstParameterValue('externalDeviceId');
+    }
+
     if (_command.containsParameter('appSecret')) {
       List<dynamic> appSecretArray = _command.getParamteters('appSecret');
       bool appSecretValid = true;
@@ -199,6 +204,14 @@ class CommandExecutor {
 
     if (_command.containsParameter('sendInBackground')) {
       adjustConfig.sendInBackground = _command.getFirstParameterValue('sendInBackground') == 'true';
+    }
+
+    if (_command.containsParameter('allowiAdInfoReading')) {
+      adjustConfig.allowiAdInfoReading = _command.getFirstParameterValue('allowiAdInfoReading') == 'true';
+    }
+
+    if (_command.containsParameter('allowIdfaReading')) {
+      adjustConfig.allowIdfaReading = _command.getFirstParameterValue('allowIdfaReading') == 'true';
     }
 
     if (_command.containsParameter('userAgent')) {
@@ -415,6 +428,10 @@ class CommandExecutor {
 
   void _gdprForgetMe() {
     Adjust.gdprForgetMe();
+  }
+
+  void _disableThirdPartySharing() {
+    Adjust.disableThirdPartySharing();
   }
 
   void _addSessionCallbackParameter() {

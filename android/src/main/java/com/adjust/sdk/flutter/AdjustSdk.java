@@ -119,6 +119,9 @@ public class AdjustSdk implements MethodCallHandler {
             case "gdprForgetMe":
                 gdprForgetMe(result);
                 break;
+            case "disableThirdPartySharing":
+                disableThirdPartySharing(result);
+                break;
             case "addSessionCallbackParameter":
                 addSessionCallbackParameter(call, result);
                 break;
@@ -227,6 +230,12 @@ public class AdjustSdk implements MethodCallHandler {
         if (configMap.containsKey("defaultTracker")) {
             String defaultTracker = (String) configMap.get("defaultTracker");
             adjustConfig.setDefaultTracker(defaultTracker);
+        }
+
+        // External device ID.
+        if (configMap.containsKey("externalDeviceId")) {
+            String externalDeviceId = (String) configMap.get("externalDeviceId");
+            adjustConfig.setExternalDeviceId(externalDeviceId);
         }
 
         // User agent.
@@ -566,6 +575,11 @@ public class AdjustSdk implements MethodCallHandler {
 
     private void gdprForgetMe(final Result result) {
         Adjust.gdprForgetMe(applicationContext);
+        result.success(null);
+    }
+
+    private void disableThirdPartySharing(final Result result) {
+        Adjust.disableThirdPartySharing(applicationContext);
         result.success(null);
     }
 
