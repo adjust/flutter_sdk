@@ -20,9 +20,8 @@
 @implementation TestLibPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-    FlutterMethodChannel* channel = [FlutterMethodChannel
-                                     methodChannelWithName:@"test_lib"
-                                     binaryMessenger:[registrar messenger]];
+    FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:@"com.adjust.test.lib/api"
+                                                                binaryMessenger:[registrar messenger]];
     TestLibPlugin *instance = [[TestLibPlugin alloc] init];
     instance.channel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
@@ -35,9 +34,7 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"getPlatformVersion" isEqualToString:call.method]) {
-    result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
-  } else if ([@"init" isEqualToString:call.method]) {
+  if ([@"init" isEqualToString:call.method]) {
       [self init:call withResult:result];
   } else if ([@"startTestSession" isEqualToString:call.method]) {
       [self startTestSession:call withResult:result];

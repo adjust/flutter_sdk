@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2018-2020 Adjust GmbH. All rights reserved.
 //
 
 import 'dart:convert';
@@ -16,7 +16,7 @@ class Command {
   Map<dynamic, dynamic> _parameters;
 
   Command(dynamic map) {
-   try {
+    try {
       _className = map['className'];
       _methodName = map['methodName'];
 

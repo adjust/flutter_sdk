@@ -24,7 +24,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initPlatformState();
 
     String _address = '192.168.2.101';
     if (Platform.isAndroid) {
@@ -32,36 +31,26 @@ class _MyAppState extends State<MyApp> {
       String _port = '8443';
       _baseUrl = _protocol + '://' + _address + ':' + _port;
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
+      _controlUrl = 'ws://' + _address + ':1987';
     } else {
       String _protocol = 'http';
-      String _port = '8000';
+      String _port = '8080';
       _baseUrl = _protocol + '://' + _address + ':' + _port;
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
+      _controlUrl = 'ws://' + _address + ':1987';
     }
-    _controlUrl = 'ws://' + _address + ':1987';
 
     // Initialise command executor.
     _commandExecutor = new CommandExecutor(_baseUrl, _gdprUrl);
 
     // Initialise test library.
-    TestLib.init(_baseUrl, _controlUrl);
-    // TestLib.doNotExitAfterEnd();
     TestLib.setExecuteCommandHalder((final dynamic callArgs) {
+      print('[AdjustTestApp]: executeCommandHandler pinged in test app!');
       Command command = new Command(callArgs);
       print('[AdjustTestApp]: Executing command ${command.className}.${command.methodName}');
       _commandExecutor.executeCommand(command);
     });
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await TestLib.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
+    TestLib.init(_baseUrl, _controlUrl);
   }
 
   @override

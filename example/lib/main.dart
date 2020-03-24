@@ -56,8 +56,6 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       case AppLifecycleState.paused:
         Adjust.onPause();
         break;
-      case AppLifecycleState.suspending:
-        break;
     }
   }
 
@@ -192,6 +190,8 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       print('[Adjust]: Received deferred deeplink: ' + uri);
     };
 
+    config.externalDeviceId = 'random-external-device-id';
+
     // Add session callback parameters.
     Adjust.addSessionCallbackParameter('scp_foo_1', 'scp_bar');
     Adjust.addSessionCallbackParameter('scp_foo_2', 'scp_value');
@@ -254,7 +254,8 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
                 // Track partner event button.
                 Util.buildCupertinoButton('Track Partner Event',
-                    () => Adjust.trackEvent(Util.buildPartnerEvent())),
+                    // () => Adjust.trackEvent(Util.buildPartnerEvent())),
+                    () => Adjust.disableThirdPartySharing()),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // Get Google Advertising Id.

@@ -88,7 +88,7 @@ class CommandExecutor {
           testOptions['teardown'] = 'true';
           testOptions['basePath'] = _basePath;
           testOptions['gdprPath'] = _gdprPath;
-          // android specific
+          // Android specific
           testOptions['useTestConnectionOptions'] = 'true';
           testOptions['tryInstallReferrer'] = 'false';
         }
