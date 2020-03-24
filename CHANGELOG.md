@@ -1,4 +1,4 @@
-### Version 4.21.0 (24th March 2021)
+### Version 4.21.0 (25th March 2021)
 #### Added
 - Added `disableThirdPartySharing` method to `Adjust` interface to allow disabling of data sharing with third parties outside of Adjust ecosystem.
 - Added support for signature library as a plugin.

@@ -66,7 +66,7 @@ This is the Flutter SDK of Adjust™. You can read more about Adjust™ at [adju
    * [Event buffering](#af-event-buffering)
    * [Background tracking](#af-background-tracking)
    * [GDPR right to be forgotten](#af-gdpr-forget-me)
-   * [Disable third-party sharing](#disable-third-party-sharing)
+   * [Disable third-party sharing](#af-disable-third-party-sharing)
 
 ### License
 
@@ -899,7 +899,7 @@ Adjust.gdprForgetMe();
 
 Upon receiving this information, Adjust will erase the user's data and the Adjust SDK will stop tracking the user. No requests from this device will be sent to Adjust in the future.
 
-### <a id="disable-third-party-sharing"></a>Disable third-party sharing
+### <a id="af-disable-third-party-sharing"></a>Disable third-party sharing
 
 You can now notify Adjust when a user has exercised their right to stop sharing their data with partners for marketing partners, but has allowed it to be shared for statistics purposes. 
 
