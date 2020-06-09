@@ -17,31 +17,34 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _baseUrl;
-  String _controlUrl;
   String _gdprUrl;
+  String _subscriptionUrl;
+  String _controlUrl;
   CommandExecutor _commandExecutor;
 
   @override
   void initState() {
     super.initState();
 
-    String _address = '192.168.2.101';
+    String _address = '192.168.86.32';
     if (Platform.isAndroid) {
       String _protocol = 'https';
       String _port = '8443';
       _baseUrl = _protocol + '://' + _address + ':' + _port;
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
+      _subscriptionUrl = _protocol + '://' + _address + ':' + _port;
       _controlUrl = 'ws://' + _address + ':1987';
     } else {
       String _protocol = 'http';
       String _port = '8080';
       _baseUrl = _protocol + '://' + _address + ':' + _port;
       _gdprUrl = _protocol + '://' + _address + ':' + _port;
+      _subscriptionUrl = _protocol + '://' + _address + ':' + _port;
       _controlUrl = 'ws://' + _address + ':1987';
     }
 
     // Initialise command executor.
-    _commandExecutor = new CommandExecutor(_baseUrl, _gdprUrl);
+    _commandExecutor = new CommandExecutor(_baseUrl, _gdprUrl, _subscriptionUrl);
 
     // Initialise test library.
     TestLib.setExecuteCommandHalder((final dynamic callArgs) {
@@ -62,16 +65,16 @@ class _MyAppState extends State<MyApp> {
         ),
         body: new CustomScrollView(shrinkWrap: true, slivers: <Widget>[
           new SliverPadding(
-              padding: const EdgeInsets.all(20.0),
-              sliver: new SliverList(
-                  delegate: new SliverChildListDelegate(<Widget>[
-                new Text('Running'),
-                buildCupertinoButton(
-                    'Start Test Session',
-                    () => Adjust.getSdkVersion().then((sdkVersion) {
-                      TestLib.startTestSession(sdkVersion);
-                    }))
-              ])))
+            padding: const EdgeInsets.all(20.0),
+            sliver: new SliverList(
+                delegate: new SliverChildListDelegate(<Widget>[
+              new Text('Running'),
+              buildCupertinoButton(
+                  'Start Test Session',
+                  () => Adjust.getSdkVersion().then((sdkVersion) {
+                    TestLib.startTestSession(sdkVersion);
+                  }))
+            ])))
         ]),
       ),
     );

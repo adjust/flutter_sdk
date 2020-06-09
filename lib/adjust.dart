@@ -13,6 +13,8 @@ import 'package:flutter/services.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
+import 'package:adjust_sdk/adjust_app_store_subscription.dart';
+import 'package:adjust_sdk/adjust_play_store_subscription.dart';
 
 class Adjust {
   static const String _sdkPrefix = 'flutter4.22.0';
@@ -141,6 +143,14 @@ class Adjust {
 
   static void trackAdRevenue(String source, String payload) {
     _channel.invokeMethod('trackAdRevenue', {'source': source, 'payload': payload});
+  }
+
+  static void trackAppStoreSubscription(AdjustAppStoreSubscription subscription) {
+    _channel.invokeMethod('trackAppStoreSubscription', subscription.toMap);
+  }
+
+  static void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription) {
+    _channel.invokeMethod('trackPlayStoreSubscription', subscription.toMap);
   }
 
   // For testing purposes only. Do not use in production.

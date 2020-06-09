@@ -18,7 +18,6 @@ class TestLib {
   static void setExecuteCommandHalder(ExecuteCommandHandler handler) {
     _executeCommandHandler = handler;
     _channel.setMethodCallHandler((MethodCall call) {
-      print('[TestLibrary]: Channel com.adjust.test.lib/api came to life in Dart');
       try {
         switch (call.method) {
           case 'adj-test-execute':
