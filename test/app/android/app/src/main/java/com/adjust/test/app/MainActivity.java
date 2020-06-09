@@ -1,10 +1,7 @@
 package com.adjust.test.app;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-
-import com.adjust.sdk.flutter.AdjustSdk;
 
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.GeneratedPluginRegistrant;

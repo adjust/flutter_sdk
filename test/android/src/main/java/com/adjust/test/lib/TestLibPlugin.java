@@ -8,6 +8,8 @@
 
 package com.adjust.test.lib;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import io.flutter.plugin.common.MethodCall;
@@ -80,12 +82,20 @@ public class TestLibPlugin implements MethodCallHandler {
         testLibrary = new TestLibrary(baseUrl, controlUrl, new ICommandJsonListener() {
             @Override
             public void executeCommand(String className, String methodName, String jsonParameters) {
-                HashMap<String, String> methodParams = new HashMap<>();
+                final HashMap<String, String> methodParams = new HashMap<String, String>();
                 methodParams.put("className", className);
-                //methodParams.put("methodName", methodName);
-                //methodParams.put("jsonParameters", jsonParameters);
+                methodParams.put("methodName", methodName);
+                methodParams.put("jsonParameters", jsonParameters);
+
                 log("Trying to call a method 'adj-test-execute' with: " + className + "." + methodName);
-                channel.invokeMethod(dartMethodName, null);
+                Handler mainHandler = new Handler(Looper.getMainLooper());
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        channel.invokeMethod(dartMethodName, methodParams);
+                    }
+                };
+                mainHandler.post(myRunnable);
             }
         });
         result.success(null);

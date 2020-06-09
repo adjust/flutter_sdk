@@ -66,6 +66,10 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self appWillOpenUrl:call withResult:result];
     } else if ([@"trackAdRevenue" isEqualToString:call.method]) {
         [self trackAdRevenue:call withResult:result];
+    } else if ([@"trackAppStoreSubscription" isEqualToString:call.method]) {
+        [self trackAppStoreSubscription:call withResult:result];
+    } else if ([@"trackPlayStoreSubscription" isEqualToString:call.method]) {
+        [self trackPlayStoreSubscription:call withResult:result];
     } else if ([@"setTestOptions" isEqualToString:call.method]) {
         [self setTestOptions:call withResult:result];
     } else if ([@"addSessionCallbackParameter" isEqualToString:call.method]) {
@@ -364,6 +368,82 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     [Adjust trackAdRevenue:source payload:dataPayload];
 }
 
+- (void)trackPlayStoreSubscription:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    result([FlutterError errorWithCode:@"non_existing_method"
+                               message:@"trackPlayStoreSubscription not available for iOS platform"
+                               details:nil]);
+}
+
+- (void)trackAppStoreSubscription:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *price = call.arguments[@"price"];
+    NSString *currency = call.arguments[@"currency"];
+    NSString *transactionId = call.arguments[@"transactionId"];
+    NSString *receipt = call.arguments[@"receipt"];
+    NSString *transactionDate = call.arguments[@"transactionDate"];
+    NSString *salesRegion = call.arguments[@"salesRegion"];
+    NSString *billingStore = call.arguments[@"billingStore"];
+    NSString *strCallbackParametersJson = call.arguments[@"callbackParameters"];
+    NSString *strPartnerParametersJson = call.arguments[@"partnerParameters"];
+
+    // Price.
+    NSDecimalNumber *priceValue;
+    if ([self isFieldValid:price]) {
+        priceValue = [NSDecimalNumber decimalNumberWithString:price];
+    }
+
+    // Receipt.
+    NSData *receiptValue;
+    if ([self isFieldValid:receipt]) {
+        receiptValue = [receipt dataUsingEncoding:NSUTF8StringEncoding];
+    }
+
+    // Create subscription object.
+    ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:priceValue
+                                                                  currency:currency
+                                                             transactionId:transactionId
+                                                                andReceipt:receiptValue];
+
+    // Transaction date.
+    if ([self isFieldValid:transactionDate]) {
+        NSTimeInterval transactionDateInterval = [transactionDate doubleValue];
+        NSDate *oTransactionDate = [NSDate dateWithTimeIntervalSince1970:transactionDateInterval];
+        [subscription setTransactionDate:oTransactionDate];
+    }
+
+    // Sales region.
+    if ([self isFieldValid:salesRegion]) {
+        [subscription setSalesRegion:salesRegion];
+    }
+
+    // Callback parameters.
+    if (strCallbackParametersJson != nil) {
+        NSData *callbackParametersData = [strCallbackParametersJson dataUsingEncoding:NSUTF8StringEncoding];
+        id callbackParametersJson = [NSJSONSerialization JSONObjectWithData:callbackParametersData
+                                                                    options:0
+                                                                      error:NULL];
+        for (id key in callbackParametersJson) {
+            NSString *value = [callbackParametersJson objectForKey:key];
+            [subscription addCallbackParameter:key value:value];
+        }
+    }
+
+    // Partner parameters.
+    if (strPartnerParametersJson != nil) {
+        NSData *partnerParametersData = [strPartnerParametersJson dataUsingEncoding:NSUTF8StringEncoding];
+        id partnerParametersJson = [NSJSONSerialization JSONObjectWithData:partnerParametersData
+                                                                   options:0
+                                                                     error:NULL];
+        for (id key in partnerParametersJson) {
+            NSString *value = [partnerParametersJson objectForKey:key];
+            [subscription addPartnerParameter:key value:value];
+        }
+    }
+
+    // Track event.
+    [Adjust trackSubscription:subscription];
+    result(nil);
+}
+
 - (void)getAttribution:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     ADJAttribution *attribution = [Adjust attribution];
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
@@ -402,8 +482,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     AdjustTestOptions *testOptions = [[AdjustTestOptions alloc] init];
     NSString *baseUrl = call.arguments[@"baseUrl"];
     NSString *gdprUrl = call.arguments[@"gdprUrl"];
-    NSString *basePath = call.arguments[@"basePath"];
-    NSString *gdprPath = call.arguments[@"gdprPath"];
+    NSString *subscriptionUrl = call.arguments[@"subscriptionUrl"];
+    NSString *extraPath = call.arguments[@"extraPath"];
     NSString *timerIntervalInMilliseconds = call.arguments[@"timerIntervalInMilliseconds"];
     NSString *timerStartInMilliseconds = call.arguments[@"timerStartInMilliseconds"];
     NSString *sessionIntervalInMilliseconds = call.arguments[@"sessionIntervalInMilliseconds"];
@@ -419,11 +499,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     if ([self isFieldValid:gdprUrl]) {
         testOptions.gdprUrl = gdprUrl;
     }
-    if ([self isFieldValid:basePath]) {
-        testOptions.basePath = basePath;
+    if ([self isFieldValid:subscriptionUrl]) {
+        testOptions.subscriptionUrl = subscriptionUrl;
     }
-    if ([self isFieldValid:gdprPath]) {
-        testOptions.gdprPath = gdprPath;
+    if ([self isFieldValid:extraPath]) {
+        testOptions.extraPath = extraPath;
     }
     if ([self isFieldValid:timerIntervalInMilliseconds]) {
         testOptions.timerIntervalInMilliseconds = [NSNumber numberWithLongLong:[timerIntervalInMilliseconds longLongValue]];

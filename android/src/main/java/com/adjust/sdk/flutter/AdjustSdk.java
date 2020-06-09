@@ -20,6 +20,7 @@ import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.AdjustPlayStoreSubscription;
 import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
@@ -142,6 +143,12 @@ public class AdjustSdk implements MethodCallHandler {
                 break;
             case "trackAdRevenue":
                 trackAdRevenue(call, result);
+                break;
+            case "trackAppStoreSubscription":
+                trackAppStoreSubscription(result);
+                break;
+            case "trackPlayStoreSubscription":
+                trackPlayStoreSubscription(call, result);
                 break;
             case "setTestOptions":
                 setTestOptions(call, result);
@@ -680,6 +687,108 @@ public class AdjustSdk implements MethodCallHandler {
         result.success(null);
     }
 
+    private void trackAppStoreSubscription(final Result result) {
+        result.error("0", "Error. No App Store subscription tracking for Android plaftorm!", null);
+    }
+
+    private void trackPlayStoreSubscription(final MethodCall call, final Result result) {
+        Map subscriptionMap = (Map) call.arguments;
+        if (subscriptionMap == null) {
+            return;
+        }
+
+        // Price.
+        long price = -1;
+        if (subscriptionMap.containsKey("price")) {
+            try {
+                price = Long.parseLong(subscriptionMap.get("price").toString());
+            } catch (NumberFormatException ignore) {}
+        }
+
+        // Currency.
+        String currency = null;
+        if (subscriptionMap.containsKey("currency")) {
+            currency = (String) subscriptionMap.get("currency");
+        }
+
+        // SKU.
+        String sku = null;
+        if (subscriptionMap.containsKey("sku")) {
+            sku = (String) subscriptionMap.get("sku");
+        }
+
+        // Order ID.
+        String orderId = null;
+        if (subscriptionMap.containsKey("orderId")) {
+            orderId = (String) subscriptionMap.get("orderId");
+        }
+
+        // Signature.
+        String signature = null;
+        if (subscriptionMap.containsKey("signature")) {
+            signature = (String) subscriptionMap.get("signature");
+        }
+
+        // Purchase token.
+        String purchaseToken = null;
+        if (subscriptionMap.containsKey("purchaseToken")) {
+            purchaseToken = (String) subscriptionMap.get("purchaseToken");
+        }
+
+        // Create subscription object.
+        AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+                price,
+                currency,
+                sku,
+                orderId,
+                signature,
+                purchaseToken);
+
+        // Purchase time.
+        if (subscriptionMap.containsKey("purchaseTime")) {
+            try {
+                long purchaseTime = Long.parseLong(subscriptionMap.get("purchaseTime").toString());
+                subscription.setPurchaseTime(purchaseTime);
+            } catch (NumberFormatException ignore) {}
+        }
+
+        // Callback parameters.
+        if (subscriptionMap.containsKey("callbackParameters")) {
+            String strCallbackParametersJson = (String) subscriptionMap.get("callbackParameters");
+            try {
+                JSONObject jsonCallbackParameters = new JSONObject(strCallbackParametersJson);
+                JSONArray callbackParametersKeys = jsonCallbackParameters.names();
+                for (int i = 0; i < callbackParametersKeys.length(); ++i) {
+                    String key = callbackParametersKeys.getString(i);
+                    String value = jsonCallbackParameters.getString(key);
+                    subscription.addCallbackParameter(key, value);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to parse subscription callback parameter! Details: " + e);
+            }
+        }
+
+        // Partner parameters.
+        if (subscriptionMap.containsKey("partnerParameters")) {
+            String strPartnerParametersJson = (String) subscriptionMap.get("partnerParameters");
+            try {
+                JSONObject jsonPartnerParameters = new JSONObject(strPartnerParametersJson);
+                JSONArray partnerParametersKeys = jsonPartnerParameters.names();
+                for (int i = 0; i < partnerParametersKeys.length(); ++i) {
+                    String key = partnerParametersKeys.getString(i);
+                    String value = jsonPartnerParameters.getString(key);
+                    subscription.addPartnerParameter(key, value);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to parse subscription partner parameter! Details: " + e);
+            }
+        }
+
+        // Track subscription.
+        Adjust.trackPlayStoreSubscription(subscription);
+        result.success(null);
+    }
+
     private void setTestOptions(final MethodCall call, final Result result) {
         AdjustTestOptions testOptions = new AdjustTestOptions();
         Map testOptionsMap = (Map) call.arguments;
@@ -690,11 +799,17 @@ public class AdjustSdk implements MethodCallHandler {
         if (testOptionsMap.containsKey("gdprUrl")) {
             testOptions.gdprUrl = (String) testOptionsMap.get("gdprUrl");
         }
+        if (testOptionsMap.containsKey("subscriptionUrl")) {
+            testOptions.subscriptionUrl = (String) testOptionsMap.get("subscriptionUrl");
+        }
         if (testOptionsMap.containsKey("basePath")) {
             testOptions.basePath = (String) testOptionsMap.get("basePath");
         }
         if (testOptionsMap.containsKey("gdprPath")) {
             testOptions.gdprPath = (String) testOptionsMap.get("gdprPath");
+        }
+        if (testOptionsMap.containsKey("subscriptionPath")) {
+            testOptions.subscriptionPath = (String) testOptionsMap.get("subscriptionPath");
         }
         if (testOptionsMap.containsKey("useTestConnectionOptions")) {
             testOptions.useTestConnectionOptions = testOptionsMap.get("useTestConnectionOptions").toString().equals("true");

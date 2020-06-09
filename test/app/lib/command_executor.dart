@@ -6,21 +6,28 @@ import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
+import 'package:adjust_sdk/adjust_app_store_subscription.dart';
+import 'package:adjust_sdk/adjust_play_store_subscription.dart';
 import 'package:test_lib/test_lib.dart';
 import 'package:test_app/command.dart';
+import 'dart:io' show Platform;
 
 class CommandExecutor {
   String _baseUrl;
   String _basePath;
   String _gdprUrl;
   String _gdprPath;
+  String _subscriptionUrl;
+  String _subscriptionPath;
+  String _extraPath;
   Command _command;
   Map<int, AdjustEvent> _savedEvents = new Map<int, AdjustEvent>();
   Map<int, AdjustConfig> _savedConfigs = new Map<int, AdjustConfig>();
 
-  CommandExecutor(String baseUrl, String gdprUrl) {
+  CommandExecutor(String baseUrl, String gdprUrl, String subscriptionUrl) {
     _baseUrl = baseUrl;
     _gdprUrl = gdprUrl;
+    _subscriptionUrl = subscriptionUrl;
   }
 
   void executeCommand(Command command) {
@@ -49,6 +56,7 @@ class CommandExecutor {
         case 'gdprForgetMe': _gdprForgetMe(); break;
         case 'disableThirdPartySharing': _disableThirdPartySharing(); break;
         case 'trackAdRevenue': _trackAdRevenue(); break;
+        case 'trackSubscription': _trackSubscription(); break;
     }
   }
 
@@ -56,9 +64,12 @@ class CommandExecutor {
     final dynamic testOptions = {};
     testOptions['baseUrl'] = _baseUrl;
     testOptions['gdprUrl'] = _gdprUrl;
+    testOptions['subscriptionUrl'] = _subscriptionUrl;
     if (_command.containsParameter('basePath')) {
       _basePath = _command.getFirstParameterValue('basePath');
       _gdprPath = _command.getFirstParameterValue('basePath');
+      _subscriptionPath = _command.getFirstParameterValue('basePath');
+      _extraPath = _command.getFirstParameterValue('basePath');
     }
     if (_command.containsParameter('timerInterval')) {
       testOptions['timerIntervalInMilliseconds'] = _command.getFirstParameterValue('timerInterval');
@@ -88,6 +99,8 @@ class CommandExecutor {
           testOptions['teardown'] = 'true';
           testOptions['basePath'] = _basePath;
           testOptions['gdprPath'] = _gdprPath;
+          testOptions['subscriptionPath'] = _subscriptionPath;
+          testOptions['extraPath'] = _extraPath;
           // Android specific
           testOptions['useTestConnectionOptions'] = 'true';
           testOptions['tryInstallReferrer'] = 'false';
@@ -107,6 +120,8 @@ class CommandExecutor {
           testOptions['teardown'] = 'true';
           testOptions['basePath'] = null;
           testOptions['gdprPath'] = null;
+          testOptions['subscriptionPath'] = null;
+          testOptions['extraPath'] = null;
           // Android specific.
           testOptions['useTestConnectionOptions'] = 'false';
         }
@@ -496,5 +511,80 @@ class CommandExecutor {
     String source = _command.getFirstParameterValue('adRevenueSource');
     String payload = _command.getFirstParameterValue('adRevenueJsonString');
     Adjust.trackAdRevenue(source, payload);
+  }
+
+  void _trackSubscription() {
+    if (Platform.isIOS) {
+      String price = _command.getFirstParameterValue('revenue');
+      String currency = _command.getFirstParameterValue('currency');
+      String transactionId = _command.getFirstParameterValue('transactionId');
+      String receipt = _command.getFirstParameterValue('receipt');
+      String transactionDate = _command.getFirstParameterValue('transactionDate');
+      String salesRegion = _command.getFirstParameterValue('salesRegion');
+
+      AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
+        price,
+        currency,
+        transactionId,
+        receipt);
+
+      subscription.setTransactionDate(transactionDate);
+      subscription.setSalesRegion(salesRegion);
+
+      if (_command.containsParameter('callbackParams')) {
+        List<dynamic> callbackParams = _command.getParamteters('callbackParams');
+        for (int i = 0; i < callbackParams.length; i = i + 2) {
+          String key = callbackParams[i];
+          String value = callbackParams[i + 1];
+          subscription.addCallbackParameter(key, value);
+        }
+      }
+      if (_command.containsParameter('partnerParams')) {
+        List<dynamic> partnerParams = _command.getParamteters('partnerParams');
+        for (int i = 0; i < partnerParams.length; i = i + 2) {
+          String key = partnerParams[i];
+          String value = partnerParams[i + 1];
+          subscription.addPartnerParameter(key, value);
+        }
+      }
+
+      Adjust.trackAppStoreSubscription(subscription);
+    } else if (Platform.isAndroid) {
+      String price = _command.getFirstParameterValue('revenue');
+      String currency = _command.getFirstParameterValue('currency');
+      String sku = _command.getFirstParameterValue('productId');
+      String signature = _command.getFirstParameterValue('receipt');
+      String purchaseToken = _command.getFirstParameterValue('purchaseToken');
+      String orderId = _command.getFirstParameterValue('transactionId');
+      String purchaseTime = _command.getFirstParameterValue('transactionDate');
+
+      AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+        price,
+        currency,
+        sku,
+        orderId,
+        signature,
+        purchaseToken);
+      subscription.setPurchaseTime(purchaseTime);
+
+      if (_command.containsParameter('callbackParams')) {
+        List<dynamic> callbackParams = _command.getParamteters('callbackParams');
+        for (int i = 0; i < callbackParams.length; i = i + 2) {
+          String key = callbackParams[i];
+          String value = callbackParams[i + 1];
+          subscription.addCallbackParameter(key, value);
+        }
+      }
+      if (_command.containsParameter('partnerParams')) {
+        List<dynamic> partnerParams = _command.getParamteters('partnerParams');
+        for (int i = 0; i < partnerParams.length; i = i + 2) {
+          String key = partnerParams[i];
+          String value = partnerParams[i + 1];
+          subscription.addPartnerParameter(key, value);
+        }
+      }
+
+      Adjust.trackPlayStoreSubscription(subscription);
+    }
   }
 }
