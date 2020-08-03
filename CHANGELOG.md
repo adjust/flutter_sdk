@@ -1,3 +1,13 @@
+### Version 4.22.1 (3rd August 2020)
+#### Changed
+- Changed referencing of native Android dependency from `implementation` to `api`.
+
+#### Native SDKs
+- [iOS@v4.22.1][ios_sdk_v4.22.1]
+- [Android@v4.22.0][android_sdk_v4.22.0]
+
+---
+
 ### Version 4.22.0 (10th June 2020)
 #### Added
 - Added subscription tracking feature.
