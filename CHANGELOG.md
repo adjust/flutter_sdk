@@ -1,3 +1,13 @@
+### Version 4.23.0 (TBD)
+#### Added
+- Added `setUrlStrategy` method in `AdjustConfig` to allow setting of URL strategy for specific market.
+
+#### Native SDKs
+- [iOS@v4.23.0][ios_sdk_v4.23.0]
+- [Android@v4.24.0][android_sdk_v4.24.0]
+
+---
+
 ### Version 4.22.1 (3rd August 2020)
 #### Changed
 - Changed referencing of native Android dependency from `implementation` to `api`.
@@ -123,8 +133,10 @@
 [ios_sdk_v4.18.3]: https://github.com/adjust/ios_sdk/tree/v4.18.3
 [ios_sdk_v4.21.0]: https://github.com/adjust/ios_sdk/tree/v4.21.0
 [ios_sdk_v4.22.1]: https://github.com/adjust/ios_sdk/tree/v4.22.1
+[ios_sdk_v4.23.0]: https://github.com/adjust/ios_sdk/tree/v4.23.0
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
 [android_sdk_v4.21.0]: https://github.com/adjust/android_sdk/tree/v4.21.0
 [android_sdk_v4.22.0]: https://github.com/adjust/android_sdk/tree/v4.22.0
+[android_sdk_v4.24.0]: https://github.com/adjust/android_sdk/tree/v4.24.0
