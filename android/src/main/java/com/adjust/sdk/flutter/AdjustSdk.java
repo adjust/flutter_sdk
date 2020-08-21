@@ -413,6 +413,19 @@ public class AdjustSdk implements MethodCallHandler {
             });
         }
 
+        // Url strategy.
+        if (configMap.containsKey("urlStrategy")) {
+            String urlStrategy = (String) configMap.get("urlStrategy");
+            adjustConfig.setUrlStrategy(urlStrategy);
+        }
+
+        // Preinstall tracking.
+        if (configMap.containsKey("preinstallTrackingEnabled")) {
+            String strPreinstallTrackingEnabled = (String) configMap.get("preinstallTrackingEnabled");
+            boolean preinstallTrackingEnabled = Boolean.valueOf(strPreinstallTrackingEnabled);
+            adjustConfig.setPreinstallTrackingEnabled(preinstallTrackingEnabled);
+        }
+
         // Start SDK.
         Adjust.onCreate(adjustConfig);
         Adjust.onResume();

@@ -331,6 +331,15 @@ class CommandExecutor {
         TestLib.sendInfoToServer(localBasePath);
       };
     }
+
+    if (_command.containsParameter('urlStrategy')) {
+      adjustConfig.urlStrategy = _command.getFirstParameterValue('urlStrategy');
+    }
+
+    if (_command.containsParameter('preinstallTrackingEnabled')) {
+      adjustConfig.preinstallTrackingEnabled = _command.getFirstParameterValue('preinstallTrackingEnabled') == 'true';
+    }
+
   }
 
   void _start() {

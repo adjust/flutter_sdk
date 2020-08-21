@@ -139,6 +139,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *dartDeferredDeeplinkCallback = call.arguments[@"deferredDeeplinkCallback"];
     BOOL allowSuppressLogLevel = NO;
     BOOL launchDeferredDeeplink = [call.arguments[@"launchDeferredDeeplink"] boolValue];
+    NSString *urlStrategy = call.arguments[@"urlStrategy"];
 
     // Suppress log level.
     if ([self isFieldValid:logLevel]) {
@@ -236,6 +237,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                                             deferredDeeplinkCallback:dartDeferredDeeplinkCallback
                                         shouldLaunchDeferredDeeplink:launchDeferredDeeplink
                                                     andMethodChannel:self.channel]];
+    }
+
+    // Url strategy.
+    if ([self isFieldValid:urlStrategy]) {
+        [adjustConfig setUrlStrategy:urlStrategy];
     }
 
     // Start SDK.

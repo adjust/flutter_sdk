@@ -59,6 +59,8 @@ class AdjustConfig {
   EventSuccessCallback eventSuccessCallback;
   EventFailureCallback eventFailureCallback;
   DeferredDeeplinkCallback deferredDeeplinkCallback;
+  String urlStrategy;
+  bool preinstallTrackingEnabled;
   
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
@@ -196,6 +198,12 @@ class AdjustConfig {
     }
     if (deferredDeeplinkCallback != null) {
       configMap['deferredDeeplinkCallback'] = _deferredDeeplinkCallbackName;
+    }
+    if (urlStrategy != null) {
+      configMap['urlStrategy'] = urlStrategy;
+    }
+    if (preinstallTrackingEnabled != null) {
+      configMap['preinstallTrackingEnabled'] = preinstallTrackingEnabled.toString();
     }
 
     return configMap;
