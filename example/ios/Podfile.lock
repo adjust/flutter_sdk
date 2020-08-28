@@ -1,31 +1,31 @@
 PODS:
-  - Adjust (4.18.3):
-    - Adjust/Core (= 4.18.3)
-  - Adjust/Core (4.18.3)
-  - adjust_sdk (4.18.1):
-    - Adjust (~> 4.18.3)
+  - Adjust (4.23.0):
+    - Adjust/Core (= 4.23.0)
+  - Adjust/Core (4.23.0)
+  - adjust_sdk (4.23.0):
+    - Adjust (= 4.23.0)
     - Flutter
   - Flutter (1.0.0)
 
 DEPENDENCIES:
-  - adjust_sdk (from `Pods/.symlinks/plugins/adjust_sdk/ios`)
-  - Flutter (from `Pods/.symlinks/flutter/ios`)
+  - adjust_sdk (from `.symlinks/plugins/adjust_sdk/ios`)
+  - Flutter (from `Flutter`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - Adjust
 
 EXTERNAL SOURCES:
   adjust_sdk:
-    :path: Pods/.symlinks/plugins/adjust_sdk/ios
+    :path: ".symlinks/plugins/adjust_sdk/ios"
   Flutter:
-    :path: Pods/.symlinks/flutter/ios
+    :path: Flutter
 
 SPEC CHECKSUMS:
-  Adjust: fef133f0bf610d439953b50306372c68c625d7e9
-  adjust_sdk: 16e632342b0ef7a1b847e2da7779e93fda3a1449
+  Adjust: 552e4f9bbc77501b2000f483491b20642081749a
+  adjust_sdk: 66801d7bb9e2b5a7fa23eeeb248faca5b821aab3
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
 
-PODFILE CHECKSUM: 13dcf421f4da2e937a57e8ba760ed880beae536f
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 
-COCOAPODS: 1.7.4
+COCOAPODS: 1.9.3

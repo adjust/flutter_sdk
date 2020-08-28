@@ -8,7 +8,9 @@ import 'package:test_app/command.dart';
 import 'package:test_app/command_executor.dart';
 import 'package:adjust_sdk/adjust.dart';
 
-void main() => runApp(new MyApp());
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override

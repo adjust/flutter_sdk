@@ -70,6 +70,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self trackAppStoreSubscription:call withResult:result];
     } else if ([@"trackPlayStoreSubscription" isEqualToString:call.method]) {
         [self trackPlayStoreSubscription:call withResult:result];
+    } else if ([@"requestTrackingAuthorizationWithCompletionHandler" isEqualToString:call.method]) {
+        [self requestTrackingAuthorizationWithCompletionHandler:call withResult:result];
     } else if ([@"setTestOptions" isEqualToString:call.method]) {
         [self setTestOptions:call withResult:result];
     } else if ([@"addSessionCallbackParameter" isEqualToString:call.method]) {
@@ -131,6 +133,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *sendInBackground = call.arguments[@"sendInBackground"];
     NSString *allowiAdInfoReading = call.arguments[@"allowiAdInfoReading"];
     NSString *allowIdfaReading = call.arguments[@"allowIdfaReading"];
+    NSString *skAdNetworkHandling = call.arguments[@"skAdNetworkHandling"];
     NSString *dartAttributionCallback = call.arguments[@"attributionCallback"];
     NSString *dartSessionSuccessCallback = call.arguments[@"sessionSuccessCallback"];
     NSString *dartSessionFailureCallback = call.arguments[@"sessionFailureCallback"];
@@ -139,6 +142,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *dartDeferredDeeplinkCallback = call.arguments[@"deferredDeeplinkCallback"];
     BOOL allowSuppressLogLevel = NO;
     BOOL launchDeferredDeeplink = [call.arguments[@"launchDeferredDeeplink"] boolValue];
+    NSString *urlStrategy = call.arguments[@"urlStrategy"];
 
     // Suppress log level.
     if ([self isFieldValid:logLevel]) {
@@ -196,6 +200,13 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     if ([self isFieldValid:allowIdfaReading]) {
         [adjustConfig setAllowIdfaReading:[allowIdfaReading boolValue]];
     }
+    
+    // SKAdNetwork handling.
+    if ([self isFieldValid:skAdNetworkHandling]) {
+        if ([skAdNetworkHandling boolValue] == NO) {
+            [adjustConfig deactivateSKAdNetworkHandling];
+        }
+    }
 
     // Set device known.
     if ([self isFieldValid:isDeviceKnown]) {
@@ -236,6 +247,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                                             deferredDeeplinkCallback:dartDeferredDeeplinkCallback
                                         shouldLaunchDeferredDeeplink:launchDeferredDeeplink
                                                     andMethodChannel:self.channel]];
+    }
+
+    // Url strategy.
+    if ([self isFieldValid:urlStrategy]) {
+        [adjustConfig setUrlStrategy:urlStrategy];
     }
 
     // Start SDK.
@@ -381,7 +397,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *receipt = call.arguments[@"receipt"];
     NSString *transactionDate = call.arguments[@"transactionDate"];
     NSString *salesRegion = call.arguments[@"salesRegion"];
-    NSString *billingStore = call.arguments[@"billingStore"];
+    // NSString *billingStore = call.arguments[@"billingStore"];
     NSString *strCallbackParametersJson = call.arguments[@"callbackParameters"];
     NSString *strPartnerParametersJson = call.arguments[@"partnerParameters"];
 
@@ -476,6 +492,12 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 - (void)getSdkVersion:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *sdkVersion = [Adjust sdkVersion];
     result(sdkVersion);
+}
+
+- (void)requestTrackingAuthorizationWithCompletionHandler:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    [Adjust requestTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
+        result([NSNumber numberWithUnsignedLong:status]);
+    }];
 }
 
 - (void)setTestOptions:(FlutterMethodCall *)call withResult:(FlutterResult)result {

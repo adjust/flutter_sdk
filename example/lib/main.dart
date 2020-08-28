@@ -11,25 +11,55 @@ import 'package:adjust_sdk/adjust_session_success.dart';
 import 'util.dart';
 
 void main() {
-  runApp(new AdjustExampleApp());
+  runApp(MyApp());
 }
 
-class AdjustExampleApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'Adjust Flutter Example App',
-      home: new MainScreen(),
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // Try running your application with "flutter run". You'll see the
+        // application has a blue toolbar. Then, without quitting the app, try
+        // changing the primarySwatch below to Colors.green and then invoke
+        // "hot reload" (press "r" in the console where you ran "flutter run",
+        // or simply save your changes to "hot reload" in a Flutter IDE).
+        // Notice that the counter didn't reset back to zero; the application
+        // is not restarted.
+        primarySwatch: Colors.blue,
+        // This makes the visual density adapt to the platform that you run
+        // the app on. For desktop platforms, the controls will be smaller and
+        // closer together (more dense) than on mobile platforms.
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MainScreen extends StatefulWidget {
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key, this.title}) : super(key: key);
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+
+  final String title;
+
   @override
-  State createState() => new MainScreenState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool _isSdkEnabled = true;
 
   @override
@@ -63,13 +93,15 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   initPlatformState() async {
     AdjustConfig config = new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
     config.logLevel = AdjustLogLevel.verbose;
-    config.isDeviceKnown = false;
+    // config.isDeviceKnown = false;
     // config.defaultTracker = 'abc123';
     // config.processName = 'com.adjust.examples';
     // config.sendInBackground = true;
     // config.eventBufferingEnabled = true;
     // config.delayStart = 6.0;
     // config.setAppSecret(1000, 1, 2, 3, 4);
+    // config.externalDeviceId = 'random-external-device-id';
+    // config.deactivateSKAdNetworkHandling();
 
     config.attributionCallback = (AdjustAttribution attributionChangedData) {
       print('[Adjust]: Attribution changed!');
@@ -190,8 +222,6 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       print('[Adjust]: Received deferred deeplink: ' + uri);
     };
 
-    config.externalDeviceId = 'random-external-device-id';
-
     // Add session callback parameters.
     Adjust.addSessionCallbackParameter('scp_foo_1', 'scp_bar');
     Adjust.addSessionCallbackParameter('scp_foo_2', 'scp_value');
@@ -210,19 +240,31 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     // Clear all session partner parameters.
     Adjust.resetSessionPartnerParameters();
 
+    // Ask for tracking consent.
+    Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
+      print('[Adjust]: Authorization status update!');
+      switch (status) {
+        case 0:
+          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined');
+          break;
+        case 1:
+          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted');
+          break;
+        case 2:
+          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied');
+          break;
+        case 3:
+          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized');
+          break;
+      }
+    });
+
     // Start SDK.
     Adjust.start(config);
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(title: new Text('Adjust Flutter Example App')),
-      body: _buildMainContent(),
-    );
-  }
-
-  _buildMainContent() {
     return new CustomScrollView(
       shrinkWrap: true,
       slivers: <Widget>[

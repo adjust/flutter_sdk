@@ -17,7 +17,7 @@ import 'package:adjust_sdk/adjust_app_store_subscription.dart';
 import 'package:adjust_sdk/adjust_play_store_subscription.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter4.22.1';
+  static const String _sdkPrefix = 'flutter4.23.0';
   static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
 
   static void start(AdjustConfig config) {
@@ -105,6 +105,11 @@ class Adjust {
     } catch (e) {
       return null;
     }
+  }
+
+  static Future<num> requestTrackingAuthorizationWithCompletionHandler() async {
+    final num status = await _channel.invokeMethod('requestTrackingAuthorizationWithCompletionHandler');
+    return status;
   }
 
   static Future<AdjustAttribution> getAttribution() async {

@@ -15,6 +15,8 @@ This is the Flutter SDK of Adjust™. You can read more about Adjust™ at [adju
       * [[Android] Install referrer](#qs-install-referrer)
          * [[Android] Google Play Referrer API](#qs-gpr-api)
          * [[Android] Google Play Store intent](#qs-gps-intent)
+         * [[Android] Huawei Referrer API](#qs-hr-api)
+         * [[iOS] Link additional frameworks](#qs-ios-frameworks)
    * [Integrate the SDK into your app](#qs-integrate-sdk)
       * [Basic setup](#qs-basic-setup)
       * [Session tracking](#qs-session-tracking)
@@ -51,6 +53,9 @@ This is the Flutter SDK of Adjust™. You can read more about Adjust™ at [adju
 
 ### Additional features
 
+   * [AppTrackingTransparency framework](#af-att-framework)
+      * [App-tracking authorisation wrapper](#af-ata-wrapper)
+   * [SKAdNetwork framework](#af-skadn-framework)
    * [Subscription tracking](#af-subscription-tracking)
    * [Push token (uninstall tracking)](#af-push-token)
    * [Attribution callback](#af-attribution-callback)
@@ -88,7 +93,7 @@ You can add Adjust SDK to your Flutter app by adding following to your `pubspec.
 
 ```yaml
 dependencies:
-  adjust_sdk: ^4.22.1
+  adjust_sdk: ^4.23.0
 ```
 
 Then navigate to your project in the terminal and run:
@@ -187,6 +192,22 @@ The Google Play Store `INSTALL_REFERRER` intent should be captured with a broadc
 We use this broadcast receiver to retrieve the install referrer and pass it to our backend.
 
 If you are already using a different broadcast receiver for the `INSTALL_REFERRER` intent, follow [these instructions][multiple-receivers] to add the Adjust broadcast receiver.
+
+#### <a id="qs-hr-api"></a>[Android] Huawei Referrer API
+
+As of v4.22.0, the Adjust SDK supports install tracking on Huawei devices with Huawei App Gallery version 10.4 and higher. No additional integration steps are needed to start using the Huawei Referrer API.
+
+#### <a id="qs-ios-frameworks"></a>[iOS] Link additional frameworks
+
+Make sure that following iOS frameworks are linked with your iOS app:
+
+* `iAd.framework` - in case you are running iAd campaigns
+* `AdSupport.framework` - for reading iOS Advertising Id (IDFA)
+* `CoreTelephony.framework` - for reading MCC and MNC information
+* `StoreKit.framework` - for communication with SKAdNetwork framework
+* `AppTrackingTransparency.framework` - to ask for user's consent to be tracked and obtain status of that consent
+
+If you are not running any iAd campaigns, you can feel free to remove the `iAd.framework` dependency. If you don't use SKAdNetwork framework, feel free to remove `StoreKit.framework` dependency (unless you need it for something else).
 
 ### <a id="qs-integrate-sdk"></a>Integrate the SDK into your app
 
@@ -595,6 +616,69 @@ In this case, this will make the Adjust SDK not send the initial install session
 ### <a id="af"></a> Additional features
 
 Once you have integrated the Adjust SDK into your project, you can take advantage of the following features.
+
+### <a id="af-att-framework"></a>AppTrackingTransparency framework
+
+**Note**: This feature exists only in iOS platform.
+
+For each package sent, the Adjust backend receives one of the following four (4) states of consent for access to app-related data that can be used for tracking the user or the device:
+
+- Authorized
+- Denied
+- Not Determined
+- Restricted
+
+After a device receives an authorization request to approve access to app-related data, which is used for user device tracking, the returned status will either be Authorized or Denied.
+
+Before a device receives an authorization request for access to app-related data, which is used for tracking the user or device, the returned status will be Not Determined.
+
+If authorization to use app tracking data is restricted, the returned status will be Restricted.
+
+The SDK has a built-in mechanism to receive an updated status after a user responds to the pop-up dialog, in case you don't want to customize your displayed dialog pop-up. To conveniently and efficiently communicate the new state of consent to the backend, Adjust SDK offers a wrapper around the app tracking authorization method described in the following chapter, App-tracking authorization wrapper.
+
+### <a id="af-ata-wrapper"></a>App-tracking authorisation wrapper
+
+**Note**: This feature exists only in iOS platform.
+
+Adjust SDK offers the possibility to use it for requesting user authorization in accessing their app-related data. Adjust SDK has a wrapper built on top of the [requestTrackingAuthorizationWithCompletionHandler:](https://developer.apple.com/documentation/apptrackingtransparency/attrackingmanager/3547037-requesttrackingauthorizationwith?language=objc) method, where you can as well define the callback method to get information about a user's choice. Also, with the use of this wrapper, as soon as a user responds to the pop-up dialog, it's then communicated back using your callback method. The SDK will also inform the backend of the user's choice. Integer value will be delivered via your callback method with the following meaning:
+
+- 0: `ATTrackingManagerAuthorizationStatusNotDetermined`
+- 1: `ATTrackingManagerAuthorizationStatusRestricted`
+- 2: `ATTrackingManagerAuthorizationStatusDenied`
+- 3: `ATTrackingManagerAuthorizationStatusAuthorized`
+
+To use this wrapper, you can call it as such:
+
+```dart
+Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
+  switch (status) {
+    case 0:
+      // ATTrackingManagerAuthorizationStatusNotDetermined case
+      break;
+    case 1:
+      // ATTrackingManagerAuthorizationStatusRestricted case
+      break;
+    case 2:
+      // ATTrackingManagerAuthorizationStatusDenied case
+      break;
+    case 3:
+      // ATTrackingManagerAuthorizationStatusAuthorized case
+      break;
+  }
+});
+```
+
+### <a id="af-skadn-framework"></a>SKAdNetwork framework
+
+**Note**: This feature exists only in iOS platform.
+
+If you have implemented the Adjust SDK v4.23.0 or above and your app is running on iOS 14, the communication with SKAdNetwork will be set on by default, although you can choose to turn it off. When set on, Adjust automatically registers for SKAdNetwork attribution when the SDK is initialized. If events are set up in the Adjust dashboard to receive conversion values, the Adjust backend sends the conversion value data to the SDK. The SDK then sets the conversion value. After Adjust receives the SKAdNetwork callback data, it is then displayed in the dashboard.
+
+In case you don't want the Adjust SDK to automatically communicate with SKAdNetwork, you can disable that by calling the following method on configuration object:
+
+```dart
+adjustConfig.deactivateSKAdNetworkHandling();
+```
 
 ### <a id="af-subscription-tracking"></a>Subscription tracking
 

@@ -150,6 +150,9 @@ public class AdjustSdk implements MethodCallHandler {
             case "trackPlayStoreSubscription":
                 trackPlayStoreSubscription(call, result);
                 break;
+            case "requestTrackingAuthorizationWithCompletionHandler":
+                requestTrackingAuthorizationWithCompletionHandler(result);
+                break;
             case "setTestOptions":
                 setTestOptions(call, result);
                 break;
@@ -184,7 +187,7 @@ public class AdjustSdk implements MethodCallHandler {
         // Suppress log level.
         if (configMap.containsKey("logLevel")) {
             logLevel = (String) configMap.get("logLevel");
-            if (logLevel.equals("suppress")) {
+            if (logLevel != null && logLevel.equals("suppress")) {
                 isLogLevelSuppress = true;
             }
         }
@@ -201,29 +204,38 @@ public class AdjustSdk implements MethodCallHandler {
         // Log level.
         if (configMap.containsKey("logLevel")) {
             logLevel = (String) configMap.get("logLevel");
-            if (logLevel.equals("verbose")) {
-                adjustConfig.setLogLevel(LogLevel.VERBOSE);
-            } else if (logLevel.equals("debug")) {
-                adjustConfig.setLogLevel(LogLevel.DEBUG);
-            } else if (logLevel.equals("info")) {
-                adjustConfig.setLogLevel(LogLevel.INFO);
-            } else if (logLevel.equals("warn")) {
-                adjustConfig.setLogLevel(LogLevel.WARN);
-            } else if (logLevel.equals("error")) {
-                adjustConfig.setLogLevel(LogLevel.ERROR);
-            } else if (logLevel.equals("assert")) {
-                adjustConfig.setLogLevel(LogLevel.ASSERT);
-            } else if (logLevel.equals("suppress")) {
-                adjustConfig.setLogLevel(LogLevel.SUPRESS);
-            } else {
-                adjustConfig.setLogLevel(LogLevel.INFO);
+            if (logLevel != null) {
+                switch (logLevel) {
+                    case "verbose":
+                        adjustConfig.setLogLevel(LogLevel.VERBOSE);
+                        break;
+                    case "debug":
+                        adjustConfig.setLogLevel(LogLevel.DEBUG);
+                        break;
+                    case "warn":
+                        adjustConfig.setLogLevel(LogLevel.WARN);
+                        break;
+                    case "error":
+                        adjustConfig.setLogLevel(LogLevel.ERROR);
+                        break;
+                    case "assert":
+                        adjustConfig.setLogLevel(LogLevel.ASSERT);
+                        break;
+                    case "suppress":
+                        adjustConfig.setLogLevel(LogLevel.SUPRESS);
+                        break;
+                    case "info":
+                    default:
+                        adjustConfig.setLogLevel(LogLevel.INFO);
+                        break;
+                }
             }
         }
 
         // Event buffering.
         if (configMap.containsKey("eventBufferingEnabled")) {
             String eventBufferingEnabledString = (String) configMap.get("eventBufferingEnabled");
-            boolean eventBufferingEnabled = Boolean.valueOf(eventBufferingEnabledString);
+            boolean eventBufferingEnabled = Boolean.parseBoolean(eventBufferingEnabledString);
             adjustConfig.setEventBufferingEnabled(eventBufferingEnabled);
         }
 
@@ -254,14 +266,14 @@ public class AdjustSdk implements MethodCallHandler {
         // Background tracking.
         if (configMap.containsKey("sendInBackground")) {
             String strSendInBackground = (String) configMap.get("sendInBackground");
-            boolean sendInBackground = Boolean.valueOf(strSendInBackground);
+            boolean sendInBackground = Boolean.parseBoolean(strSendInBackground);
             adjustConfig.setSendInBackground(sendInBackground);
         }
 
         // Set device known.
         if (configMap.containsKey("isDeviceKnown")) {
             String strIsDeviceKnown = (String) configMap.get("isDeviceKnown");
-            boolean isDeviceKnown = Boolean.valueOf(strIsDeviceKnown);
+            boolean isDeviceKnown = Boolean.parseBoolean(strIsDeviceKnown);
             adjustConfig.setDeviceKnown(isDeviceKnown);
         }
 
@@ -269,7 +281,7 @@ public class AdjustSdk implements MethodCallHandler {
         if (configMap.containsKey("delayStart")) {
             String strDelayStart = (String) configMap.get("delayStart");
             if (isNumber(strDelayStart)) {
-                double delayStart = Double.valueOf(strDelayStart);
+                double delayStart = Double.parseDouble(strDelayStart);
                 adjustConfig.setDelayStart(delayStart);
             }
         }
@@ -298,119 +310,144 @@ public class AdjustSdk implements MethodCallHandler {
         // Launch deferred deep link.
         if (configMap.containsKey("launchDeferredDeeplink")) {
             String strLaunchDeferredDeeplink = (String) configMap.get("launchDeferredDeeplink");
-            this.launchDeferredDeeplink = strLaunchDeferredDeeplink.equals("true");
+            launchDeferredDeeplink = strLaunchDeferredDeeplink.equals("true");
         }
 
         // Attribution callback.
         if (configMap.containsKey("attributionCallback")) {
             final String dartMethodName = (String) configMap.get("attributionCallback");
-            adjustConfig.setOnAttributionChangedListener(new OnAttributionChangedListener() {
-                @Override
-                public void onAttributionChanged(AdjustAttribution adjustAttribution) {
-                    HashMap<String, String> adjustAttributionMap = new HashMap<String, String>();
-                    adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
-                    adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
-                    adjustAttributionMap.put("network", adjustAttribution.network);
-                    adjustAttributionMap.put("campaign", adjustAttribution.campaign);
-                    adjustAttributionMap.put("adgroup", adjustAttribution.adgroup);
-                    adjustAttributionMap.put("creative", adjustAttribution.creative);
-                    adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
-                    adjustAttributionMap.put("adid", adjustAttribution.adid);
-                    channel.invokeMethod(dartMethodName, adjustAttributionMap);
-                }
-            });
+            if (dartMethodName != null) {
+                adjustConfig.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+                    @Override
+                    public void onAttributionChanged(AdjustAttribution adjustAttribution) {
+                        HashMap<String, String> adjustAttributionMap = new HashMap<String, String>();
+                        adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
+                        adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
+                        adjustAttributionMap.put("network", adjustAttribution.network);
+                        adjustAttributionMap.put("campaign", adjustAttribution.campaign);
+                        adjustAttributionMap.put("adgroup", adjustAttribution.adgroup);
+                        adjustAttributionMap.put("creative", adjustAttribution.creative);
+                        adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
+                        adjustAttributionMap.put("adid", adjustAttribution.adid);
+                        channel.invokeMethod(dartMethodName, adjustAttributionMap);
+                    }
+                });
+            }
         }
 
         // Session success callback.
         if (configMap.containsKey("sessionSuccessCallback")) {
             final String dartMethodName = (String) configMap.get("sessionSuccessCallback");
-            adjustConfig.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
-                @Override
-                public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess adjustSessionSuccess) {
-                    HashMap<String, String> adjustSessionSuccessMap = new HashMap<String, String>();
-                    adjustSessionSuccessMap.put("message", adjustSessionSuccess.message);
-                    adjustSessionSuccessMap.put("timestamp", adjustSessionSuccess.timestamp);
-                    adjustSessionSuccessMap.put("adid", adjustSessionSuccess.adid);
-                    if (adjustSessionSuccess.jsonResponse != null) {
-                        adjustSessionSuccessMap.put("jsonResponse", adjustSessionSuccess.jsonResponse.toString());
+            if (dartMethodName != null) {
+                adjustConfig.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+                    @Override
+                    public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess adjustSessionSuccess) {
+                        HashMap<String, String> adjustSessionSuccessMap = new HashMap<String, String>();
+                        adjustSessionSuccessMap.put("message", adjustSessionSuccess.message);
+                        adjustSessionSuccessMap.put("timestamp", adjustSessionSuccess.timestamp);
+                        adjustSessionSuccessMap.put("adid", adjustSessionSuccess.adid);
+                        if (adjustSessionSuccess.jsonResponse != null) {
+                            adjustSessionSuccessMap.put("jsonResponse", adjustSessionSuccess.jsonResponse.toString());
+                        }
+                        channel.invokeMethod(dartMethodName, adjustSessionSuccessMap);
                     }
-                    channel.invokeMethod(dartMethodName, adjustSessionSuccessMap);
-                }
-            });
+                });
+            }
         }
 
         // Session failure callback.
         if (configMap.containsKey("sessionFailureCallback")) {
             final String dartMethodName = (String) configMap.get("sessionFailureCallback");
-            adjustConfig.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
-                @Override
-                public void onFinishedSessionTrackingFailed(AdjustSessionFailure adjustSessionFailure) {
-                    HashMap<String, String> adjustSessionFailureMap = new HashMap<String, String>();
-                    adjustSessionFailureMap.put("message", adjustSessionFailure.message);
-                    adjustSessionFailureMap.put("timestamp", adjustSessionFailure.timestamp);
-                    adjustSessionFailureMap.put("adid", adjustSessionFailure.adid);
-                    adjustSessionFailureMap.put("willRetry", Boolean.toString(adjustSessionFailure.willRetry));
-                    if (adjustSessionFailure.jsonResponse != null) {
-                        adjustSessionFailureMap.put("jsonResponse", adjustSessionFailure.jsonResponse.toString());
+            if (dartMethodName != null) {
+                adjustConfig.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+                    @Override
+                    public void onFinishedSessionTrackingFailed(AdjustSessionFailure adjustSessionFailure) {
+                        HashMap<String, String> adjustSessionFailureMap = new HashMap<String, String>();
+                        adjustSessionFailureMap.put("message", adjustSessionFailure.message);
+                        adjustSessionFailureMap.put("timestamp", adjustSessionFailure.timestamp);
+                        adjustSessionFailureMap.put("adid", adjustSessionFailure.adid);
+                        adjustSessionFailureMap.put("willRetry", Boolean.toString(adjustSessionFailure.willRetry));
+                        if (adjustSessionFailure.jsonResponse != null) {
+                            adjustSessionFailureMap.put("jsonResponse", adjustSessionFailure.jsonResponse.toString());
+                        }
+                        channel.invokeMethod(dartMethodName, adjustSessionFailureMap);
                     }
-                    channel.invokeMethod(dartMethodName, adjustSessionFailureMap);
-                }
-            });
+                });
+            }
         }
 
         // Event success callback.
         if (configMap.containsKey("eventSuccessCallback")) {
             final String dartMethodName = (String) configMap.get("eventSuccessCallback");
-            adjustConfig.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
-                @Override
-                public void onFinishedEventTrackingSucceeded(AdjustEventSuccess adjustEventSuccess) {
-                    HashMap<String, String> adjustEventSuccessMap = new HashMap<String, String>();
-                    adjustEventSuccessMap.put("message", adjustEventSuccess.message);
-                    adjustEventSuccessMap.put("timestamp", adjustEventSuccess.timestamp);
-                    adjustEventSuccessMap.put("adid", adjustEventSuccess.adid);
-                    adjustEventSuccessMap.put("eventToken", adjustEventSuccess.eventToken);
-                    adjustEventSuccessMap.put("callbackId", adjustEventSuccess.callbackId);
-                    if (adjustEventSuccess.jsonResponse != null) {
-                        adjustEventSuccessMap.put("jsonResponse", adjustEventSuccess.jsonResponse.toString());
+            if (dartMethodName != null) {
+                adjustConfig.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+                    @Override
+                    public void onFinishedEventTrackingSucceeded(AdjustEventSuccess adjustEventSuccess) {
+                        HashMap<String, String> adjustEventSuccessMap = new HashMap<String, String>();
+                        adjustEventSuccessMap.put("message", adjustEventSuccess.message);
+                        adjustEventSuccessMap.put("timestamp", adjustEventSuccess.timestamp);
+                        adjustEventSuccessMap.put("adid", adjustEventSuccess.adid);
+                        adjustEventSuccessMap.put("eventToken", adjustEventSuccess.eventToken);
+                        adjustEventSuccessMap.put("callbackId", adjustEventSuccess.callbackId);
+                        if (adjustEventSuccess.jsonResponse != null) {
+                            adjustEventSuccessMap.put("jsonResponse", adjustEventSuccess.jsonResponse.toString());
+                        }
+                        channel.invokeMethod(dartMethodName, adjustEventSuccessMap);
                     }
-                    channel.invokeMethod(dartMethodName, adjustEventSuccessMap);
-                }
-            });
+                });
+            }
         }
 
         // Event failure callback.
         if (configMap.containsKey("eventFailureCallback")) {
             final String dartMethodName = (String) configMap.get("eventFailureCallback");
-            adjustConfig.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
-                @Override
-                public void onFinishedEventTrackingFailed(AdjustEventFailure adjustEventFailure) {
-                    HashMap<String, String> adjustEventFailureMap = new HashMap<String, String>();
-                    adjustEventFailureMap.put("message", adjustEventFailure.message);
-                    adjustEventFailureMap.put("timestamp", adjustEventFailure.timestamp);
-                    adjustEventFailureMap.put("adid", adjustEventFailure.adid);
-                    adjustEventFailureMap.put("eventToken", adjustEventFailure.eventToken);
-                    adjustEventFailureMap.put("callbackId", adjustEventFailure.callbackId);
-                    adjustEventFailureMap.put("willRetry", Boolean.toString(adjustEventFailure.willRetry));
-                    if (adjustEventFailure.jsonResponse != null) {
-                        adjustEventFailureMap.put("jsonResponse", adjustEventFailure.jsonResponse.toString());
+            if (dartMethodName != null) {
+                adjustConfig.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+                    @Override
+                    public void onFinishedEventTrackingFailed(AdjustEventFailure adjustEventFailure) {
+                        HashMap<String, String> adjustEventFailureMap = new HashMap<String, String>();
+                        adjustEventFailureMap.put("message", adjustEventFailure.message);
+                        adjustEventFailureMap.put("timestamp", adjustEventFailure.timestamp);
+                        adjustEventFailureMap.put("adid", adjustEventFailure.adid);
+                        adjustEventFailureMap.put("eventToken", adjustEventFailure.eventToken);
+                        adjustEventFailureMap.put("callbackId", adjustEventFailure.callbackId);
+                        adjustEventFailureMap.put("willRetry", Boolean.toString(adjustEventFailure.willRetry));
+                        if (adjustEventFailure.jsonResponse != null) {
+                            adjustEventFailureMap.put("jsonResponse", adjustEventFailure.jsonResponse.toString());
+                        }
+                        channel.invokeMethod(dartMethodName, adjustEventFailureMap);
                     }
-                    channel.invokeMethod(dartMethodName, adjustEventFailureMap);
-                }
-            });
+                });
+            }
         }
 
         // Deferred deep link callback.
         if (configMap.containsKey("deferredDeeplinkCallback")) {
             final String dartMethodName = (String) configMap.get("deferredDeeplinkCallback");
-            adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
-                @Override
-                public boolean launchReceivedDeeplink(Uri uri) {
-                    HashMap<String, String> uriParamsMap = new HashMap<String, String>();
-                    uriParamsMap.put("uri", uri.toString());
-                    channel.invokeMethod(dartMethodName, uriParamsMap);
-                    return launchDeferredDeeplink;
-                }
-            });
+            if (dartMethodName != null) {
+                adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+                    @Override
+                    public boolean launchReceivedDeeplink(Uri uri) {
+                        HashMap<String, String> uriParamsMap = new HashMap<String, String>();
+                        uriParamsMap.put("uri", uri.toString());
+                        channel.invokeMethod(dartMethodName, uriParamsMap);
+                        return launchDeferredDeeplink;
+                    }
+                });
+            }
+        }
+
+        // Url strategy.
+        if (configMap.containsKey("urlStrategy")) {
+            String urlStrategy = (String) configMap.get("urlStrategy");
+            adjustConfig.setUrlStrategy(urlStrategy);
+        }
+
+        // Preinstall tracking.
+        if (configMap.containsKey("preinstallTrackingEnabled")) {
+            String strPreinstallTrackingEnabled = (String) configMap.get("preinstallTrackingEnabled");
+            boolean preinstallTrackingEnabled = Boolean.parseBoolean(strPreinstallTrackingEnabled);
+            adjustConfig.setPreinstallTrackingEnabled(preinstallTrackingEnabled);
         }
 
         // Start SDK.
@@ -787,6 +824,10 @@ public class AdjustSdk implements MethodCallHandler {
         // Track subscription.
         Adjust.trackPlayStoreSubscription(subscription);
         result.success(null);
+    }
+
+    private void requestTrackingAuthorizationWithCompletionHandler(final Result result) {
+        result.error("0", "Error. No requestTrackingAuthorizationWithCompletionHandler for Android plaftorm!", null);
     }
 
     private void setTestOptions(final MethodCall call, final Result result) {
