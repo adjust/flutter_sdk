@@ -1,12 +1,11 @@
 name: adjust_sdk
 description: This is the Flutter SDK of Adjust™. You can read more about Adjust™ at adjust.com.
-author: Adjust GmbH <srdjan@adjust.com>
 homepage: https://github.com/adjust/flutter_sdk
 version: 4.23.0
 
 environment:
     sdk: ">=2.0.0 <3.0.0"
-    flutter: ">=0.1.4 <2.0.0"
+    flutter: ">=1.10.0 <2.0.0"
     
 dependencies:
   flutter:
@@ -15,6 +14,10 @@ dependencies:
 
 flutter:
   plugin:
-    androidPackage: com.adjust.sdk.flutter
-    iosPrefix: ADJ
-    pluginClass: AdjustSdk
+    platforms:
+      android:
+        package: com.adjust.sdk.flutter
+        pluginClass: AdjustSdk
+      ios:
+        iosPrefix: ADJ
+        pluginClass: AdjustSdk
