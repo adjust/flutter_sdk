@@ -6,7 +6,7 @@
 //  Copyright (c) 2018 Adjust GmbH. All rights reserved.
 //
 
-#import "TestLibPlugin.h"
+#import "TestlibPlugin.h"
 #import "AdjustCommandExecutor.h"
 
 @interface TestLibPlugin ()

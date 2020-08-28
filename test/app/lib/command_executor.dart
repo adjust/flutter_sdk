@@ -336,10 +336,9 @@ class CommandExecutor {
       adjustConfig.urlStrategy = _command.getFirstParameterValue('urlStrategy');
     }
 
-    if (_command.containsParameter('preinstallTrackingEnabled')) {
-      adjustConfig.preinstallTrackingEnabled = _command.getFirstParameterValue('preinstallTrackingEnabled') == 'true';
-    }
-
+    // if (_command.containsParameter('preinstallTrackingEnabled')) {
+    //   adjustConfig.preinstallTrackingEnabled = _command.getFirstParameterValue('preinstallTrackingEnabled') == // 'true';
+    // }
   }
 
   void _start() {
