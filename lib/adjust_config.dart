@@ -39,6 +39,7 @@ class AdjustConfig {
   num _secretId;
   String _appToken;
   AdjustEnvironment _environment;
+  bool _skAdNetworkHandling;
 
   double delayStart;
   bool isDeviceKnown;
@@ -51,6 +52,7 @@ class AdjustConfig {
   String userAgent;
   String defaultTracker;
   String externalDeviceId;
+  String urlStrategy;
   String processName;
   AdjustLogLevel logLevel;
   AttributionCallback attributionCallback;
@@ -59,11 +61,10 @@ class AdjustConfig {
   EventSuccessCallback eventSuccessCallback;
   EventFailureCallback eventFailureCallback;
   DeferredDeeplinkCallback deferredDeeplinkCallback;
-  String urlStrategy;
-  bool preinstallTrackingEnabled;
   
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
+    _skAdNetworkHandling = true;
   }
 
   void setAppSecret(num secretId, num info1, num info2, num info3, num info4) {
@@ -72,6 +73,10 @@ class AdjustConfig {
     _info2 = info2;
     _info3 = info3;
     _info4 = info4;
+  }
+
+  void deactivateSKAdNetworkHandling() {
+    _skAdNetworkHandling = false;
   }
 
   void _initCallbackHandlers() {
@@ -145,6 +150,9 @@ class AdjustConfig {
     if (externalDeviceId != null) {
       configMap['externalDeviceId'] = externalDeviceId;
     }
+    if (urlStrategy != null) {
+      configMap['urlStrategy'] = urlStrategy;
+    }
     if (isDeviceKnown != null) {
       configMap['isDeviceKnown'] = isDeviceKnown.toString();
     }
@@ -159,6 +167,9 @@ class AdjustConfig {
     }
     if (allowIdfaReading != null) {
       configMap['allowIdfaReading'] = allowIdfaReading.toString();
+    }
+    if (_skAdNetworkHandling != null) {
+      configMap['skAdNetworkHandling'] = _skAdNetworkHandling.toString();
     }
     if (launchDeferredDeeplink != null) {
       configMap['launchDeferredDeeplink'] = launchDeferredDeeplink.toString();
@@ -198,12 +209,6 @@ class AdjustConfig {
     }
     if (deferredDeeplinkCallback != null) {
       configMap['deferredDeeplinkCallback'] = _deferredDeeplinkCallbackName;
-    }
-    if (urlStrategy != null) {
-      configMap['urlStrategy'] = urlStrategy;
-    }
-    if (preinstallTrackingEnabled != null) {
-      configMap['preinstallTrackingEnabled'] = preinstallTrackingEnabled.toString();
     }
 
     return configMap;

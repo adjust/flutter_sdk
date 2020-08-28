@@ -107,6 +107,11 @@ class Adjust {
     }
   }
 
+  static Future<num> requestTrackingAuthorizationWithCompletionHandler() async {
+    final num status = await _channel.invokeMethod('requestTrackingAuthorizationWithCompletionHandler');
+    return status;
+  }
+
   static Future<AdjustAttribution> getAttribution() async {
     final Map attributionMap = await _channel.invokeMethod('getAttribution');
     return AdjustAttribution.fromMap(attributionMap);
