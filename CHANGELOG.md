@@ -1,6 +1,13 @@
-### Version 4.23.0 (TBD)
+### Version 4.23.0 (28th August 2020)
 #### Added
-- Added `setUrlStrategy` method in `AdjustConfig` to allow setting of URL strategy for specific market.
+- Added communication with SKAdNetwork framework by default on iOS 14.
+- Added method `deactivateSKAdNetworkHandling` method to `AdjustConfig` to switch off default communication with SKAdNetwork framework in iOS 14.
+- Added wrapper method `requestTrackingAuthorizationWithCompletionHandler` to `Adjust` to allow asking for user's consent to be tracked in iOS 14 and immediate propagation of user's choice to backend.
+- Added handling of new iAd framework error codes introduced in iOS 14.
+- Added sending of value of user's consent to be tracked with each package.
+- Added `setUrlStrategy` method to `AdjustConfig` class to allow selection of URL strategy for specific market.
+
+⚠️ **Note**: iOS 14 beta versions prior to 5 appear to have an issue when trying to use iAd framework API like described in [here](https://github.com/adjust/ios_sdk/issues/452). For testing of v4.23.0 version of SDK in iOS, please make sure you're using **iOS 14 beta 5 or later**.
 
 #### Native SDKs
 - [iOS@v4.23.0][ios_sdk_v4.23.0]
