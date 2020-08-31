@@ -19,5 +19,4 @@ flutter:
         package: com.adjust.sdk.flutter
         pluginClass: AdjustSdk
       ios:
-        iosPrefix: ADJ
         pluginClass: AdjustSdk

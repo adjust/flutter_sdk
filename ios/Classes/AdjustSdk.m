@@ -7,23 +7,23 @@
 //
 
 #import "AdjustSdk.h"
-#import "ADJSdkDelegate.h"
+#import "AdjustSdkDelegate.h"
 #import <Adjust/Adjust.h>
 
 static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 
-@interface ADJAdjustSdk ()
+@interface AdjustSdk ()
 
 @property (nonatomic, retain) FlutterMethodChannel *channel;
 
 @end
 
-@implementation ADJAdjustSdk
+@implementation AdjustSdk
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:CHANNEL_API_NAME
                                                                 binaryMessenger:[registrar messenger]];
-    ADJAdjustSdk *instance = [[ADJAdjustSdk alloc] init];
+    AdjustSdk *instance = [[AdjustSdk alloc] init];
     instance.channel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -239,14 +239,14 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         || dartEventFailureCallback != nil
         || dartDeferredDeeplinkCallback != nil) {
         [adjustConfig setDelegate:
-         [ADJSdkDelegate getInstanceWithSwizzleOfAttributionCallback:dartAttributionCallback
-                                              sessionSuccessCallback:dartSessionSuccessCallback
-                                              sessionFailureCallback:dartSessionFailureCallback
-                                                eventSuccessCallback:dartEventSuccessCallback
-                                                eventFailureCallback:dartEventFailureCallback
-                                            deferredDeeplinkCallback:dartDeferredDeeplinkCallback
-                                        shouldLaunchDeferredDeeplink:launchDeferredDeeplink
-                                                    andMethodChannel:self.channel]];
+         [AdjustSdkDelegate getInstanceWithSwizzleOfAttributionCallback:dartAttributionCallback
+                                                 sessionSuccessCallback:dartSessionSuccessCallback
+                                                 sessionFailureCallback:dartSessionFailureCallback
+                                                   eventSuccessCallback:dartEventSuccessCallback
+                                                   eventFailureCallback:dartEventFailureCallback
+                                               deferredDeeplinkCallback:dartDeferredDeeplinkCallback
+                                           shouldLaunchDeferredDeeplink:launchDeferredDeeplink
+                                                       andMethodChannel:self.channel]];
     }
 
     // Url strategy.
@@ -542,7 +542,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     if ([self isFieldValid:teardown]) {
         testOptions.teardown = [teardown boolValue];
         if (testOptions.teardown) {
-            [ADJSdkDelegate teardown];
+            [AdjustSdkDelegate teardown];
         }
     }
     if ([self isFieldValid:deleteState]) {
