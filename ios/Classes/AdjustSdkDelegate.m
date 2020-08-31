@@ -7,10 +7,10 @@
 //
 
 #import <objc/runtime.h>
-#import "ADJSdkDelegate.h"
+#import "AdjustSdkDelegate.h"
 
 static dispatch_once_t onceToken;
-static ADJSdkDelegate *defaultInstance = nil;
+static AdjustSdkDelegate *defaultInstance = nil;
 static NSString *dartAttributionCallback;
 static NSString *dartSessionSuccessCallback;
 static NSString *dartSessionFailureCallback;
@@ -18,7 +18,7 @@ static NSString *dartEventSuccessCallback;
 static NSString *dartEventFailureCallback;
 static NSString *dartDeferredDeeplinkCallback;
 
-@implementation ADJSdkDelegate
+@implementation AdjustSdkDelegate
 
 #pragma mark - Object lifecycle methods
 
@@ -42,7 +42,7 @@ static NSString *dartDeferredDeeplinkCallback;
                                  andMethodChannel:(FlutterMethodChannel *)channel {
     
     dispatch_once(&onceToken, ^{
-        defaultInstance = [[ADJSdkDelegate alloc] init];
+        defaultInstance = [[AdjustSdkDelegate alloc] init];
         
         // Do the swizzling where and if needed.
         if (swizzleAttributionCallback != nil) {

@@ -9,7 +9,7 @@
 #import <Flutter/Flutter.h>
 #import <Adjust/Adjust.h>
 
-@interface ADJSdkDelegate : NSObject<AdjustDelegate>
+@interface AdjustSdkDelegate : NSObject<AdjustDelegate>
 
 @property (nonatomic) BOOL shouldLaunchDeferredDeeplink;
 @property (nonatomic, weak) FlutterMethodChannel *channel;

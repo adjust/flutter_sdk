@@ -1,3 +1,14 @@
+### Version 4.23.1 (31st August 2020)
+#### Fixed
+- Removed `iosPrefix` from `pubspec.yaml`.
+- Removed `ADJ` prefix from Flutter iOS class names.
+
+#### Native SDKs
+- [iOS@v4.23.0][ios_sdk_v4.23.0]
+- [Android@v4.24.0][android_sdk_v4.24.0]
+
+---
+
 ### Version 4.23.0 (28th August 2020)
 #### Added
 - Added communication with SKAdNetwork framework by default on iOS 14.
