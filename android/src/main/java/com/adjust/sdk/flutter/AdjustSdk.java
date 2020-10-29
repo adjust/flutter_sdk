@@ -38,6 +38,9 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
@@ -46,15 +49,70 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import static com.adjust.sdk.flutter.AdjustUtils.*;
 
-public class AdjustSdk implements MethodCallHandler {
+public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandler {
     private static String TAG = "AdjustBridge";
     private static boolean launchDeferredDeeplink = true;
     private MethodChannel channel;
     private Context applicationContext;
+    private boolean v2Plugin;
+    private boolean v2Attached = false;
 
     AdjustSdk(MethodChannel channel, Context applicationContext) {
         this.channel = channel;
         this.applicationContext = applicationContext;
+
+        v2Plugin = false;
+    }
+
+    public AdjustSdk() {
+        v2Plugin = true;
+    }
+
+    // FlutterPlugin
+    @Override
+    public void onAttachedToEngine(FlutterPluginBinding binding) {
+        if (!v2Plugin) {
+            return;
+        }
+        if (v2Attached) {
+            return;
+        }
+
+        v2Attached = true;
+        applicationContext = binding.getApplicationContext();
+        channel = new MethodChannel(binding.getBinaryMessenger(), "com.adjust.sdk/api");
+        channel.setMethodCallHandler(this);
+    }
+
+    @Override
+    public void onDetachedFromEngine(FlutterPluginBinding binding) {
+        v2Attached = false;
+        applicationContext = null;
+        if (channel != null) {
+            channel.setMethodCallHandler(null);
+        }
+        channel = null;
+    }
+
+    // ActivityAware
+    @Override
+    public void onAttachedToActivity(ActivityPluginBinding binding) {
+        Adjust.onResume();
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(
+        ActivityPluginBinding binding)
+    {
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+        Adjust.onPause();
     }
 
     // Plugin registration.
