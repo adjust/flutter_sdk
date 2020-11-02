@@ -387,13 +387,15 @@ Once everything set up, inside of your native Android activity make a call to `a
 
 ```java
 import com.adjust.sdk.flutter.AdjustSdk;
+import io.flutter.embedding.android.FlutterActivity; // Used for post flutter 1.12 Android projects
+//import io.flutter.app.FlutterActivity; // Used for pre flutter 1.12 Android projects
 
 public class MainActivity extends FlutterActivity {
     // Either call make the call in onCreate.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GeneratedPluginRegistrant.registerWith(this);
+        // GeneratedPluginRegistrant.registerWith(this); Used only for pre flutter 1.12 Android projects
 
         Intent intent = getIntent();
         Uri data = intent.getData();
