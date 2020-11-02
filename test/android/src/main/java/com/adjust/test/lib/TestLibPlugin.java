@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -24,15 +25,49 @@ import com.adjust.test.TestLibrary;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestLibPlugin implements MethodCallHandler {
+public class TestLibPlugin implements FlutterPlugin, MethodCallHandler {
     private static String TAG = "TestLibPlugin";
     private TestLibrary testLibrary = null;
     private MethodChannel channel;
+    private boolean v2Plugin;
+    private boolean v2Attached = false;
 
     private TestLibPlugin(MethodChannel channel) {
         this.channel = channel;
+
+        v2Plugin = false;
     }
 
+    public TestLibPlugin() {
+        v2Plugin = true;
+    }
+
+    // FlutterPlugin
+    @Override
+    public void onAttachedToEngine(FlutterPluginBinding binding) {
+        if (!v2Plugin) {
+            return;
+        }
+        if (v2Attached) {
+            return;
+        }
+
+        v2Attached = true;
+
+        channel = new MethodChannel(binding.getBinaryMessenger(), "com.adjust.test.lib/api");
+        channel.setMethodCallHandler(this);
+    }
+
+    @Override
+    public void onDetachedFromEngine(FlutterPluginBinding binding) {
+        v2Attached = false;
+        if (channel != null) {
+            channel.setMethodCallHandler(null);
+        }
+        channel = null;
+    }
+
+    // Plugin registration.
     public static void registerWith(Registrar registrar) {
         final MethodChannel channel = new MethodChannel(registrar.messenger(), "com.adjust.test.lib/api");
         channel.setMethodCallHandler(new TestLibPlugin(channel));

@@ -1,15 +1,17 @@
 name: test_lib
 description: Flutter plugin for Adjust Testing Library. Intended exclusively for internal use.
-version: 1.0.0
+version: 1.0.1
 author: Serj (srdjan@adjust.com)
 homepage:
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ">=2.0.0 <3.0.0"
+  flutter: ">=1.10.0 <2.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  meta: ">=1.1.6 <2.0.0"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
