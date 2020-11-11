@@ -1,3 +1,13 @@
+### Version 4.23.2 (11th November 2020)
+#### Added
+- Added [Flutter 1.2 or later](https://github.com/flutter/flutter/wiki/Upgrading-pre-1.12-Android-projects) support for Android projects.
+
+#### Native SDKs
+- [iOS@v4.23.2][ios_sdk_v4.23.2]
+- [Android@v4.24.1][android_sdk_v4.24.1]
+
+---
+
 ### Version 4.23.1 (31st August 2020)
 #### Fixed
 - Removed `iosPrefix` from `pubspec.yaml`.
@@ -17,8 +27,6 @@
 - Added handling of new iAd framework error codes introduced in iOS 14.
 - Added sending of value of user's consent to be tracked with each package.
 - Added `setUrlStrategy` method to `AdjustConfig` class to allow selection of URL strategy for specific market.
-
-⚠️ **Note**: iOS 14 beta versions prior to 5 appear to have an issue when trying to use iAd framework API like described in [here](https://github.com/adjust/ios_sdk/issues/452). For testing of v4.23.0 version of SDK in iOS, please make sure you're using **iOS 14 beta 5 or later**.
 
 #### Native SDKs
 - [iOS@v4.23.0][ios_sdk_v4.23.0]
@@ -152,9 +160,11 @@
 [ios_sdk_v4.21.0]: https://github.com/adjust/ios_sdk/tree/v4.21.0
 [ios_sdk_v4.22.1]: https://github.com/adjust/ios_sdk/tree/v4.22.1
 [ios_sdk_v4.23.0]: https://github.com/adjust/ios_sdk/tree/v4.23.0
+[ios_sdk_v4.23.2]: https://github.com/adjust/ios_sdk/tree/v4.23.2
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
 [android_sdk_v4.21.0]: https://github.com/adjust/android_sdk/tree/v4.21.0
 [android_sdk_v4.22.0]: https://github.com/adjust/android_sdk/tree/v4.22.0
 [android_sdk_v4.24.0]: https://github.com/adjust/android_sdk/tree/v4.24.0
+[android_sdk_v4.24.1]: https://github.com/adjust/android_sdk/tree/v4.24.1
