@@ -2,7 +2,7 @@ PODS:
   - Adjust (4.23.2):
     - Adjust/Core (= 4.23.2)
   - Adjust/Core (4.23.2)
-  - adjust_sdk (4.23.2):
+  - adjust_sdk (4.23.3):
     - Adjust (= 4.23.2)
     - Flutter
   - Flutter (1.0.0)
@@ -23,7 +23,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Adjust: 2faf94752c2069c0bc68bc41c03d00175de4555f
-  adjust_sdk: 00967d6a6a8e6623a79f7c0244e4b481629f4347
+  adjust_sdk: 465ba0e8398b803e7e993bb829dd14037752a05a
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c

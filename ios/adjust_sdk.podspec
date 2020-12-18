@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = 'adjust_sdk'
-  s.version               = '4.23.2'
+  s.version               = '4.23.3'
   s.summary               = 'Adjust Flutter SDK for iOS platform'
   s.description           = <<-DESC
                             Adjust Flutter SDK for iOS platform.
