@@ -1,3 +1,13 @@
+### Version 4.23.3 (18th December 2020)
+#### Added
+- Added URL strategy constants to `AdjustConfig` for more straight forward feature usage.
+
+#### Native SDKs
+- [iOS@v4.23.2][ios_sdk_v4.23.2]
+- [Android@v4.24.1][android_sdk_v4.24.1]
+
+---
+
 ### Version 4.23.2 (11th November 2020)
 #### Added
 - Added [Flutter 1.2 or later](https://github.com/flutter/flutter/wiki/Upgrading-pre-1.12-Android-projects) support for Android projects.

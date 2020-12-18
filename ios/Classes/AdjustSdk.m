@@ -122,6 +122,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *defaultTracker = call.arguments[@"defaultTracker"];
     NSString *externalDeviceId = call.arguments[@"externalDeviceId"];
     NSString *userAgent = call.arguments[@"userAgent"];
+    NSString *urlStrategy = call.arguments[@"urlStrategy"];
     NSString *secretId = call.arguments[@"secretId"];
     NSString *info1 = call.arguments[@"info1"];
     NSString *info2 = call.arguments[@"info2"];
@@ -142,7 +143,6 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *dartDeferredDeeplinkCallback = call.arguments[@"deferredDeeplinkCallback"];
     BOOL allowSuppressLogLevel = NO;
     BOOL launchDeferredDeeplink = [call.arguments[@"launchDeferredDeeplink"] boolValue];
-    NSString *urlStrategy = call.arguments[@"urlStrategy"];
 
     // Suppress log level.
     if ([self isFieldValid:logLevel]) {
@@ -184,6 +184,15 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     // User agent.
     if ([self isFieldValid:userAgent]) {
         [adjustConfig setUserAgent:userAgent];
+    }
+
+    // URL strategy.
+    if ([self isFieldValid:urlStrategy]) {
+        if ([urlStrategy isEqualToString:@"china"]) {
+            [adjustConfig setUrlStrategy:ADJUrlStrategyChina];
+        } else if ([urlStrategy isEqualToString:@"india"]) {
+            [adjustConfig setUrlStrategy:ADJUrlStrategyIndia];
+        }
     }
 
     // Background tracking.
@@ -247,11 +256,6 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                                                deferredDeeplinkCallback:dartDeferredDeeplinkCallback
                                            shouldLaunchDeferredDeeplink:launchDeferredDeeplink
                                                        andMethodChannel:self.channel]];
-    }
-
-    // Url strategy.
-    if ([self isFieldValid:urlStrategy]) {
-        [adjustConfig setUrlStrategy:urlStrategy];
     }
 
     // Start SDK.

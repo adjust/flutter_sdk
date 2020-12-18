@@ -31,6 +31,8 @@ class AdjustConfig {
   static const String _eventSuccessCallbackName = 'adj-event-success';
   static const String _eventFailureCallbackName = 'adj-event-failure';
   static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
+  static const String UrlStrategyIndia = 'india';
+  static const String UrlStrategyChina = 'china';
 
   num _info1;
   num _info2;
