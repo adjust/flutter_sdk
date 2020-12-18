@@ -315,6 +315,16 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             adjustConfig.setExternalDeviceId(externalDeviceId);
         }
 
+        // URL strategy.
+        if (configMap.containsKey("urlStrategy")) {
+            String urlStrategy = (String) configMap.get("urlStrategy");
+            if (urlStrategy.equalsIgnoreCase("china")) {
+                adjustConfig.setUrlStrategy(AdjustConfig.URL_STRATEGY_CHINA);
+            } else if (urlStrategy.equalsIgnoreCase("india")) {
+                adjustConfig.setUrlStrategy(AdjustConfig.URL_STRATEGY_INDIA);
+            }
+        }
+
         // User agent.
         if (configMap.containsKey("userAgent")) {
             String userAgent = (String) configMap.get("userAgent");
@@ -495,12 +505,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             }
         }
 
-        // Url strategy.
-        if (configMap.containsKey("urlStrategy")) {
-            String urlStrategy = (String) configMap.get("urlStrategy");
-            adjustConfig.setUrlStrategy(urlStrategy);
-        }
-
+        // TODO: expose to dart
         // Preinstall tracking.
         if (configMap.containsKey("preinstallTrackingEnabled")) {
             String strPreinstallTrackingEnabled = (String) configMap.get("preinstallTrackingEnabled");
