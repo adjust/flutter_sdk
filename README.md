@@ -207,7 +207,7 @@ Make sure that following iOS frameworks are linked with your iOS app:
 * `StoreKit.framework` - for communication with SKAdNetwork framework
 * `AppTrackingTransparency.framework` - to ask for user's consent to be tracked and obtain status of that consent
 
-If you are not running any iAd campaigns, you can feel free to remove the `iAd.framework` dependency. If you don't use SKAdNetwork framework, feel free to remove `StoreKit.framework` dependency (unless you need it for something else).
+All of these frameworks are enabling certain SDK features, but they are not mandatory for SDK to work normally. With this in mind, you can set **Status** of each one of these frameworks to **Optional** in your **Project Settings → Build Phases → Link Binary With Libraries** section.
 
 ### <a id="qs-integrate-sdk"></a>Integrate the SDK into your app
 
@@ -1124,7 +1124,7 @@ Upon receiving this information, Adjust will block the sharing of that specific 
 
 The Adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2012-2018 Adjust GmbH, http://www.adjust.com
+Copyright (c) 2018-2021 Adjust GmbH, http://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
