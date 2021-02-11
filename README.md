@@ -93,7 +93,7 @@ You can add Adjust SDK to your Flutter app by adding following to your `pubspec.
 
 ```yaml
 dependencies:
-  adjust_sdk: ^4.23.3
+  adjust_sdk: ^4.26.0
 ```
 
 Then navigate to your project in the terminal and run:

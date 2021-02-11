@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'test_lib'
-  s.version          = '4.23.3'
+  s.version          = '4.26.0'
   s.summary          = 'Adjust test library Flutter plugin'
   s.description      = <<-DESC
 A new flutter plugin project.
