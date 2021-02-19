@@ -21,6 +21,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import com.adjust.test.ICommandJsonListener;
 import com.adjust.test.TestLibrary;
+import com.adjust.test_options.TestConnectionOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -96,6 +97,9 @@ public class TestLibPlugin implements FlutterPlugin, MethodCallHandler {
                 break;
             case "doNotExitAfterEnd":
                 doNotExitAfterEnd(result);
+                break;
+            case "setTestConnectionOptions":
+                setTestConnectionOptions(result);
                 break;
             default:
                 error("Not implemented method: " + call.method);
@@ -211,6 +215,16 @@ public class TestLibPlugin implements FlutterPlugin, MethodCallHandler {
         }
 
         testLibrary.doNotExitAfterEnd();
+        result.success(null);
+    }
+
+    private void setTestConnectionOptions(final Result result) {
+        if (testLibrary == null) {
+            result.error("0", "Test Library not initialized. Call 'init' method first.", null);
+            return;
+        }
+
+        TestConnectionOptions.setTestConnectionOptions();
         result.success(null);
     }
 

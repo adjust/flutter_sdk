@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018-2019 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2018-2021 Adjust GmbH. All rights reserved.
 //
 
 import 'package:flutter/services.dart';
@@ -33,6 +33,25 @@ class AdjustConfig {
   static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
   static const String UrlStrategyIndia = 'india';
   static const String UrlStrategyChina = 'china';
+  static const String AdRevenueSourceMopub = 'mopub';
+  static const String AdRevenueSourceAdmob = 'admob';
+  static const String AdRevenueSourceFbNativeAd = 'facebook_native_ad';
+  static const String AdRevenueSourceFbAudienceNetwork = 'facebook_audience_network';
+  static const String AdRevenueSourceIronsource = 'ironsource';
+  static const String AdRevenueSourceFyber = 'fyber';
+  static const String AdRevenueSourceAerserv = 'aerserv';
+  static const String AdRevenueSourceAppodeal = 'appodeal';
+  static const String AdRevenueSourceAdincube = 'adincube';
+  static const String AdRevenueSourceFusePowered = 'fusepowered';
+  static const String AdRevenueSourceAddaptr = 'addapptr';
+  static const String AdRevenueSourceMillenialMediation = 'millennial_mediation';
+  static const String AdRevenueSourceFlurry = 'flurry';
+  static const String AdRevenueSourceAdmost = 'admost';
+  static const String AdRevenueSourceDeltadna = 'deltadna';
+  static const String AdRevenueSourceUpsight = 'upsight';
+  static const String AdRevenueSourceUnityAds = 'unityads';
+  static const String AdRevenueSourceAdtoapp = 'adtoapp';
+  static const String AdRevenueSourceTapdaq = 'tapdaq';
 
   num _info1;
   num _info2;
@@ -48,8 +67,11 @@ class AdjustConfig {
   bool sendInBackground;
   bool eventBufferingEnabled;
   bool allowiAdInfoReading;
+  bool allowAdServicesInfoReading;
   bool allowIdfaReading;
   bool launchDeferredDeeplink;
+  bool needsCost;
+  bool preinstallTrackingEnabled;
   String sdkPrefix;
   String userAgent;
   String defaultTracker;
@@ -164,8 +186,17 @@ class AdjustConfig {
     if (eventBufferingEnabled != null) {
       configMap['eventBufferingEnabled'] = eventBufferingEnabled.toString();
     }
+    if (needsCost != null) {
+      configMap['needsCost'] = needsCost.toString();
+    }
+    if (preinstallTrackingEnabled != null) {
+      configMap['preinstallTrackingEnabled'] = preinstallTrackingEnabled.toString();
+    }
     if (allowiAdInfoReading != null) {
       configMap['allowiAdInfoReading'] = allowiAdInfoReading.toString();
+    }
+    if (allowAdServicesInfoReading != null) {
+      configMap['allowAdServicesInfoReading'] = allowAdServicesInfoReading.toString();
     }
     if (allowIdfaReading != null) {
       configMap['allowIdfaReading'] = allowIdfaReading.toString();

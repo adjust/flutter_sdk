@@ -8,6 +8,7 @@ import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_app_store_subscription.dart';
 import 'package:adjust_sdk/adjust_play_store_subscription.dart';
+import 'package:adjust_sdk/adjust_third_party_sharing.dart';
 import 'package:test_lib/test_lib.dart';
 import 'package:test_app/command.dart';
 import 'dart:io' show Platform;
@@ -57,6 +58,8 @@ class CommandExecutor {
         case 'disableThirdPartySharing': _disableThirdPartySharing(); break;
         case 'trackAdRevenue': _trackAdRevenue(); break;
         case 'trackSubscription': _trackSubscription(); break;
+        case 'thirdPartySharing': _trackThirdPartySharing(); break;
+        case 'measurementConsent': _trackMeasurementConsent(); break;
     }
   }
 
@@ -92,6 +95,10 @@ class CommandExecutor {
     if (_command.containsParameter('iAdFrameworkEnabled')) {
       testOptions['iAdFrameworkEnabled'] = _command.getFirstParameterValue('iAdFrameworkEnabled');
     }
+    if (_command.containsParameter('adServicesFrameworkEnabled')) {
+      testOptions['adServicesFrameworkEnabled'] = _command.getFirstParameterValue('adServicesFrameworkEnabled');
+    }
+    bool useTestConnectionOptions = false;
     if (_command.containsParameter('teardown')) {
       List<dynamic> teardownOptions = _command.getParamteters('teardown');
       for (String teardownOption in teardownOptions) {
@@ -104,6 +111,7 @@ class CommandExecutor {
           // Android specific
           testOptions['useTestConnectionOptions'] = 'true';
           testOptions['tryInstallReferrer'] = 'false';
+          useTestConnectionOptions = true;
         }
         if (teardownOption == 'deleteState') {
           testOptions['deleteState'] = 'true';
@@ -124,6 +132,7 @@ class CommandExecutor {
           testOptions['extraPath'] = null;
           // Android specific.
           testOptions['useTestConnectionOptions'] = 'false';
+          useTestConnectionOptions = false;
         }
         if (teardownOption == 'test') {
           _savedEvents.clear();
@@ -136,6 +145,9 @@ class CommandExecutor {
       }
     }
     Adjust.setTestOptions(testOptions);
+    if (useTestConnectionOptions == true) {
+      TestLib.setTestConnectionOptions();
+    }
   }
 
   void _config() {
@@ -266,6 +278,9 @@ class CommandExecutor {
         TestLib.addInfoToSend('creative', attribution.creative);
         TestLib.addInfoToSend('clickLabel', attribution.clickLabel);
         TestLib.addInfoToSend('adid', attribution.adid);
+        TestLib.addInfoToSend('costType', attribution.costType);
+        TestLib.addInfoToSend('costAmount', attribution.costAmount.toString());
+        TestLib.addInfoToSend('costCurrency', attribution.costCurrency);
         TestLib.sendInfoToServer(localBasePath);
       };
     }
@@ -594,5 +609,30 @@ class CommandExecutor {
 
       Adjust.trackPlayStoreSubscription(subscription);
     }
+  }
+
+  void _trackThirdPartySharing() {
+    bool isEnabled = null;
+    if (_command.containsParameter('isEnabled')) {
+      isEnabled = _command.getFirstParameterValue('isEnabled') == 'true';
+    }
+    AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(isEnabled);
+
+    if (_command.containsParameter('granularOptions')) {
+      List<dynamic> granularOptions = _command.getParamteters('granularOptions');
+      for (var i = 0; i < granularOptions.length; i += 3) {
+        String partnerName = granularOptions[i];
+        String key = granularOptions[i+1];
+        String value = granularOptions[i+2];
+        adjustThirdPartySharing.addGranularOption(partnerName, key, value);
+      }
+    }
+
+    Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+  }
+
+  void _trackMeasurementConsent() {
+    bool isEnabled = _command.getFirstParameterValue('isEnabled') == 'true';
+    Adjust.trackMeasurementConsent(isEnabled);
   }
 }

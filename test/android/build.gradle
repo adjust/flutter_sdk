@@ -34,7 +34,8 @@ android {
 }
 
 dependencies {
-    implementation files('libs/adjust-test.jar')
+    implementation files('libs/adjust-test-library.jar')
+    implementation files('libs/adjust-test-options.jar')
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'org.java-websocket:Java-WebSocket:1.4.0'
 }

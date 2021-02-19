@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2018-2021 Adjust GmbH. All rights reserved.
 //
 
 package com.adjust.sdk.flutter;
@@ -21,6 +21,7 @@ import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustPlayStoreSubscription;
+import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
@@ -211,6 +212,15 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "requestTrackingAuthorizationWithCompletionHandler":
                 requestTrackingAuthorizationWithCompletionHandler(result);
                 break;
+            case "updateConversionValue":
+                updateConversionValue(result);
+                break;
+            case "trackThirdPartySharing":
+                trackThirdPartySharing(call, result);
+                break;
+            case "trackMeasurementConsent":
+                trackMeasurementConsent(call, result);
+                break;
             case "setTestOptions":
                 setTestOptions(call, result);
                 break;
@@ -345,6 +355,20 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             adjustConfig.setDeviceKnown(isDeviceKnown);
         }
 
+        // Cost data.
+        if (configMap.containsKey("needsCost")) {
+            String strNeedsCost = (String) configMap.get("needsCost");
+            boolean needsCost = Boolean.parseBoolean(strNeedsCost);
+            adjustConfig.setNeedsCost(needsCost);
+        }
+
+        // Preinstall tracking.
+        if (configMap.containsKey("preinstallTrackingEnabled")) {
+            String strPreinstallTrackingEnabled = (String) configMap.get("preinstallTrackingEnabled");
+            boolean preinstallTrackingEnabled = Boolean.parseBoolean(strPreinstallTrackingEnabled);
+            adjustConfig.setPreinstallTrackingEnabled(preinstallTrackingEnabled);
+        }
+
         // Delayed start.
         if (configMap.containsKey("delayStart")) {
             String strDelayStart = (String) configMap.get("delayStart");
@@ -388,7 +412,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                 adjustConfig.setOnAttributionChangedListener(new OnAttributionChangedListener() {
                     @Override
                     public void onAttributionChanged(AdjustAttribution adjustAttribution) {
-                        HashMap<String, String> adjustAttributionMap = new HashMap<String, String>();
+                        HashMap<String, Object> adjustAttributionMap = new HashMap<String, Object>();
                         adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
                         adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
                         adjustAttributionMap.put("network", adjustAttribution.network);
@@ -397,6 +421,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                         adjustAttributionMap.put("creative", adjustAttribution.creative);
                         adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
                         adjustAttributionMap.put("adid", adjustAttribution.adid);
+                        adjustAttributionMap.put("costType", adjustAttribution.costType);
+                        adjustAttributionMap.put("costAmount", adjustAttribution.costAmount);
+                        adjustAttributionMap.put("costCurrency", adjustAttribution.costCurrency);
                         channel.invokeMethod(dartMethodName, adjustAttributionMap);
                     }
                 });
@@ -503,14 +530,6 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                     }
                 });
             }
-        }
-
-        // TODO: expose to dart
-        // Preinstall tracking.
-        if (configMap.containsKey("preinstallTrackingEnabled")) {
-            String strPreinstallTrackingEnabled = (String) configMap.get("preinstallTrackingEnabled");
-            boolean preinstallTrackingEnabled = Boolean.parseBoolean(strPreinstallTrackingEnabled);
-            adjustConfig.setPreinstallTrackingEnabled(preinstallTrackingEnabled);
         }
 
         // Start SDK.
@@ -893,6 +912,59 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         result.error("0", "Error. No requestTrackingAuthorizationWithCompletionHandler for Android plaftorm!", null);
     }
 
+    private void updateConversionValue(final Result result) {
+        result.error("0", "Error. No updateConversionValue for Android plaftorm!", null);
+    }
+
+    private void trackThirdPartySharing(final MethodCall call, final Result result) {
+        Map thirdPartySharingMap = (Map) call.arguments;
+        if (thirdPartySharingMap == null) {
+            return;
+        }
+
+        // Is enabled.
+        Boolean isEnabled = null;
+        if (thirdPartySharingMap.containsKey("isEnabled")) {
+            String strIsEnabled = (String) thirdPartySharingMap.get("isEnabled");
+            if (strIsEnabled != null) {
+                if (strIsEnabled.equalsIgnoreCase("false") || strIsEnabled.equalsIgnoreCase("true")) {
+                    isEnabled = Boolean.valueOf(strIsEnabled);
+                }
+            }
+        }
+
+        // Create third party sharing object.
+        AdjustThirdPartySharing thirdPartySharing = new AdjustThirdPartySharing(isEnabled);
+
+        // Granular options.
+        if (thirdPartySharingMap.containsKey("granularOptions")) {
+            String strGranularOptions = (String) thirdPartySharingMap.get("granularOptions");
+            String[] arrayGranularOptions = strGranularOptions.split("\\__ADJ__", -1);
+            for (int i = 0; i < arrayGranularOptions.length; i += 3) {
+                thirdPartySharing.addGranularOption(
+                    arrayGranularOptions[i],
+                    arrayGranularOptions[i+1],
+                    arrayGranularOptions[i+2]);
+            }
+        }
+
+        // Track third party sharing.
+        Adjust.trackThirdPartySharing(thirdPartySharing);
+        result.success(null);
+    }
+
+    private void trackMeasurementConsent(final MethodCall call, final Result result) {
+        Map measurementConsentMap = (Map) call.arguments;
+        if (!measurementConsentMap.containsKey("measurementConsent")) {
+            result.error("0", "Arguments null or wrong (missing argument of 'trackMeasurementConsent' method.", null);
+            return;
+        }
+
+        boolean measurementConsent = (boolean) measurementConsentMap.get("measurementConsent");
+        Adjust.trackMeasurementConsent(measurementConsent);
+        result.success(null);
+    }
+
     private void setTestOptions(final MethodCall call, final Result result) {
         AdjustTestOptions testOptions = new AdjustTestOptions();
         Map testOptionsMap = (Map) call.arguments;
@@ -915,9 +987,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         if (testOptionsMap.containsKey("subscriptionPath")) {
             testOptions.subscriptionPath = (String) testOptionsMap.get("subscriptionPath");
         }
-        if (testOptionsMap.containsKey("useTestConnectionOptions")) {
-            testOptions.useTestConnectionOptions = testOptionsMap.get("useTestConnectionOptions").toString().equals("true");
-        }
+        // if (testOptionsMap.containsKey("useTestConnectionOptions")) {
+        //     testOptions.useTestConnectionOptions = testOptionsMap.get("useTestConnectionOptions").toString().equals("true");
+        // }
         if (testOptionsMap.containsKey("noBackoffWait")) {
             testOptions.noBackoffWait = testOptionsMap.get("noBackoffWait").toString().equals("true");
         }

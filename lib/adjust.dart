@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018-2019 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2018-2021 Adjust GmbH. All rights reserved.
 //
 
 import 'dart:async';
@@ -15,6 +15,7 @@ import 'package:adjust_sdk/adjust_event.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_app_store_subscription.dart';
 import 'package:adjust_sdk/adjust_play_store_subscription.dart';
+import 'package:adjust_sdk/adjust_third_party_sharing.dart';
 
 class Adjust {
   static const String _sdkPrefix = 'flutter4.26.0';
@@ -112,6 +113,15 @@ class Adjust {
     return status;
   }
 
+  static Future<int> getAppTrackingAuthorizationStatus() async {
+    try {
+      final int authorizationStatus = await _channel.invokeMethod('getAppTrackingAuthorizationStatus');
+      return authorizationStatus;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static Future<AdjustAttribution> getAttribution() async {
     final Map attributionMap = await _channel.invokeMethod('getAttribution');
     return AdjustAttribution.fromMap(attributionMap);
@@ -156,6 +166,18 @@ class Adjust {
 
   static void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription) {
     _channel.invokeMethod('trackPlayStoreSubscription', subscription.toMap);
+  }
+
+  static void trackThirdPartySharing(AdjustThirdPartySharing thirdPartySharing) {
+    _channel.invokeMethod('trackThirdPartySharing', thirdPartySharing.toMap);
+  }
+
+  static void trackMeasurementConsent(bool measurementConsent) {
+    _channel.invokeMethod('trackMeasurementConsent', {'measurementConsent': measurementConsent});
+  }
+
+  static void updateConversionValue(int conversionValue) {
+    _channel.invokeMethod('updateConversionValue', {'conversionValue': conversionValue.toString()});
   }
 
   // For testing purposes only. Do not use in production.

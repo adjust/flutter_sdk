@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018-2019 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2018-2021 Adjust GmbH. All rights reserved.
 //
 
 class AdjustAttribution {
@@ -15,6 +15,9 @@ class AdjustAttribution {
   String creative;
   String clickLabel;
   String adid;
+  String costType;
+  num costAmount;
+  String costCurrency;
 
   static AdjustAttribution fromMap(dynamic map) {
     AdjustAttribution attribution = new AdjustAttribution();
@@ -27,6 +30,9 @@ class AdjustAttribution {
       attribution.creative = map['creative'];
       attribution.clickLabel = map['clickLabel'];
       attribution.adid = map['adid'];
+      attribution.costType = map['costType'];
+      attribution.costAmount = map['costAmount'];
+      attribution.costCurrency = map['costCurrency'];
     } catch (e) {
       print('[AdjustFlutter]: Failed to create AdjustAttribution object from given map object. Details: ' + e.toString());
     }

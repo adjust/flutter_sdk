@@ -77,4 +77,8 @@ class TestLib {
   static void doNotExitAfterEnd() {
     _channel.invokeMethod('doNotExitAfterEnd');
   }
+
+  static void setTestConnectionOptions() {
+    _channel.invokeMethod('setTestConnectionOptions');
+  }
 }
