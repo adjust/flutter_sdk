@@ -177,7 +177,7 @@ class Adjust {
   }
 
   static void updateConversionValue(int conversionValue) {
-    _channel.invokeMethod('updateConversionValue', {'conversionValue': conversionValue.toString()});
+    _channel.invokeMethod('updateConversionValue', {'conversionValue': conversionValue});
   }
 
   // For testing purposes only. Do not use in production.

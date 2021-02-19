@@ -923,14 +923,18 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         }
 
         // Is enabled.
+        // Boolean isEnabled = null;
+        // if (thirdPartySharingMap.containsKey("isEnabled")) {
+        //     String strIsEnabled = (String) thirdPartySharingMap.get("isEnabled");
+        //     if (strIsEnabled != null) {
+        //         if (strIsEnabled.equalsIgnoreCase("false") || strIsEnabled.equalsIgnoreCase("true")) {
+        //             isEnabled = Boolean.valueOf(strIsEnabled);
+        //         }
+        //     }
+        // }
         Boolean isEnabled = null;
         if (thirdPartySharingMap.containsKey("isEnabled")) {
-            String strIsEnabled = (String) thirdPartySharingMap.get("isEnabled");
-            if (strIsEnabled != null) {
-                if (strIsEnabled.equalsIgnoreCase("false") || strIsEnabled.equalsIgnoreCase("true")) {
-                    isEnabled = Boolean.valueOf(strIsEnabled);
-                }
-            }
+            isEnabled = (Boolean) thirdPartySharingMap.get("isEnabled");
         }
 
         // Create third party sharing object.

@@ -237,6 +237,10 @@ class CommandExecutor {
       adjustConfig.allowiAdInfoReading = _command.getFirstParameterValue('allowiAdInfoReading') == 'true';
     }
 
+    if (_command.containsParameter('allowAdServicesInfoReading')) {
+      adjustConfig.allowAdServicesInfoReading = _command.getFirstParameterValue('allowAdServicesInfoReading') == 'true';
+    }
+
     if (_command.containsParameter('allowIdfaReading')) {
       adjustConfig.allowIdfaReading = _command.getFirstParameterValue('allowIdfaReading') == 'true';
     }
