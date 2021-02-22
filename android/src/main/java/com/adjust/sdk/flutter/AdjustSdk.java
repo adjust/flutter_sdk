@@ -424,7 +424,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                         adjustAttributionMap.put("costType", adjustAttribution.costType);
                         adjustAttributionMap.put("costAmount", adjustAttribution.costAmount);
                         adjustAttributionMap.put("costCurrency", adjustAttribution.costCurrency);
-                        channel.invokeMethod(dartMethodName, adjustAttributionMap);
+                        if (channel != null) {
+                            channel.invokeMethod(dartMethodName, adjustAttributionMap);
+                        }
                     }
                 });
             }
@@ -444,7 +446,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                         if (adjustSessionSuccess.jsonResponse != null) {
                             adjustSessionSuccessMap.put("jsonResponse", adjustSessionSuccess.jsonResponse.toString());
                         }
-                        channel.invokeMethod(dartMethodName, adjustSessionSuccessMap);
+                        if (channel != null) {
+                            channel.invokeMethod(dartMethodName, adjustSessionSuccessMap);
+                        }
                     }
                 });
             }
@@ -465,7 +469,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                         if (adjustSessionFailure.jsonResponse != null) {
                             adjustSessionFailureMap.put("jsonResponse", adjustSessionFailure.jsonResponse.toString());
                         }
-                        channel.invokeMethod(dartMethodName, adjustSessionFailureMap);
+                        if (channel != null) {
+                            channel.invokeMethod(dartMethodName, adjustSessionFailureMap);
+                        }
                     }
                 });
             }
@@ -487,7 +493,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                         if (adjustEventSuccess.jsonResponse != null) {
                             adjustEventSuccessMap.put("jsonResponse", adjustEventSuccess.jsonResponse.toString());
                         }
-                        channel.invokeMethod(dartMethodName, adjustEventSuccessMap);
+                        if (channel != null) {
+                            channel.invokeMethod(dartMethodName, adjustEventSuccessMap);
+                        }
                     }
                 });
             }
@@ -510,7 +518,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                         if (adjustEventFailure.jsonResponse != null) {
                             adjustEventFailureMap.put("jsonResponse", adjustEventFailure.jsonResponse.toString());
                         }
-                        channel.invokeMethod(dartMethodName, adjustEventFailureMap);
+                        if (channel != null) {
+                            channel.invokeMethod(dartMethodName, adjustEventFailureMap);
+                        }
                     }
                 });
             }
@@ -525,7 +535,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                     public boolean launchReceivedDeeplink(Uri uri) {
                         HashMap<String, String> uriParamsMap = new HashMap<String, String>();
                         uriParamsMap.put("uri", uri.toString());
-                        channel.invokeMethod(dartMethodName, uriParamsMap);
+                        if (channel != null) {
+                            channel.invokeMethod(dartMethodName, uriParamsMap);
+                        }
                         return launchDeferredDeeplink;
                     }
                 });
