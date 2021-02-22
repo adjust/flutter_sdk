@@ -695,7 +695,8 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void getIdfa(final Result result) {
-        result.error("0", "Error. No IDFA for Android plaftorm!", null);
+        result.notImplemented();
+        // result.error("0", "Error. No IDFA for Android platform!", null);
     }
 
     private void getGoogleAdId(final Result result) {
@@ -813,13 +814,14 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             JSONObject jsonPayload = new JSONObject(payload);
             Adjust.trackAdRevenue(source, jsonPayload);
         } catch (JSONException err) {
-            Log.e(TAG, "Give ad revenue payload is not a valid JSON string");
+            Log.e(TAG, "Given ad revenue payload is not a valid JSON string");
         }
         result.success(null);
     }
 
     private void trackAppStoreSubscription(final Result result) {
-        result.error("0", "Error. No App Store subscription tracking for Android plaftorm!", null);
+        result.notImplemented();
+        // result.error("0", "Error. No App Store subscription tracking for Android platform!", null);
     }
 
     private void trackPlayStoreSubscription(final MethodCall call, final Result result) {
@@ -921,11 +923,13 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void requestTrackingAuthorizationWithCompletionHandler(final Result result) {
-        result.error("0", "Error. No requestTrackingAuthorizationWithCompletionHandler for Android plaftorm!", null);
+        result.notImplemented();
+        // result.error("0", "Error. No requestTrackingAuthorizationWithCompletionHandler for Android platform!", null);
     }
 
     private void updateConversionValue(final Result result) {
-        result.error("0", "Error. No updateConversionValue for Android plaftorm!", null);
+        result.notImplemented();
+        // result.error("0", "Error. No updateConversionValue for Android platform!", null);
     }
 
     private void trackThirdPartySharing(final MethodCall call, final Result result) {
@@ -934,16 +938,6 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             return;
         }
 
-        // Is enabled.
-        // Boolean isEnabled = null;
-        // if (thirdPartySharingMap.containsKey("isEnabled")) {
-        //     String strIsEnabled = (String) thirdPartySharingMap.get("isEnabled");
-        //     if (strIsEnabled != null) {
-        //         if (strIsEnabled.equalsIgnoreCase("false") || strIsEnabled.equalsIgnoreCase("true")) {
-        //             isEnabled = Boolean.valueOf(strIsEnabled);
-        //         }
-        //     }
-        // }
         Boolean isEnabled = null;
         if (thirdPartySharingMap.containsKey("isEnabled")) {
             isEnabled = (Boolean) thirdPartySharingMap.get("isEnabled");
@@ -955,7 +949,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         // Granular options.
         if (thirdPartySharingMap.containsKey("granularOptions")) {
             String strGranularOptions = (String) thirdPartySharingMap.get("granularOptions");
-            String[] arrayGranularOptions = strGranularOptions.split("\\__ADJ__", -1);
+            String[] arrayGranularOptions = strGranularOptions.split("__ADJ__", -1);
             for (int i = 0; i < arrayGranularOptions.length; i += 3) {
                 thirdPartySharing.addGranularOption(
                     arrayGranularOptions[i],
@@ -1003,6 +997,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         if (testOptionsMap.containsKey("subscriptionPath")) {
             testOptions.subscriptionPath = (String) testOptionsMap.get("subscriptionPath");
         }
+        // Kept for the record. Not needed anymore with test options extraction.
         // if (testOptionsMap.containsKey("useTestConnectionOptions")) {
         //     testOptions.useTestConnectionOptions = testOptionsMap.get("useTestConnectionOptions").toString().equals("true");
         // }
