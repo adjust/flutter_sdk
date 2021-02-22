@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (2beens) on 22nd November 2018.
-//  Copyright © 2018 Adjust GmbH. All rights reserved.
+//  Copyright © 2018-2021 Adjust GmbH. All rights reserved.
 //
 
 #import <objc/runtime.h>
@@ -95,7 +95,18 @@ static NSString *dartDeferredDeeplinkCallback;
         return;
     }
     
-    id keys[] = { @"trackerToken", @"trackerName", @"network", @"campaign", @"adgroup", @"creative", @"clickLabel", @"adid" };
+    id keys[] = {
+        @"trackerToken",
+        @"trackerName",
+        @"network",
+        @"campaign",
+        @"adgroup",
+        @"creative",
+        @"clickLabel",
+        @"adid",
+        @"costType",
+        @"costAmount",
+        @"costCurrency" };
     id values[] = {
         [self getValueOrEmpty:[attribution trackerToken]],
         [self getValueOrEmpty:[attribution trackerName]],
@@ -104,7 +115,10 @@ static NSString *dartDeferredDeeplinkCallback;
         [self getValueOrEmpty:[attribution adgroup]],
         [self getValueOrEmpty:[attribution creative]],
         [self getValueOrEmpty:[attribution clickLabel]],
-        [self getValueOrEmpty:[attribution adid]]
+        [self getValueOrEmpty:[attribution adid]],
+        [self getValueOrEmpty:[attribution costType]],
+        [self getObjectValueOrEmpty:[attribution costAmount]],
+        [self getValueOrEmpty:[attribution costCurrency]]
     };
     NSUInteger count = sizeof(values) / sizeof(id);
     NSDictionary *attributionMap = [NSDictionary dictionaryWithObjects:values

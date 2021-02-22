@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018-2020 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2018-2021 Adjust GmbH. All rights reserved.
 //
 
 import 'dart:async';
@@ -76,5 +76,9 @@ class TestLib {
 
   static void doNotExitAfterEnd() {
     _channel.invokeMethod('doNotExitAfterEnd');
+  }
+
+  static void setTestConnectionOptions() {
+    _channel.invokeMethod('setTestConnectionOptions');
   }
 }

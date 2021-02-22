@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 6th June 2018.
-//  Copyright © 2018 Adjust GmbH. All rights reserved.
+//  Copyright © 2018-2021 Adjust GmbH. All rights reserved.
 //
 
 #import "AdjustSdk.h"
@@ -72,6 +72,14 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self trackPlayStoreSubscription:call withResult:result];
     } else if ([@"requestTrackingAuthorizationWithCompletionHandler" isEqualToString:call.method]) {
         [self requestTrackingAuthorizationWithCompletionHandler:call withResult:result];
+    } else if ([@"getAppTrackingAuthorizationStatus" isEqualToString:call.method]) {
+        [self getAppTrackingAuthorizationStatus:call withResult:result];
+    } else if ([@"updateConversionValue" isEqualToString:call.method]) {
+        [self updateConversionValue:call withResult:result];
+    } else if ([@"trackThirdPartySharing" isEqualToString:call.method]) {
+        [self trackThirdPartySharing:call withResult:result];
+    } else if ([@"trackMeasurementConsent" isEqualToString:call.method]) {
+        [self trackMeasurementConsent:call withResult:result];
     } else if ([@"setTestOptions" isEqualToString:call.method]) {
         [self setTestOptions:call withResult:result];
     } else if ([@"addSessionCallbackParameter" isEqualToString:call.method]) {
@@ -132,7 +140,9 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *isDeviceKnown = call.arguments[@"isDeviceKnown"];
     NSString *eventBufferingEnabled = call.arguments[@"eventBufferingEnabled"];
     NSString *sendInBackground = call.arguments[@"sendInBackground"];
+    NSString *needsCost = call.arguments[@"needsCost"];
     NSString *allowiAdInfoReading = call.arguments[@"allowiAdInfoReading"];
+    NSString *allowAdServicesInfoReading = call.arguments[@"allowAdServicesInfoReading"];
     NSString *allowIdfaReading = call.arguments[@"allowIdfaReading"];
     NSString *skAdNetworkHandling = call.arguments[@"skAdNetworkHandling"];
     NSString *dartAttributionCallback = call.arguments[@"attributionCallback"];
@@ -200,9 +210,19 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [adjustConfig setSendInBackground:[sendInBackground boolValue]];
     }
 
+    // Cost data.
+    if ([self isFieldValid:needsCost]) {
+        [adjustConfig setNeedsCost:[needsCost boolValue]];
+    }
+
     // Allow iAd info reading.
     if ([self isFieldValid:allowiAdInfoReading]) {
         [adjustConfig setAllowiAdInfoReading:[allowiAdInfoReading boolValue]];
+    }
+
+    // Allow AdServices info reading.
+    if ([self isFieldValid:allowAdServicesInfoReading]) {
+        [adjustConfig setAllowAdServicesInfoReading:[allowAdServicesInfoReading boolValue]];
     }
 
     // Allow IDFA reading.
@@ -504,6 +524,51 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }];
 }
 
+- (void)getAppTrackingAuthorizationStatus:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    result([NSNumber numberWithInt:[Adjust appTrackingAuthorizationStatus]]);
+}
+
+- (void)updateConversionValue:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *conversionValue = call.arguments[@"conversionValue"];
+    if ([self isFieldValid:conversionValue]) {
+        [Adjust updateConversionValue:[conversionValue intValue]];
+    }
+    result(nil);
+}
+
+- (void)trackThirdPartySharing:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSNumber *isEnabled = call.arguments[@"isEnabled"];
+    NSString *strGranularOptions = call.arguments[@"granularOptions"];
+
+    // Create third party sharing object.
+    ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc]
+                                                     initWithIsEnabledNumberBool:[self isFieldValid:isEnabled] ? isEnabled : nil];
+
+    // Granular options.
+    if (strGranularOptions != nil) {
+        NSArray *arrayGranularOptions = [strGranularOptions componentsSeparatedByString:@"__ADJ__"];
+        if (arrayGranularOptions != nil) {
+            for (int i = 0; i < [arrayGranularOptions count]; i += 3) {
+                [adjustThirdPartySharing addGranularOption:[arrayGranularOptions objectAtIndex:i]
+                                                       key:[arrayGranularOptions objectAtIndex:i+1]
+                                                     value:[arrayGranularOptions objectAtIndex:i+2]];
+            }
+        }
+    }
+
+    // Track third party sharing.
+    [Adjust trackThirdPartySharing:adjustThirdPartySharing];
+    result(nil);
+}
+
+- (void)trackMeasurementConsent:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *measurementConsent = call.arguments[@"measurementConsent"];
+    if ([self isFieldValid:measurementConsent]) {
+        [Adjust trackMeasurementConsent:[measurementConsent boolValue]];
+    }
+    result(nil);
+}
+
 - (void)setTestOptions:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     AdjustTestOptions *testOptions = [[AdjustTestOptions alloc] init];
     NSString *baseUrl = call.arguments[@"baseUrl"];
@@ -518,6 +583,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *deleteState = call.arguments[@"deleteState"];
     NSString *noBackoffWait = call.arguments[@"noBackoffWait"];
     NSString *iAdFrameworkEnabled = call.arguments[@"iAdFrameworkEnabled"];
+    NSString *adServicesFrameworkEnabled = call.arguments[@"adServicesFrameworkEnabled"];
     
     if ([self isFieldValid:baseUrl]) {
         testOptions.baseUrl = baseUrl;
@@ -557,6 +623,9 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
     if ([self isFieldValid:iAdFrameworkEnabled]) {
         testOptions.iAdFrameworkEnabled = [iAdFrameworkEnabled boolValue];
+    }
+    if ([self isFieldValid:adServicesFrameworkEnabled]) {
+        testOptions.adServicesFrameworkEnabled = [adServicesFrameworkEnabled boolValue];
     }
     
     [Adjust setTestOptions:testOptions];

@@ -3,10 +3,10 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 1st October 2018.
-//  Copyright (c) 2018 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2018-2021 Adjust GmbH. All rights reserved.
 //
 
-#import "TestlibPlugin.h"
+#import "TestLibPlugin.h"
 #import "AdjustCommandExecutor.h"
 
 @interface TestLibPlugin ()

@@ -55,7 +55,9 @@ This is the Flutter SDK of Adjust™. You can read more about Adjust™ at [adju
 
    * [AppTrackingTransparency framework](#af-att-framework)
       * [App-tracking authorisation wrapper](#af-ata-wrapper)
+      * [Get current authorisation status](#af-ata-getter)
    * [SKAdNetwork framework](#af-skadn-framework)
+      * [Update SKAdNetwork conversion value](#af-skadn-update-conversion-value)
    * [Subscription tracking](#af-subscription-tracking)
    * [Push token (uninstall tracking)](#af-push-token)
    * [Attribution callback](#af-attribution-callback)
@@ -72,7 +74,10 @@ This is the Flutter SDK of Adjust™. You can read more about Adjust™ at [adju
    * [Event buffering](#af-event-buffering)
    * [Background tracking](#af-background-tracking)
    * [GDPR right to be forgotten](#af-gdpr-forget-me)
-   * [Disable third-party sharing](#af-disable-third-party-sharing)
+   * [Third-party sharing](#af-third-party-sharing)
+      * [Disable third-party sharing](#af-disable-third-party-sharing)
+      * [Enable third-party sharing](#af-enable-third-party-sharing)
+   * [Measurement consent](#af-measurement-consent)
 
 ### License
 
@@ -93,7 +98,7 @@ You can add Adjust SDK to your Flutter app by adding following to your `pubspec.
 
 ```yaml
 dependencies:
-  adjust_sdk: ^4.23.3
+  adjust_sdk: ^4.26.0
 ```
 
 Then navigate to your project in the terminal and run:
@@ -202,6 +207,7 @@ As of v4.22.0, the Adjust SDK supports install tracking on Huawei devices with H
 Make sure that following iOS frameworks are linked with your iOS app:
 
 * `iAd.framework` - in case you are running iAd campaigns
+* `AdServices.framework` - in case you are running iAd campaigns
 * `AdSupport.framework` - for reading iOS Advertising Id (IDFA)
 * `CoreTelephony.framework` - for reading MCC and MNC information
 * `StoreKit.framework` - for communication with SKAdNetwork framework
@@ -670,6 +676,18 @@ Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
 });
 ```
 
+### <a id="af-ata-getter"></a>Get current authorisation status
+
+**Note**: This feature exists only in iOS platform.
+
+To get the current app tracking authorization status you can call `getAppTrackingAuthorizationStatus` method of `Adjust` class that will return one of the following possibilities:
+
+* `0`: The user hasn't been asked yet
+* `1`: The user device is restricted
+* `2`: The user denied access to IDFA
+* `3`: The user authorized access to IDFA
+* `-1`: The status is not available
+
 ### <a id="af-skadn-framework"></a>SKAdNetwork framework
 
 **Note**: This feature exists only in iOS platform.
@@ -680,6 +698,16 @@ In case you don't want the Adjust SDK to automatically communicate with SKAdNetw
 
 ```dart
 adjustConfig.deactivateSKAdNetworkHandling();
+```
+
+### <a id="af-skadn-update-conversion-value"></a>Update SKAdNetwork conversion value
+
+**Note**: This feature exists only in iOS platform.
+
+You can use Adjust SDK wrapper method `updateConversionValue` to update SKAdNetwork conversion value for your user:
+
+```dart
+Adjust.updateConversionValue(6);
 ```
 
 ### <a id="af-subscription-tracking"></a>Subscription tracking
@@ -1089,17 +1117,51 @@ Adjust.gdprForgetMe();
 
 Upon receiving this information, Adjust will erase the user's data and the Adjust SDK will stop tracking the user. No requests from this device will be sent to Adjust in the future.
 
-### <a id="af-disable-third-party-sharing"></a>Disable third-party sharing
+## <a id="af-third-party-sharing"></a>Third-party sharing for specific users
 
-You can now notify Adjust when a user has exercised their right to stop sharing their data with partners for marketing partners, but has allowed it to be shared for statistics purposes. 
+You can notify Adjust when a user disables, enables, and re-enables data sharing with third-party partners.
+
+### <a id="af-disable-third-party-sharing"></a>Disable third-party sharing for specific users
 
 Call the following method to instruct the Adjust SDK to communicate the user's choice to disable data sharing to the Adjust backend:
 
 ```dart
-Adjust.disableThirdPartySharing();
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 
 Upon receiving this information, Adjust will block the sharing of that specific user's data to partners and the Adjust SDK will continue to work as usual.
+
+### <a id="af-enable-third-party-sharing">Enable or re-enable third-party sharing for specific users</a>
+
+Call the following method to instruct the Adjust SDK to communicate the user's choice to share data or change data sharing, to the Adjust backend:
+
+```dart
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+Upon receiving this information, Adjust changes sharing the specific user's data to partners. The Adjust SDK will continue to work as expected.
+
+Call the following method to instruct the Adjust SDK to send the granular options to the Adjust backend:
+
+```dart
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addGranularOption('PartnerA', 'foo', 'bar');
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+
+### <a id="af-measurement-consent"></a>Consent measurement for specific users
+
+You can notify Adjust when a user exercises their right to change data sharing with partners for marketing purposes, but they allow data sharing for statistical purposes. 
+
+Call the following method to instruct the Adjust SDK to communicate the user's choice to change data sharing, to the Adjust backend:
+
+```dart
+Adjust.trackMeasurementConsent(true);
+```
+
+Upon receiving this information, Adjust changes sharing the specific user's data to partners. The Adjust SDK will continue to work as expected.
 
 [dashboard]:  http://adjust.com
 [adjust.com]: http://adjust.com

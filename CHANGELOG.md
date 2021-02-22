@@ -1,3 +1,21 @@
+### Version 4.26.0 (22nd February 2021)
+#### Added
+- Added possibility to get cost data information in attribution callback.
+- Added `needsCost` member to `AdjustConfig` to indicate if cost data is needed in attribution callback (by default cost data will not be part of attribution callback if not enabled with this setter method).
+- Added `preinstallTrackingEnabled` member to `AdjustConfig` to allow enabling of preinstall tracking (this feature is OFF by default).
+- Added support for Apple Search Ads attribution with usage of `AdServices.framework`.
+- Added `allowAdServicesInfoReading` member to `AdjustConfig` to allow option for users to prevent SDK from performing any tasks related to Apple Search Ads attribution with usage of `AdServices.framework`.
+- Added wrapper method `updateConversionValue` method to `Adjust` to allow updating SKAdNetwork conversion value via SDK API.
+- Added `getAppTrackingAuthorizationStatus` getter to `Adjust` instance to be able to get current iOS app tracking status.
+- Added improved measurement consent management and third party sharing mechanism.
+- Added public constants to be used as sources for ad revenue tracking with `trackAdRevenue` method.
+
+#### Native SDKs
+- [iOS@v4.26.1][ios_sdk_v4.26.1]
+- [Android@v4.26.2][android_sdk_v4.26.2]
+
+---
+
 ### Version 4.23.3 (18th December 2020)
 #### Added
 - Added URL strategy constants to `AdjustConfig` for more straight forward feature usage.
@@ -36,7 +54,7 @@
 - Added wrapper method `requestTrackingAuthorizationWithCompletionHandler` to `Adjust` to allow asking for user's consent to be tracked in iOS 14 and immediate propagation of user's choice to backend.
 - Added handling of new iAd framework error codes introduced in iOS 14.
 - Added sending of value of user's consent to be tracked with each package.
-- Added `setUrlStrategy` method to `AdjustConfig` class to allow selection of URL strategy for specific market.
+- Added `urlStrategy` member to `AdjustConfig` class to allow selection of URL strategy for specific market.
 
 #### Native SDKs
 - [iOS@v4.23.0][ios_sdk_v4.23.0]
@@ -171,6 +189,7 @@
 [ios_sdk_v4.22.1]: https://github.com/adjust/ios_sdk/tree/v4.22.1
 [ios_sdk_v4.23.0]: https://github.com/adjust/ios_sdk/tree/v4.23.0
 [ios_sdk_v4.23.2]: https://github.com/adjust/ios_sdk/tree/v4.23.2
+[ios_sdk_v4.26.1]: https://github.com/adjust/ios_sdk/tree/v4.26.1
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -178,3 +197,4 @@
 [android_sdk_v4.22.0]: https://github.com/adjust/android_sdk/tree/v4.22.0
 [android_sdk_v4.24.0]: https://github.com/adjust/android_sdk/tree/v4.24.0
 [android_sdk_v4.24.1]: https://github.com/adjust/android_sdk/tree/v4.24.1
+[android_sdk_v4.26.2]: https://github.com/adjust/android_sdk/tree/v4.26.2
