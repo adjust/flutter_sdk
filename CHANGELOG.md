@@ -1,4 +1,4 @@
-### Version 4.26.0 (22nd February 2021)
+### Version 4.26.0 (23rd February 2021)
 #### Added
 - Added possibility to get cost data information in attribution callback.
 - Added `needsCost` member to `AdjustConfig` to indicate if cost data is needed in attribution callback (by default cost data will not be part of attribution callback if not enabled with this setter method).
@@ -9,6 +9,12 @@
 - Added `getAppTrackingAuthorizationStatus` getter to `Adjust` instance to be able to get current iOS app tracking status.
 - Added improved measurement consent management and third party sharing mechanism.
 - Added public constants to be used as sources for ad revenue tracking with `trackAdRevenue` method.
+
+#### Changed
+- Updated Gradle version to 6.5 (thanks to @MrtnvM).
+
+#### Fixed
+- Fixed occasional NPEs in Android when firing callback methods.
 
 #### Native SDKs
 - [iOS@v4.26.1][ios_sdk_v4.26.1]
