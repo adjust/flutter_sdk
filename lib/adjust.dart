@@ -8,14 +8,14 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart';
-import 'package:flutter/services.dart';
+import 'package:adjust_sdk/adjust_app_store_subscription.dart';
+import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
-import 'package:adjust_sdk/adjust_attribution.dart';
-import 'package:adjust_sdk/adjust_app_store_subscription.dart';
 import 'package:adjust_sdk/adjust_play_store_subscription.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
+import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 class Adjust {
   static const String _sdkPrefix = 'flutter4.26.0';
@@ -76,54 +76,40 @@ class Adjust {
   }
 
   // Return value could be `null`
-  static Future<String> getAdid() async {
-    final String adid = await _channel.invokeMethod('getAdid');
+  static Future<String?> getAdid() async {
+    final String? adid = await _channel.invokeMethod('getAdid');
     return adid;
   }
 
-  static Future<String> getIdfa() async {
-    try {
-      final String idfa = await _channel.invokeMethod('getIdfa');
-      return idfa;
-    } catch (e) {
-      return null;
-    }
+  static Future<String?> getIdfa() async {
+    final String? idfa = await _channel.invokeMethod('getIdfa');
+    return idfa;
   }
 
-  static Future<String> getAmazonAdId() async {
-    try {
-      final String amazonAdId = await _channel.invokeMethod('getAmazonAdId');
-      return amazonAdId;
-    } catch (e) {
-      return null;
-    }
+  static Future<String?> getAmazonAdId() async {
+    final String? amazonAdId = await _channel.invokeMethod('getAmazonAdId');
+    return amazonAdId;
   }
 
-  static Future<String> getGoogleAdId() async {
-    try {
-      final String googleAdId = await _channel.invokeMethod('getGoogleAdId');
-      return googleAdId;
-    } catch (e) {
-      return null;
-    }
+  static Future<String?> getGoogleAdId() async {
+    final String? googleAdId = await _channel.invokeMethod('getGoogleAdId');
+    return googleAdId;
   }
 
-  static Future<num> requestTrackingAuthorizationWithCompletionHandler() async {
-    final num status = await _channel.invokeMethod('requestTrackingAuthorizationWithCompletionHandler');
+  static Future<num?> requestTrackingAuthorizationWithCompletionHandler() async {
+    final num? status =
+        await _channel.invokeMethod('requestTrackingAuthorizationWithCompletionHandler');
     return status;
   }
 
-  static Future<int> getAppTrackingAuthorizationStatus() async {
-    try {
-      final int authorizationStatus = await _channel.invokeMethod('getAppTrackingAuthorizationStatus');
-      return authorizationStatus;
-    } catch (e) {
-      return null;
-    }
+  static Future<int?> getAppTrackingAuthorizationStatus() async {
+    final int? authorizationStatus =
+        await _channel.invokeMethod('getAppTrackingAuthorizationStatus');
+    return authorizationStatus;
   }
 
   static Future<AdjustAttribution> getAttribution() async {
-    final Map attributionMap = await _channel.invokeMethod('getAttribution');
+    final dynamic attributionMap = await _channel.invokeMethod('getAttribution');
     return AdjustAttribution.fromMap(attributionMap);
   }
 
