@@ -1,12 +1,11 @@
 import 'dart:io';
-import 'dart:async';
+
+import 'package:adjust_sdk/adjust.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:test_lib/test_lib.dart';
 import 'package:test_app/command.dart';
 import 'package:test_app/command_executor.dart';
-import 'package:adjust_sdk/adjust.dart';
+import 'package:test_lib/test_lib.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,11 +17,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _baseUrl;
-  String _gdprUrl;
-  String _subscriptionUrl;
-  String _controlUrl;
-  CommandExecutor _commandExecutor;
+  String? _baseUrl;
+  String? _gdprUrl;
+  String? _subscriptionUrl;
+  late String _controlUrl;
+  late CommandExecutor _commandExecutor;
 
   @override
   void initState() {
@@ -55,7 +54,7 @@ class _MyAppState extends State<MyApp> {
       print('[AdjustTestApp]: Executing command ${command.className}.${command.methodName}');
       _commandExecutor.executeCommand(command);
     });
-    TestLib.init(_baseUrl, _controlUrl);
+    TestLib.init(_baseUrl!, _controlUrl);
   }
 
   @override
@@ -67,16 +66,16 @@ class _MyAppState extends State<MyApp> {
         ),
         body: new CustomScrollView(shrinkWrap: true, slivers: <Widget>[
           new SliverPadding(
-            padding: const EdgeInsets.all(20.0),
-            sliver: new SliverList(
-                delegate: new SliverChildListDelegate(<Widget>[
-              new Text('Running'),
-              buildCupertinoButton(
-                  'Start Test Session',
-                  () => Adjust.getSdkVersion().then((sdkVersion) {
-                    TestLib.startTestSession(sdkVersion);
-                  }))
-            ])))
+              padding: const EdgeInsets.all(20.0),
+              sliver: new SliverList(
+                  delegate: new SliverChildListDelegate(<Widget>[
+                new Text('Running'),
+                buildCupertinoButton(
+                    'Start Test Session',
+                    () => Adjust.getSdkVersion().then((sdkVersion) {
+                          TestLib.startTestSession(sdkVersion);
+                        }))
+              ])))
         ]),
       ),
     );
@@ -87,7 +86,7 @@ class _MyAppState extends State<MyApp> {
       child: Text(text),
       color: CupertinoColors.activeBlue,
       padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
-      onPressed: action,
+      onPressed: action as void Function()?,
     );
   }
 }

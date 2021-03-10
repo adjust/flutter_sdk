@@ -7,35 +7,51 @@
 //
 
 class AdjustAttribution {
-  String trackerToken;
-  String trackerName;
-  String network;
-  String campaign;
-  String adgroup;
-  String creative;
-  String clickLabel;
-  String adid;
-  String costType;
-  num costAmount;
-  String costCurrency;
+  final String? trackerToken;
+  final String? trackerName;
+  final String? network;
+  final String? campaign;
+  final String? adgroup;
+  final String? creative;
+  final String? clickLabel;
+  final String? adid;
+  final String? costType;
+  final num? costAmount;
+  final String? costCurrency;
 
-  static AdjustAttribution fromMap(dynamic map) {
-    AdjustAttribution attribution = new AdjustAttribution();
+  AdjustAttribution({
+    required this.trackerToken,
+    required this.trackerName,
+    required this.network,
+    required this.campaign,
+    required this.adgroup,
+    required this.creative,
+    required this.clickLabel,
+    required this.adid,
+    required this.costType,
+    required this.costAmount,
+    required this.costCurrency,
+  });
+
+  factory AdjustAttribution.fromMap(dynamic map) {
     try {
-      attribution.trackerToken = map['trackerToken'];
-      attribution.trackerName = map['trackerName'];
-      attribution.network = map['network'];
-      attribution.campaign = map['campaign'];
-      attribution.adgroup = map['adgroup'];
-      attribution.creative = map['creative'];
-      attribution.clickLabel = map['clickLabel'];
-      attribution.adid = map['adid'];
-      attribution.costType = map['costType'];
-      attribution.costAmount = map['costAmount'];
-      attribution.costCurrency = map['costCurrency'];
+      return AdjustAttribution(
+        trackerToken: map['trackerToken'],
+        trackerName: map['trackerName'],
+        network: map['network'],
+        campaign: map['campaign'],
+        adgroup: map['adgroup'],
+        creative: map['creative'],
+        clickLabel: map['clickLabel'],
+        adid: map['adid'],
+        costType: map['costType'],
+        costAmount: map['costAmount'],
+        costCurrency: map['costCurrency'],
+      );
     } catch (e) {
-      print('[AdjustFlutter]: Failed to create AdjustAttribution object from given map object. Details: ' + e.toString());
+      throw Exception(
+          '[AdjustFlutter]: Failed to create AdjustAttribution object from given map object. Details: ' +
+              e.toString());
     }
-    return attribution;
   }
 }

@@ -1,13 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:adjust_sdk/adjust.dart';
-import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
+import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import 'util.dart';
 
 void main() {
@@ -42,7 +43,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -53,7 +54,7 @@ class MyHomePage extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final String title;
+  final String? title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -65,13 +66,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
     initPlatformState();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 
@@ -85,6 +86,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         break;
       case AppLifecycleState.paused:
         Adjust.onPause();
+        break;
+      case AppLifecycleState.detached:
         break;
     }
   }
@@ -107,28 +110,28 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       print('[Adjust]: Attribution changed!');
 
       if (attributionChangedData.trackerToken != null) {
-        print('[Adjust]: Tracker token: ' + attributionChangedData.trackerToken);
+        print('[Adjust]: Tracker token: ' + attributionChangedData.trackerToken!);
       }
       if (attributionChangedData.trackerName != null) {
-        print('[Adjust]: Tracker name: ' + attributionChangedData.trackerName);
+        print('[Adjust]: Tracker name: ' + attributionChangedData.trackerName!);
       }
       if (attributionChangedData.campaign != null) {
-        print('[Adjust]: Campaign: ' + attributionChangedData.campaign);
+        print('[Adjust]: Campaign: ' + attributionChangedData.campaign!);
       }
       if (attributionChangedData.network != null) {
-        print('[Adjust]: Network: ' + attributionChangedData.network);
+        print('[Adjust]: Network: ' + attributionChangedData.network!);
       }
       if (attributionChangedData.creative != null) {
-        print('[Adjust]: Creative: ' + attributionChangedData.creative);
+        print('[Adjust]: Creative: ' + attributionChangedData.creative!);
       }
       if (attributionChangedData.adgroup != null) {
-        print('[Adjust]: Adgroup: ' + attributionChangedData.adgroup);
+        print('[Adjust]: Adgroup: ' + attributionChangedData.adgroup!);
       }
       if (attributionChangedData.clickLabel != null) {
-        print('[Adjust]: Click label: ' + attributionChangedData.clickLabel);
+        print('[Adjust]: Click label: ' + attributionChangedData.clickLabel!);
       }
       if (attributionChangedData.adid != null) {
-        print('[Adjust]: Adid: ' + attributionChangedData.adid);
+        print('[Adjust]: Adid: ' + attributionChangedData.adid!);
       }
     };
 
@@ -136,16 +139,16 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       print('[Adjust]: Session tracking success!');
 
       if (sessionSuccessData.message != null) {
-        print('[Adjust]: Message: ' + sessionSuccessData.message);
+        print('[Adjust]: Message: ' + sessionSuccessData.message!);
       }
       if (sessionSuccessData.timestamp != null) {
-        print('[Adjust]: Timestamp: ' + sessionSuccessData.timestamp);
+        print('[Adjust]: Timestamp: ' + sessionSuccessData.timestamp!);
       }
       if (sessionSuccessData.adid != null) {
-        print('[Adjust]: Adid: ' + sessionSuccessData.adid);
+        print('[Adjust]: Adid: ' + sessionSuccessData.adid!);
       }
       if (sessionSuccessData.jsonResponse != null) {
-        print('[Adjust]: JSON response: ' + sessionSuccessData.jsonResponse);
+        print('[Adjust]: JSON response: ' + sessionSuccessData.jsonResponse!);
       }
     };
 
@@ -153,19 +156,19 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       print('[Adjust]: Session tracking failure!');
 
       if (sessionFailureData.message != null) {
-        print('[Adjust]: Message: ' + sessionFailureData.message);
+        print('[Adjust]: Message: ' + sessionFailureData.message!);
       }
       if (sessionFailureData.timestamp != null) {
-        print('[Adjust]: Timestamp: ' + sessionFailureData.timestamp);
+        print('[Adjust]: Timestamp: ' + sessionFailureData.timestamp!);
       }
       if (sessionFailureData.adid != null) {
-        print('[Adjust]: Adid: ' + sessionFailureData.adid);
+        print('[Adjust]: Adid: ' + sessionFailureData.adid!);
       }
       if (sessionFailureData.willRetry != null) {
         print('[Adjust]: Will retry: ' + sessionFailureData.willRetry.toString());
       }
       if (sessionFailureData.jsonResponse != null) {
-        print('[Adjust]: JSON response: ' + sessionFailureData.jsonResponse);
+        print('[Adjust]: JSON response: ' + sessionFailureData.jsonResponse!);
       }
     };
 
@@ -173,22 +176,22 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       print('[Adjust]: Event tracking success!');
 
       if (eventSuccessData.eventToken != null) {
-        print('[Adjust]: Event token: ' + eventSuccessData.eventToken);
+        print('[Adjust]: Event token: ' + eventSuccessData.eventToken!);
       }
       if (eventSuccessData.message != null) {
-        print('[Adjust]: Message: ' + eventSuccessData.message);
+        print('[Adjust]: Message: ' + eventSuccessData.message!);
       }
       if (eventSuccessData.timestamp != null) {
-        print('[Adjust]: Timestamp: ' + eventSuccessData.timestamp);
+        print('[Adjust]: Timestamp: ' + eventSuccessData.timestamp!);
       }
       if (eventSuccessData.adid != null) {
-        print('[Adjust]: Adid: ' + eventSuccessData.adid);
+        print('[Adjust]: Adid: ' + eventSuccessData.adid!);
       }
       if (eventSuccessData.callbackId != null) {
-        print('[Adjust]: Callback ID: ' + eventSuccessData.callbackId);
+        print('[Adjust]: Callback ID: ' + eventSuccessData.callbackId!);
       }
       if (eventSuccessData.jsonResponse != null) {
-        print('[Adjust]: JSON response: ' + eventSuccessData.jsonResponse);
+        print('[Adjust]: JSON response: ' + eventSuccessData.jsonResponse!);
       }
     };
 
@@ -196,30 +199,30 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       print('[Adjust]: Event tracking failure!');
 
       if (eventFailureData.eventToken != null) {
-        print('[Adjust]: Event token: ' + eventFailureData.eventToken);
+        print('[Adjust]: Event token: ' + eventFailureData.eventToken!);
       }
       if (eventFailureData.message != null) {
-        print('[Adjust]: Message: ' + eventFailureData.message);
+        print('[Adjust]: Message: ' + eventFailureData.message!);
       }
       if (eventFailureData.timestamp != null) {
-        print('[Adjust]: Timestamp: ' + eventFailureData.timestamp);
+        print('[Adjust]: Timestamp: ' + eventFailureData.timestamp!);
       }
       if (eventFailureData.adid != null) {
-        print('[Adjust]: Adid: ' + eventFailureData.adid);
+        print('[Adjust]: Adid: ' + eventFailureData.adid!);
       }
       if (eventFailureData.callbackId != null) {
-        print('[Adjust]: Callback ID: ' + eventFailureData.callbackId);
+        print('[Adjust]: Callback ID: ' + eventFailureData.callbackId!);
       }
       if (eventFailureData.willRetry != null) {
         print('[Adjust]: Will retry: ' + eventFailureData.willRetry.toString());
       }
       if (eventFailureData.jsonResponse != null) {
-        print('[Adjust]: JSON response: ' + eventFailureData.jsonResponse);
+        print('[Adjust]: JSON response: ' + eventFailureData.jsonResponse!);
       }
     };
 
-    config.deferredDeeplinkCallback = (String uri) {
-      print('[Adjust]: Received deferred deeplink: ' + uri);
+    config.deferredDeeplinkCallback = (String? uri) {
+      print('[Adjust]: Received deferred deeplink: ' + uri!);
     };
 
     // Add session callback parameters.
@@ -245,16 +248,20 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       print('[Adjust]: Authorization status update!');
       switch (status) {
         case 0:
-          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined');
+          print(
+              '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined');
           break;
         case 1:
-          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted');
+          print(
+              '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted');
           break;
         case 2:
-          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied');
+          print(
+              '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied');
           break;
         case 3:
-          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized');
+          print(
+              '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized');
           break;
       }
     });
@@ -275,27 +282,27 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               <Widget>[
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
-                Util.buildCupertinoButton(
-                    'Is Enabled ?', () => _showIsSdkEnabled()),
+                Util.buildCupertinoButton('Is Enabled ?', () => _showIsSdkEnabled()),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // Track simple event button.
-                Util.buildCupertinoButton('Track Sample Event',
-                    () => Adjust.trackEvent(Util.buildSimpleEvent())),
+                Util.buildCupertinoButton(
+                    'Track Sample Event', () => Adjust.trackEvent(Util.buildSimpleEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // Track revenue event button.
-                Util.buildCupertinoButton('Track Revenue Event',
-                    () => Adjust.trackEvent(Util.buildRevenueEvent())),
+                Util.buildCupertinoButton(
+                    'Track Revenue Event', () => Adjust.trackEvent(Util.buildRevenueEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // Track callback event button.
-                Util.buildCupertinoButton('Track Callback Event',
-                    () => Adjust.trackEvent(Util.buildCallbackEvent())),
+                Util.buildCupertinoButton(
+                    'Track Callback Event', () => Adjust.trackEvent(Util.buildCallbackEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // Track partner event button.
-                Util.buildCupertinoButton('Track Partner Event',
+                Util.buildCupertinoButton(
+                    'Track Partner Event',
                     // () => Adjust.trackEvent(Util.buildPartnerEvent())),
                     () => Adjust.disableThirdPartySharing()),
                 const Padding(padding: const EdgeInsets.all(7.0)),
@@ -313,7 +320,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get Adjust identifier',
                     () => Adjust.getAdid().then((adid) {
-                          _showDialogMessage('Adjust identifier', 'Received Adjust identifier: $adid');
+                          _showDialogMessage(
+                              'Adjust identifier', 'Received Adjust identifier: $adid');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
@@ -329,8 +337,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get attribution',
                     () => Adjust.getAttribution().then((attribution) {
-                          _showDialogMessage('Attribution',
-                              'Received attribution: ${attribution.toString()}');
+                          _showDialogMessage(
+                              'Attribution', 'Received attribution: ${attribution.toString()}');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
@@ -377,13 +385,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         _showDialogMessage('SDK Enabled?', 'Adjust is enabled = $isEnabled');
       });
     } on PlatformException {
-      _showDialogMessage(
-          'SDK Enabled?', 'no such method found im plugin: isEnabled');
+      _showDialogMessage('SDK Enabled?', 'no such method found im plugin: isEnabled');
     }
   }
 
-  void _showDialogMessage(String title, String text,
-      [bool printToConsoleAlso = true]) {
+  void _showDialogMessage(String title, String text, [bool printToConsoleAlso = true]) {
     if (printToConsoleAlso) {
       print(text);
     }
