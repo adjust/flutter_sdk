@@ -53,13 +53,14 @@ class AdjustConfig {
   static const String AdRevenueSourceAdtoapp = 'adtoapp';
   static const String AdRevenueSourceTapdaq = 'tapdaq';
 
+  String _appToken;
+  AdjustEnvironment _environment;
+
   num? _info1;
   num? _info2;
   num? _info3;
   num? _info4;
   num? _secretId;
-  String _appToken;
-  AdjustEnvironment _environment;
   bool? _skAdNetworkHandling;
 
   double? delayStart;
@@ -89,18 +90,6 @@ class AdjustConfig {
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
     _skAdNetworkHandling = true;
-  }
-
-  void setAppSecret(num secretId, num info1, num info2, num info3, num info4) {
-    _secretId = secretId;
-    _info1 = info1;
-    _info2 = info2;
-    _info3 = info3;
-    _info4 = info4;
-  }
-
-  void deactivateSKAdNetworkHandling() {
-    _skAdNetworkHandling = false;
   }
 
   void _initCallbackHandlers() {
@@ -144,13 +133,24 @@ class AdjustConfig {
             }
             break;
           default:
-            throw new UnsupportedError(
-                '[AdjustFlutter]: Received unknown native method: ${call.method}');
+            throw new UnsupportedError('[AdjustFlutter]: Received unknown native method: ${call.method}');
         }
       } catch (e) {
         print(e.toString());
       }
     });
+  }
+
+  void setAppSecret(num secretId, num info1, num info2, num info3, num info4) {
+    _secretId = secretId;
+    _info1 = info1;
+    _info2 = info2;
+    _info3 = info3;
+    _info4 = info4;
+  }
+
+  void deactivateSKAdNetworkHandling() {
+    _skAdNetworkHandling = false;
   }
 
   Map<String, String?> get toMap {

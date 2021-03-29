@@ -96,15 +96,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   initPlatformState() async {
     AdjustConfig config = new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
     config.logLevel = AdjustLogLevel.verbose;
-    // config.isDeviceKnown = false;
-    // config.defaultTracker = 'abc123';
-    // config.processName = 'com.adjust.examples';
-    // config.sendInBackground = true;
-    // config.eventBufferingEnabled = true;
-    // config.delayStart = 6.0;
-    // config.setAppSecret(1000, 1, 2, 3, 4);
-    // config.externalDeviceId = 'random-external-device-id';
-    // config.deactivateSKAdNetworkHandling();
 
     config.attributionCallback = (AdjustAttribution attributionChangedData) {
       print('[Adjust]: Attribution changed!');
@@ -248,20 +239,16 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       print('[Adjust]: Authorization status update!');
       switch (status) {
         case 0:
-          print(
-              '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined');
+          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined');
           break;
         case 1:
-          print(
-              '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted');
+          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted');
           break;
         case 2:
-          print(
-              '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied');
+          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied');
           break;
         case 3:
-          print(
-              '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized');
+          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized');
           break;
       }
     });
@@ -287,7 +274,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
                 // Track simple event button.
                 Util.buildCupertinoButton(
-                    'Track Sample Event', () => Adjust.trackEvent(Util.buildSimpleEvent())),
+                    'Track Simple Event', () => Adjust.trackEvent(Util.buildSimpleEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // Track revenue event button.
@@ -303,8 +290,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 // Track partner event button.
                 Util.buildCupertinoButton(
                     'Track Partner Event',
-                    // () => Adjust.trackEvent(Util.buildPartnerEvent())),
-                    () => Adjust.disableThirdPartySharing()),
+                    () => Adjust.trackEvent(Util.buildPartnerEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // Get Google Advertising Id.
@@ -385,7 +371,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         _showDialogMessage('SDK Enabled?', 'Adjust is enabled = $isEnabled');
       });
     } on PlatformException {
-      _showDialogMessage('SDK Enabled?', 'no such method found im plugin: isEnabled');
+      _showDialogMessage('SDK Enabled?', 'No such method found in plugin: isEnabled');
     }
   }
 

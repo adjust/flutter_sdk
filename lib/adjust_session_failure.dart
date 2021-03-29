@@ -31,9 +31,8 @@ class AdjustSessionFailure {
         willRetry: map['willRetry']?.toString().toLowerCase() == 'true',
       );
     } catch (e) {
-      throw Exception(
-          '[AdjustFlutter]: Failed to create AdjustSessionFailure object from given map object. Details: ' +
-              e.toString());
+      throw Exception('[AdjustFlutter]: Failed to create AdjustSessionFailure object from given map object. Details: '
+        + e.toString());
     }
   }
 }

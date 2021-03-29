@@ -69,7 +69,6 @@ class Util {
     AdjustEvent event = new AdjustEvent(EVENT_TOKEN_REVENUE);
     event.setRevenue(100.0, 'EUR');
     event.transactionId = 'DummyTransactionId';
-    event.callbackId = 'DummyCallbackId';
     return event;
   }
 
@@ -91,9 +90,9 @@ class Util {
     showDialog<Null>(
         context: context,
         builder: (_) => new AlertDialog(
-              title: new Text(dialogText),
-              content: new Text(message),
-            ));
+          title: new Text(dialogText),
+          content: new Text(message),
+        ));
   }
 
   static void showDemoDialog<T>(

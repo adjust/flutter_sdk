@@ -75,7 +75,6 @@ class Adjust {
     return isEnabled;
   }
 
-  // Return value could be `null`
   static Future<String?> getAdid() async {
     final String? adid = await _channel.invokeMethod('getAdid');
     return adid;
@@ -96,15 +95,13 @@ class Adjust {
     return googleAdId;
   }
 
-  static Future<num?> requestTrackingAuthorizationWithCompletionHandler() async {
-    final num? status =
-        await _channel.invokeMethod('requestTrackingAuthorizationWithCompletionHandler');
+  static Future<num> requestTrackingAuthorizationWithCompletionHandler() async {
+    final num status = await _channel.invokeMethod('requestTrackingAuthorizationWithCompletionHandler');
     return status;
   }
 
-  static Future<int?> getAppTrackingAuthorizationStatus() async {
-    final int? authorizationStatus =
-        await _channel.invokeMethod('getAppTrackingAuthorizationStatus');
+  static Future<int> getAppTrackingAuthorizationStatus() async {
+    final int authorizationStatus = await _channel.invokeMethod('getAppTrackingAuthorizationStatus');
     return authorizationStatus;
   }
 

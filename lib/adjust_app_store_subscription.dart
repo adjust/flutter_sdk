@@ -23,8 +23,7 @@ class AdjustAppStoreSubscription {
     this._price,
     this._currency,
     this._transactionId,
-    this._receipt,
-  ) {
+    this._receipt) {
     _billingStore = "iOS";
     _callbackParameters = new Map<String, String>();
     _partnerParameters = new Map<String, String>();

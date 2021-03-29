@@ -21,7 +21,12 @@ class AdjustPlayStoreSubscription {
   Map<String, String>? _partnerParameters;
 
   AdjustPlayStoreSubscription(
-      this._price, this._currency, this._sku, this._orderId, this._signature, this._purchaseToken) {
+    this._price,
+    this._currency,
+    this._sku,
+    this._orderId,
+    this._signature,
+    this._purchaseToken) {
     _billingStore = "GooglePlay";
     _callbackParameters = new Map<String, String>();
     _partnerParameters = new Map<String, String>();

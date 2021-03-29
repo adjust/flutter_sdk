@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,11 +13,12 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		9DF8055B24F9214500A001CE /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8055A24F9214500A001CE /* iAd.framework */; };
-		9DF8055D24F9214A00A001CE /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8055C24F9214900A001CE /* AdSupport.framework */; };
-		9DF8055F24F9215100A001CE /* AppTrackingTransparency.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8055E24F9215100A001CE /* AppTrackingTransparency.framework */; };
-		9DF8056124F9215600A001CE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8056024F9215600A001CE /* StoreKit.framework */; };
-		9DF8056324F9215B00A001CE /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8056224F9215B00A001CE /* CoreTelephony.framework */; };
+		9D934E032612994B00BDDA0B /* AdServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D934E022612994B00BDDA0B /* AdServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		9DF8055B24F9214500A001CE /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8055A24F9214500A001CE /* iAd.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		9DF8055D24F9214A00A001CE /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8055C24F9214900A001CE /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		9DF8055F24F9215100A001CE /* AppTrackingTransparency.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8055E24F9215100A001CE /* AppTrackingTransparency.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		9DF8056124F9215600A001CE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8056024F9215600A001CE /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		9DF8056324F9215B00A001CE /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8056224F9215B00A001CE /* CoreTelephony.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		B6025B3595AA1F9CF9F139AC /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 356E070BF8DE437AF960ADE2 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +52,7 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9D934E022612994B00BDDA0B /* AdServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdServices.framework; path = System/Library/Frameworks/AdServices.framework; sourceTree = SDKROOT; };
 		9DF8055A24F9214500A001CE /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
 		9DF8055C24F9214900A001CE /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		9DF8055E24F9215100A001CE /* AppTrackingTransparency.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppTrackingTransparency.framework; path = System/Library/Frameworks/AppTrackingTransparency.framework; sourceTree = SDKROOT; };
@@ -64,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D934E032612994B00BDDA0B /* AdServices.framework in Frameworks */,
 				9DF8055F24F9215100A001CE /* AppTrackingTransparency.framework in Frameworks */,
 				9DF8055B24F9214500A001CE /* iAd.framework in Frameworks */,
 				9DF8056324F9215B00A001CE /* CoreTelephony.framework in Frameworks */,
@@ -83,7 +86,6 @@
 				5F31F7FF83E0ADA732B55E3B /* Pods-Runner.release.xcconfig */,
 				33F9C572C86811AA0C86097B /* Pods-Runner.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -135,6 +137,7 @@
 		9DF8055924F9214500A001CE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9D934E022612994B00BDDA0B /* AdServices.framework */,
 				9DF8056224F9215B00A001CE /* CoreTelephony.framework */,
 				9DF8056024F9215600A001CE /* StoreKit.framework */,
 				9DF8055E24F9215100A001CE /* AppTrackingTransparency.framework */,
@@ -176,7 +179,7 @@
 		97C146E61CF9000F007C117D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = "";
 				TargetAttributes = {
 					97C146ED1CF9000F007C117D = {
@@ -342,6 +345,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -422,6 +426,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -477,6 +482,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;

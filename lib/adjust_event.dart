@@ -9,9 +9,9 @@
 import 'dart:convert';
 
 class AdjustEvent {
+  String _eventToken;
   num? _revenue;
   String? _currency;
-  String _eventToken;
   Map<String, String>? _callbackParameters;
   Map<String, String>? _partnerParameters;
 

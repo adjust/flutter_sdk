@@ -15,6 +15,10 @@ class AdjustThirdPartySharing {
   }
 
   void addGranularOption(String partnerName, String key, String value) {
+    if (partnerName == null || key == null || value == null) {
+      return;
+    }
+
     _granularOptions.add(partnerName);
     _granularOptions.add(key);
     _granularOptions.add(value);

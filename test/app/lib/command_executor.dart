@@ -1,3 +1,11 @@
+//
+//  command_executor.dart
+//  Adjust SDK
+//
+//  Created by Srdjan Tubin (@2beens) on 25th April 2018.
+//  Copyright (c) 2018-2021 Adjust GmbH. All rights reserved.
+//
+
 import 'dart:io' show Platform;
 
 import 'package:adjust_sdk/adjust.dart';
@@ -134,12 +142,10 @@ class CommandExecutor {
       testOptions['timerStartInMilliseconds'] = _command.getFirstParameterValue('timerStart');
     }
     if (_command.containsParameter('sessionInterval')) {
-      testOptions['sessionIntervalInMilliseconds'] =
-          _command.getFirstParameterValue('sessionInterval');
+      testOptions['sessionIntervalInMilliseconds'] = _command.getFirstParameterValue('sessionInterval');
     }
     if (_command.containsParameter('subsessionInterval')) {
-      testOptions['subsessionIntervalInMilliseconds'] =
-          _command.getFirstParameterValue('subsessionInterval');
+      testOptions['subsessionIntervalInMilliseconds'] = _command.getFirstParameterValue('subsessionInterval');
     }
     if (_command.containsParameter('tryInstallReferrer')) {
       testOptions['tryInstallReferrer'] = _command.getFirstParameterValue('tryInstallReferrer');
@@ -151,8 +157,7 @@ class CommandExecutor {
       testOptions['iAdFrameworkEnabled'] = _command.getFirstParameterValue('iAdFrameworkEnabled');
     }
     if (_command.containsParameter('adServicesFrameworkEnabled')) {
-      testOptions['adServicesFrameworkEnabled'] =
-          _command.getFirstParameterValue('adServicesFrameworkEnabled');
+      testOptions['adServicesFrameworkEnabled'] = _command.getFirstParameterValue('adServicesFrameworkEnabled');
     }
     bool useTestConnectionOptions = false;
     if (_command.containsParameter('teardown')) {
@@ -219,8 +224,7 @@ class CommandExecutor {
     } else {
       String appToken = _command.getFirstParameterValue('appToken')!;
       String? environmentString = _command.getFirstParameterValue('environment');
-      AdjustEnvironment environment =
-          environmentString == 'sandbox' ? AdjustEnvironment.sandbox : AdjustEnvironment.production;
+      AdjustEnvironment environment = environmentString == 'sandbox' ? AdjustEnvironment.sandbox : AdjustEnvironment.production;
       adjustConfig = new AdjustConfig(appToken, environment);
       adjustConfig.logLevel = AdjustLogLevel.verbose;
       _savedConfigs.putIfAbsent(configNumber, () => adjustConfig);
@@ -289,8 +293,7 @@ class CommandExecutor {
     }
 
     if (_command.containsParameter('eventBufferingEnabled')) {
-      adjustConfig!.eventBufferingEnabled =
-          _command.getFirstParameterValue('eventBufferingEnabled') == 'true';
+      adjustConfig!.eventBufferingEnabled = _command.getFirstParameterValue('eventBufferingEnabled') == 'true';
     }
 
     if (_command.containsParameter('sendInBackground')) {
@@ -298,13 +301,11 @@ class CommandExecutor {
     }
 
     if (_command.containsParameter('allowiAdInfoReading')) {
-      adjustConfig!.allowiAdInfoReading =
-          _command.getFirstParameterValue('allowiAdInfoReading') == 'true';
+      adjustConfig!.allowiAdInfoReading = _command.getFirstParameterValue('allowiAdInfoReading') == 'true';
     }
 
     if (_command.containsParameter('allowAdServicesInfoReading')) {
-      adjustConfig!.allowAdServicesInfoReading =
-          _command.getFirstParameterValue('allowAdServicesInfoReading') == 'true';
+      adjustConfig!.allowAdServicesInfoReading = _command.getFirstParameterValue('allowAdServicesInfoReading') == 'true';
     }
 
     if (_command.containsParameter('allowIdfaReading')) {
@@ -327,10 +328,9 @@ class CommandExecutor {
     // https://github.com/flutter/flutter/issues/8711#issuecomment-304681212
     if (_command.containsParameter('deferredDeeplinkCallback')) {
       String? localBasePath = _basePath;
-      adjustConfig.launchDeferredDeeplink =
-          _command.getFirstParameterValue('deferredDeeplinkCallback') == 'true';
-      print(
-          '[CommandExecutor]: Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink}');
+      adjustConfig.launchDeferredDeeplink = _command.getFirstParameterValue('deferredDeeplinkCallback') == 'true';
+      print('[CommandExecutor]: Deferred deeplink callback, launchDeferredDeeplink:
+        ${adjustConfig.launchDeferredDeeplink}');
       adjustConfig.deferredDeeplinkCallback = (String? uri) {
         print('[CommandExecutor]: Sending deeplink info to server: $uri');
         TestLib.addInfoToSend('deeplink', uri);
@@ -422,10 +422,6 @@ class CommandExecutor {
     if (_command.containsParameter('urlStrategy')) {
       adjustConfig.urlStrategy = _command.getFirstParameterValue('urlStrategy');
     }
-
-    // if (_command.containsParameter('preinstallTrackingEnabled')) {
-    //   adjustConfig.preinstallTrackingEnabled = _command.getFirstParameterValue('preinstallTrackingEnabled') == // 'true';
-    // }
   }
 
   void _start() {
@@ -618,7 +614,7 @@ class CommandExecutor {
       String salesRegion = _command.getFirstParameterValue('salesRegion')!;
 
       AdjustAppStoreSubscription subscription =
-          new AdjustAppStoreSubscription(price, currency, transactionId, receipt);
+        new AdjustAppStoreSubscription(price, currency, transactionId, receipt);
 
       subscription.setTransactionDate(transactionDate);
       subscription.setSalesRegion(salesRegion);
@@ -651,7 +647,7 @@ class CommandExecutor {
       String purchaseTime = _command.getFirstParameterValue('transactionDate')!;
 
       AdjustPlayStoreSubscription subscription =
-          new AdjustPlayStoreSubscription(price, currency, sku, orderId, signature, purchaseToken);
+        new AdjustPlayStoreSubscription(price, currency, sku, orderId, signature, purchaseToken);
       subscription.setPurchaseTime(purchaseTime);
 
       if (_command.containsParameter('callbackParams')) {

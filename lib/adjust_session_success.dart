@@ -28,9 +28,8 @@ class AdjustSessionSuccess {
         jsonResponse: map['jsonResponse'],
       );
     } catch (e) {
-      throw Exception(
-          '[AdjustFlutter]: Failed to create AdjustSessionSuccess object from given map object. Details: ' +
-              e.toString());
+      throw Exception('[AdjustFlutter]: Failed to create AdjustSessionSuccess object from given map object. Details: '
+        + e.toString());
     }
   }
 }

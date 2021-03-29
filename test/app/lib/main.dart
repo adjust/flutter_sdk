@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> {
                     'Start Test Session',
                     () => Adjust.getSdkVersion().then((sdkVersion) {
                           TestLib.startTestSession(sdkVersion);
-                        }))
+                    }))
               ])))
         ]),
       ),

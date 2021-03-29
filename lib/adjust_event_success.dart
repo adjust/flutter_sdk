@@ -34,9 +34,8 @@ class AdjustEventSuccess {
         jsonResponse: map['jsonResponse'],
       );
     } catch (e) {
-      throw Exception(
-          '[AdjustFlutter]: Failed to create AdjustEventSuccess object from given map object. Details: ' +
-              e.toString());
+      throw Exception('[AdjustFlutter]: Failed to create AdjustEventSuccess object from given map object. Details: ' 
+        + e.toString());
     }
   }
 }
