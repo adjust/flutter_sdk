@@ -329,8 +329,7 @@ class CommandExecutor {
     if (_command.containsParameter('deferredDeeplinkCallback')) {
       String? localBasePath = _basePath;
       adjustConfig.launchDeferredDeeplink = _command.getFirstParameterValue('deferredDeeplinkCallback') == 'true';
-      print('[CommandExecutor]: Deferred deeplink callback, launchDeferredDeeplink:
-        ${adjustConfig.launchDeferredDeeplink}');
+      print('[CommandExecutor]: Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink}');
       adjustConfig.deferredDeeplinkCallback = (String? uri) {
         print('[CommandExecutor]: Sending deeplink info to server: $uri');
         TestLib.addInfoToSend('deeplink', uri);
