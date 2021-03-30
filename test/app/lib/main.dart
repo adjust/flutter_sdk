@@ -73,6 +73,7 @@ class _MyAppState extends State<MyApp> {
                 buildCupertinoButton(
                     'Start Test Session',
                     () => Adjust.getSdkVersion().then((sdkVersion) {
+                          // TestLib.addTestDirectory('third-party-sharing');
                           TestLib.startTestSession(sdkVersion);
                     }))
               ])))

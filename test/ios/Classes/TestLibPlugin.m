@@ -48,6 +48,8 @@
       [self addTestDirectory:call withResult:result];
   } else if ([@"doNotExitAfterEnd" isEqualToString:call.method]) {
       [self doNotExitAfterEnd:call withResult:result];
+  } else if ([@"setTestConnectionOptions" isEqualToString:call.method]) {
+    // do nothing, Android specific method
   } else {
     result(FlutterMethodNotImplemented);
   }

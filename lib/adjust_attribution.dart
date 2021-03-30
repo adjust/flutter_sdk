@@ -35,6 +35,13 @@ class AdjustAttribution {
 
   factory AdjustAttribution.fromMap(dynamic map) {
     try {
+      double parsedCostAmount = -1;
+      try {
+        if (map['costAmount'] != null) {
+          parsedCostAmount = double.parse(map['costAmount']);
+        }
+      } catch (ex) {}
+
       return AdjustAttribution(
         trackerToken: map['trackerToken'],
         trackerName: map['trackerName'],
@@ -45,7 +52,7 @@ class AdjustAttribution {
         clickLabel: map['clickLabel'],
         adid: map['adid'],
         costType: map['costType'],
-        costAmount: map['costAmount'],
+        costAmount: parsedCostAmount != -1 ? parsedCostAmount : null,
         costCurrency: map['costCurrency'],
       );
     } catch (e) {

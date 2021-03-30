@@ -25,8 +25,7 @@ class TestLib {
             }
             break;
           default:
-            throw new UnsupportedError(
-                '[TestLibrary]: Received unknown native method: ${call.method}');
+            throw new UnsupportedError('[TestLibrary]: Received unknown native method: ${call.method}');
         }
       } catch (e) {
         print(e.toString());

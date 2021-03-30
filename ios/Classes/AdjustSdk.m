@@ -501,6 +501,9 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     [self addValueOrEmpty:attribution.adgroup withKey:@"adgroup" toDictionary:dictionary];
     [self addValueOrEmpty:attribution.clickLabel withKey:@"clickLabel" toDictionary:dictionary];
     [self addValueOrEmpty:attribution.adid withKey:@"adid" toDictionary:dictionary];
+    [self addValueOrEmpty:attribution.costType withKey:@"costType" toDictionary:dictionary];
+    [self addNumberOrEmpty:attribution.costAmount withKey:@"costAmount" toDictionary:dictionary];
+    [self addValueOrEmpty:attribution.costCurrency withKey:@"costCurrency" toDictionary:dictionary];
     result(dictionary);
 }
 
@@ -659,6 +662,16 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
            toDictionary:(NSMutableDictionary *)dictionary {
     if (nil != value) {
         [dictionary setObject:[NSString stringWithFormat:@"%@", value] forKey:key];
+    } else {
+        [dictionary setObject:@"" forKey:key];
+    }
+}
+
+- (void)addNumberOrEmpty:(NSNumber *)value
+                 withKey:(NSString *)key
+            toDictionary:(NSMutableDictionary *)dictionary {
+    if (nil != value) {
+        [dictionary setObject:[value stringValue] forKey:key];
     } else {
         [dictionary setObject:@"" forKey:key];
     }

@@ -162,7 +162,7 @@ class CommandExecutor {
     bool useTestConnectionOptions = false;
     if (_command.containsParameter('teardown')) {
       List<dynamic> teardownOptions = _command.getParamteters('teardown')!;
-      for (String teardownOption in teardownOptions as Iterable<String>) {
+      for (String teardownOption in teardownOptions) {
         if (teardownOption == 'resetSdk') {
           testOptions['teardown'] = 'true';
           testOptions['basePath'] = _basePath;
@@ -267,7 +267,7 @@ class CommandExecutor {
     if (_command.containsParameter('appSecret')) {
       List<dynamic> appSecretArray = _command.getParamteters('appSecret')!;
       bool appSecretValid = true;
-      for (String appSecretData in appSecretArray as Iterable<String>) {
+      for (String appSecretData in appSecretArray) {
         if (appSecretData.length == 0) {
           appSecretValid = false;
           break;
@@ -671,7 +671,7 @@ class CommandExecutor {
   }
 
   void _trackThirdPartySharing() {
-    late bool isEnabled;
+    bool? isEnabled;
     if (_command.containsParameter('isEnabled')) {
       isEnabled = _command.getFirstParameterValue('isEnabled') == 'true';
     }

@@ -117,7 +117,7 @@ static NSString *dartDeferredDeeplinkCallback;
         [self getValueOrEmpty:[attribution clickLabel]],
         [self getValueOrEmpty:[attribution adid]],
         [self getValueOrEmpty:[attribution costType]],
-        [self getObjectValueOrEmpty:[attribution costAmount]],
+        [self getNumberValueOrEmpty:[attribution costAmount]],
         [self getValueOrEmpty:[attribution costCurrency]]
     };
     NSUInteger count = sizeof(values) / sizeof(id);
@@ -264,6 +264,13 @@ static NSString *dartDeferredDeeplinkCallback;
         return @"";
     }
     return value;
+}
+
+- (id)getNumberValueOrEmpty:(NSNumber *)value {
+    if (value == nil || value == NULL) {
+        return @"";
+    }
+    return [value stringValue];
 }
 
 - (id)getObjectValueOrEmpty:(id)value {
