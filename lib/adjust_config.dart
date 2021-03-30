@@ -33,6 +33,7 @@ class AdjustConfig {
   static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
   static const String UrlStrategyIndia = 'india';
   static const String UrlStrategyChina = 'china';
+  static const String DataResidencyEU = 'data-residency-eu';
   static const String AdRevenueSourceMopub = 'mopub';
   static const String AdRevenueSourceAdmob = 'admob';
   static const String AdRevenueSourceFbNativeAd = 'facebook_native_ad';

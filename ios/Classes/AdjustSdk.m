@@ -202,6 +202,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
             [adjustConfig setUrlStrategy:ADJUrlStrategyChina];
         } else if ([urlStrategy isEqualToString:@"india"]) {
             [adjustConfig setUrlStrategy:ADJUrlStrategyIndia];
+        } else if ([urlStrategy isEqualToString:@"data-residency-eu"]) {
+            [adjustConfig setUrlStrategy:ADJDataResidencyEU];
         }
     }
 
