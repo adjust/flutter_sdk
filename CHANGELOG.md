@@ -1,3 +1,18 @@
+### Version 4.29.0 (xxth May 2021)
+#### Added
+- Added support for null safety (thanks to @blaueeiner).
+- Added data residency feature. Support for EU data residency region is added. You can choose this setting by setting `urlStrategy` member of `AdjustConfig` instance to `AdjustConfig.DataResidencyEU` value.
+- Added preinstall tracking with usage of system installer receiver on Android platform.
+
+#### Fixed
+- Fixed attribution value comparison logic which might cause same attribution value to be delivered into attribution callback on iOS platform.
+
+#### Native SDKs
+- [iOS@v4.29.2][ios_sdk_v4.29.2]
+- [Android@v4.28.1][android_sdk_v4.28.1]
+
+---
+
 ### Version 4.28.0 (2nd April 2021)
 #### Changed
 - Removed native iOS legacy code.
@@ -207,6 +222,7 @@
 [ios_sdk_v4.23.2]: https://github.com/adjust/ios_sdk/tree/v4.23.2
 [ios_sdk_v4.26.1]: https://github.com/adjust/ios_sdk/tree/v4.26.1
 [ios_sdk_v4.28.0]: https://github.com/adjust/ios_sdk/tree/v4.28.0
+[ios_sdk_v4.29.2]: https://github.com/adjust/ios_sdk/tree/v4.29.2
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -216,3 +232,4 @@
 [android_sdk_v4.24.1]: https://github.com/adjust/android_sdk/tree/v4.24.1
 [android_sdk_v4.26.2]: https://github.com/adjust/android_sdk/tree/v4.26.2
 [android_sdk_v4.27.0]: https://github.com/adjust/android_sdk/tree/v4.27.0
+[android_sdk_v4.28.1]: https://github.com/adjust/android_sdk/tree/v4.28.1
