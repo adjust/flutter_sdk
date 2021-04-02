@@ -4,7 +4,7 @@
 
 #### Native SDKs
 - [iOS@v4.28.0][ios_sdk_v4.28.0]
-- [Android@v4.26.2][android_sdk_v4.26.2]
+- [Android@v4.27.0][android_sdk_v4.27.0]
 
 ---
 
@@ -215,3 +215,4 @@
 [android_sdk_v4.24.0]: https://github.com/adjust/android_sdk/tree/v4.24.0
 [android_sdk_v4.24.1]: https://github.com/adjust/android_sdk/tree/v4.24.1
 [android_sdk_v4.26.2]: https://github.com/adjust/android_sdk/tree/v4.26.2
+[android_sdk_v4.27.0]: https://github.com/adjust/android_sdk/tree/v4.27.0
