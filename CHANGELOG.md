@@ -1,3 +1,13 @@
+### Version 4.28.0 (2nd April 2021)
+#### Changed
+- Removed native iOS legacy code.
+
+#### Native SDKs
+- [iOS@v4.28.0][ios_sdk_v4.28.0]
+- [Android@v4.27.0][android_sdk_v4.27.0]
+
+---
+
 ### Version 4.26.0 (23rd February 2021)
 #### Added
 - Added possibility to get cost data information in attribution callback.
@@ -196,6 +206,7 @@
 [ios_sdk_v4.23.0]: https://github.com/adjust/ios_sdk/tree/v4.23.0
 [ios_sdk_v4.23.2]: https://github.com/adjust/ios_sdk/tree/v4.23.2
 [ios_sdk_v4.26.1]: https://github.com/adjust/ios_sdk/tree/v4.26.1
+[ios_sdk_v4.28.0]: https://github.com/adjust/ios_sdk/tree/v4.28.0
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -204,3 +215,4 @@
 [android_sdk_v4.24.0]: https://github.com/adjust/android_sdk/tree/v4.24.0
 [android_sdk_v4.24.1]: https://github.com/adjust/android_sdk/tree/v4.24.1
 [android_sdk_v4.26.2]: https://github.com/adjust/android_sdk/tree/v4.26.2
+[android_sdk_v4.27.0]: https://github.com/adjust/android_sdk/tree/v4.27.0
