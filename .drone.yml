@@ -1,0 +1,18 @@
+pipeline:
+  validate-publish:
+    group: build
+    image: gcr.io/quintohub/flutter:1.0.10
+    commands:
+      - flutter pub publish -n
+    when:
+      event:
+        exclude: [pull_request]
+
+  publish:
+    group: publish
+    image: gcr.io/quintohub/flutter:1.0.10
+    commands:
+      - flutter pub publish -f
+    when:
+      event: tag
+      branch: master

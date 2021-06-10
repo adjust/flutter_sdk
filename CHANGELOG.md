@@ -1,3 +1,5 @@
+### 5.0.0
+
 ### Version 4.28.0 (2nd April 2021)
 #### Changed
 - Removed native iOS legacy code.
