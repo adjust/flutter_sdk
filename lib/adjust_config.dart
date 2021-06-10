@@ -6,12 +6,12 @@
 //  Copyright (c) 2018-2021 Adjust GmbH. All rights reserved.
 //
 
-import 'package:flutter/services.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
+import 'package:flutter/services.dart';
 
 enum AdjustLogLevel { verbose, debug, info, warn, error, suppress }
 enum AdjustEnvironment { production, sandbox }
@@ -21,7 +21,7 @@ typedef void SessionSuccessCallback(AdjustSessionSuccess successData);
 typedef void SessionFailureCallback(AdjustSessionFailure failureData);
 typedef void EventSuccessCallback(AdjustEventSuccess successData);
 typedef void EventFailureCallback(AdjustEventFailure failureData);
-typedef void DeferredDeeplinkCallback(String uri);
+typedef void DeferredDeeplinkCallback(String? uri);
 
 class AdjustConfig {
   static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
@@ -53,39 +53,39 @@ class AdjustConfig {
   static const String AdRevenueSourceAdtoapp = 'adtoapp';
   static const String AdRevenueSourceTapdaq = 'tapdaq';
 
-  num _info1;
-  num _info2;
-  num _info3;
-  num _info4;
-  num _secretId;
+  num? _info1;
+  num? _info2;
+  num? _info3;
+  num? _info4;
+  num? _secretId;
   String _appToken;
   AdjustEnvironment _environment;
-  bool _skAdNetworkHandling;
+  bool? _skAdNetworkHandling;
 
-  double delayStart;
-  bool isDeviceKnown;
-  bool sendInBackground;
-  bool eventBufferingEnabled;
-  bool allowiAdInfoReading;
-  bool allowAdServicesInfoReading;
-  bool allowIdfaReading;
-  bool launchDeferredDeeplink;
-  bool needsCost;
-  bool preinstallTrackingEnabled;
-  String sdkPrefix;
-  String userAgent;
-  String defaultTracker;
-  String externalDeviceId;
-  String urlStrategy;
-  String processName;
-  AdjustLogLevel logLevel;
-  AttributionCallback attributionCallback;
-  SessionSuccessCallback sessionSuccessCallback;
-  SessionFailureCallback sessionFailureCallback;
-  EventSuccessCallback eventSuccessCallback;
-  EventFailureCallback eventFailureCallback;
-  DeferredDeeplinkCallback deferredDeeplinkCallback;
-  
+  double? delayStart;
+  bool? isDeviceKnown;
+  bool? sendInBackground;
+  bool? eventBufferingEnabled;
+  bool? allowiAdInfoReading;
+  bool? allowAdServicesInfoReading;
+  bool? allowIdfaReading;
+  bool? launchDeferredDeeplink;
+  bool? needsCost;
+  bool? preinstallTrackingEnabled;
+  String? sdkPrefix;
+  String? userAgent;
+  String? defaultTracker;
+  String? externalDeviceId;
+  String? urlStrategy;
+  String? processName;
+  AdjustLogLevel? logLevel;
+  AttributionCallback? attributionCallback;
+  SessionSuccessCallback? sessionSuccessCallback;
+  SessionFailureCallback? sessionFailureCallback;
+  EventSuccessCallback? eventSuccessCallback;
+  EventFailureCallback? eventFailureCallback;
+  DeferredDeeplinkCallback? deferredDeeplinkCallback;
+
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
     _skAdNetworkHandling = true;
@@ -104,47 +104,48 @@ class AdjustConfig {
   }
 
   void _initCallbackHandlers() {
-    _channel.setMethodCallHandler((MethodCall call) {
+    _channel.setMethodCallHandler((MethodCall call) async {
       try {
         switch (call.method) {
           case _attributionCallbackName:
             if (attributionCallback != null) {
               AdjustAttribution attribution = AdjustAttribution.fromMap(call.arguments);
-              attributionCallback(attribution);
+              attributionCallback!(attribution);
             }
             break;
           case _sessionSuccessCallbackName:
             if (sessionSuccessCallback != null) {
               AdjustSessionSuccess sessionSuccess = AdjustSessionSuccess.fromMap(call.arguments);
-              sessionSuccessCallback(sessionSuccess);
+              sessionSuccessCallback!(sessionSuccess);
             }
             break;
           case _sessionFailureCallbackName:
             if (sessionFailureCallback != null) {
               AdjustSessionFailure sessionFailure = AdjustSessionFailure.fromMap(call.arguments);
-              sessionFailureCallback(sessionFailure);
+              sessionFailureCallback!(sessionFailure);
             }
             break;
           case _eventSuccessCallbackName:
             if (eventSuccessCallback != null) {
               AdjustEventSuccess eventSuccess = AdjustEventSuccess.fromMap(call.arguments);
-              eventSuccessCallback(eventSuccess);
+              eventSuccessCallback!(eventSuccess);
             }
             break;
           case _eventFailureCallbackName:
             if (eventFailureCallback != null) {
               AdjustEventFailure eventFailure = AdjustEventFailure.fromMap(call.arguments);
-              eventFailureCallback(eventFailure);
+              eventFailureCallback!(eventFailure);
             }
             break;
           case _deferredDeeplinkCallbackName:
-            String uri = call.arguments['uri'];
+            String? uri = call.arguments['uri'];
             if (deferredDeeplinkCallback != null) {
-              deferredDeeplinkCallback(uri);
+              deferredDeeplinkCallback!(uri);
             }
             break;
           default:
-            throw new UnsupportedError('[AdjustFlutter]: Received unknown native method: ${call.method}');
+            throw new UnsupportedError(
+                '[AdjustFlutter]: Received unknown native method: ${call.method}');
         }
       } catch (e) {
         print(e.toString());
@@ -152,8 +153,8 @@ class AdjustConfig {
     });
   }
 
-  Map<String, String> get toMap {
-    Map<String, String> configMap = {
+  Map<String, String?> get toMap {
+    Map<String, String?> configMap = {
       'sdkPrefix': sdkPrefix,
       'appToken': _appToken,
       'environment': _environment.toString().substring(_environment.toString().indexOf('.') + 1),

@@ -9,24 +9,19 @@
 import 'dart:convert';
 
 class AdjustPlayStoreSubscription {
-  String _price;
-  String _currency;
-  String _sku;
-  String _orderId;
-  String _signature;
-  String _purchaseToken;
-  String _billingStore;
-  String _purchaseTime;
-  Map<String, String> _callbackParameters;
-  Map<String, String> _partnerParameters;
+  String? _price;
+  String? _currency;
+  String? _sku;
+  String? _orderId;
+  String? _signature;
+  String? _purchaseToken;
+  String? _billingStore;
+  String? _purchaseTime;
+  Map<String, String>? _callbackParameters;
+  Map<String, String>? _partnerParameters;
 
   AdjustPlayStoreSubscription(
-    this._price,
-    this._currency,
-    this._sku,
-    this._orderId,
-    this._signature,
-    this._purchaseToken) {
+      this._price, this._currency, this._sku, this._orderId, this._signature, this._purchaseToken) {
     _billingStore = "GooglePlay";
     _callbackParameters = new Map<String, String>();
     _partnerParameters = new Map<String, String>();
@@ -37,15 +32,15 @@ class AdjustPlayStoreSubscription {
   }
 
   void addCallbackParameter(String key, String value) {
-    _callbackParameters[key] = value;
+    _callbackParameters![key] = value;
   }
 
   void addPartnerParameter(String key, String value) {
-    _partnerParameters[key] = value;
+    _partnerParameters![key] = value;
   }
 
-  Map<String, String> get toMap {
-    Map<String, String> subscriptionMap = new Map<String, String>();
+  Map<String, String?> get toMap {
+    Map<String, String?> subscriptionMap = new Map<String, String?>();
 
     if (_price != null) {
       subscriptionMap['price'] = _price;
@@ -71,10 +66,10 @@ class AdjustPlayStoreSubscription {
     if (_purchaseTime != null) {
       subscriptionMap['purchaseTime'] = _purchaseTime;
     }
-    if (_callbackParameters.length > 0) {
+    if (_callbackParameters!.length > 0) {
       subscriptionMap['callbackParameters'] = json.encode(_callbackParameters);
     }
-    if (_partnerParameters.length > 0) {
+    if (_partnerParameters!.length > 0) {
       subscriptionMap['partnerParameters'] = json.encode(_partnerParameters);
     }
 
