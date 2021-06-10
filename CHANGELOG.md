@@ -1,7 +1,7 @@
-### Version 4.29.0 (xxth May 2021)
+### Version 4.29.0 (xxth June 2021)
 #### Added
 - Added support for null safety (thanks to @blaueeiner).
-- Added data residency feature. Support for EU data residency region is added. You can choose this setting by setting `urlStrategy` member of `AdjustConfig` instance to `AdjustConfig.DataResidencyEU` value.
+- Added data residency feature. You can choose this setting by setting `urlStrategy` member of `AdjustConfig` instance to `AdjustConfig.DataResidencyEU` (for EU data residency region), `AdjustConfig.DataResidencyTR` (for TR data residency region) or `AdjustConfig.DataResidencyUS` value (for US data residency region).
 - Added preinstall tracking with usage of system installer receiver on Android platform.
 
 #### Fixed
