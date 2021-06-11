@@ -892,7 +892,7 @@ The callback function will be called after the SDK receives the final attributio
 - `costAmount` the cost amount
 - `costCurrency` the cost currency string
 
-**Note**: The cost data - `costType`, `costAmount` & `costCurrency` are only available when configured in `AdjustConfig` by setting `needsCost` member to `true`. If not configured or configured, but not being part of the attribution, these fields will have value `null`. This feature is available in SDK v4.29.0 and later.
+**Note**: The cost data - `costType`, `costAmount` & `costCurrency` are only available when configured in `AdjustConfig` by setting `needsCost` member to `true`. If not configured or configured, but not being part of the attribution, these fields will have value `null`. This feature is available in SDK v4.26.0 and later.
 
 ### <a id="af-session-event-callbacks"></a>Session and event callbacks
 
