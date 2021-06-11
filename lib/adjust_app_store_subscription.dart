@@ -9,15 +9,15 @@
 import 'dart:convert';
 
 class AdjustAppStoreSubscription {
-  String _price;
-  String _currency;
-  String _transactionId;
-  String _receipt;
-  String _transactionDate;
-  String _salesRegion;
-  String _billingStore;
-  Map<String, String> _callbackParameters;
-  Map<String, String> _partnerParameters;
+  String? _price;
+  String? _currency;
+  String? _transactionId;
+  String? _receipt;
+  String? _transactionDate;
+  String? _salesRegion;
+  String? _billingStore;
+  Map<String, String>? _callbackParameters;
+  Map<String, String>? _partnerParameters;
 
   AdjustAppStoreSubscription(
     this._price,
@@ -38,15 +38,15 @@ class AdjustAppStoreSubscription {
   }
 
   void addCallbackParameter(String key, String value) {
-    _callbackParameters[key] = value;
+    _callbackParameters![key] = value;
   }
 
   void addPartnerParameter(String key, String value) {
-    _partnerParameters[key] = value;
+    _partnerParameters![key] = value;
   }
 
-  Map<String, String> get toMap {
-    Map<String, String> subscriptionMap = new Map<String, String>();
+  Map<String, String?> get toMap {
+    Map<String, String?> subscriptionMap = new Map<String, String?>();
 
     if (_price != null) {
       subscriptionMap['price'] = _price;
@@ -69,10 +69,10 @@ class AdjustAppStoreSubscription {
     if (_billingStore != null) {
       subscriptionMap['billingStore'] = _billingStore;
     }
-    if (_callbackParameters.length > 0) {
+    if (_callbackParameters!.length > 0) {
       subscriptionMap['callbackParameters'] = json.encode(_callbackParameters);
     }
-    if (_partnerParameters.length > 0) {
+    if (_partnerParameters!.length > 0) {
       subscriptionMap['partnerParameters'] = json.encode(_partnerParameters);
     }
 

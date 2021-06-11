@@ -3,17 +3,17 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018-2020 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2018-2021 Adjust GmbH. All rights reserved.
 //
 
 import 'dart:convert';
 import 'dart:io';
 
 class Command {
-  String _className;
-  String _methodName;
-  String _jsonParameters;
-  Map<dynamic, dynamic> _parameters;
+  String? _className;
+  String? _methodName;
+  String? _jsonParameters;
+  Map<dynamic, dynamic>? _parameters;
 
   Command(dynamic map) {
     try {
@@ -22,7 +22,7 @@ class Command {
 
       if (Platform.isAndroid) {
         _jsonParameters = map['jsonParameters'];
-        _parameters = json.decode(_jsonParameters);
+        _parameters = json.decode(_jsonParameters!);
       } else {
         _parameters = map['jsonParameters'];
         _jsonParameters = json.encode(_parameters);
@@ -32,23 +32,23 @@ class Command {
     }
   }
 
-  String get className => _className;
-  String get methodName => _methodName;
+  String? get className => _className;
+  String? get methodName => _methodName;
 
-  String getFirstParameterValue(String parameterKey) {
-    List<dynamic> parameterValues = _parameters[parameterKey];
+  String? getFirstParameterValue(String parameterKey) {
+    List<dynamic>? parameterValues = _parameters![parameterKey];
     if (parameterValues == null || parameterValues.length == 0) {
       return null;
     }
     return parameterValues.first;
   }
 
-  List<dynamic> getParamteters(String parameterKey) {
-    return _parameters[parameterKey];
+  List<dynamic>? getParamteters(String parameterKey) {
+    return _parameters![parameterKey];
   }
 
   bool containsParameter(String parameterKey) {
-    return _parameters[parameterKey] != null;
+    return _parameters![parameterKey] != null;
   }
 
   @override

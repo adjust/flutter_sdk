@@ -17,6 +17,7 @@ static NSString *dartSessionFailureCallback;
 static NSString *dartEventSuccessCallback;
 static NSString *dartEventFailureCallback;
 static NSString *dartDeferredDeeplinkCallback;
+static NSString *dartConversionValueUpdatedCallback;
 
 @implementation AdjustSdkDelegate
 
@@ -38,6 +39,7 @@ static NSString *dartDeferredDeeplinkCallback;
                              eventSuccessCallback:(NSString *)swizzleEventSuccessCallback
                              eventFailureCallback:(NSString *)swizzleEventFailureCallback
                          deferredDeeplinkCallback:(NSString *)swizzleDeferredDeeplinkCallback
+                   conversionValueUpdatedCallback:(NSString *)swizzleConversionValueUpdatedCallback
                      shouldLaunchDeferredDeeplink:(BOOL)shouldLaunchDeferredDeeplink
                                  andMethodChannel:(FlutterMethodChannel *)channel {
     
@@ -74,6 +76,11 @@ static NSString *dartDeferredDeeplinkCallback;
             [defaultInstance swizzleCallbackMethod:@selector(adjustDeeplinkResponse:)
                                   swizzledSelector:@selector(adjustDeeplinkResponseWannabe:)];
             dartDeferredDeeplinkCallback = swizzleDeferredDeeplinkCallback;
+        }
+        if (swizzleConversionValueUpdatedCallback != nil) {
+            [defaultInstance swizzleCallbackMethod:@selector(adjustConversionValueUpdated:)
+                                  swizzledSelector:@selector(adjustConversionValueUpdatedWannabe:)];
+            dartConversionValueUpdatedCallback = swizzleConversionValueUpdatedCallback;
         }
 
         [defaultInstance setShouldLaunchDeferredDeeplink:shouldLaunchDeferredDeeplink];
@@ -117,7 +124,7 @@ static NSString *dartDeferredDeeplinkCallback;
         [self getValueOrEmpty:[attribution clickLabel]],
         [self getValueOrEmpty:[attribution adid]],
         [self getValueOrEmpty:[attribution costType]],
-        [self getObjectValueOrEmpty:[attribution costAmount]],
+        [self getNumberValueOrEmpty:[attribution costAmount]],
         [self getValueOrEmpty:[attribution costCurrency]]
     };
     NSUInteger count = sizeof(values) / sizeof(id);
@@ -222,6 +229,16 @@ static NSString *dartDeferredDeeplinkCallback;
     return self.shouldLaunchDeferredDeeplink;
 }
 
+- (void)adjustConversionValueUpdatedWannabe:(NSNumber *)conversionValue {
+    id keys[] = { @"conversionValue" };
+    id values[] = { [conversionValue stringValue] };
+    NSUInteger count = sizeof(values) / sizeof(id);
+    NSDictionary *conversionValueMap = [NSDictionary dictionaryWithObjects:values
+                                                                   forKeys:keys
+                                                                     count:count];
+    [self.channel invokeMethod:dartConversionValueUpdatedCallback arguments:conversionValueMap];
+}
+
 - (void)swizzleCallbackMethod:(SEL)originalSelector
              swizzledSelector:(SEL)swizzledSelector {
     Class class = [self class];
@@ -264,6 +281,13 @@ static NSString *dartDeferredDeeplinkCallback;
         return @"";
     }
     return value;
+}
+
+- (id)getNumberValueOrEmpty:(NSNumber *)value {
+    if (value == nil || value == NULL) {
+        return @"";
+    }
+    return [value stringValue];
 }
 
 - (id)getObjectValueOrEmpty:(id)value {

@@ -7,28 +7,38 @@
 //
 
 class AdjustEventFailure {
-  String message;
-  String timestamp;
-  String adid;
-  String eventToken;
-  String callbackId;
-  String jsonResponse;
-  bool willRetry;
+  final String? message;
+  final String? timestamp;
+  final String? adid;
+  final String? eventToken;
+  final String? callbackId;
+  final String? jsonResponse;
+  final bool? willRetry;
 
-  static AdjustEventFailure fromMap(dynamic map) {
-    AdjustEventFailure eventFailure = new AdjustEventFailure();
+  AdjustEventFailure({
+    required this.message,
+    required this.timestamp,
+    required this.adid,
+    required this.eventToken,
+    required this.callbackId,
+    required this.jsonResponse,
+    required this.willRetry,
+  });
+
+  factory AdjustEventFailure.fromMap(dynamic map) {
     try {
-      eventFailure.message = map['message'];
-      eventFailure.timestamp = map['timestamp'];
-      eventFailure.adid = map['adid'];
-      eventFailure.eventToken = map['eventToken'];
-      eventFailure.callbackId = map['callbackId'];
-      eventFailure.jsonResponse = map['jsonResponse'];
-      bool willRetry = map['willRetry'].toString().toLowerCase() == 'true';
-      eventFailure.willRetry = willRetry;
+      return AdjustEventFailure(
+        message: map['message'],
+        timestamp: map['timestamp'],
+        adid: map['adid'],
+        eventToken: map['eventToken'],
+        callbackId: map['callbackId'],
+        jsonResponse: map['jsonResponse'],
+        willRetry: map['willRetry']?.toString().toLowerCase() == 'true',
+      );
     } catch (e) {
-      print('[AdjustFlutter]: Failed to create AdjustEventFailure object from given map object. Details: ' + e.toString());
+      throw Exception('[AdjustFlutter]: Failed to create AdjustEventFailure object from given map object. Details: '
+        + e.toString());
     }
-    return eventFailure;
   }
 }

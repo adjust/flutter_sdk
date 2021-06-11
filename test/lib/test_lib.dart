@@ -6,23 +6,22 @@
 //  Copyright (c) 2018-2021 Adjust GmbH. All rights reserved.
 //
 
-import 'dart:async';
 import 'package:flutter/services.dart';
 
 typedef void ExecuteCommandHandler(final dynamic callArgs);
 
 class TestLib {
   static const MethodChannel _channel = const MethodChannel('com.adjust.test.lib/api');
-  static ExecuteCommandHandler _executeCommandHandler;
+  static ExecuteCommandHandler? _executeCommandHandler;
 
   static void setExecuteCommandHalder(ExecuteCommandHandler handler) {
     _executeCommandHandler = handler;
-    _channel.setMethodCallHandler((MethodCall call) {
+    _channel.setMethodCallHandler((MethodCall call) async {
       try {
         switch (call.method) {
           case 'adj-test-execute':
             if (_executeCommandHandler != null) {
-              _executeCommandHandler(call.arguments);
+              _executeCommandHandler!(call.arguments);
             }
             break;
           default:
@@ -42,15 +41,15 @@ class TestLib {
     _channel.invokeMethod('startTestSession', {'clientSdk': clientSdk});
   }
 
-  static void addInfoToSend(String key, String value) {
+  static void addInfoToSend(String key, String? value) {
     if (value == null) {
-      print('[TestLibrary]: Skip adding info to server for key [${key}]. Value is null.');
+      print('[TestLibrary]: Skip adding info to server for key [$key]. Value is null.');
       return;
     }
     _channel.invokeMethod('addInfoToSend', {'key': key, 'value': value});
   }
 
-  static void sendInfoToServer(String basePath) {
+  static void sendInfoToServer(String? basePath) {
     if (basePath == null) {
       print('[TestLibrary]: Skip sending info to server with base path set to null.');
       return;
@@ -58,7 +57,7 @@ class TestLib {
     _channel.invokeMethod('sendInfoToServer', {'basePath': basePath});
   }
 
-  static void addTest(String testName) {
+  static void addTest(String? testName) {
     if (testName == null) {
       print('[TestLibrary]: Skip adding test with null value for the name.');
       return;
@@ -66,7 +65,7 @@ class TestLib {
     _channel.invokeMethod('addTest', {'testName': testName});
   }
 
-  static void addTestDirectory(String testDirectory) {
+  static void addTestDirectory(String? testDirectory) {
     if (testDirectory == null) {
       print('[TestLibrary]: Skip adding test directory with null value for the name.');
       return;

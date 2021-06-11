@@ -6,12 +6,12 @@
 //  Copyright (c) 2018-2021 Adjust GmbH. All rights reserved.
 //
 
-import 'package:flutter/services.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
+import 'package:flutter/services.dart';
 
 enum AdjustLogLevel { verbose, debug, info, warn, error, suppress }
 enum AdjustEnvironment { production, sandbox }
@@ -21,7 +21,8 @@ typedef void SessionSuccessCallback(AdjustSessionSuccess successData);
 typedef void SessionFailureCallback(AdjustSessionFailure failureData);
 typedef void EventSuccessCallback(AdjustEventSuccess successData);
 typedef void EventFailureCallback(AdjustEventFailure failureData);
-typedef void DeferredDeeplinkCallback(String uri);
+typedef void DeferredDeeplinkCallback(String? uri);
+typedef void ConversionValueUpdatedCallback(num? conversionValue);
 
 class AdjustConfig {
   static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
@@ -31,64 +32,118 @@ class AdjustConfig {
   static const String _eventSuccessCallbackName = 'adj-event-success';
   static const String _eventFailureCallbackName = 'adj-event-failure';
   static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
+  static const String _conversionValueUpdatedCallbackName = 'adj-conversion-value-updated';
+
   static const String UrlStrategyIndia = 'india';
   static const String UrlStrategyChina = 'china';
-  static const String AdRevenueSourceMopub = 'mopub';
-  static const String AdRevenueSourceAdmob = 'admob';
-  static const String AdRevenueSourceFbNativeAd = 'facebook_native_ad';
-  static const String AdRevenueSourceFbAudienceNetwork = 'facebook_audience_network';
-  static const String AdRevenueSourceIronsource = 'ironsource';
-  static const String AdRevenueSourceFyber = 'fyber';
-  static const String AdRevenueSourceAerserv = 'aerserv';
-  static const String AdRevenueSourceAppodeal = 'appodeal';
-  static const String AdRevenueSourceAdincube = 'adincube';
-  static const String AdRevenueSourceFusePowered = 'fusepowered';
-  static const String AdRevenueSourceAddaptr = 'addapptr';
-  static const String AdRevenueSourceMillenialMediation = 'millennial_mediation';
-  static const String AdRevenueSourceFlurry = 'flurry';
-  static const String AdRevenueSourceAdmost = 'admost';
-  static const String AdRevenueSourceDeltadna = 'deltadna';
-  static const String AdRevenueSourceUpsight = 'upsight';
-  static const String AdRevenueSourceUnityAds = 'unityads';
-  static const String AdRevenueSourceAdtoapp = 'adtoapp';
-  static const String AdRevenueSourceTapdaq = 'tapdaq';
 
-  num _info1;
-  num _info2;
-  num _info3;
-  num _info4;
-  num _secretId;
+  static const String DataResidencyEU = 'data-residency-eu';
+  static const String DataResidencyTR = 'data-residency-tr';
+  static const String DataResidencyUS = 'data-residency-us';
+
+  static const String AdRevenueSourceAppLovinMAX = "applovin_max_sdk";
+  static const String AdRevenueSourceMopub = 'mopub';
+  static const String AdRevenueSourceAdMob = 'admob_sdk';
+  static const String AdRevenueSourceIronSource = 'ironsource_sdk';
+
   String _appToken;
   AdjustEnvironment _environment;
-  bool _skAdNetworkHandling;
 
-  double delayStart;
-  bool isDeviceKnown;
-  bool sendInBackground;
-  bool eventBufferingEnabled;
-  bool allowiAdInfoReading;
-  bool allowAdServicesInfoReading;
-  bool allowIdfaReading;
-  bool launchDeferredDeeplink;
-  bool needsCost;
-  bool preinstallTrackingEnabled;
-  String sdkPrefix;
-  String userAgent;
-  String defaultTracker;
-  String externalDeviceId;
-  String urlStrategy;
-  String processName;
-  AdjustLogLevel logLevel;
-  AttributionCallback attributionCallback;
-  SessionSuccessCallback sessionSuccessCallback;
-  SessionFailureCallback sessionFailureCallback;
-  EventSuccessCallback eventSuccessCallback;
-  EventFailureCallback eventFailureCallback;
-  DeferredDeeplinkCallback deferredDeeplinkCallback;
-  
+  num? _info1;
+  num? _info2;
+  num? _info3;
+  num? _info4;
+  num? _secretId;
+  bool? _skAdNetworkHandling;
+
+  double? delayStart;
+  bool? isDeviceKnown;
+  bool? sendInBackground;
+  bool? eventBufferingEnabled;
+  bool? allowiAdInfoReading;
+  bool? allowAdServicesInfoReading;
+  bool? allowIdfaReading;
+  bool? launchDeferredDeeplink;
+  bool? needsCost;
+  bool? preinstallTrackingEnabled;
+  String? sdkPrefix;
+  String? userAgent;
+  String? defaultTracker;
+  String? externalDeviceId;
+  String? urlStrategy;
+  String? processName;
+  String? preinstallFilePath;
+  AdjustLogLevel? logLevel;
+  AttributionCallback? attributionCallback;
+  SessionSuccessCallback? sessionSuccessCallback;
+  SessionFailureCallback? sessionFailureCallback;
+  EventSuccessCallback? eventSuccessCallback;
+  EventFailureCallback? eventFailureCallback;
+  DeferredDeeplinkCallback? deferredDeeplinkCallback;
+  ConversionValueUpdatedCallback? conversionValueUpdatedCallback;
+
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
     _skAdNetworkHandling = true;
+  }
+
+  void _initCallbackHandlers() {
+    _channel.setMethodCallHandler((MethodCall call) async {
+      try {
+        switch (call.method) {
+          case _attributionCallbackName:
+            if (attributionCallback != null) {
+              AdjustAttribution attribution = AdjustAttribution.fromMap(call.arguments);
+              attributionCallback!(attribution);
+            }
+            break;
+          case _sessionSuccessCallbackName:
+            if (sessionSuccessCallback != null) {
+              AdjustSessionSuccess sessionSuccess = AdjustSessionSuccess.fromMap(call.arguments);
+              sessionSuccessCallback!(sessionSuccess);
+            }
+            break;
+          case _sessionFailureCallbackName:
+            if (sessionFailureCallback != null) {
+              AdjustSessionFailure sessionFailure = AdjustSessionFailure.fromMap(call.arguments);
+              sessionFailureCallback!(sessionFailure);
+            }
+            break;
+          case _eventSuccessCallbackName:
+            if (eventSuccessCallback != null) {
+              AdjustEventSuccess eventSuccess = AdjustEventSuccess.fromMap(call.arguments);
+              eventSuccessCallback!(eventSuccess);
+            }
+            break;
+          case _eventFailureCallbackName:
+            if (eventFailureCallback != null) {
+              AdjustEventFailure eventFailure = AdjustEventFailure.fromMap(call.arguments);
+              eventFailureCallback!(eventFailure);
+            }
+            break;
+          case _deferredDeeplinkCallbackName:
+            if (deferredDeeplinkCallback != null) {
+              String? uri = call.arguments['uri'];
+              if (deferredDeeplinkCallback != null) {
+                deferredDeeplinkCallback!(uri);
+              }
+            }
+            break;
+          case _conversionValueUpdatedCallbackName:
+            if (conversionValueUpdatedCallback != null) {
+              String? conversionValue = call.arguments['conversionValue'];
+              if (conversionValue != null) {
+                conversionValueUpdatedCallback!(int.parse(conversionValue));
+              }
+            }
+            break;
+          default:
+            throw new UnsupportedError('[AdjustFlutter]: Received unknown native method: ${call.method}');
+        }
+      } catch (e) {
+        print(e.toString());
+      }
+    });
   }
 
   void setAppSecret(num secretId, num info1, num info2, num info3, num info4) {
@@ -103,57 +158,8 @@ class AdjustConfig {
     _skAdNetworkHandling = false;
   }
 
-  void _initCallbackHandlers() {
-    _channel.setMethodCallHandler((MethodCall call) {
-      try {
-        switch (call.method) {
-          case _attributionCallbackName:
-            if (attributionCallback != null) {
-              AdjustAttribution attribution = AdjustAttribution.fromMap(call.arguments);
-              attributionCallback(attribution);
-            }
-            break;
-          case _sessionSuccessCallbackName:
-            if (sessionSuccessCallback != null) {
-              AdjustSessionSuccess sessionSuccess = AdjustSessionSuccess.fromMap(call.arguments);
-              sessionSuccessCallback(sessionSuccess);
-            }
-            break;
-          case _sessionFailureCallbackName:
-            if (sessionFailureCallback != null) {
-              AdjustSessionFailure sessionFailure = AdjustSessionFailure.fromMap(call.arguments);
-              sessionFailureCallback(sessionFailure);
-            }
-            break;
-          case _eventSuccessCallbackName:
-            if (eventSuccessCallback != null) {
-              AdjustEventSuccess eventSuccess = AdjustEventSuccess.fromMap(call.arguments);
-              eventSuccessCallback(eventSuccess);
-            }
-            break;
-          case _eventFailureCallbackName:
-            if (eventFailureCallback != null) {
-              AdjustEventFailure eventFailure = AdjustEventFailure.fromMap(call.arguments);
-              eventFailureCallback(eventFailure);
-            }
-            break;
-          case _deferredDeeplinkCallbackName:
-            String uri = call.arguments['uri'];
-            if (deferredDeeplinkCallback != null) {
-              deferredDeeplinkCallback(uri);
-            }
-            break;
-          default:
-            throw new UnsupportedError('[AdjustFlutter]: Received unknown native method: ${call.method}');
-        }
-      } catch (e) {
-        print(e.toString());
-      }
-    });
-  }
-
-  Map<String, String> get toMap {
-    Map<String, String> configMap = {
+  Map<String, String?> get toMap {
+    Map<String, String?> configMap = {
       'sdkPrefix': sdkPrefix,
       'appToken': _appToken,
       'environment': _environment.toString().substring(_environment.toString().indexOf('.') + 1),
@@ -242,6 +248,9 @@ class AdjustConfig {
     }
     if (deferredDeeplinkCallback != null) {
       configMap['deferredDeeplinkCallback'] = _deferredDeeplinkCallbackName;
+    }
+    if (conversionValueUpdatedCallback != null) {
+      configMap['conversionValueUpdatedCallback'] = _conversionValueUpdatedCallbackName;
     }
 
     return configMap;

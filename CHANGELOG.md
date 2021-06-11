@@ -1,3 +1,21 @@
+### Version 4.29.0 (11th June 2021)
+#### Added
+- Added support for null safety (thanks to @blaueeiner).
+- [beta] Added data residency feature. You can choose this setting by setting `urlStrategy` member of `AdjustConfig` instance to `AdjustConfig.DataResidencyEU` (for EU data residency region), `AdjustConfig.DataResidencyTR` (for TR data residency region) or `AdjustConfig.DataResidencyUS` value (for US data residency region).
+- Added `trackAdRevenueNew` method to `Adjust` interface to allow tracking of ad revenue by passing `AdjustAdRevenue` object as parameter.
+- Added support for `AppLovin MAX` ad revenue tracking.
+- Added `conversionValueUpdatedCallback` member to `AdjustConfig` which can be used to set a callback which will get information when Adjust SDK updates conversion value for the user.
+- Added preinstall tracking with usage of system installer receiver on Android platform.
+
+#### Fixed
+- Fixed attribution value comparison logic which might cause same attribution value to be delivered into attribution callback on iOS platform.
+
+#### Native SDKs
+- [iOS@v4.29.2][ios_sdk_v4.29.2]
+- [Android@v4.28.1][android_sdk_v4.28.1]
+
+---
+
 ### Version 4.28.0 (2nd April 2021)
 #### Changed
 - Removed native iOS legacy code.
@@ -207,6 +225,7 @@
 [ios_sdk_v4.23.2]: https://github.com/adjust/ios_sdk/tree/v4.23.2
 [ios_sdk_v4.26.1]: https://github.com/adjust/ios_sdk/tree/v4.26.1
 [ios_sdk_v4.28.0]: https://github.com/adjust/ios_sdk/tree/v4.28.0
+[ios_sdk_v4.29.2]: https://github.com/adjust/ios_sdk/tree/v4.29.2
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -216,3 +235,4 @@
 [android_sdk_v4.24.1]: https://github.com/adjust/android_sdk/tree/v4.24.1
 [android_sdk_v4.26.2]: https://github.com/adjust/android_sdk/tree/v4.26.2
 [android_sdk_v4.27.0]: https://github.com/adjust/android_sdk/tree/v4.27.0
+[android_sdk_v4.28.1]: https://github.com/adjust/android_sdk/tree/v4.28.1

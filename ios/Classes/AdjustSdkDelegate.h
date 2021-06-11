@@ -20,6 +20,7 @@
                              eventSuccessCallback:(NSString *)swizzleEventSuccessCallback
                              eventFailureCallback:(NSString *)swizzleEventFailureCallback
                          deferredDeeplinkCallback:(NSString *)swizzleDeferredDeeplinkCallback
+                   conversionValueUpdatedCallback:(NSString *)swizzleConversionValueUpdatedCallback
                      shouldLaunchDeferredDeeplink:(BOOL)shouldLaunchDeferredDeeplink
                                  andMethodChannel:(FlutterMethodChannel *)channel;
 

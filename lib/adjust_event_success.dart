@@ -7,25 +7,35 @@
 //
 
 class AdjustEventSuccess {
-  String message;
-  String timestamp;
-  String adid;
-  String eventToken;
-  String callbackId;
-  String jsonResponse;
+  final String? message;
+  final String? timestamp;
+  final String? adid;
+  final String? eventToken;
+  final String? callbackId;
+  final String? jsonResponse;
 
-  static AdjustEventSuccess fromMap(dynamic map) {
-    AdjustEventSuccess eventSuccess = new AdjustEventSuccess();
+  AdjustEventSuccess({
+    required this.message,
+    required this.timestamp,
+    required this.adid,
+    required this.eventToken,
+    required this.callbackId,
+    required this.jsonResponse,
+  });
+
+  factory AdjustEventSuccess.fromMap(dynamic map) {
     try {
-      eventSuccess.message = map['message'];
-      eventSuccess.timestamp = map['timestamp'];
-      eventSuccess.adid = map['adid'];
-      eventSuccess.eventToken = map['eventToken'];
-      eventSuccess.callbackId = map['callbackId'];
-      eventSuccess.jsonResponse = map['jsonResponse'];
+      return AdjustEventSuccess(
+        message: map['message'],
+        timestamp: map['timestamp'],
+        adid: map['adid'],
+        eventToken: map['eventToken'],
+        callbackId: map['callbackId'],
+        jsonResponse: map['jsonResponse'],
+      );
     } catch (e) {
-      print('[AdjustFlutter]: Failed to create AdjustEventSuccess object from given map object. Details: ' + e.toString());
+      throw Exception('[AdjustFlutter]: Failed to create AdjustEventSuccess object from given map object. Details: ' 
+        + e.toString());
     }
-    return eventSuccess;
   }
 }

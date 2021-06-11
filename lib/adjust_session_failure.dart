@@ -7,24 +7,32 @@
 //
 
 class AdjustSessionFailure {
-  String message;
-  String timestamp;
-  String adid;
-  String jsonResponse;
-  bool willRetry;
+  final String? message;
+  final String? timestamp;
+  final String? adid;
+  final String? jsonResponse;
+  final bool? willRetry;
 
-  static AdjustSessionFailure fromMap(dynamic map) {
-    AdjustSessionFailure sessionFailure = new AdjustSessionFailure();
+  AdjustSessionFailure({
+    required this.message,
+    required this.timestamp,
+    required this.adid,
+    required this.jsonResponse,
+    required this.willRetry,
+  });
+
+  factory AdjustSessionFailure.fromMap(dynamic map) {
     try {
-      sessionFailure.message = map['message'];
-      sessionFailure.timestamp = map['timestamp'];
-      sessionFailure.adid = map['adid'];
-      sessionFailure.jsonResponse = map['jsonResponse'];
-      bool willRetry = map['willRetry'].toString().toLowerCase() == 'true';
-      sessionFailure.willRetry = willRetry;
+      return AdjustSessionFailure(
+        message: map['message'],
+        timestamp: map['timestamp'],
+        adid: map['adid'],
+        jsonResponse: map['jsonResponse'],
+        willRetry: map['willRetry']?.toString().toLowerCase() == 'true',
+      );
     } catch (e) {
-      print('[AdjustFlutter]: Failed to create AdjustSessionFailure object from given map object. Details: ' + e.toString());
+      throw Exception('[AdjustFlutter]: Failed to create AdjustSessionFailure object from given map object. Details: '
+        + e.toString());
     }
-    return sessionFailure;
   }
 }

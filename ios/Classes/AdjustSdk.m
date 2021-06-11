@@ -66,6 +66,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self appWillOpenUrl:call withResult:result];
     } else if ([@"trackAdRevenue" isEqualToString:call.method]) {
         [self trackAdRevenue:call withResult:result];
+    } else if ([@"trackAdRevenueNew" isEqualToString:call.method]) {
+        [self trackAdRevenueNew:call withResult:result];
     } else if ([@"trackAppStoreSubscription" isEqualToString:call.method]) {
         [self trackAppStoreSubscription:call withResult:result];
     } else if ([@"trackPlayStoreSubscription" isEqualToString:call.method]) {
@@ -151,6 +153,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *dartEventSuccessCallback = call.arguments[@"eventSuccessCallback"];
     NSString *dartEventFailureCallback = call.arguments[@"eventFailureCallback"];
     NSString *dartDeferredDeeplinkCallback = call.arguments[@"deferredDeeplinkCallback"];
+    NSString *dartConversionValueUpdatedCallback = call.arguments[@"conversionValueUpdatedCallback"];
     BOOL allowSuppressLogLevel = NO;
     BOOL launchDeferredDeeplink = [call.arguments[@"launchDeferredDeeplink"] boolValue];
 
@@ -202,6 +205,12 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
             [adjustConfig setUrlStrategy:ADJUrlStrategyChina];
         } else if ([urlStrategy isEqualToString:@"india"]) {
             [adjustConfig setUrlStrategy:ADJUrlStrategyIndia];
+        } else if ([urlStrategy isEqualToString:@"data-residency-eu"]) {
+            [adjustConfig setUrlStrategy:ADJDataResidencyEU];
+        } else if ([urlStrategy isEqualToString:@"data-residency-tr"]) {
+            [adjustConfig setUrlStrategy:ADJDataResidencyTR];
+        } else if ([urlStrategy isEqualToString:@"data-residency-us"]) {
+            [adjustConfig setUrlStrategy:ADJDataResidencyUS];
         }
     }
 
@@ -266,7 +275,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         || dartSessionFailureCallback != nil
         || dartEventSuccessCallback != nil
         || dartEventFailureCallback != nil
-        || dartDeferredDeeplinkCallback != nil) {
+        || dartDeferredDeeplinkCallback != nil
+        || dartConversionValueUpdatedCallback != nil) {
         [adjustConfig setDelegate:
          [AdjustSdkDelegate getInstanceWithSwizzleOfAttributionCallback:dartAttributionCallback
                                                  sessionSuccessCallback:dartSessionSuccessCallback
@@ -274,6 +284,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                                                    eventSuccessCallback:dartEventSuccessCallback
                                                    eventFailureCallback:dartEventFailureCallback
                                                deferredDeeplinkCallback:dartDeferredDeeplinkCallback
+                                         conversionValueUpdatedCallback:dartConversionValueUpdatedCallback
                                            shouldLaunchDeferredDeeplink:launchDeferredDeeplink
                                                        andMethodChannel:self.channel]];
     }
@@ -408,6 +419,76 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     [Adjust trackAdRevenue:source payload:dataPayload];
 }
 
+- (void)trackAdRevenueNew:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *source = call.arguments[@"source"];
+    NSString *revenue = call.arguments[@"revenue"];
+    NSString *currency = call.arguments[@"currency"];
+    NSString *adImpressionsCount = call.arguments[@"adImpressionsCount"];
+    NSString *adRevenueNetwork = call.arguments[@"adRevenueNetwork"];
+    NSString *adRevenueUnit = call.arguments[@"adRevenueUnit"];
+    NSString *adRevenuePlacement = call.arguments[@"adRevenuePlacement"];
+    NSString *strCallbackParametersJson = call.arguments[@"callbackParameters"];
+    NSString *strPartnerParametersJson = call.arguments[@"partnerParameters"];
+
+    // Create ad revenue object.
+    ADJAdRevenue *adjustAdRevenue = [[ADJAdRevenue alloc] initWithSource:source];
+
+    // Revenue.
+    if ([self isFieldValid:revenue]) {
+        double revenueValue = [revenue doubleValue];
+        [adjustAdRevenue setRevenue:revenueValue currency:currency];
+    }
+
+    // Ad impressions count.
+    if ([self isFieldValid:adImpressionsCount]) {
+        int adImpressionsCountValue = [adImpressionsCount intValue];
+        [adjustAdRevenue setAdImpressionsCount:adImpressionsCountValue];
+    }
+
+    // Ad revenue network.
+    if ([self isFieldValid:adRevenueNetwork]) {
+        [adjustAdRevenue setAdRevenueNetwork:adRevenueNetwork];
+    }
+    
+    // Ad revenue unit.
+    if ([self isFieldValid:adRevenueUnit]) {
+        [adjustAdRevenue setAdRevenueUnit:adRevenueUnit];
+    }
+    
+    // Ad revenue placement.
+    if ([self isFieldValid:adRevenuePlacement]) {
+        [adjustAdRevenue setAdRevenuePlacement:adRevenuePlacement];
+    }
+
+    // Callback parameters.
+    if (strCallbackParametersJson != nil) {
+        NSData *callbackParametersData = [strCallbackParametersJson dataUsingEncoding:NSUTF8StringEncoding];
+        id callbackParametersJson = [NSJSONSerialization JSONObjectWithData:callbackParametersData
+                                                                    options:0
+                                                                      error:NULL];
+        for (id key in callbackParametersJson) {
+            NSString *value = [callbackParametersJson objectForKey:key];
+            [adjustAdRevenue addCallbackParameter:key value:value];
+        }
+    }
+
+    // Partner parameters.
+    if (strPartnerParametersJson != nil) {
+        NSData *partnerParametersData = [strPartnerParametersJson dataUsingEncoding:NSUTF8StringEncoding];
+        id partnerParametersJson = [NSJSONSerialization JSONObjectWithData:partnerParametersData
+                                                                   options:0
+                                                                     error:NULL];
+        for (id key in partnerParametersJson) {
+            NSString *value = [partnerParametersJson objectForKey:key];
+            [adjustAdRevenue addPartnerParameter:key value:value];
+        }
+    }
+
+    // Track ad revenue.
+    [Adjust trackAdRevenue:adjustAdRevenue];
+    result(nil);
+}
+
 - (void)trackPlayStoreSubscription:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     result([FlutterError errorWithCode:@"non_existing_method"
                                message:@"trackPlayStoreSubscription not available for iOS platform"
@@ -499,6 +580,9 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     [self addValueOrEmpty:attribution.adgroup withKey:@"adgroup" toDictionary:dictionary];
     [self addValueOrEmpty:attribution.clickLabel withKey:@"clickLabel" toDictionary:dictionary];
     [self addValueOrEmpty:attribution.adid withKey:@"adid" toDictionary:dictionary];
+    [self addValueOrEmpty:attribution.costType withKey:@"costType" toDictionary:dictionary];
+    [self addNumberOrEmpty:attribution.costAmount withKey:@"costAmount" toDictionary:dictionary];
+    [self addValueOrEmpty:attribution.costCurrency withKey:@"costCurrency" toDictionary:dictionary];
     result(dictionary);
 }
 
@@ -657,6 +741,16 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
            toDictionary:(NSMutableDictionary *)dictionary {
     if (nil != value) {
         [dictionary setObject:[NSString stringWithFormat:@"%@", value] forKey:key];
+    } else {
+        [dictionary setObject:@"" forKey:key];
+    }
+}
+
+- (void)addNumberOrEmpty:(NSNumber *)value
+                 withKey:(NSString *)key
+            toDictionary:(NSMutableDictionary *)dictionary {
+    if (nil != value) {
+        [dictionary setObject:[value stringValue] forKey:key];
     } else {
         [dictionary setObject:@"" forKey:key];
     }

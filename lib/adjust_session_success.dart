@@ -7,21 +7,29 @@
 //
 
 class AdjustSessionSuccess {
-  String message;
-  String timestamp;
-  String adid;
-  String jsonResponse;
+  final String? message;
+  final String? timestamp;
+  final String? adid;
+  final String? jsonResponse;
 
-  static AdjustSessionSuccess fromMap(dynamic map) {
-    AdjustSessionSuccess sessionSuccess = new AdjustSessionSuccess();
+  AdjustSessionSuccess({
+    required this.message,
+    required this.timestamp,
+    required this.adid,
+    required this.jsonResponse,
+  });
+
+  factory AdjustSessionSuccess.fromMap(dynamic map) {
     try {
-      sessionSuccess.message = map['message'];
-      sessionSuccess.timestamp = map['timestamp'];
-      sessionSuccess.adid = map['adid'];
-      sessionSuccess.jsonResponse = map['jsonResponse'];
+      return AdjustSessionSuccess(
+        message: map['message'],
+        timestamp: map['timestamp'],
+        adid: map['adid'],
+        jsonResponse: map['jsonResponse'],
+      );
     } catch (e) {
-      print('[AdjustFlutter]: Failed to create AdjustSessionSuccess object from given map object. Details: ' + e.toString());
+      throw Exception('[AdjustFlutter]: Failed to create AdjustSessionSuccess object from given map object. Details: '
+        + e.toString());
     }
-    return sessionSuccess;
   }
 }
