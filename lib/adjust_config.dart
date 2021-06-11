@@ -22,6 +22,7 @@ typedef void SessionFailureCallback(AdjustSessionFailure failureData);
 typedef void EventSuccessCallback(AdjustEventSuccess successData);
 typedef void EventFailureCallback(AdjustEventFailure failureData);
 typedef void DeferredDeeplinkCallback(String? uri);
+typedef void ConversionValueUpdatedCallback(num? conversionValue);
 
 class AdjustConfig {
   static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
@@ -31,28 +32,19 @@ class AdjustConfig {
   static const String _eventSuccessCallbackName = 'adj-event-success';
   static const String _eventFailureCallbackName = 'adj-event-failure';
   static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
+  static const String _conversionValueUpdatedCallbackName = 'adj-conversion-value-updated';
+
   static const String UrlStrategyIndia = 'india';
   static const String UrlStrategyChina = 'china';
+
   static const String DataResidencyEU = 'data-residency-eu';
+  static const String DataResidencyTR = 'data-residency-tr';
+  static const String DataResidencyUS = 'data-residency-us';
+
+  static const String AdRevenueSourceAppLovinMAX = "applovin_max_sdk";
   static const String AdRevenueSourceMopub = 'mopub';
-  static const String AdRevenueSourceAdmob = 'admob';
-  static const String AdRevenueSourceFbNativeAd = 'facebook_native_ad';
-  static const String AdRevenueSourceFbAudienceNetwork = 'facebook_audience_network';
-  static const String AdRevenueSourceIronsource = 'ironsource';
-  static const String AdRevenueSourceFyber = 'fyber';
-  static const String AdRevenueSourceAerserv = 'aerserv';
-  static const String AdRevenueSourceAppodeal = 'appodeal';
-  static const String AdRevenueSourceAdincube = 'adincube';
-  static const String AdRevenueSourceFusePowered = 'fusepowered';
-  static const String AdRevenueSourceAddaptr = 'addapptr';
-  static const String AdRevenueSourceMillenialMediation = 'millennial_mediation';
-  static const String AdRevenueSourceFlurry = 'flurry';
-  static const String AdRevenueSourceAdmost = 'admost';
-  static const String AdRevenueSourceDeltadna = 'deltadna';
-  static const String AdRevenueSourceUpsight = 'upsight';
-  static const String AdRevenueSourceUnityAds = 'unityads';
-  static const String AdRevenueSourceAdtoapp = 'adtoapp';
-  static const String AdRevenueSourceTapdaq = 'tapdaq';
+  static const String AdRevenueSourceAdMob = 'admob_sdk';
+  static const String AdRevenueSourceIronSource = 'ironsource_sdk';
 
   String _appToken;
   AdjustEnvironment _environment;
@@ -80,6 +72,7 @@ class AdjustConfig {
   String? externalDeviceId;
   String? urlStrategy;
   String? processName;
+  String? preinstallFilePath;
   AdjustLogLevel? logLevel;
   AttributionCallback? attributionCallback;
   SessionSuccessCallback? sessionSuccessCallback;
@@ -87,6 +80,7 @@ class AdjustConfig {
   EventSuccessCallback? eventSuccessCallback;
   EventFailureCallback? eventFailureCallback;
   DeferredDeeplinkCallback? deferredDeeplinkCallback;
+  ConversionValueUpdatedCallback? conversionValueUpdatedCallback;
 
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
@@ -128,9 +122,19 @@ class AdjustConfig {
             }
             break;
           case _deferredDeeplinkCallbackName:
-            String? uri = call.arguments['uri'];
             if (deferredDeeplinkCallback != null) {
-              deferredDeeplinkCallback!(uri);
+              String? uri = call.arguments['uri'];
+              if (deferredDeeplinkCallback != null) {
+                deferredDeeplinkCallback!(uri);
+              }
+            }
+            break;
+          case _conversionValueUpdatedCallbackName:
+            if (conversionValueUpdatedCallback != null) {
+              String? conversionValue = call.arguments['conversionValue'];
+              if (conversionValue != null) {
+                conversionValueUpdatedCallback!(int.parse(conversionValue));
+              }
             }
             break;
           default:
@@ -244,6 +248,9 @@ class AdjustConfig {
     }
     if (deferredDeeplinkCallback != null) {
       configMap['deferredDeeplinkCallback'] = _deferredDeeplinkCallbackName;
+    }
+    if (conversionValueUpdatedCallback != null) {
+      configMap['conversionValueUpdatedCallback'] = _conversionValueUpdatedCallbackName;
     }
 
     return configMap;

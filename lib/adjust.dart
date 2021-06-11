@@ -8,6 +8,7 @@
 
 import 'dart:async';
 
+import 'package:adjust_sdk/adjust_ad_revenue.dart';
 import 'package:adjust_sdk/adjust_app_store_subscription.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_config.dart';
@@ -141,6 +142,10 @@ class Adjust {
 
   static void trackAdRevenue(String source, String payload) {
     _channel.invokeMethod('trackAdRevenue', {'source': source, 'payload': payload});
+  }
+
+  static void trackAdRevenueNew(AdjustAdRevenue adRevenue) {
+    _channel.invokeMethod('trackAdRevenueNew', adRevenue.toMap);
   }
 
   static void trackAppStoreSubscription(AdjustAppStoreSubscription subscription) {

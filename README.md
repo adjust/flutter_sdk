@@ -58,6 +58,7 @@ This is the Flutter SDK of Adjust™. You can read more about Adjust™ at [adju
       * [Get current authorisation status](#af-ata-getter)
    * [SKAdNetwork framework](#af-skadn-framework)
       * [Update SKAdNetwork conversion value](#af-skadn-update-conversion-value)
+      * [Conversion value updated callback](#af-skadn-cv-updated-callback)
    * [Subscription tracking](#af-subscription-tracking)
    * [Push token (uninstall tracking)](#af-push-token)
    * [Attribution callback](#af-attribution-callback)
@@ -78,6 +79,7 @@ This is the Flutter SDK of Adjust™. You can read more about Adjust™ at [adju
       * [Disable third-party sharing](#af-disable-third-party-sharing)
       * [Enable third-party sharing](#af-enable-third-party-sharing)
    * [Measurement consent](#af-measurement-consent)
+   * [[beta] Data residency](#af-data-residency)
 
 ### License
 
@@ -710,6 +712,18 @@ You can use Adjust SDK wrapper method `updateConversionValue` to update SKAdNetw
 Adjust.updateConversionValue(6);
 ```
 
+### <a id="af-skadn-cv-updated-callback"></a>Conversion value updated callback
+
+You can register callback to get notified each time when Adjust SDK updates conversion value for the user.
+
+```dart
+AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
+config.conversionValueUpdatedCallback = (num? conversionValue) {
+  print('[Adjust]: Received conversion value update: ' + conversionValue!.toString());
+};
+Adjust.start(adjustConfig);
+```
+
 ### <a id="af-subscription-tracking"></a>Subscription tracking
 
 **Note**: This feature is only available in the SDK v4.22.0 and above.
@@ -874,6 +888,11 @@ The callback function will be called after the SDK receives the final attributio
 - `creative` the creative grouping level string of the current attribution.
 - `clickLabel` the click label string of the current attribution.
 - `adid` the Adjust device identifier string.
+- `costType` the cost type string
+- `costAmount` the cost amount
+- `costCurrency` the cost currency string
+
+**Note**: The cost data - `costType`, `costAmount` & `costCurrency` are only available when configured in `AdjustConfig` by setting `needsCost` member to `true`. If not configured or configured, but not being part of the attribution, these fields will have value `null`. This feature is available in SDK v4.29.0 and later.
 
 ### <a id="af-session-event-callbacks"></a>Session and event callbacks
 
@@ -1162,6 +1181,18 @@ Adjust.trackMeasurementConsent(true);
 ```
 
 Upon receiving this information, Adjust changes sharing the specific user's data to partners. The Adjust SDK will continue to work as expected.
+
+### <a id="af-data-residency"></a>[beta] Data residency
+
+In order to enable data residency feature, make sure to set `urlStrategy` member of the `AdjustConfig` instance with one of the following constants:
+
+```dart
+adjustConfig.urlStrategy = AdjustConfig.DataResidencyEU; // for EU data residency region
+adjustConfig.urlStrategy = AdjustConfig.DataResidencyTR; // for Turkey data residency region
+adjustConfig.urlStrategy = AdjustConfig.DataResidencyUS; // for US data residency region
+```
+
+**Note:** This feature is currently in beta testing phase. If you are interested in getting access to it, please contact your dedicated account manager or write an email to support@adjust.com. Please, do not turn this setting on before making sure with the support team that this feature is enabled for your app because otherwise SDK traffic will get dropped.
 
 [dashboard]:  http://adjust.com
 [adjust.com]: http://adjust.com

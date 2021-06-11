@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    String _address = '192.168.86.75';
+    String _address = '172.20.10.6';
     if (Platform.isAndroid) {
       String _protocol = 'https';
       String _port = '8443';
@@ -74,6 +74,7 @@ class _MyAppState extends State<MyApp> {
                     'Start Test Session',
                     () => Adjust.getSdkVersion().then((sdkVersion) {
                           // TestLib.addTestDirectory('third-party-sharing');
+                          // TestLib.addTest('Test_Event_Revenue_invalid');
                           TestLib.startTestSession(sdkVersion);
                     }))
               ])))

@@ -96,6 +96,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   initPlatformState() async {
     AdjustConfig config = new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
     config.logLevel = AdjustLogLevel.verbose;
+    config.urlStrategy = AdjustConfig.DataResidencyUS;
 
     config.attributionCallback = (AdjustAttribution attributionChangedData) {
       print('[Adjust]: Attribution changed!');
@@ -123,6 +124,15 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       }
       if (attributionChangedData.adid != null) {
         print('[Adjust]: Adid: ' + attributionChangedData.adid!);
+      }
+      if (attributionChangedData.costType != null) {
+        print('[Adjust]: Cost type: ' + attributionChangedData.costType!);
+      }
+      if (attributionChangedData.costAmount != null) {
+        print('[Adjust]: Cost amount: ' + attributionChangedData.costAmount!.toString());
+      }
+      if (attributionChangedData.costCurrency != null) {
+        print('[Adjust]: Cost currency: ' + attributionChangedData.costCurrency!);
       }
     };
 
@@ -214,6 +224,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     config.deferredDeeplinkCallback = (String? uri) {
       print('[Adjust]: Received deferred deeplink: ' + uri!);
+    };
+
+    config.conversionValueUpdatedCallback = (num? conversionValue) {
+      print('[Adjust]: Received conversion value update: ' + conversionValue!.toString());
     };
 
     // Add session callback parameters.

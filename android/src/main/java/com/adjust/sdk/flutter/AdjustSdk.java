@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustAdRevenue;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
@@ -203,6 +204,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "trackAdRevenue":
                 trackAdRevenue(call, result);
                 break;
+            case "trackAdRevenueNew":
+                trackAdRevenueNew(call, result);
+                break;
             case "trackAppStoreSubscription":
                 trackAppStoreSubscription(result);
                 break;
@@ -325,6 +329,12 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             adjustConfig.setExternalDeviceId(externalDeviceId);
         }
 
+        // Custom preinstall file path.
+        if (configMap.containsKey("preinstallFilePath")) {
+            String preinstallFilePath = (String) configMap.get("preinstallFilePath");
+            adjustConfig.setPreinstallFilePath(preinstallFilePath);
+        }
+
         // URL strategy.
         if (configMap.containsKey("urlStrategy")) {
             String urlStrategy = (String) configMap.get("urlStrategy");
@@ -334,6 +344,10 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                 adjustConfig.setUrlStrategy(AdjustConfig.URL_STRATEGY_INDIA);
             } else if (urlStrategy.equalsIgnoreCase("data-residency-eu")) {
                 adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU);
+            } else if (urlStrategy.equalsIgnoreCase("data-residency-tr")) {
+                adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_TR);
+            } else if (urlStrategy.equalsIgnoreCase("data-residency-us")) {
+                adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_US);
             }
         }
 
@@ -811,18 +825,109 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void trackAdRevenue(final MethodCall call, final Result result) {
-        String source = null;
-        String payload = null;
         if (call.hasArgument("source") && call.hasArgument("payload")) {
-            source = (String) call.argument("source");
-            payload = (String) call.argument("payload");
+            // Old (MoPub) API.
+            String source = (String) call.argument("source");
+            String payload = (String) call.argument("payload");
+
+            try {
+                JSONObject jsonPayload = new JSONObject(payload);
+                Adjust.trackAdRevenue(source, jsonPayload);
+            } catch (JSONException err) {
+                Log.e(TAG, "Given ad revenue payload is not a valid JSON string");
+            }
+        } 
+        result.success(null);
+    }
+
+    private void trackAdRevenueNew(final MethodCall call, final Result result) {
+        // New API.
+        Map adRevenueMap = (Map) call.arguments;
+        if (adRevenueMap == null) {
+            return;
         }
-        try {
-            JSONObject jsonPayload = new JSONObject(payload);
-            Adjust.trackAdRevenue(source, jsonPayload);
-        } catch (JSONException err) {
-            Log.e(TAG, "Given ad revenue payload is not a valid JSON string");
+
+        // Source.
+        String source = null;
+        if (adRevenueMap.containsKey("source")) {
+            source = (String) adRevenueMap.get("source");
         }
+
+        // Create ad revenue object.
+        AdjustAdRevenue adRevenue = new AdjustAdRevenue(source);
+
+        // Revenue.
+        if (adRevenueMap.containsKey("revenue") || adRevenueMap.containsKey("currency")) {
+            double revenue = -1.0;
+            String strRevenue = (String) adRevenueMap.get("revenue");
+
+            try {
+                revenue = Double.parseDouble(strRevenue);
+            } catch (NumberFormatException ignore) {}
+
+            String currency = (String) adRevenueMap.get("currency");
+            adRevenue.setRevenue(revenue, currency);
+        }
+
+        // Ad impressions count.
+        if (adRevenueMap.containsKey("adImpressionsCount")) {
+            String strAdImpressionsCount = (String) adRevenueMap.get("adImpressionsCount");
+            int adImpressionsCount = Integer.parseInt(strAdImpressionsCount);
+            adRevenue.setAdImpressionsCount(adImpressionsCount);
+        }
+
+        // Ad revenue network.
+        if (adRevenueMap.containsKey("adRevenueNetwork")) {
+            String adRevenueNetwork = (String) adRevenueMap.get("adRevenueNetwork");
+            adRevenue.setAdRevenueNetwork(adRevenueNetwork);
+        }
+
+        // Ad revenue unit.
+        if (adRevenueMap.containsKey("adRevenueUnit")) {
+            String adRevenueUnit = (String) adRevenueMap.get("adRevenueUnit");
+            adRevenue.setAdRevenueUnit(adRevenueUnit);
+        }
+
+        // Ad revenue placement.
+        if (adRevenueMap.containsKey("adRevenuePlacement")) {
+            String adRevenuePlacement = (String) adRevenueMap.get("adRevenuePlacement");
+            adRevenue.setAdRevenuePlacement(adRevenuePlacement);
+        }
+
+        // Callback parameters.
+        if (adRevenueMap.containsKey("callbackParameters")) {
+            String strCallbackParametersJson = (String) adRevenueMap.get("callbackParameters");
+            try {
+                JSONObject jsonCallbackParameters = new JSONObject(strCallbackParametersJson);
+                JSONArray callbackParametersKeys = jsonCallbackParameters.names();
+                for (int i = 0; i < callbackParametersKeys.length(); ++i) {
+                    String key = callbackParametersKeys.getString(i);
+                    String value = jsonCallbackParameters.getString(key);
+                    adRevenue.addCallbackParameter(key, value);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to parse ad revenue callback parameter! Details: " + e);
+            }
+        }
+
+        // Partner parameters.
+        if (adRevenueMap.containsKey("partnerParameters")) {
+            String strPartnerParametersJson = (String) adRevenueMap.get("partnerParameters");
+            try {
+                JSONObject jsonPartnerParameters = new JSONObject(strPartnerParametersJson);
+                JSONArray partnerParametersKeys = jsonPartnerParameters.names();
+                for (int i = 0; i < partnerParametersKeys.length(); ++i) {
+                    String key = partnerParametersKeys.getString(i);
+                    String value = jsonPartnerParameters.getString(key);
+                    adRevenue.addPartnerParameter(key, value);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to parse ad revenue partner parameter! Details: " + e);
+            }
+        }
+
+        // Track ad revenue.
+        Adjust.trackAdRevenue(adRevenue);
         result.success(null);
     }
 

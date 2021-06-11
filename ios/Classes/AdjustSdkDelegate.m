@@ -17,6 +17,7 @@ static NSString *dartSessionFailureCallback;
 static NSString *dartEventSuccessCallback;
 static NSString *dartEventFailureCallback;
 static NSString *dartDeferredDeeplinkCallback;
+static NSString *dartConversionValueUpdatedCallback;
 
 @implementation AdjustSdkDelegate
 
@@ -38,6 +39,7 @@ static NSString *dartDeferredDeeplinkCallback;
                              eventSuccessCallback:(NSString *)swizzleEventSuccessCallback
                              eventFailureCallback:(NSString *)swizzleEventFailureCallback
                          deferredDeeplinkCallback:(NSString *)swizzleDeferredDeeplinkCallback
+                   conversionValueUpdatedCallback:(NSString *)swizzleConversionValueUpdatedCallback
                      shouldLaunchDeferredDeeplink:(BOOL)shouldLaunchDeferredDeeplink
                                  andMethodChannel:(FlutterMethodChannel *)channel {
     
@@ -74,6 +76,11 @@ static NSString *dartDeferredDeeplinkCallback;
             [defaultInstance swizzleCallbackMethod:@selector(adjustDeeplinkResponse:)
                                   swizzledSelector:@selector(adjustDeeplinkResponseWannabe:)];
             dartDeferredDeeplinkCallback = swizzleDeferredDeeplinkCallback;
+        }
+        if (swizzleConversionValueUpdatedCallback != nil) {
+            [defaultInstance swizzleCallbackMethod:@selector(adjustConversionValueUpdated:)
+                                  swizzledSelector:@selector(adjustConversionValueUpdatedWannabe:)];
+            dartConversionValueUpdatedCallback = swizzleConversionValueUpdatedCallback;
         }
 
         [defaultInstance setShouldLaunchDeferredDeeplink:shouldLaunchDeferredDeeplink];
@@ -220,6 +227,16 @@ static NSString *dartDeferredDeeplinkCallback;
                                                               count:count];
     [self.channel invokeMethod:dartDeferredDeeplinkCallback arguments:deeplinkMap];
     return self.shouldLaunchDeferredDeeplink;
+}
+
+- (void)adjustConversionValueUpdatedWannabe:(NSNumber *)conversionValue {
+    id keys[] = { @"conversionValue" };
+    id values[] = { [conversionValue stringValue] };
+    NSUInteger count = sizeof(values) / sizeof(id);
+    NSDictionary *conversionValueMap = [NSDictionary dictionaryWithObjects:values
+                                                                   forKeys:keys
+                                                                     count:count];
+    [self.channel invokeMethod:dartConversionValueUpdatedCallback arguments:conversionValueMap];
 }
 
 - (void)swizzleCallbackMethod:(SEL)originalSelector

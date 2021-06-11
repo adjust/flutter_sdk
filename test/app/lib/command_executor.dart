@@ -9,6 +9,7 @@
 import 'dart:io' show Platform;
 
 import 'package:adjust_sdk/adjust.dart';
+import 'package:adjust_sdk/adjust_ad_revenue.dart';
 import 'package:adjust_sdk/adjust_app_store_subscription.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_config.dart';
@@ -120,6 +121,9 @@ class CommandExecutor {
         break;
       case 'measurementConsent':
         _trackMeasurementConsent();
+        break;
+      case 'trackAdRevenueV2':
+        _trackAdRevenueV2();
         break;
     }
   }
@@ -454,7 +458,10 @@ class CommandExecutor {
 
     if (_command.containsParameter('revenue')) {
       List<dynamic> revenueParams = _command.getParamteters('revenue')!;
-      adjustEvent!.setRevenue(num.parse(revenueParams[1]), revenueParams[0]);
+      // TODO: find better way to filter null values for Flutter platform
+      if (revenueParams[0] != null && revenueParams[1] != null) {
+        adjustEvent!.setRevenue(num.parse(revenueParams[1]), revenueParams[0]);
+      }
     }
     if (_command.containsParameter('callbackParams')) {
       List<dynamic> callbackParams = _command.getParamteters('callbackParams')!;
@@ -693,5 +700,45 @@ class CommandExecutor {
   void _trackMeasurementConsent() {
     bool isEnabled = _command.getFirstParameterValue('isEnabled') == 'true';
     Adjust.trackMeasurementConsent(isEnabled);
+  }
+
+  void _trackAdRevenueV2() {
+    String source = _command.getFirstParameterValue('adRevenueSource')!;
+    AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(source);
+
+    if (_command.containsParameter('revenue')) {
+      List<dynamic> revenueParams = _command.getParamteters('revenue')!;
+      adjustAdRevenue.setRevenue(num.parse(revenueParams[1]), revenueParams[0]);
+    }
+    if (_command.containsParameter('callbackParams')) {
+      List<dynamic> callbackParams = _command.getParamteters('callbackParams')!;
+      for (int i = 0; i < callbackParams.length; i = i + 2) {
+        String key = callbackParams[i];
+        String value = callbackParams[i + 1];
+        adjustAdRevenue.addCallbackParameter(key, value);
+      }
+    }
+    if (_command.containsParameter('partnerParams')) {
+      List<dynamic> partnerParams = _command.getParamteters('partnerParams')!;
+      for (int i = 0; i < partnerParams.length; i = i + 2) {
+        String key = partnerParams[i];
+        String value = partnerParams[i + 1];
+        adjustAdRevenue.addPartnerParameter(key, value);
+      }
+    }
+    if (_command.containsParameter('adImpressionsCount')) {
+      adjustAdRevenue.adImpressionsCount = int.parse(_command.getFirstParameterValue('adImpressionsCount')!);
+    }
+    if (_command.containsParameter('adRevenueUnit')) {
+      adjustAdRevenue.adRevenueUnit = _command.getFirstParameterValue('adRevenueUnit');
+    }
+    if (_command.containsParameter('adRevenuePlacement')) {
+      adjustAdRevenue.adRevenuePlacement = _command.getFirstParameterValue('adRevenuePlacement');
+    }
+    if (_command.containsParameter('adRevenueNetwork')) {
+      adjustAdRevenue.adRevenueNetwork = _command.getFirstParameterValue('adRevenueNetwork');
+    }
+
+    Adjust.trackAdRevenueNew(adjustAdRevenue);
   }
 }
