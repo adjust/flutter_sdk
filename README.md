@@ -80,7 +80,7 @@ This is the Flutter SDK of Adjust™. You can read more about Adjust™ at [adju
       * [Disable third-party sharing](#af-disable-third-party-sharing)
       * [Enable third-party sharing](#af-enable-third-party-sharing)
    * [Measurement consent](#af-measurement-consent)
-   * [[beta] Data residency](#af-data-residency)
+   * [Data residency](#af-data-residency)
 
 ### License
 
@@ -1221,7 +1221,7 @@ Adjust.trackMeasurementConsent(true);
 
 Upon receiving this information, Adjust changes sharing the specific user's data to partners. The Adjust SDK will continue to work as expected.
 
-### <a id="af-data-residency"></a>[beta] Data residency
+### <a id="af-data-residency"></a>Data residency
 
 In order to enable data residency feature, make sure to set `urlStrategy` member of the `AdjustConfig` instance with one of the following constants:
 
@@ -1230,8 +1230,6 @@ adjustConfig.urlStrategy = AdjustConfig.DataResidencyEU; // for EU data residenc
 adjustConfig.urlStrategy = AdjustConfig.DataResidencyTR; // for Turkey data residency region
 adjustConfig.urlStrategy = AdjustConfig.DataResidencyUS; // for US data residency region
 ```
-
-**Note:** This feature is currently in beta testing phase. If you are interested in getting access to it, please contact your dedicated account manager or write an email to support@adjust.com. Please, do not turn this setting on before making sure with the support team that this feature is enabled for your app because otherwise SDK traffic will get dropped.
 
 [dashboard]:  http://adjust.com
 [adjust.com]: http://adjust.com
