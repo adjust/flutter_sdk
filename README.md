@@ -660,22 +660,24 @@ Adjust SDK offers the possibility to use it for requesting user authorization in
 To use this wrapper, you can call it as such:
 
 ```dart
-Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
-  switch (status) {
-    case 0:
-      // ATTrackingManagerAuthorizationStatusNotDetermined case
-      break;
-    case 1:
-      // ATTrackingManagerAuthorizationStatusRestricted case
-      break;
-    case 2:
-      // ATTrackingManagerAuthorizationStatusDenied case
-      break;
-    case 3:
-      // ATTrackingManagerAuthorizationStatusAuthorized case
-      break;
-  }
-});
+if (Platform.isIOS) {
+  Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
+    switch (status) {
+      case 0:
+        // ATTrackingManagerAuthorizationStatusNotDetermined case
+        break;
+      case 1:
+        // ATTrackingManagerAuthorizationStatusRestricted case
+        break;
+      case 2:
+        // ATTrackingManagerAuthorizationStatusDenied case
+        break;
+      case 3:
+        // ATTrackingManagerAuthorizationStatusAuthorized case
+        break;
+    }
+  });
+}
 ```
 
 ### <a id="af-ata-getter"></a>Get current authorisation status
