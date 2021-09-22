@@ -45,6 +45,7 @@ class AdjustConfig {
   static const String AdRevenueSourceMopub = 'mopub';
   static const String AdRevenueSourceAdMob = 'admob_sdk';
   static const String AdRevenueSourceIronSource = 'ironsource_sdk';
+  static const String AdRevenueSourceAdMostSource = 'admost_sdk';
 
   String _appToken;
   AdjustEnvironment _environment;
