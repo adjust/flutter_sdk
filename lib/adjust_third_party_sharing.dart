@@ -23,7 +23,8 @@ class AdjustThirdPartySharing {
   Map<String, Object?> get toMap {
     Map<String, Object?> thirdPartySharingMap = {'isEnabled': _isEnabled};
     if (_granularOptions.length > 0) {
-      thirdPartySharingMap['granularOptions'] = _granularOptions.join('__ADJ__');
+      thirdPartySharingMap['granularOptions'] =
+          _granularOptions.join('__ADJ__');
     }
 
     return thirdPartySharingMap;

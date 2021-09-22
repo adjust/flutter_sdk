@@ -37,8 +37,9 @@ class AdjustEventFailure {
         willRetry: map['willRetry']?.toString().toLowerCase() == 'true',
       );
     } catch (e) {
-      throw Exception('[AdjustFlutter]: Failed to create AdjustEventFailure object from given map object. Details: '
-        + e.toString());
+      throw Exception(
+          '[AdjustFlutter]: Failed to create AdjustEventFailure object from given map object. Details: ' +
+              e.toString());
     }
   }
 }

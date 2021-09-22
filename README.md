@@ -69,6 +69,7 @@ This is the Flutter SDK of Adjust™. You can read more about Adjust™ at [adju
       * [Google Play Services advertising identifier](#af-gps-adid)
       * [Amazon advertising identifier](#af-amazon-adid)
       * [Adjust device identifier](#af-adid)
+   * [Set external device ID](#set-external-device-id)
    * [Pre-installed trackers](#af-pre-installed-trackers)
    * [Offline mode](#af-offline-mode)
    * [Disable tracking](#af-disable-tracking)
@@ -79,7 +80,7 @@ This is the Flutter SDK of Adjust™. You can read more about Adjust™ at [adju
       * [Disable third-party sharing](#af-disable-third-party-sharing)
       * [Enable third-party sharing](#af-enable-third-party-sharing)
    * [Measurement consent](#af-measurement-consent)
-   * [[beta] Data residency](#af-data-residency)
+   * [Data residency](#af-data-residency)
 
 ### License
 
@@ -100,7 +101,7 @@ You can add Adjust SDK to your Flutter app by adding following to your `pubspec.
 
 ```yaml
 dependencies:
-  adjust_sdk: ^4.29.0
+  adjust_sdk: ^4.29.1
 ```
 
 Then navigate to your project in the terminal and run:
@@ -135,6 +136,16 @@ If you are **not targeting the Google Play Store**, please also add the followin
 ```xml
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
+
+#### <a id="gps-adid-permission"></a>Add permission to gather Google advertising ID
+
+If you are targeting Android 12 and above (API level 31), you need to add the `com.google.android.gms.AD_ID` permission to read the device's advertising ID. Add the following line to your `AndroidManifest.xml` to enable the permission.
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+```
+
+For more information, see [Google's `AdvertisingIdClient.Info` documentation](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid).
 
 ### <a id="qs-proguard"></a>[Android] Proguard settings
 
@@ -506,7 +517,7 @@ You should use **callback parameters** for the values that you collect for your 
 
 You can register a callback URL for your events in your [dashboard]. We will send a GET request to that URL whenever the event is tracked. You can add callback parameters to that event by calling `addCallbackParameter` to the event instance before tracking it. We will then append these parameters to your callback URL.
 
-For example, suppose you have registered the URL `http://www.adjust.com/callback` then track an event like this:
+For example, suppose you have registered the URL `https://www.adjust.com/callback` then track an event like this:
 
 ```dart
 AdjustEvent adjustEvent = new AdjustEvent('abc123');
@@ -518,7 +529,7 @@ Adjust.trackEvent(adjustEvent);
 In that case we would track the event and send a request to:
 
 ```
-http://www.adjust.com/callback?key=value&foo=bar
+https://www.adjust.com/callback?key=value&foo=bar
 ```
 
 It should be mentioned that we support a variety of placeholders like `{gps_adid}` that can be used as parameter values. In the resulting callback this placeholder would be replaced with the Google Play Services ID of the current device. Also note that we don't store any of your custom parameters, but only append them to your callbacks. If you haven't registered a callback for an event, these parameters won't even be read.
@@ -660,22 +671,24 @@ Adjust SDK offers the possibility to use it for requesting user authorization in
 To use this wrapper, you can call it as such:
 
 ```dart
-Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
-  switch (status) {
-    case 0:
-      // ATTrackingManagerAuthorizationStatusNotDetermined case
-      break;
-    case 1:
-      // ATTrackingManagerAuthorizationStatusRestricted case
-      break;
-    case 2:
-      // ATTrackingManagerAuthorizationStatusDenied case
-      break;
-    case 3:
-      // ATTrackingManagerAuthorizationStatusAuthorized case
-      break;
-  }
-});
+if (Platform.isIOS) {
+  Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
+    switch (status) {
+      case 0:
+        // ATTrackingManagerAuthorizationStatusNotDetermined case
+        break;
+      case 1:
+        // ATTrackingManagerAuthorizationStatusRestricted case
+        break;
+      case 2:
+        // ATTrackingManagerAuthorizationStatusDenied case
+        break;
+      case 3:
+        // ATTrackingManagerAuthorizationStatusAuthorized case
+        break;
+    }
+  });
+}
 ```
 
 ### <a id="af-ata-getter"></a>Get current authorisation status
@@ -1036,6 +1049,10 @@ Adjust.getIdfa().then((idfa) {
 
 ### <a id="af-gps-adid"></a>Google Play Services advertising identifier
 
+The Google Play Services Advertising Identifier (Google advertising ID) is a unique identifier for a device. Users can opt out of sharing their Google advertising ID by toggling the "Opt out of Ads Personalization" setting on their device. When a user has enabled this setting, the Adjust SDK returns a string of zeros when trying to read the Google advertising ID.
+
+> **Important**: If you are targeting Android 12 and above (API level 31), you need to add the [`com.google.android.gms.AD_ID` permission](#gps-adid-permission) to your app. If you do not add this permission, you will not be able to read the Google advertising ID even if the user has not opted out of sharing their ID.
+
 Certain services (such as Google Analytics) require you to coordinate Device and Client IDs in order to prevent duplicate reporting.
 
 To obtain the device Google Advertising identifier, it's necessary to pass a callback function to `Adjust.getGoogleAdId` that will receive the Google Advertising ID in it's argument, like this:
@@ -1068,6 +1085,30 @@ Adjust.getAdid().then((adid) {
 
 **Note**: Information about **adid** is available after app installation has been tracked by the Adjust backend. From that moment on, Adjust SDK has information about your device **adid** and you can access it with this method. So, **it is not possible** to access **adid** value before the SDK has been initialised and installation of your app was tracked successfully.
 
+### <a id="set-external-device-id"></a>Set external device ID
+
+> **Note** If you want to use external device IDs, please contact your Adjust representative. They will talk you through the best approach for your use case.
+
+An external device identifier is a custom value that you can assign to a device or user. They can help you to recognize users across sessions and platforms. They can also help you to deduplicate installs by user so that a user isn't counted as multiple new installs.
+
+You can also use an external device ID as a custom identifier for a device. This can be useful if you use these identifiers elsewhere and want to keep continuity.
+
+Check out our [external device identifiers article](https://help.adjust.com/en/article/external-device-identifiers) for more information.
+
+> **Note** This setting requires Adjust SDK v4.21.0 or later.
+
+To set an external device ID, assign the identifier to the `externalDeviceId` property of your config instance. Do this before you initialize the Adjust SDK.
+
+```dart
+adjustConfig.externalDeviceId = '{Your-External-Device-Id}';
+```
+
+> **Important**: You need to make sure this ID is **unique to the user or device** depending on your use-case. Using the same ID across different users or devices could lead to duplicated data. Talk to your Adjust representative for more information.
+
+If you want to use the external device ID in your business analytics, you can pass it as a session callback parameter. See the section on [session callback parameters](#cp-session-callback-parameters) for more information.
+
+You can import existing external device IDs into Adjust. This ensures that the backend matches future data to your existing device records. If you want to do this, please contact your Adjust representative.
+
 ### <a id="af-pre-installed-trackers"></a>Pre-installed trackers
 
 If you want to use the Adjust SDK to recognize users whose devices came with your app pre-installed, follow these steps.
@@ -1078,7 +1119,7 @@ If you want to use the Adjust SDK to recognize users whose devices came with you
   ```dart
   adjustConfig.defaultTracker = '{TrackerToken}';
   ```
-  Replace `{TrackerToken}` with the tracker token you created in step 1. Please note that the Dashboard displays a tracker URL (including `http://app.adjust.com/`). In your source code, you should specify only the six-character token and not the entire URL.
+  Replace `{TrackerToken}` with the tracker token you created in step 1. Please note that the Dashboard displays a tracker URL (including `https://app.adjust.com/`). In your source code, you should specify only the six-character token and not the entire URL.
 
 - Build and run your app. You should see a line like the following in your LogCat:
 
@@ -1182,7 +1223,7 @@ Adjust.trackMeasurementConsent(true);
 
 Upon receiving this information, Adjust changes sharing the specific user's data to partners. The Adjust SDK will continue to work as expected.
 
-### <a id="af-data-residency"></a>[beta] Data residency
+### <a id="af-data-residency"></a>Data residency
 
 In order to enable data residency feature, make sure to set `urlStrategy` member of the `AdjustConfig` instance with one of the following constants:
 
@@ -1192,10 +1233,8 @@ adjustConfig.urlStrategy = AdjustConfig.DataResidencyTR; // for Turkey data resi
 adjustConfig.urlStrategy = AdjustConfig.DataResidencyUS; // for US data residency region
 ```
 
-**Note:** This feature is currently in beta testing phase. If you are interested in getting access to it, please contact your dedicated account manager or write an email to support@adjust.com. Please, do not turn this setting on before making sure with the support team that this feature is enabled for your app because otherwise SDK traffic will get dropped.
-
-[dashboard]:  http://adjust.com
-[adjust.com]: http://adjust.com
+[dashboard]:  https://adjust.com
+[adjust.com]: https://adjust.com
 
 [example-app]: example
 
@@ -1210,14 +1249,14 @@ adjustConfig.urlStrategy = AdjustConfig.DataResidencyUS; // for US data residenc
 [currency-conversion]:            https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
 [android-deeplinking]:            https://github.com/adjust/android_sdk#deep-linking
 [android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
-[google-play-services]:           http://developer.android.com/google/play-services/setup.html
+[google-play-services]:           https://developer.android.com/google/play-services/setup.html
 [reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
 
 ## <a id="license"></a>License
 
 The Adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2018-2021 Adjust GmbH, http://www.adjust.com
+Copyright (c) 2018-2021 Adjust GmbH, https://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

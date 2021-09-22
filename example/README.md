@@ -1,6 +1,6 @@
 # example
 
-Adjust Flutter Appliaction
+Adjust Flutter Applicаtion
 
 ## Getting Started
 

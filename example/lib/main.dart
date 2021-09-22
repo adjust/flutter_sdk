@@ -94,15 +94,16 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   initPlatformState() async {
-    AdjustConfig config = new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
+    AdjustConfig config =
+        new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
     config.logLevel = AdjustLogLevel.verbose;
-    config.urlStrategy = AdjustConfig.DataResidencyUS;
 
     config.attributionCallback = (AdjustAttribution attributionChangedData) {
       print('[Adjust]: Attribution changed!');
 
       if (attributionChangedData.trackerToken != null) {
-        print('[Adjust]: Tracker token: ' + attributionChangedData.trackerToken!);
+        print(
+            '[Adjust]: Tracker token: ' + attributionChangedData.trackerToken!);
       }
       if (attributionChangedData.trackerName != null) {
         print('[Adjust]: Tracker name: ' + attributionChangedData.trackerName!);
@@ -129,10 +130,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         print('[Adjust]: Cost type: ' + attributionChangedData.costType!);
       }
       if (attributionChangedData.costAmount != null) {
-        print('[Adjust]: Cost amount: ' + attributionChangedData.costAmount!.toString());
+        print('[Adjust]: Cost amount: ' +
+            attributionChangedData.costAmount!.toString());
       }
       if (attributionChangedData.costCurrency != null) {
-        print('[Adjust]: Cost currency: ' + attributionChangedData.costCurrency!);
+        print(
+            '[Adjust]: Cost currency: ' + attributionChangedData.costCurrency!);
       }
     };
 
@@ -166,7 +169,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         print('[Adjust]: Adid: ' + sessionFailureData.adid!);
       }
       if (sessionFailureData.willRetry != null) {
-        print('[Adjust]: Will retry: ' + sessionFailureData.willRetry.toString());
+        print(
+            '[Adjust]: Will retry: ' + sessionFailureData.willRetry.toString());
       }
       if (sessionFailureData.jsonResponse != null) {
         print('[Adjust]: JSON response: ' + sessionFailureData.jsonResponse!);
@@ -227,7 +231,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     };
 
     config.conversionValueUpdatedCallback = (num? conversionValue) {
-      print('[Adjust]: Received conversion value update: ' + conversionValue!.toString());
+      print('[Adjust]: Received conversion value update: ' +
+          conversionValue!.toString());
     };
 
     // Add session callback parameters.
@@ -253,16 +258,20 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       print('[Adjust]: Authorization status update!');
       switch (status) {
         case 0:
-          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined');
+          print(
+              '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined');
           break;
         case 1:
-          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted');
+          print(
+              '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusRestricted');
           break;
         case 2:
-          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied');
+          print(
+              '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusDenied');
           break;
         case 3:
-          print('[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized');
+          print(
+              '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusAuthorized');
           break;
       }
     });
@@ -283,27 +292,27 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               <Widget>[
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
-                Util.buildCupertinoButton('Is Enabled ?', () => _showIsSdkEnabled()),
+                Util.buildCupertinoButton(
+                    'Is Enabled ?', () => _showIsSdkEnabled()),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // Track simple event button.
-                Util.buildCupertinoButton(
-                    'Track Simple Event', () => Adjust.trackEvent(Util.buildSimpleEvent())),
+                Util.buildCupertinoButton('Track Simple Event',
+                    () => Adjust.trackEvent(Util.buildSimpleEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // Track revenue event button.
-                Util.buildCupertinoButton(
-                    'Track Revenue Event', () => Adjust.trackEvent(Util.buildRevenueEvent())),
+                Util.buildCupertinoButton('Track Revenue Event',
+                    () => Adjust.trackEvent(Util.buildRevenueEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // Track callback event button.
-                Util.buildCupertinoButton(
-                    'Track Callback Event', () => Adjust.trackEvent(Util.buildCallbackEvent())),
+                Util.buildCupertinoButton('Track Callback Event',
+                    () => Adjust.trackEvent(Util.buildCallbackEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
                 // Track partner event button.
-                Util.buildCupertinoButton(
-                    'Track Partner Event',
+                Util.buildCupertinoButton('Track Partner Event',
                     () => Adjust.trackEvent(Util.buildPartnerEvent())),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
@@ -320,8 +329,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get Adjust identifier',
                     () => Adjust.getAdid().then((adid) {
-                          _showDialogMessage(
-                              'Adjust identifier', 'Received Adjust identifier: $adid');
+                          _showDialogMessage('Adjust identifier',
+                              'Received Adjust identifier: $adid');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
@@ -337,8 +346,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 Util.buildCupertinoButton(
                     'Get attribution',
                     () => Adjust.getAttribution().then((attribution) {
-                          _showDialogMessage(
-                              'Attribution', 'Received attribution: ${attribution.toString()}');
+                          _showDialogMessage('Attribution',
+                              'Received attribution: ${attribution.toString()}');
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
@@ -385,11 +394,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         _showDialogMessage('SDK Enabled?', 'Adjust is enabled = $isEnabled');
       });
     } on PlatformException {
-      _showDialogMessage('SDK Enabled?', 'No such method found in plugin: isEnabled');
+      _showDialogMessage(
+          'SDK Enabled?', 'No such method found in plugin: isEnabled');
     }
   }
 
-  void _showDialogMessage(String title, String text, [bool printToConsoleAlso = true]) {
+  void _showDialogMessage(String title, String text,
+      [bool printToConsoleAlso = true]) {
     if (printToConsoleAlso) {
       print(text);
     }

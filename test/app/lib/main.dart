@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    String _address = '172.20.10.6';
+    String _address = '192.168.86.65';
     if (Platform.isAndroid) {
       String _protocol = 'https';
       String _port = '8443';
@@ -45,13 +45,15 @@ class _MyAppState extends State<MyApp> {
     }
 
     // Initialise command executor.
-    _commandExecutor = new CommandExecutor(_baseUrl, _gdprUrl, _subscriptionUrl);
+    _commandExecutor =
+        new CommandExecutor(_baseUrl, _gdprUrl, _subscriptionUrl);
 
     // Initialise test library.
     TestLib.setExecuteCommandHalder((final dynamic callArgs) {
       print('[AdjustTestApp]: executeCommandHandler pinged in test app!');
       Command command = new Command(callArgs);
-      print('[AdjustTestApp]: Executing command ${command.className}.${command.methodName}');
+      print(
+          '[AdjustTestApp]: Executing command ${command.className}.${command.methodName}');
       _commandExecutor.executeCommand(command);
     });
     TestLib.init(_baseUrl!, _controlUrl);
@@ -76,7 +78,7 @@ class _MyAppState extends State<MyApp> {
                           // TestLib.addTestDirectory('third-party-sharing');
                           // TestLib.addTest('Test_Event_Revenue_invalid');
                           TestLib.startTestSession(sdkVersion);
-                    }))
+                        }))
               ])))
         ]),
       ),

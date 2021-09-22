@@ -56,7 +56,8 @@ class Util {
         ),
         margin: new EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
         padding: new EdgeInsets.all(1.0),
-        decoration: new BoxDecoration(border: new Border.all(color: Colors.black)),
+        decoration:
+            new BoxDecoration(border: new Border.all(color: Colors.black)),
       ),
     );
   }
@@ -86,17 +87,20 @@ class Util {
     return event;
   }
 
-  static void showMessage(BuildContext context, String dialogText, String message) {
+  static void showMessage(
+      BuildContext context, String dialogText, String message) {
     showDialog<Null>(
         context: context,
         builder: (_) => new AlertDialog(
-          title: new Text(dialogText),
-          content: new Text(message),
-        ));
+              title: new Text(dialogText),
+              content: new Text(message),
+            ));
   }
 
   static void showDemoDialog<T>(
-      {GlobalKey<ScaffoldState>? scaffoldKey, required BuildContext context, Widget? child}) {
+      {GlobalKey<ScaffoldState>? scaffoldKey,
+      required BuildContext context,
+      Widget? child}) {
     showDialog<T>(
       context: context,
       barrierDismissible: false,
