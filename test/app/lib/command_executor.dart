@@ -312,6 +312,12 @@ class CommandExecutor {
       adjustConfig!.allowAdServicesInfoReading = _command.getFirstParameterValue('allowAdServicesInfoReading') == 'true';
     }
 
+    if (_command.containsParameter('allowSkAdNetworkHandling')) {
+      if (_command.getFirstParameterValue('allowSkAdNetworkHandling') == 'false') {
+        adjustConfig!.deactivateSKAdNetworkHandling();
+      }
+    }
+
     if (_command.containsParameter('allowIdfaReading')) {
       adjustConfig!.allowIdfaReading = _command.getFirstParameterValue('allowIdfaReading') == 'true';
     }
