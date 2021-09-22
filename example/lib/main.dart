@@ -96,7 +96,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   initPlatformState() async {
     AdjustConfig config = new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
     config.logLevel = AdjustLogLevel.verbose;
-    config.urlStrategy = AdjustConfig.DataResidencyUS;
 
     config.attributionCallback = (AdjustAttribution attributionChangedData) {
       print('[Adjust]: Attribution changed!');
