@@ -28,7 +28,9 @@ class Command {
         _jsonParameters = json.encode(_parameters);
       }
     } catch (e) {
-      print('[Command]: Error! Failed to map Command from incoming data. Details: ' + e.toString());
+      print(
+          '[Command]: Error! Failed to map Command from incoming data. Details: ' +
+              e.toString());
     }
   }
 

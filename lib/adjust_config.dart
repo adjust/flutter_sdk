@@ -25,14 +25,16 @@ typedef void DeferredDeeplinkCallback(String? uri);
 typedef void ConversionValueUpdatedCallback(num? conversionValue);
 
 class AdjustConfig {
-  static const MethodChannel _channel = const MethodChannel('com.adjust.sdk/api');
+  static const MethodChannel _channel =
+      const MethodChannel('com.adjust.sdk/api');
   static const String _attributionCallbackName = 'adj-attribution-changed';
   static const String _sessionSuccessCallbackName = 'adj-session-success';
   static const String _sessionFailureCallbackName = 'adj-session-failure';
   static const String _eventSuccessCallbackName = 'adj-event-success';
   static const String _eventFailureCallbackName = 'adj-event-failure';
   static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
-  static const String _conversionValueUpdatedCallbackName = 'adj-conversion-value-updated';
+  static const String _conversionValueUpdatedCallbackName =
+      'adj-conversion-value-updated';
 
   static const String UrlStrategyIndia = 'india';
   static const String UrlStrategyChina = 'china';
@@ -94,31 +96,36 @@ class AdjustConfig {
         switch (call.method) {
           case _attributionCallbackName:
             if (attributionCallback != null) {
-              AdjustAttribution attribution = AdjustAttribution.fromMap(call.arguments);
+              AdjustAttribution attribution =
+                  AdjustAttribution.fromMap(call.arguments);
               attributionCallback!(attribution);
             }
             break;
           case _sessionSuccessCallbackName:
             if (sessionSuccessCallback != null) {
-              AdjustSessionSuccess sessionSuccess = AdjustSessionSuccess.fromMap(call.arguments);
+              AdjustSessionSuccess sessionSuccess =
+                  AdjustSessionSuccess.fromMap(call.arguments);
               sessionSuccessCallback!(sessionSuccess);
             }
             break;
           case _sessionFailureCallbackName:
             if (sessionFailureCallback != null) {
-              AdjustSessionFailure sessionFailure = AdjustSessionFailure.fromMap(call.arguments);
+              AdjustSessionFailure sessionFailure =
+                  AdjustSessionFailure.fromMap(call.arguments);
               sessionFailureCallback!(sessionFailure);
             }
             break;
           case _eventSuccessCallbackName:
             if (eventSuccessCallback != null) {
-              AdjustEventSuccess eventSuccess = AdjustEventSuccess.fromMap(call.arguments);
+              AdjustEventSuccess eventSuccess =
+                  AdjustEventSuccess.fromMap(call.arguments);
               eventSuccessCallback!(eventSuccess);
             }
             break;
           case _eventFailureCallbackName:
             if (eventFailureCallback != null) {
-              AdjustEventFailure eventFailure = AdjustEventFailure.fromMap(call.arguments);
+              AdjustEventFailure eventFailure =
+                  AdjustEventFailure.fromMap(call.arguments);
               eventFailureCallback!(eventFailure);
             }
             break;
@@ -139,7 +146,8 @@ class AdjustConfig {
             }
             break;
           default:
-            throw new UnsupportedError('[AdjustFlutter]: Received unknown native method: ${call.method}');
+            throw new UnsupportedError(
+                '[AdjustFlutter]: Received unknown native method: ${call.method}');
         }
       } catch (e) {
         print(e.toString());
@@ -163,7 +171,9 @@ class AdjustConfig {
     Map<String, String?> configMap = {
       'sdkPrefix': sdkPrefix,
       'appToken': _appToken,
-      'environment': _environment.toString().substring(_environment.toString().indexOf('.') + 1),
+      'environment': _environment
+          .toString()
+          .substring(_environment.toString().indexOf('.') + 1),
     };
 
     if (userAgent != null) {
@@ -173,7 +183,8 @@ class AdjustConfig {
       configMap['processName'] = processName;
     }
     if (logLevel != null) {
-      configMap['logLevel'] = logLevel.toString().substring(logLevel.toString().indexOf('.') + 1);
+      configMap['logLevel'] =
+          logLevel.toString().substring(logLevel.toString().indexOf('.') + 1);
     }
     if (defaultTracker != null) {
       configMap['defaultTracker'] = defaultTracker;
@@ -197,13 +208,15 @@ class AdjustConfig {
       configMap['needsCost'] = needsCost.toString();
     }
     if (preinstallTrackingEnabled != null) {
-      configMap['preinstallTrackingEnabled'] = preinstallTrackingEnabled.toString();
+      configMap['preinstallTrackingEnabled'] =
+          preinstallTrackingEnabled.toString();
     }
     if (allowiAdInfoReading != null) {
       configMap['allowiAdInfoReading'] = allowiAdInfoReading.toString();
     }
     if (allowAdServicesInfoReading != null) {
-      configMap['allowAdServicesInfoReading'] = allowAdServicesInfoReading.toString();
+      configMap['allowAdServicesInfoReading'] =
+          allowAdServicesInfoReading.toString();
     }
     if (allowIdfaReading != null) {
       configMap['allowIdfaReading'] = allowIdfaReading.toString();
@@ -251,7 +264,8 @@ class AdjustConfig {
       configMap['deferredDeeplinkCallback'] = _deferredDeeplinkCallbackName;
     }
     if (conversionValueUpdatedCallback != null) {
-      configMap['conversionValueUpdatedCallback'] = _conversionValueUpdatedCallbackName;
+      configMap['conversionValueUpdatedCallback'] =
+          _conversionValueUpdatedCallbackName;
     }
 
     return configMap;

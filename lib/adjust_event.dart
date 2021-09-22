@@ -37,9 +37,7 @@ class AdjustEvent {
   }
 
   Map<String, String?> get toMap {
-    Map<String, String?> eventMap = {
-      'eventToken': _eventToken
-    };
+    Map<String, String?> eventMap = {'eventToken': _eventToken};
 
     if (_revenue != null) {
       eventMap['revenue'] = _revenue.toString();

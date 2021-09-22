@@ -56,8 +56,9 @@ class AdjustAttribution {
         costCurrency: map['costCurrency'],
       );
     } catch (e) {
-      throw Exception('[AdjustFlutter]: Failed to create AdjustAttribution object from given map object. Details: '
-        + e.toString());
+      throw Exception(
+          '[AdjustFlutter]: Failed to create AdjustAttribution object from given map object. Details: ' +
+              e.toString());
     }
   }
 }

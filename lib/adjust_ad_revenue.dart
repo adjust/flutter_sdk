@@ -38,9 +38,7 @@ class AdjustAdRevenue {
   }
 
   Map<String, String?> get toMap {
-    Map<String, String?> adRevenueMap = {
-      'source': _source
-    };
+    Map<String, String?> adRevenueMap = {'source': _source};
 
     if (_revenue != null) {
       adRevenueMap['revenue'] = _revenue.toString();
