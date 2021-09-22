@@ -517,7 +517,7 @@ You should use **callback parameters** for the values that you collect for your 
 
 You can register a callback URL for your events in your [dashboard]. We will send a GET request to that URL whenever the event is tracked. You can add callback parameters to that event by calling `addCallbackParameter` to the event instance before tracking it. We will then append these parameters to your callback URL.
 
-For example, suppose you have registered the URL `http://www.adjust.com/callback` then track an event like this:
+For example, suppose you have registered the URL `https://www.adjust.com/callback` then track an event like this:
 
 ```dart
 AdjustEvent adjustEvent = new AdjustEvent('abc123');
@@ -529,7 +529,7 @@ Adjust.trackEvent(adjustEvent);
 In that case we would track the event and send a request to:
 
 ```
-http://www.adjust.com/callback?key=value&foo=bar
+https://www.adjust.com/callback?key=value&foo=bar
 ```
 
 It should be mentioned that we support a variety of placeholders like `{gps_adid}` that can be used as parameter values. In the resulting callback this placeholder would be replaced with the Google Play Services ID of the current device. Also note that we don't store any of your custom parameters, but only append them to your callbacks. If you haven't registered a callback for an event, these parameters won't even be read.
@@ -1119,7 +1119,7 @@ If you want to use the Adjust SDK to recognize users whose devices came with you
   ```dart
   adjustConfig.defaultTracker = '{TrackerToken}';
   ```
-  Replace `{TrackerToken}` with the tracker token you created in step 1. Please note that the Dashboard displays a tracker URL (including `http://app.adjust.com/`). In your source code, you should specify only the six-character token and not the entire URL.
+  Replace `{TrackerToken}` with the tracker token you created in step 1. Please note that the Dashboard displays a tracker URL (including `https://app.adjust.com/`). In your source code, you should specify only the six-character token and not the entire URL.
 
 - Build and run your app. You should see a line like the following in your LogCat:
 
@@ -1233,8 +1233,8 @@ adjustConfig.urlStrategy = AdjustConfig.DataResidencyTR; // for Turkey data resi
 adjustConfig.urlStrategy = AdjustConfig.DataResidencyUS; // for US data residency region
 ```
 
-[dashboard]:  http://adjust.com
-[adjust.com]: http://adjust.com
+[dashboard]:  https://adjust.com
+[adjust.com]: https://adjust.com
 
 [example-app]: example
 
@@ -1249,14 +1249,14 @@ adjustConfig.urlStrategy = AdjustConfig.DataResidencyUS; // for US data residenc
 [currency-conversion]:            https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
 [android-deeplinking]:            https://github.com/adjust/android_sdk#deep-linking
 [android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
-[google-play-services]:           http://developer.android.com/google/play-services/setup.html
+[google-play-services]:           https://developer.android.com/google/play-services/setup.html
 [reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
 
 ## <a id="license"></a>License
 
 The Adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2018-2021 Adjust GmbH, http://www.adjust.com
+Copyright (c) 2018-2021 Adjust GmbH, https://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
