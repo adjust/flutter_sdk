@@ -1,3 +1,16 @@
+### Version 4.29.1 (23rd September 2021)
+#### Added
+- Added support for `Admost` ad revenue source.
+
+#### Fixed
+- Fixed compile time errors with Xcode 13.
+
+#### Native SDKs
+- [iOS@v4.29.6][ios_sdk_v4.29.6]
+- [Android@v4.28.5][android_sdk_v4.28.5]
+
+---
+
 ### Version 4.29.0 (11th June 2021)
 #### Added
 - Added support for null safety (thanks to @blaueeiner).
@@ -226,6 +239,7 @@
 [ios_sdk_v4.26.1]: https://github.com/adjust/ios_sdk/tree/v4.26.1
 [ios_sdk_v4.28.0]: https://github.com/adjust/ios_sdk/tree/v4.28.0
 [ios_sdk_v4.29.2]: https://github.com/adjust/ios_sdk/tree/v4.29.2
+[ios_sdk_v4.29.6]: https://github.com/adjust/ios_sdk/tree/v4.29.6
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -236,3 +250,4 @@
 [android_sdk_v4.26.2]: https://github.com/adjust/android_sdk/tree/v4.26.2
 [android_sdk_v4.27.0]: https://github.com/adjust/android_sdk/tree/v4.27.0
 [android_sdk_v4.28.1]: https://github.com/adjust/android_sdk/tree/v4.28.1
+[android_sdk_v4.28.5]: https://github.com/adjust/android_sdk/tree/v4.28.5
