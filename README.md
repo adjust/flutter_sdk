@@ -152,7 +152,7 @@ For more information, see [Google's `AdvertisingIdClient.Info` documentation](ht
 If you are using Proguard, add these lines to your Proguard file:
 
 ```
--keep public class com.adjust.sdk.** { *; }
+-keep class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
     int SUCCESS;
 }
