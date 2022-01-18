@@ -120,7 +120,7 @@ Since the 1st of August of 2014, apps in the Google Play Store must use the [Goo
 implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
 ```
 
-**Note**: The Adjust SDK is not tied to any specific version of the `play-services-analytics` part of the Google Play Services library. You can use the latest version of the library, or any other version you need.
+**Note**: The Adjust SDK is not tied to any specific version of the `play-services-ads-identifier` part of the Google Play Services library. You can use the latest version of the library, or any other version you need.
 
 ### <a id="qs-permissions"></a>[Android] Add permissions
 
