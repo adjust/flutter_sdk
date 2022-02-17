@@ -1,4 +1,4 @@
-### Version 4.29.2 (17th February 2022)
+### Version 4.29.2 (18th February 2022)
 #### Added
 - Added support for `Unity` ad revenue tracking.
 - Added support for `Helium Chartboost` ad revenue tracking.
