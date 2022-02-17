@@ -47,7 +47,6 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import static com.adjust.sdk.flutter.AdjustUtils.*;
 
@@ -56,31 +55,10 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     private static boolean launchDeferredDeeplink = true;
     private MethodChannel channel;
     private Context applicationContext;
-    private boolean v2Plugin;
-    private boolean v2Attached = false;
-
-    AdjustSdk(MethodChannel channel, Context applicationContext) {
-        this.channel = channel;
-        this.applicationContext = applicationContext;
-
-        v2Plugin = false;
-    }
-
-    public AdjustSdk() {
-        v2Plugin = true;
-    }
 
     // FlutterPlugin
     @Override
     public void onAttachedToEngine(FlutterPluginBinding binding) {
-        if (!v2Plugin) {
-            return;
-        }
-        if (v2Attached) {
-            return;
-        }
-
-        v2Attached = true;
         applicationContext = binding.getApplicationContext();
         channel = new MethodChannel(binding.getBinaryMessenger(), "com.adjust.sdk/api");
         channel.setMethodCallHandler(this);
@@ -88,7 +66,6 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
 
     @Override
     public void onDetachedFromEngine(FlutterPluginBinding binding) {
-        v2Attached = false;
         applicationContext = null;
         if (channel != null) {
             channel.setMethodCallHandler(null);
@@ -108,19 +85,12 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
 
     @Override
     public void onReattachedToActivityForConfigChanges(
-        ActivityPluginBinding binding)
-    {
+        ActivityPluginBinding binding) {
     }
 
     @Override
     public void onDetachedFromActivity() {
         Adjust.onPause();
-    }
-
-    // Plugin registration.
-    public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "com.adjust.sdk/api");
-        channel.setMethodCallHandler(new AdjustSdk(channel, registrar.context()));
     }
 
     @Override
