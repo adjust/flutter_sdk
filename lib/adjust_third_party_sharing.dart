@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Ugljesa Erceg (@uerceg) on 18th February 2021.
-//  Copyright (c) 2021 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2021-Present Adjust GmbH. All rights reserved.
 //
 
 class AdjustThirdPartySharing {

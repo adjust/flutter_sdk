@@ -7,12 +7,12 @@ Pod::Spec.new do |s|
                             DESC
   s.homepage              = 'http://www.adjust.com'
   s.license               = { :file => '../LICENSE' }
-  s.author                = { 'Srdjan Tubin' => 'srdjan@adjust.com' }
+  s.author                = { 'Adjust GmbH' => 'sdk@adjust.com' }
   s.source                = { :path => '.' }
   s.source_files          = 'Classes/**/*'
   s.public_header_files   = 'Classes/**/*.h'
   s.ios.deployment_target = '8.0'
 
   s.dependency 'Flutter'
-  s.dependency 'Adjust', '4.29.6'
+  s.dependency 'Adjust', '4.29.7'
 end
