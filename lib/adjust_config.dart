@@ -48,6 +48,8 @@ class AdjustConfig {
   static const String AdRevenueSourceAdMob = 'admob_sdk';
   static const String AdRevenueSourceIronSource = 'ironsource_sdk';
   static const String AdRevenueSourceAdMostSource = 'admost_sdk';
+  static const String AdRevenueSourceUnity = 'unity_sdk';
+  static const String AdRevenueSourceHeliumChartboost = 'helium_chartboost_sdk';
 
   String _appToken;
   AdjustEnvironment _environment;
