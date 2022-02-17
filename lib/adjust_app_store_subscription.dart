@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Ugljesa Erceg (@uerceg) on 9th June 2020.
-//  Copyright (c) 2020-2021 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2020-Present Adjust GmbH. All rights reserved.
 //
 
 import 'dart:convert';

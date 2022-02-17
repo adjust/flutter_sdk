@@ -1,3 +1,18 @@
+### Version 4.29.2 (18th February 2022)
+#### Added
+- Added support for `Unity` ad revenue tracking.
+- Added support for `Helium Chartboost` ad revenue tracking.
+
+#### Changed
+- Removed deprecated v1 way of plugin registration (https://github.com/adjust/flutter_sdk/issues/64).
+- Migrated from `jcenter` to `mavenCentral` repository (https://github.com/adjust/flutter_sdk/pull/72).
+
+#### Native SDKs
+- [iOS@v4.29.7][ios_sdk_v4.29.7]
+- [Android@v4.29.1][android_sdk_v4.29.1]
+
+---
+
 ### Version 4.29.1 (23rd September 2021)
 #### Added
 - Added support for `Admost` ad revenue source.
@@ -240,6 +255,7 @@
 [ios_sdk_v4.28.0]: https://github.com/adjust/ios_sdk/tree/v4.28.0
 [ios_sdk_v4.29.2]: https://github.com/adjust/ios_sdk/tree/v4.29.2
 [ios_sdk_v4.29.6]: https://github.com/adjust/ios_sdk/tree/v4.29.6
+[ios_sdk_v4.29.7]: https://github.com/adjust/ios_sdk/tree/v4.29.7
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -251,3 +267,4 @@
 [android_sdk_v4.27.0]: https://github.com/adjust/android_sdk/tree/v4.27.0
 [android_sdk_v4.28.1]: https://github.com/adjust/android_sdk/tree/v4.28.1
 [android_sdk_v4.28.5]: https://github.com/adjust/android_sdk/tree/v4.28.5
+[android_sdk_v4.29.1]: https://github.com/adjust/android_sdk/tree/v4.29.1

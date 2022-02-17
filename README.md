@@ -101,7 +101,7 @@ You can add Adjust SDK to your Flutter app by adding following to your `pubspec.
 
 ```yaml
 dependencies:
-  adjust_sdk: ^4.29.1
+  adjust_sdk: ^4.29.2
 ```
 
 Then navigate to your project in the terminal and run:
@@ -117,10 +117,10 @@ flutter packages get
 Since the 1st of August of 2014, apps in the Google Play Store must use the [Google Advertising ID][google-ad-id] to uniquely identify devices. To allow the Adjust SDK to use the Google Advertising ID, you must integrate the [Google Play Services][google-play-services]. If you haven't done this yet, please add dependency to Google Play Services library by adding following dependecy to your `dependencies` block of app's `build.gradle` file for Android platform:
 
 ```gradle
-implementation 'com.google.android.gms:play-services-analytics:16.0.4'
+implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
 ```
 
-**Note**: The Adjust SDK is not tied to any specific version of the `play-services-analytics` part of the Google Play Services library, so feel free to always use the latest version of it (or whichever you might need).
+**Note**: The Adjust SDK is not tied to any specific version of the `play-services-ads-identifier` part of the Google Play Services library. You can use the latest version of the library, or any other version you need.
 
 ### <a id="qs-permissions"></a>[Android] Add permissions
 

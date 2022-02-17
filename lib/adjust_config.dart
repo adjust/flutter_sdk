@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018-2021 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2018-Present Adjust GmbH. All rights reserved.
 //
 
 import 'package:adjust_sdk/adjust_attribution.dart';
@@ -48,6 +48,8 @@ class AdjustConfig {
   static const String AdRevenueSourceAdMob = 'admob_sdk';
   static const String AdRevenueSourceIronSource = 'ironsource_sdk';
   static const String AdRevenueSourceAdMostSource = 'admost_sdk';
+  static const String AdRevenueSourceUnity = 'unity_sdk';
+  static const String AdRevenueSourceHeliumChartboost = 'helium_chartboost_sdk';
 
   String _appToken;
   AdjustEnvironment _environment;
