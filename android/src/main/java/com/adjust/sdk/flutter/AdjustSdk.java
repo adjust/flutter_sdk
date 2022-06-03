@@ -305,6 +305,13 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             adjustConfig.setPreinstallFilePath(preinstallFilePath);
         }
 
+        // coppaCompliant
+        if (configMap.containsKey("coppaCompliantEnabled")) {
+            String strCoppaCompliantEnabled = (String) configMap.get("coppaCompliantEnabled");
+            boolean coppaCompliantEnabled = Boolean.parseBoolean(strCoppaCompliantEnabled);
+            adjustConfig.setCoppaCompliantEnabled(coppaCompliantEnabled);
+        }
+
         // URL strategy.
         if (configMap.containsKey("urlStrategy")) {
             String urlStrategy = (String) configMap.get("urlStrategy");
