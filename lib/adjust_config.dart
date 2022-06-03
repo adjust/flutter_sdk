@@ -14,6 +14,7 @@ import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:flutter/services.dart';
 
 enum AdjustLogLevel { verbose, debug, info, warn, error, suppress }
+
 enum AdjustEnvironment { production, sandbox }
 
 typedef void AttributionCallback(AdjustAttribution attributionData);
@@ -86,6 +87,8 @@ class AdjustConfig {
   EventFailureCallback? eventFailureCallback;
   DeferredDeeplinkCallback? deferredDeeplinkCallback;
   ConversionValueUpdatedCallback? conversionValueUpdatedCallback;
+  bool? playStoreKidsAppEnabled;
+  bool? coppaCompliantEnabled;
 
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
@@ -268,6 +271,14 @@ class AdjustConfig {
     if (conversionValueUpdatedCallback != null) {
       configMap['conversionValueUpdatedCallback'] =
           _conversionValueUpdatedCallbackName;
+    }
+
+    if (playStoreKidsAppEnabled != null) {
+      configMap['playStoreKidsAppEnabled'] = playStoreKidsAppEnabled.toString();
+    }
+
+    if (coppaCompliantEnabled != null) {
+      configMap['coppaCompliantEnabled'] = coppaCompliantEnabled.toString();
     }
 
     return configMap;
