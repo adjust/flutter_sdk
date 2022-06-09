@@ -1,9 +1,9 @@
 Pod::Spec.new do |s|
   s.name                  = 'test_lib'
   s.version               = '4.30.0'
-  s.summary               = 'Adjust test library Flutter plugin'
+  s.summary               = 'Adjust test library for iOS platform'
   s.description           = <<-DESC
-A new flutter plugin project.
+                            Adjust test library for iOS platform.
                             DESC
   s.homepage              = 'http://www.adjust.com'
   s.license               = { :file => '../LICENSE' }
