@@ -276,6 +276,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       }
     });
 
+    // COPPA compliance.
+    // config.coppaCompliantEnabled = true;
+
+    // Google Play Store kids apps.
+    // config.playStoreKidsAppEnabled = true;
+
     // Start SDK.
     Adjust.start(config);
   }

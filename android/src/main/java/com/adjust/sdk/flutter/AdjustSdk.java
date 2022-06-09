@@ -195,6 +195,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "trackMeasurementConsent":
                 trackMeasurementConsent(call, result);
                 break;
+            case "checkForNewAttStatus":
+                checkForNewAttStatus(call, result);
+                break;
             case "setTestOptions":
                 setTestOptions(call, result);
                 break;
@@ -276,9 +279,23 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
 
         // Event buffering.
         if (configMap.containsKey("eventBufferingEnabled")) {
-            String eventBufferingEnabledString = (String) configMap.get("eventBufferingEnabled");
-            boolean eventBufferingEnabled = Boolean.parseBoolean(eventBufferingEnabledString);
+            String strEventBufferingEnabled = (String) configMap.get("eventBufferingEnabled");
+            boolean eventBufferingEnabled = Boolean.parseBoolean(strEventBufferingEnabled);
             adjustConfig.setEventBufferingEnabled(eventBufferingEnabled);
+        }
+
+        // COPPA compliance.
+        if (configMap.containsKey("coppaCompliantEnabled")) {
+            String strCoppaCompliantEnabled = (String) configMap.get("coppaCompliantEnabled");
+            boolean coppaCompliantEnabled = Boolean.parseBoolean(strCoppaCompliantEnabled);
+            adjustConfig.setCoppaCompliantEnabled(coppaCompliantEnabled);
+        }
+
+        // Google Play Store kids apps.
+        if (configMap.containsKey("playStoreKidsAppEnabled")) {
+            String strPlayStoreKidsAppEnabled = (String) configMap.get("playStoreKidsAppEnabled");
+            boolean playStoreKidsAppEnabled = Boolean.parseBoolean(strPlayStoreKidsAppEnabled);
+            adjustConfig.setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled);
         }
 
         // Main process name.
@@ -682,8 +699,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void getIdfa(final Result result) {
-        result.notImplemented();
-        // result.error("0", "Error. No IDFA for Android platform!", null);
+        result.success("Error. No IDFA on Android platform!");
     }
 
     private void getGoogleAdId(final Result result) {
@@ -902,8 +918,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void trackAppStoreSubscription(final Result result) {
-        result.notImplemented();
-        // result.error("0", "Error. No App Store subscription tracking for Android platform!", null);
+        result.success("Error. No App Store subscription tracking on Android platform!");
     }
 
     private void trackPlayStoreSubscription(final MethodCall call, final Result result) {
@@ -1005,13 +1020,11 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void requestTrackingAuthorizationWithCompletionHandler(final Result result) {
-        result.notImplemented();
-        // result.error("0", "Error. No requestTrackingAuthorizationWithCompletionHandler for Android platform!", null);
+        result.success("Error. No requestTrackingAuthorizationWithCompletionHandler on Android platform!");
     }
 
     private void updateConversionValue(final Result result) {
-        result.notImplemented();
-        // result.error("0", "Error. No updateConversionValue for Android platform!", null);
+        result.success("Error. No updateConversionValue on Android platform!");
     }
 
     private void trackThirdPartySharing(final MethodCall call, final Result result) {
@@ -1055,6 +1068,10 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         boolean measurementConsent = (boolean) measurementConsentMap.get("measurementConsent");
         Adjust.trackMeasurementConsent(measurementConsent);
         result.success(null);
+    }
+
+    private void checkForNewAttStatus(final MethodCall call, final Result result) {
+        result.success("Error. No checkForNewAttStatus for Android platform!");
     }
 
     private void setTestOptions(final MethodCall call, final Result result) {

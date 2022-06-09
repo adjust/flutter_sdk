@@ -56,6 +56,7 @@ This is the Flutter SDK of Adjust™. You can read more about Adjust™ at [adju
    * [AppTrackingTransparency framework](#af-att-framework)
       * [App-tracking authorisation wrapper](#af-ata-wrapper)
       * [Get current authorisation status](#af-ata-getter)
+      * [Check for ATT status change](#af-att-status-change)
    * [SKAdNetwork framework](#af-skadn-framework)
       * [Update SKAdNetwork conversion value](#af-skadn-update-conversion-value)
       * [Conversion value updated callback](#af-skadn-cv-updated-callback)
@@ -81,6 +82,8 @@ This is the Flutter SDK of Adjust™. You can read more about Adjust™ at [adju
       * [Enable third-party sharing](#af-enable-third-party-sharing)
    * [Measurement consent](#af-measurement-consent)
    * [Data residency](#af-data-residency)
+   * [COPPA compliance](#af-coppa-compliance)
+   * [Play Store Kids Apps](#af-play-store-kids-apps)
 
 ### License
 
@@ -101,7 +104,7 @@ You can add Adjust SDK to your Flutter app by adding following to your `pubspec.
 
 ```yaml
 dependencies:
-  adjust_sdk: ^4.29.2
+  adjust_sdk: ^4.30.0
 ```
 
 Then navigate to your project in the terminal and run:
@@ -129,12 +132,6 @@ Please add the following permissions, which the Adjust SDK needs, if they are no
 ```xml
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-```
-
-If you are **not targeting the Google Play Store**, please also add the following permission:
-
-```xml
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
 
 #### <a id="gps-adid-permission"></a>Add permission to gather Google advertising ID
@@ -183,7 +180,7 @@ In order to correctly attribute an install of your app to its source, Adjust nee
 In order to support this in your app, please make sure to add following dependency to your app's `build.gradle` file for Android platform:
 
 ```
-implementation 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 Also, make sure that you have paid attention to the [Proguard settings](#qs-proguard) chapter and that you have added all the rules mentioned in it, especially the one needed for this feature:
@@ -222,7 +219,6 @@ Make sure that following iOS frameworks are linked with your iOS app:
 * `iAd.framework` - in case you are running iAd campaigns
 * `AdServices.framework` - in case you are running iAd campaigns
 * `AdSupport.framework` - for reading iOS Advertising Id (IDFA)
-* `CoreTelephony.framework` - for reading MCC and MNC information
 * `StoreKit.framework` - for communication with SKAdNetwork framework
 * `AppTrackingTransparency.framework` - to ask for user's consent to be tracked and obtain status of that consent
 
@@ -702,6 +698,16 @@ To get the current app tracking authorization status you can call `getAppTrackin
 * `2`: The user denied access to IDFA
 * `3`: The user authorized access to IDFA
 * `-1`: The status is not available
+
+### <a id="att-status-change"></a>Check for ATT status change
+
+**Note**: This feature exists only in iOS platform.
+
+In cases where you are not using [Adjust app-tracking authorization wrapper](#af-ata-wrapper), Adjust SDK will not be able to know immediately upon answering the dialog what is the new value of app-tracking status. In situations like this, if you would want Adjust SDK to read the new app-tracking status value and communicate it to our backend, make sure to make a call to this method:
+
+```dart
+Adjust.checkForNewAttStatus();
+```
 
 ### <a id="af-skadn-framework"></a>SKAdNetwork framework
 
@@ -1233,6 +1239,26 @@ adjustConfig.urlStrategy = AdjustConfig.DataResidencyTR; // for Turkey data resi
 adjustConfig.urlStrategy = AdjustConfig.DataResidencyUS; // for US data residency region
 ```
 
+### <a id="af-coppa-compliance"></a>COPPA compliance
+
+By default Adjust SDK doesn't mark app as COPPA compliant. In order to mark your app as COPPA compliant, make sure to set `coppaCompliantEnabled` member of `AdjustConfig` instance to `true`:
+
+```dart
+adjustConfig.coppaCompliantEnabled = true;
+```
+
+**Note:** By enabling this feature, third-party sharing will be automatically disabled for the users. If later during the app lifetime you decide not to mark app as COPPA compliant anymore, third-party sharing **will not be automatically re-enabled**. Instead, next to not marking your app as COPPA compliant anymore, you will need to explicitly re-enable third-party sharing in case you want to do that.
+
+### <a id="af-play-store-kids-apps"></a>Play Store Kids Apps
+
+**Note**: This feature exists only in Android platform.
+
+By default Adjust SDK doesn't mark Android app as Play Store Kids App. In order to mark your app as the app which is targetting kids in Play Store, make sure to set `playStoreKidsAppEnabled` member of `AdjustConfig` instance to `true`:
+
+```dart
+adjustConfig.playStoreKidsAppEnabled = true;
+```
+
 [dashboard]:  https://adjust.com
 [adjust.com]: https://adjust.com
 
@@ -1256,7 +1282,7 @@ adjustConfig.urlStrategy = AdjustConfig.DataResidencyUS; // for US data residenc
 
 The Adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2018-2021 Adjust GmbH, https://www.adjust.com
+Copyright (c) 2018-Present Adjust GmbH, https://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

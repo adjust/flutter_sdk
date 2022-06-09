@@ -19,7 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter4.29.2';
+  static const String _sdkPrefix = 'flutter4.30.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
 
@@ -178,6 +178,10 @@ class Adjust {
   static void updateConversionValue(int conversionValue) {
     _channel.invokeMethod(
         'updateConversionValue', {'conversionValue': conversionValue});
+  }
+
+  static void checkForNewAttStatus() {
+    _channel.invokeMethod('checkForNewAttStatus');
   }
 
   // For testing purposes only. Do not use in production.
