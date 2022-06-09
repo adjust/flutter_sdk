@@ -195,6 +195,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "trackMeasurementConsent":
                 trackMeasurementConsent(call, result);
                 break;
+            case "checkForNewAttStatus":
+                checkForNewAttStatus(call, result);
+                break;
             case "setTestOptions":
                 setTestOptions(call, result);
                 break;
@@ -1065,6 +1068,10 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         boolean measurementConsent = (boolean) measurementConsentMap.get("measurementConsent");
         Adjust.trackMeasurementConsent(measurementConsent);
         result.success(null);
+    }
+
+    private void checkForNewAttStatus(final MethodCall call, final Result result) {
+        result.success("Error. No checkForNewAttStatus for Android platform!");
     }
 
     private void setTestOptions(final MethodCall call, final Result result) {

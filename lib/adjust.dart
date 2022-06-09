@@ -180,6 +180,10 @@ class Adjust {
         'updateConversionValue', {'conversionValue': conversionValue});
   }
 
+  static void checkForNewAttStatus() {
+    _channel.invokeMethod('checkForNewAttStatus');
+  }
+
   // For testing purposes only. Do not use in production.
   @visibleForTesting
   static void setTestOptions(final dynamic testOptions) {
