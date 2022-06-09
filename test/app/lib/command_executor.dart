@@ -526,17 +526,21 @@ class CommandExecutor {
     if (_command.containsParameter('callbackParams')) {
       List<dynamic> callbackParams = _command.getParamteters('callbackParams')!;
       for (int i = 0; i < callbackParams.length; i = i + 2) {
-        String key = callbackParams[i];
-        String value = callbackParams[i + 1];
-        adjustEvent!.addCallbackParameter(key, value);
+        if (callbackParams[i] != null && callbackParams[i + 1] != null) {
+          String key = callbackParams[i];
+          String value = callbackParams[i + 1];
+          adjustEvent!.addCallbackParameter(key, value);
+        }
       }
     }
     if (_command.containsParameter('partnerParams')) {
       List<dynamic> partnerParams = _command.getParamteters('partnerParams')!;
       for (int i = 0; i < partnerParams.length; i = i + 2) {
-        String key = partnerParams[i];
-        String value = partnerParams[i + 1];
-        adjustEvent!.addPartnerParameter(key, value);
+        if (partnerParams[i] != null && partnerParams[i + 1] != null) {
+          String key = partnerParams[i];
+          String value = partnerParams[i + 1];
+          adjustEvent!.addPartnerParameter(key, value);
+        }
       }
     }
     if (_command.containsParameter('orderId')) {
@@ -690,17 +694,21 @@ class CommandExecutor {
         List<dynamic> callbackParams =
             _command.getParamteters('callbackParams')!;
         for (int i = 0; i < callbackParams.length; i = i + 2) {
-          String key = callbackParams[i];
-          String value = callbackParams[i + 1];
-          subscription.addCallbackParameter(key, value);
+          if (callbackParams[i] != null && callbackParams[i + 1] != null) {
+            String key = callbackParams[i];
+            String value = callbackParams[i + 1];
+            subscription.addCallbackParameter(key, value);
+          }
         }
       }
       if (_command.containsParameter('partnerParams')) {
         List<dynamic> partnerParams = _command.getParamteters('partnerParams')!;
         for (int i = 0; i < partnerParams.length; i = i + 2) {
-          String key = partnerParams[i];
-          String value = partnerParams[i + 1];
-          subscription.addPartnerParameter(key, value);
+          if (partnerParams[i] != null && partnerParams[i + 1] != null) {
+            String key = partnerParams[i];
+            String value = partnerParams[i + 1];
+            subscription.addPartnerParameter(key, value);
+          }
         }
       }
 
@@ -723,17 +731,21 @@ class CommandExecutor {
         List<dynamic> callbackParams =
             _command.getParamteters('callbackParams')!;
         for (int i = 0; i < callbackParams.length; i = i + 2) {
-          String key = callbackParams[i];
-          String value = callbackParams[i + 1];
-          subscription.addCallbackParameter(key, value);
+          if (callbackParams[i] != null && callbackParams[i + 1] != null) {
+            String key = callbackParams[i];
+            String value = callbackParams[i + 1];
+            subscription.addCallbackParameter(key, value);
+          }
         }
       }
       if (_command.containsParameter('partnerParams')) {
         List<dynamic> partnerParams = _command.getParamteters('partnerParams')!;
         for (int i = 0; i < partnerParams.length; i = i + 2) {
-          String key = partnerParams[i];
-          String value = partnerParams[i + 1];
-          subscription.addPartnerParameter(key, value);
+          if (partnerParams[i] != null && partnerParams[i + 1] != null) {
+            String key = partnerParams[i];
+            String value = partnerParams[i + 1];
+            subscription.addPartnerParameter(key, value);
+          }
         }
       }
 
@@ -753,10 +765,12 @@ class CommandExecutor {
       List<dynamic> granularOptions =
           _command.getParamteters('granularOptions')!;
       for (var i = 0; i < granularOptions.length; i += 3) {
-        String partnerName = granularOptions[i];
-        String key = granularOptions[i + 1];
-        String value = granularOptions[i + 2];
-        adjustThirdPartySharing.addGranularOption(partnerName, key, value);
+        if (granularOptions[i] != null && granularOptions[i + 1] != null && granularOptions[i + 2] != null) {
+          String partnerName = granularOptions[i];
+          String key = granularOptions[i + 1];
+          String value = granularOptions[i + 2];
+          adjustThirdPartySharing.addGranularOption(partnerName, key, value);
+        }
       }
     }
 
@@ -779,17 +793,21 @@ class CommandExecutor {
     if (_command.containsParameter('callbackParams')) {
       List<dynamic> callbackParams = _command.getParamteters('callbackParams')!;
       for (int i = 0; i < callbackParams.length; i = i + 2) {
-        String key = callbackParams[i];
-        String value = callbackParams[i + 1];
-        adjustAdRevenue.addCallbackParameter(key, value);
+        if (callbackParams[i] != null && callbackParams[i + 1] != null) {
+          String key = callbackParams[i];
+          String value = callbackParams[i + 1];
+          adjustAdRevenue.addCallbackParameter(key, value);
+        }
       }
     }
     if (_command.containsParameter('partnerParams')) {
       List<dynamic> partnerParams = _command.getParamteters('partnerParams')!;
       for (int i = 0; i < partnerParams.length; i = i + 2) {
-        String key = partnerParams[i];
-        String value = partnerParams[i + 1];
-        adjustAdRevenue.addPartnerParameter(key, value);
+        if (partnerParams[i] != null && partnerParams[i + 1] != null) {
+          String key = partnerParams[i];
+          String value = partnerParams[i + 1];
+          adjustAdRevenue.addPartnerParameter(key, value);
+        }
       }
     }
     if (_command.containsParameter('adImpressionsCount')) {
