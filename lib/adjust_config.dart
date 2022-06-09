@@ -73,6 +73,8 @@ class AdjustConfig {
   bool? launchDeferredDeeplink;
   bool? needsCost;
   bool? preinstallTrackingEnabled;
+  bool? playStoreKidsAppEnabled;
+  bool? coppaCompliantEnabled;
   String? sdkPrefix;
   String? userAgent;
   String? defaultTracker;
@@ -88,8 +90,6 @@ class AdjustConfig {
   EventFailureCallback? eventFailureCallback;
   DeferredDeeplinkCallback? deferredDeeplinkCallback;
   ConversionValueUpdatedCallback? conversionValueUpdatedCallback;
-  bool? playStoreKidsAppEnabled;
-  bool? coppaCompliantEnabled;
 
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
@@ -217,6 +217,12 @@ class AdjustConfig {
       configMap['preinstallTrackingEnabled'] =
           preinstallTrackingEnabled.toString();
     }
+    if (playStoreKidsAppEnabled != null) {
+      configMap['playStoreKidsAppEnabled'] = playStoreKidsAppEnabled.toString();
+    }
+    if (coppaCompliantEnabled != null) {
+      configMap['coppaCompliantEnabled'] = coppaCompliantEnabled.toString();
+    }
     if (allowiAdInfoReading != null) {
       configMap['allowiAdInfoReading'] = allowiAdInfoReading.toString();
     }
@@ -272,14 +278,6 @@ class AdjustConfig {
     if (conversionValueUpdatedCallback != null) {
       configMap['conversionValueUpdatedCallback'] =
           _conversionValueUpdatedCallbackName;
-    }
-
-    if (playStoreKidsAppEnabled != null) {
-      configMap['playStoreKidsAppEnabled'] = playStoreKidsAppEnabled.toString();
-    }
-
-    if (coppaCompliantEnabled != null) {
-      configMap['coppaCompliantEnabled'] = coppaCompliantEnabled.toString();
     }
 
     return configMap;

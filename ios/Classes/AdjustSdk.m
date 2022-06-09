@@ -143,6 +143,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *eventBufferingEnabled = call.arguments[@"eventBufferingEnabled"];
     NSString *sendInBackground = call.arguments[@"sendInBackground"];
     NSString *needsCost = call.arguments[@"needsCost"];
+    NSString *coppaCompliantEnabled = call.arguments[@"coppaCompliantEnabled"];
     NSString *allowiAdInfoReading = call.arguments[@"allowiAdInfoReading"];
     NSString *allowAdServicesInfoReading = call.arguments[@"allowAdServicesInfoReading"];
     NSString *allowIdfaReading = call.arguments[@"allowIdfaReading"];
@@ -183,6 +184,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     if ([self isFieldValid:eventBufferingEnabled]) {
         [adjustConfig setEventBufferingEnabled:[eventBufferingEnabled boolValue]];
     }
+
+    // COPPA compliance.
+     if ([self isFieldValid:coppaCompliantEnabled]) {
+         [adjustConfig setCoppaCompliantEnabled:[coppaCompliantEnabled boolValue]];
+     }
     
     // Default tracker.
     if ([self isFieldValid:defaultTracker]) {

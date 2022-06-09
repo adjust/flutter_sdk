@@ -276,9 +276,23 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
 
         // Event buffering.
         if (configMap.containsKey("eventBufferingEnabled")) {
-            String eventBufferingEnabledString = (String) configMap.get("eventBufferingEnabled");
-            boolean eventBufferingEnabled = Boolean.parseBoolean(eventBufferingEnabledString);
+            String strEventBufferingEnabled = (String) configMap.get("eventBufferingEnabled");
+            boolean eventBufferingEnabled = Boolean.parseBoolean(strEventBufferingEnabled);
             adjustConfig.setEventBufferingEnabled(eventBufferingEnabled);
+        }
+
+        // COPPA compliance.
+        if (configMap.containsKey("coppaCompliantEnabled")) {
+            String strCoppaCompliantEnabled = (String) configMap.get("coppaCompliantEnabled");
+            boolean coppaCompliantEnabled = Boolean.parseBoolean(strCoppaCompliantEnabled);
+            adjustConfig.setCoppaCompliantEnabled(coppaCompliantEnabled);
+        }
+
+        // Google Play Store kids apps.
+        if (configMap.containsKey("playStoreKidsAppEnabled")) {
+            String strPlayStoreKidsAppEnabled = (String) configMap.get("playStoreKidsAppEnabled");
+            boolean playStoreKidsAppEnabled = Boolean.parseBoolean(strPlayStoreKidsAppEnabled);
+            adjustConfig.setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled);
         }
 
         // Main process name.
@@ -303,20 +317,6 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         if (configMap.containsKey("preinstallFilePath")) {
             String preinstallFilePath = (String) configMap.get("preinstallFilePath");
             adjustConfig.setPreinstallFilePath(preinstallFilePath);
-        }
-
-        // coppaCompliant
-        if (configMap.containsKey("coppaCompliantEnabled")) {
-            String strCoppaCompliantEnabled = (String) configMap.get("coppaCompliantEnabled");
-            boolean coppaCompliantEnabled = Boolean.parseBoolean(strCoppaCompliantEnabled);
-            adjustConfig.setCoppaCompliantEnabled(coppaCompliantEnabled);
-        }
-
-        // playStoreKidsApp
-        if (configMap.containsKey("playStoreKidsAppEnabled")) {
-            String strPlayStoreKidsAppEnabled = (String) configMap.get("playStoreKidsAppEnabled");
-            boolean playStoreKidsAppEnabled = Boolean.parseBoolean(strPlayStoreKidsAppEnabled);
-            adjustConfig.setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled);
         }
 
         // URL strategy.
@@ -696,8 +696,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void getIdfa(final Result result) {
-        result.notImplemented();
-        // result.error("0", "Error. No IDFA for Android platform!", null);
+        result.success("Error. No IDFA on Android platform!");
     }
 
     private void getGoogleAdId(final Result result) {
@@ -916,8 +915,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void trackAppStoreSubscription(final Result result) {
-        result.notImplemented();
-        // result.error("0", "Error. No App Store subscription tracking for Android platform!", null);
+        result.success("0", "Error. No App Store subscription tracking on Android platform!", null);
     }
 
     private void trackPlayStoreSubscription(final MethodCall call, final Result result) {
@@ -1019,13 +1017,11 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void requestTrackingAuthorizationWithCompletionHandler(final Result result) {
-        result.notImplemented();
-        // result.error("0", "Error. No requestTrackingAuthorizationWithCompletionHandler for Android platform!", null);
+        result.success("Error. No requestTrackingAuthorizationWithCompletionHandler on Android platform!");
     }
 
     private void updateConversionValue(final Result result) {
-        result.notImplemented();
-        // result.error("0", "Error. No updateConversionValue for Android platform!", null);
+        result.success("Error. No updateConversionValue on Android platform!");
     }
 
     private void trackThirdPartySharing(final MethodCall call, final Result result) {

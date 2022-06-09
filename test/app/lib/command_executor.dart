@@ -316,6 +316,16 @@ class CommandExecutor {
           _command.getFirstParameterValue('eventBufferingEnabled') == 'true';
     }
 
+    if (_command.containsParameter('coppaCompliant')) {
+      adjustConfig!.coppaCompliantEnabled =
+      _command.getFirstParameterValue('coppaCompliant') == 'true';
+    }
+
+    if (_command.containsParameter('playStoreKids')) {
+      adjustConfig!.playStoreKidsAppEnabled =
+      _command.getFirstParameterValue('playStoreKids') == 'true';
+    }
+
     if (_command.containsParameter('sendInBackground')) {
       adjustConfig!.sendInBackground =
           _command.getFirstParameterValue('sendInBackground') == 'true';
