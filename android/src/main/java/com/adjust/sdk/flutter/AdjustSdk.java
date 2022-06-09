@@ -915,7 +915,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void trackAppStoreSubscription(final Result result) {
-        result.success("0", "Error. No App Store subscription tracking on Android platform!", null);
+        result.success("Error. No App Store subscription tracking on Android platform!");
     }
 
     private void trackPlayStoreSubscription(final MethodCall call, final Result result) {
