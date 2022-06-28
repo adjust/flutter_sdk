@@ -310,17 +310,9 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
 ### <a id="qs-sdk-signature"></a>SDK signature
 
-An account manager must activate the Adjust SDK signature. Contact Adjust support (support@adjust.com) if you are interested in using this feature.
+When you set up the SDK Signature, each SDK communication package is "signed". This lets Adjust’s servers easily detect and reject any install activity that is not legitimate.
 
-If the SDK signature has already been enabled on your account and you have access to App Secrets in your Adjust Dashboard, please use the method below to integrate the SDK signature into your app.
-
-An App Secret is set by calling `setAppSecret` on your config instance:
-
-```dart
-AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
-adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
-Adjust.start(adjustConfig);
-```
+There are just a few steps involved in setting up the SDK Signature. Please contact your Technical Account Manager or support@adjust.com to get started.
 
 ### <a id="qs-adjust-logging"></a>Adjust logging
 
