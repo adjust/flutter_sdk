@@ -396,6 +396,7 @@ class CommandExecutor {
         TestLib.addInfoToSend('costType', attribution.costType);
         TestLib.addInfoToSend('costAmount', attribution.costAmount.toString());
         TestLib.addInfoToSend('costCurrency', attribution.costCurrency);
+        TestLib.addInfoToSend('fbInstallReferrer', attribution.fbInstallReferrer);
         TestLib.sendInfoToServer(localBasePath);
       };
     }

@@ -104,7 +104,7 @@ You can add Adjust SDK to your Flutter app by adding following to your `pubspec.
 
 ```yaml
 dependencies:
-  adjust_sdk: ^4.30.0
+  adjust_sdk: ^4.31.0
 ```
 
 Then navigate to your project in the terminal and run:
@@ -310,17 +310,9 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
 ### <a id="qs-sdk-signature"></a>SDK signature
 
-An account manager must activate the Adjust SDK signature. Contact Adjust support (support@adjust.com) if you are interested in using this feature.
+When you set up the SDK Signature, each SDK communication package is "signed". This lets Adjust’s servers easily detect and reject any install activity that is not legitimate.
 
-If the SDK signature has already been enabled on your account and you have access to App Secrets in your Adjust Dashboard, please use the method below to integrate the SDK signature into your app.
-
-An App Secret is set by calling `setAppSecret` on your config instance:
-
-```dart
-AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
-adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
-Adjust.start(adjustConfig);
-```
+There are just a few steps involved in setting up the SDK Signature. Please contact your Technical Account Manager or support@adjust.com to get started.
 
 ### <a id="qs-adjust-logging"></a>Adjust logging
 
@@ -910,6 +902,7 @@ The callback function will be called after the SDK receives the final attributio
 - `costType` the cost type string
 - `costAmount` the cost amount
 - `costCurrency` the cost currency string
+- `fbInstallReferrer` the Facebook install referrer information
 
 **Note**: The cost data - `costType`, `costAmount` & `costCurrency` are only available when configured in `AdjustConfig` by setting `needsCost` member to `true`. If not configured or configured, but not being part of the attribution, these fields will have value `null`. This feature is available in SDK v4.26.0 and later.
 

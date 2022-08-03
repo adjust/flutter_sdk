@@ -18,6 +18,8 @@ class AdjustAttribution {
   final String? costType;
   final num? costAmount;
   final String? costCurrency;
+  // Android only
+  final String? fbInstallReferrer;
 
   AdjustAttribution({
     required this.trackerToken,
@@ -31,6 +33,7 @@ class AdjustAttribution {
     required this.costType,
     required this.costAmount,
     required this.costCurrency,
+    required this.fbInstallReferrer,
   });
 
   factory AdjustAttribution.fromMap(dynamic map) {
@@ -54,6 +57,7 @@ class AdjustAttribution {
         costType: map['costType'],
         costAmount: parsedCostAmount != -1 ? parsedCostAmount : null,
         costCurrency: map['costCurrency'],
+        fbInstallReferrer: map['fbInstallReferrer'],
       );
     } catch (e) {
       throw Exception(

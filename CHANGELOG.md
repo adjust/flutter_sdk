@@ -1,3 +1,14 @@
+### Version 4.31.0 (3rd August 2022)
+#### Added
+- Added support for `LinkMe` feature.
+- Added support to get Facebook install referrer information in attribution callback.
+
+#### Native SDKs
+- [iOS@v4.31.0][ios_sdk_v4.31.0]
+- [Android@v4.31.0][android_sdk_v4.31.0]
+
+---
+
 ### Version 4.30.0 (9th June 2022)
 #### Added
 - Added ability to mark your app as COPPA compliant. You can enable this setting by setting `coppaCompliantEnabled` member of `AdjustConfig` instance to `true`.
@@ -274,6 +285,7 @@
 [ios_sdk_v4.29.6]: https://github.com/adjust/ios_sdk/tree/v4.29.6
 [ios_sdk_v4.29.7]: https://github.com/adjust/ios_sdk/tree/v4.29.7
 [ios_sdk_v4.30.0]: https://github.com/adjust/ios_sdk/tree/v4.30.0
+[ios_sdk_v4.31.0]: https://github.com/adjust/ios_sdk/tree/v4.31.0
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -286,3 +298,4 @@
 [android_sdk_v4.28.1]: https://github.com/adjust/android_sdk/tree/v4.28.1
 [android_sdk_v4.28.5]: https://github.com/adjust/android_sdk/tree/v4.28.5
 [android_sdk_v4.30.1]: https://github.com/adjust/android_sdk/tree/v4.30.1
+[android_sdk_v4.31.0]: https://github.com/adjust/android_sdk/tree/v4.31.0

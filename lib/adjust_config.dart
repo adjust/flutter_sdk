@@ -75,6 +75,7 @@ class AdjustConfig {
   bool? preinstallTrackingEnabled;
   bool? playStoreKidsAppEnabled;
   bool? coppaCompliantEnabled;
+  bool? linkMeEnabled;
   String? sdkPrefix;
   String? userAgent;
   String? defaultTracker;
@@ -222,6 +223,9 @@ class AdjustConfig {
     }
     if (coppaCompliantEnabled != null) {
       configMap['coppaCompliantEnabled'] = coppaCompliantEnabled.toString();
+    }
+    if (linkMeEnabled != null) {
+      configMap['linkMeEnabled'] = linkMeEnabled.toString();
     }
     if (allowiAdInfoReading != null) {
       configMap['allowiAdInfoReading'] = allowiAdInfoReading.toString();
