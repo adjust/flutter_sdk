@@ -428,6 +428,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                         adjustAttributionMap.put("costAmount", adjustAttribution.costAmount != null ?
                                 adjustAttribution.costAmount.toString() : "");
                         adjustAttributionMap.put("costCurrency", adjustAttribution.costCurrency);
+                        adjustAttributionMap.put("fbInstallReferrer", adjustAttribution.fbInstallReferrer);
                         if (channel != null) {
                             channel.invokeMethod(dartMethodName, adjustAttributionMap);
                         }
@@ -744,6 +745,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         adjustAttributionMap.put("costAmount", adjustAttribution.costAmount != null ?
                 adjustAttribution.costAmount.toString() : "");
         adjustAttributionMap.put("costCurrency", adjustAttribution.costCurrency);
+        adjustAttributionMap.put("fbInstallReferrer", adjustAttribution.fbInstallReferrer);
         result.success(adjustAttributionMap);
     }
 
