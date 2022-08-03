@@ -146,6 +146,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *sendInBackground = call.arguments[@"sendInBackground"];
     NSString *needsCost = call.arguments[@"needsCost"];
     NSString *coppaCompliantEnabled = call.arguments[@"coppaCompliantEnabled"];
+    NSString *linkMeEnabled = call.arguments[@"linkMeEnabled"];
     NSString *allowiAdInfoReading = call.arguments[@"allowiAdInfoReading"];
     NSString *allowAdServicesInfoReading = call.arguments[@"allowAdServicesInfoReading"];
     NSString *allowIdfaReading = call.arguments[@"allowIdfaReading"];
@@ -188,10 +189,15 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
 
     // COPPA compliance.
-     if ([self isFieldValid:coppaCompliantEnabled]) {
-         [adjustConfig setCoppaCompliantEnabled:[coppaCompliantEnabled boolValue]];
-     }
-    
+    if ([self isFieldValid:coppaCompliantEnabled]) {
+        [adjustConfig setCoppaCompliantEnabled:[coppaCompliantEnabled boolValue]];
+    }
+
+    // LinkMe.
+    if ([self isFieldValid:linkMeEnabled]) {
+        [adjustConfig setLinkMeEnabled:[linkMeEnabled boolValue]];
+    }
+
     // Default tracker.
     if ([self isFieldValid:defaultTracker]) {
         [adjustConfig setDefaultTracker:defaultTracker];
