@@ -301,7 +301,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       case AppLifecycleState.paused:
         Adjust.onPause();
         break;
-      case AppLifecycleState.suspending:
+      case AppLifecycleState.detached:
         break;
     }
   }
