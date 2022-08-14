@@ -282,6 +282,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // Play store kids app
     config.playStoreKidsAppEnabled = true;
 
+    // read oaid
+    Adjust.readOaid();
+
     // Start SDK.
     Adjust.start(config);
   }
