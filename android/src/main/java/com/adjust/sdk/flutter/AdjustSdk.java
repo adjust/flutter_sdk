@@ -32,6 +32,7 @@ import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
+import com.adjust.sdk.oaid.AdjustOaid;
 
 import org.json.JSONArray;
 import org.json.JSONException;
