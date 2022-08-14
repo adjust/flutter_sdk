@@ -199,6 +199,12 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "setTestOptions":
                 setTestOptions(call, result);
                 break;
+            case "readOaid":
+                readOaid(call,result);
+                break;
+            case "doNotReadOaid":
+                doNotReadOaid(call,result);
+                break;
             default:
                 Log.e(TAG, "Not implemented method: " + call.method);
                 result.notImplemented();
@@ -1057,6 +1063,18 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
 
         // Track third party sharing.
         Adjust.trackThirdPartySharing(thirdPartySharing);
+        result.success(null);
+    }
+
+    // read oaid
+    private void readOaid(final MethodCall call, final Result result){
+        AdjustOaid.readOaid(applicationContext);
+        result.success(null);
+    }
+
+    // do not read oaid
+    private void doNotReadOaid(final MethodCall call, final Result result){
+        AdjustOaid.doNotReadOaid();
         result.success(null);
     }
 
