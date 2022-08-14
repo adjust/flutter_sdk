@@ -180,6 +180,20 @@ class Adjust {
         'updateConversionValue', {'conversionValue': conversionValue});
   }
 
+  /// read OAID (Open Access ID)
+  ///
+  /// this is used when you only want to target devices with OAID instead of GPS Ad Id (e.g. Huawei)
+  static void readOaid() {
+    _channel.invokeMethod('readOaid');
+  }
+
+  /// do not read OAID (Open Access ID)
+  ///
+  /// this is used when you only want to target devices with OAID instead of GPS Ad Id (e.g. Huawei)
+  static void doNotReadOaid() {
+    _channel.invokeMethod('doNotReadOaid');
+  }
+
   // For testing purposes only. Do not use in production.
   @visibleForTesting
   static void setTestOptions(final dynamic testOptions) {
