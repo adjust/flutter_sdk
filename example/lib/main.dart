@@ -285,6 +285,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // read oaid
     Adjust.readOaid();
 
+
     // Start SDK.
     Adjust.start(config);
   }

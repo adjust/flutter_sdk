@@ -19,7 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter4.29.2';
+  static const String _sdkPrefix = 'flutter4.31.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
 
@@ -192,6 +192,8 @@ class Adjust {
   /// this is used when you only want to target devices with OAID instead of GPS Ad Id (e.g. Huawei)
   static void doNotReadOaid() {
     _channel.invokeMethod('doNotReadOaid');
+  static void checkForNewAttStatus() {
+    _channel.invokeMethod('checkForNewAttStatus');
   }
 
   // For testing purposes only. Do not use in production.

@@ -24,7 +24,7 @@ rootProject.allprojects {
 }
 apply plugin: 'com.android.library'
 android {
-    compileSdkVersion 32
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 16
@@ -38,4 +38,5 @@ android {
 dependencies {
     api 'com.adjust.sdk:adjust-android:4.30.1'
     api 'com.adjust.sdk:adjust-android-oaid:4.31.0'
+
 }

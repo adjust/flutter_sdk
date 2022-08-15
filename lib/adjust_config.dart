@@ -51,6 +51,7 @@ class AdjustConfig {
   static const String AdRevenueSourceAdMostSource = 'admost_sdk';
   static const String AdRevenueSourceUnity = 'unity_sdk';
   static const String AdRevenueSourceHeliumChartboost = 'helium_chartboost_sdk';
+  static const String AdRevenueSourcePublisher = 'publisher_sdk';
 
   String _appToken;
   AdjustEnvironment _environment;
@@ -72,6 +73,9 @@ class AdjustConfig {
   bool? launchDeferredDeeplink;
   bool? needsCost;
   bool? preinstallTrackingEnabled;
+  bool? playStoreKidsAppEnabled;
+  bool? coppaCompliantEnabled;
+  bool? linkMeEnabled;
   String? sdkPrefix;
   String? userAgent;
   String? defaultTracker;
@@ -215,6 +219,15 @@ class AdjustConfig {
     if (preinstallTrackingEnabled != null) {
       configMap['preinstallTrackingEnabled'] =
           preinstallTrackingEnabled.toString();
+    }
+    if (playStoreKidsAppEnabled != null) {
+      configMap['playStoreKidsAppEnabled'] = playStoreKidsAppEnabled.toString();
+    }
+    if (coppaCompliantEnabled != null) {
+      configMap['coppaCompliantEnabled'] = coppaCompliantEnabled.toString();
+    }
+    if (linkMeEnabled != null) {
+      configMap['linkMeEnabled'] = linkMeEnabled.toString();
     }
     if (allowiAdInfoReading != null) {
       configMap['allowiAdInfoReading'] = allowiAdInfoReading.toString();
