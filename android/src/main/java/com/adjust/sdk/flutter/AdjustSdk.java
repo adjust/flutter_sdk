@@ -1095,7 +1095,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void getAppTrackingAuthorizationStatus(final MethodCall call, final Result result) {
-        result.getAppTrackingAuthorizationStatus("Error. No getAppTrackingAuthorizationStatus for Android platform!");
+        result.success("Error. No getAppTrackingAuthorizationStatus for Android platform!");
     }
 
     private void getLastDeeplink(final MethodCall call, final Result result) {
