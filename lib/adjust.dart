@@ -184,6 +184,11 @@ class Adjust {
     _channel.invokeMethod('checkForNewAttStatus');
   }
 
+  static Future<String?> getLastDeeplink() async {
+    final String? deeplink = await _channel.invokeMethod('getLastDeeplink');
+    return deeplink;
+  }
+
   // For testing purposes only. Do not use in production.
   @visibleForTesting
   static void setTestOptions(final dynamic testOptions) {

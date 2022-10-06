@@ -125,6 +125,9 @@ class CommandExecutor {
       case 'trackAdRevenueV2':
         _trackAdRevenueV2();
         break;
+      case 'getLastDeeplink':
+        _getLastDeeplink();
+        break;
     }
   }
 
@@ -842,5 +845,15 @@ class CommandExecutor {
     }
 
     Adjust.trackAdRevenueNew(adjustAdRevenue);
+  }
+
+  void _getLastDeeplink() {
+    if (Platform.isIOS) {
+      Adjust.getLastDeeplink().then((lastDeeplink) {
+        String? localBasePath = _basePath;
+        TestLib.addInfoToSend('last_deeplink', lastDeeplink);
+        TestLib.sendInfoToServer(localBasePath);
+      });
+    }
   }
 }

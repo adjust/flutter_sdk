@@ -198,6 +198,12 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "checkForNewAttStatus":
                 checkForNewAttStatus(call, result);
                 break;
+            case "getAppTrackingAuthorizationStatus":
+                getAppTrackingAuthorizationStatus(call, result);
+                break;
+            case "getLastDeeplink":
+                getLastDeeplink(call, result);
+                break;
             case "setTestOptions":
                 setTestOptions(call, result);
                 break;
@@ -1086,6 +1092,14 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
 
     private void checkForNewAttStatus(final MethodCall call, final Result result) {
         result.success("Error. No checkForNewAttStatus for Android platform!");
+    }
+
+    private void getAppTrackingAuthorizationStatus(final MethodCall call, final Result result) {
+        result.getAppTrackingAuthorizationStatus("Error. No getAppTrackingAuthorizationStatus for Android platform!");
+    }
+
+    private void getLastDeeplink(final MethodCall call, final Result result) {
+        result.success("Error. No getLastDeeplink for Android platform!");
     }
 
     private void setTestOptions(final MethodCall call, final Result result) {
