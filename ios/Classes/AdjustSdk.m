@@ -637,6 +637,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 - (void)trackThirdPartySharing:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSNumber *isEnabled = call.arguments[@"isEnabled"];
     NSString *strGranularOptions = call.arguments[@"granularOptions"];
+    NSString *strPartnerSharingSettings = call.arguments[@"partnerSharingSettings"];
 
     // Create third party sharing object.
     ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc]
@@ -650,6 +651,18 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                 [adjustThirdPartySharing addGranularOption:[arrayGranularOptions objectAtIndex:i]
                                                        key:[arrayGranularOptions objectAtIndex:i+1]
                                                      value:[arrayGranularOptions objectAtIndex:i+2]];
+            }
+        }
+    }
+
+    // Partner sharing settings.
+    if (strPartnerSharingSettings != nil) {
+        NSArray *arrayPartnerSharingSettings = [strPartnerSharingSettings componentsSeparatedByString:@"__ADJ__"];
+        if (arrayPartnerSharingSettings != nil) {
+            for (int i = 0; i < [arrayPartnerSharingSettings count]; i += 3) {
+                [adjustThirdPartySharing addPartnerSharingSetting:[arrayPartnerSharingSettings objectAtIndex:i]
+                                                              key:[arrayPartnerSharingSettings objectAtIndex:i+1]
+                                                            value:[[arrayPartnerSharingSettings objectAtIndex:i+2] boolValue]];
             }
         }
     }

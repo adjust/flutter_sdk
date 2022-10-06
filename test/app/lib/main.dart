@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    String _address = '192.168.86.42';
+    String _address = '192.168.86.44';
     if (Platform.isAndroid) {
       String _protocol = 'https';
       String _port = '8443';
@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
                 buildCupertinoButton(
                     'Start Test Session',
                     () => Adjust.getSdkVersion().then((sdkVersion) {
-                          // TestLib.addTestDirectory('third-party-sharing');
+                          TestLib.addTestDirectory('third-party-sharing');
                           // TestLib.addTest('Test_Event_Revenue_invalid');
                           TestLib.startTestSession(sdkVersion);
                         }))

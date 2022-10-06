@@ -775,6 +775,19 @@ class CommandExecutor {
       }
     }
 
+    if (_command.containsParameter('partnerSharingSettings')) {
+      List<dynamic> partnerSharingSettings =
+          _command.getParamteters('partnerSharingSettings')!;
+      for (var i = 0; i < partnerSharingSettings.length; i += 3) {
+        if (partnerSharingSettings[i] != null && partnerSharingSettings[i + 1] != null && partnerSharingSettings[i + 2] != null) {
+          String partnerName = partnerSharingSettings[i];
+          String key = partnerSharingSettings[i + 1];
+          bool value = partnerSharingSettings[i + 2] == 'true';
+          adjustThirdPartySharing.addPartnerSharingSetting(partnerName, key, value);
+        }
+      }
+    }
+
     Adjust.trackThirdPartySharing(adjustThirdPartySharing);
   }
 

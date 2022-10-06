@@ -1055,6 +1055,18 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             }
         }
 
+        // Partner sharing settings.
+        if (thirdPartySharingMap.containsKey("partnerSharingSettings")) {
+            String strPartnerSharingSettings = (String) thirdPartySharingMap.get("partnerSharingSettings");
+            String[] arrayPartnerSharingSettings = strPartnerSharingSettings.split("__ADJ__", -1);
+            for (int i = 0; i < arrayPartnerSharingSettings.length; i += 3) {
+                thirdPartySharing.addPartnerSharingSetting(
+                    arrayPartnerSharingSettings[i],
+                    arrayPartnerSharingSettings[i+1],
+                    Boolean.parseBoolean(arrayPartnerSharingSettings[i+2]));
+            }
+        }
+
         // Track third party sharing.
         Adjust.trackThirdPartySharing(thirdPartySharing);
         result.success(null);

@@ -9,9 +9,11 @@
 class AdjustThirdPartySharing {
   bool? _isEnabled;
   late List<String> _granularOptions;
+  late List<String> _partnerSharingSettings;
 
   AdjustThirdPartySharing(this._isEnabled) {
     _granularOptions = <String>[];
+    _partnerSharingSettings = <String>[];
   }
 
   void addGranularOption(String partnerName, String key, String value) {
@@ -20,11 +22,21 @@ class AdjustThirdPartySharing {
     _granularOptions.add(value);
   }
 
+  void addPartnerSharingSetting(String partnerName, String key, bool value) {
+    _partnerSharingSettings.add(partnerName);
+    _partnerSharingSettings.add(key);
+    _partnerSharingSettings.add(value.toString());
+  }
+
   Map<String, Object?> get toMap {
     Map<String, Object?> thirdPartySharingMap = {'isEnabled': _isEnabled};
     if (_granularOptions.length > 0) {
       thirdPartySharingMap['granularOptions'] =
           _granularOptions.join('__ADJ__');
+    }
+    if (_partnerSharingSettings.length > 0) {
+      thirdPartySharingMap['partnerSharingSettings'] =
+          _partnerSharingSettings.join('__ADJ__');
     }
 
     return thirdPartySharingMap;
