@@ -198,6 +198,12 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "checkForNewAttStatus":
                 checkForNewAttStatus(call, result);
                 break;
+            case "getAppTrackingAuthorizationStatus":
+                getAppTrackingAuthorizationStatus(call, result);
+                break;
+            case "getLastDeeplink":
+                getLastDeeplink(call, result);
+                break;
             case "setTestOptions":
                 setTestOptions(call, result);
                 break;
@@ -1055,6 +1061,18 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             }
         }
 
+        // Partner sharing settings.
+        if (thirdPartySharingMap.containsKey("partnerSharingSettings")) {
+            String strPartnerSharingSettings = (String) thirdPartySharingMap.get("partnerSharingSettings");
+            String[] arrayPartnerSharingSettings = strPartnerSharingSettings.split("__ADJ__", -1);
+            for (int i = 0; i < arrayPartnerSharingSettings.length; i += 3) {
+                thirdPartySharing.addPartnerSharingSetting(
+                    arrayPartnerSharingSettings[i],
+                    arrayPartnerSharingSettings[i+1],
+                    Boolean.parseBoolean(arrayPartnerSharingSettings[i+2]));
+            }
+        }
+
         // Track third party sharing.
         Adjust.trackThirdPartySharing(thirdPartySharing);
         result.success(null);
@@ -1074,6 +1092,14 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
 
     private void checkForNewAttStatus(final MethodCall call, final Result result) {
         result.success("Error. No checkForNewAttStatus for Android platform!");
+    }
+
+    private void getAppTrackingAuthorizationStatus(final MethodCall call, final Result result) {
+        result.success("Error. No getAppTrackingAuthorizationStatus for Android platform!");
+    }
+
+    private void getLastDeeplink(final MethodCall call, final Result result) {
+        result.success("Error. No getLastDeeplink for Android platform!");
     }
 
     private void setTestOptions(final MethodCall call, final Result result) {

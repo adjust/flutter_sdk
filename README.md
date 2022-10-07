@@ -104,7 +104,7 @@ You can add Adjust SDK to your Flutter app by adding following to your `pubspec.
 
 ```yaml
 dependencies:
-  adjust_sdk: ^4.31.0
+  adjust_sdk: ^4.32.0
 ```
 
 Then navigate to your project in the terminal and run:
@@ -301,7 +301,7 @@ class MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       case AppLifecycleState.paused:
         Adjust.onPause();
         break;
-      case AppLifecycleState.suspending:
+      case AppLifecycleState.detached:
         break;
     }
   }

@@ -125,6 +125,9 @@ class CommandExecutor {
       case 'trackAdRevenueV2':
         _trackAdRevenueV2();
         break;
+      case 'getLastDeeplink':
+        _getLastDeeplink();
+        break;
     }
   }
 
@@ -775,6 +778,19 @@ class CommandExecutor {
       }
     }
 
+    if (_command.containsParameter('partnerSharingSettings')) {
+      List<dynamic> partnerSharingSettings =
+          _command.getParamteters('partnerSharingSettings')!;
+      for (var i = 0; i < partnerSharingSettings.length; i += 3) {
+        if (partnerSharingSettings[i] != null && partnerSharingSettings[i + 1] != null && partnerSharingSettings[i + 2] != null) {
+          String partnerName = partnerSharingSettings[i];
+          String key = partnerSharingSettings[i + 1];
+          bool value = partnerSharingSettings[i + 2] == 'true';
+          adjustThirdPartySharing.addPartnerSharingSetting(partnerName, key, value);
+        }
+      }
+    }
+
     Adjust.trackThirdPartySharing(adjustThirdPartySharing);
   }
 
@@ -829,5 +845,15 @@ class CommandExecutor {
     }
 
     Adjust.trackAdRevenueNew(adjustAdRevenue);
+  }
+
+  void _getLastDeeplink() {
+    if (Platform.isIOS) {
+      Adjust.getLastDeeplink().then((lastDeeplink) {
+        String? localBasePath = _basePath;
+        TestLib.addInfoToSend('last_deeplink', lastDeeplink);
+        TestLib.sendInfoToServer(localBasePath);
+      });
+    }
   }
 }

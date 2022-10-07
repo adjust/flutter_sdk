@@ -19,7 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter4.31.0';
+  static const String _sdkPrefix = 'flutter4.32.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
 
@@ -182,6 +182,11 @@ class Adjust {
 
   static void checkForNewAttStatus() {
     _channel.invokeMethod('checkForNewAttStatus');
+  }
+
+  static Future<String?> getLastDeeplink() async {
+    final String? deeplink = await _channel.invokeMethod('getLastDeeplink');
+    return deeplink;
   }
 
   // For testing purposes only. Do not use in production.

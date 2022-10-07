@@ -1,3 +1,17 @@
+### Version 4.32.0 (7th October 2022)
+#### Added
+- Added partner sharing settings to the third party sharing feature.
+- Added `getLastDeeplink` getter to `Adjust` API to be able to get last tracked deep link by the SDK for iOS platform.
+
+#### Changed
+- Switched to adding permission `com.google.android.gms.permission.AD_ID` in the Android app's mainfest by default.
+
+#### Native SDKs
+- [iOS@v4.32.1][ios_sdk_v4.32.1]
+- [Android@v4.32.0][android_sdk_v4.32.0]
+
+---
+
 ### Version 4.31.0 (3rd August 2022)
 #### Added
 - Added support for `LinkMe` feature.
@@ -286,6 +300,7 @@
 [ios_sdk_v4.29.7]: https://github.com/adjust/ios_sdk/tree/v4.29.7
 [ios_sdk_v4.30.0]: https://github.com/adjust/ios_sdk/tree/v4.30.0
 [ios_sdk_v4.31.0]: https://github.com/adjust/ios_sdk/tree/v4.31.0
+[ios_sdk_v4.32.1]: https://github.com/adjust/ios_sdk/tree/v4.32.1
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -299,3 +314,4 @@
 [android_sdk_v4.28.5]: https://github.com/adjust/android_sdk/tree/v4.28.5
 [android_sdk_v4.30.1]: https://github.com/adjust/android_sdk/tree/v4.30.1
 [android_sdk_v4.31.0]: https://github.com/adjust/android_sdk/tree/v4.31.0
+[android_sdk_v4.32.0]: https://github.com/adjust/android_sdk/tree/v4.32.0

@@ -121,7 +121,9 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         result([Adjust adid]);
     } else if ([@"checkForNewAttStatus" isEqualToString:call.method]) {
          [Adjust checkForNewAttStatus];
-     } else {
+    } else if ([@"getLastDeeplink" isEqualToString:call.method]) {
+         [self getLastDeeplink:call withResult:result];
+    } else {
         result(FlutterMethodNotImplemented);
     }
 }
@@ -637,6 +639,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 - (void)trackThirdPartySharing:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSNumber *isEnabled = call.arguments[@"isEnabled"];
     NSString *strGranularOptions = call.arguments[@"granularOptions"];
+    NSString *strPartnerSharingSettings = call.arguments[@"partnerSharingSettings"];
 
     // Create third party sharing object.
     ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc]
@@ -654,6 +657,18 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         }
     }
 
+    // Partner sharing settings.
+    if (strPartnerSharingSettings != nil) {
+        NSArray *arrayPartnerSharingSettings = [strPartnerSharingSettings componentsSeparatedByString:@"__ADJ__"];
+        if (arrayPartnerSharingSettings != nil) {
+            for (int i = 0; i < [arrayPartnerSharingSettings count]; i += 3) {
+                [adjustThirdPartySharing addPartnerSharingSetting:[arrayPartnerSharingSettings objectAtIndex:i]
+                                                              key:[arrayPartnerSharingSettings objectAtIndex:i+1]
+                                                            value:[[arrayPartnerSharingSettings objectAtIndex:i+2] boolValue]];
+            }
+        }
+    }
+
     // Track third party sharing.
     [Adjust trackThirdPartySharing:adjustThirdPartySharing];
     result(nil);
@@ -665,6 +680,15 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [Adjust trackMeasurementConsent:[measurementConsent boolValue]];
     }
     result(nil);
+}
+
+- (void)getLastDeeplink:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSURL *lastDeeplink = [Adjust lastDeeplink];
+    if (![self isFieldValid:lastDeeplink]) {
+        result(nil);
+    } else {
+        result([lastDeeplink absoluteString]);
+    }
 }
 
 - (void)setTestOptions:(FlutterMethodCall *)call withResult:(FlutterResult)result {
