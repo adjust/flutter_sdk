@@ -23,9 +23,9 @@ class Adjust {
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
 
-  static void start(AdjustConfig config) {
+  static Future<void> start(AdjustConfig config) async {
     config.sdkPrefix = _sdkPrefix;
-    _channel.invokeMethod('start', config.toMap);
+    await _channel.invokeMethod('start', config.toMap);
   }
 
   static void trackEvent(AdjustEvent event) {

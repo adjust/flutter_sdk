@@ -234,7 +234,7 @@ Make sure to initialise Adjust SDK as soon as possible in your Flutter app (upon
 
 ```dart
 AdjustConfig config = new AdjustConfig('{YourAppToken}', AdjustEnvironment.sandbox);
-Adjust.start(config);
+await Adjust.start(config);
 ```
 
 Replace `{YourAppToken}` with your app token. You can find this in your [dashboard].
@@ -352,7 +352,7 @@ AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
 adjustConfig.deferredDeeplinkCallback = (String uri) {
   print('[Adjust]: Received deferred deeplink: ' + uri);
 };
-Adjust.start(adjustConfig);
+await Adjust.start(adjustConfig);
 ```
 
 In deferred deep linking scenario, there is one additional setting which can be set on the config object. Once the Adjust SDK gets the deferred deep link information, we offer you the possibility to choose whether our SDK should open this URL or not. You can choose to set this option by assigning the `launchDeferredDeeplink` member of the config instance:
@@ -363,7 +363,7 @@ adjustConfig.launchDeferredDeeplink = true;
 adjustConfig.deferredDeeplinkCallback = (String uri) {
   print('[Adjust]: Received deferred deeplink: ' + uri);
 };
-Adjust.start(adjustConfig);
+await Adjust.start(adjustConfig);
 ```
 
 If nothing is set, **the Adjust SDK will always try to launch the URL by default**.
@@ -732,7 +732,7 @@ AdjustConfig adjustConfig = new AdjustConfig(yourAppToken, environment);
 config.conversionValueUpdatedCallback = (num? conversionValue) {
   print('[Adjust]: Received conversion value update: ' + conversionValue!.toString());
 };
-Adjust.start(adjustConfig);
+await Adjust.start(adjustConfig);
 ```
 
 ### <a id="af-subscription-tracking"></a>Subscription tracking
@@ -886,7 +886,7 @@ config.attributionCallback = (AdjustAttribution attributionChangedData) {
     print('[Adjust]: Adid: ' + attributionChangedData.adid);
   }
 };
-Adjust.start(adjustConfig);
+await Adjust.start(adjustConfig);
 ```
 
 The callback function will be called after the SDK receives the final attribution data. Within the callback function you have access to the `attribution` parameter. Here is a quick summary of its properties:
@@ -1003,7 +1003,7 @@ config.eventFailureCallback = (AdjustEventFailure eventFailureData) {
   }
 };
 
-Adjust.start(adjustConfig);
+await Adjust.start(adjustConfig);
 ```
 
 The callback function will be called after the SDK tries to send a package to the server. Within the callback function you have access to a response data object specifically for the callback. Here is a quick summary of the success session response data object fields:
