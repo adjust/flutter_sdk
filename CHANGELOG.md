@@ -1,3 +1,14 @@
+### Version 4.33.0 (xxth December 2022)
+#### Added
+- Added support for SKAD 4.0.
+- Added support for setting a new China URL Strategy. You can choose this setting by calling `setUrlStrategy` method of `AdjustConfig` instance with `AdjustConfig.UrlStrategyCn` parameter.
+
+#### Native SDKs
+- [iOS@v4.33.2][ios_sdk_v4.33.2]
+- [Android@v4.33.2][android_sdk_v4.32.2]
+
+---
+
 ### Version 4.32.0 (7th October 2022)
 #### Added
 - Added partner sharing settings to the third party sharing feature.
@@ -301,6 +312,7 @@
 [ios_sdk_v4.30.0]: https://github.com/adjust/ios_sdk/tree/v4.30.0
 [ios_sdk_v4.31.0]: https://github.com/adjust/ios_sdk/tree/v4.31.0
 [ios_sdk_v4.32.1]: https://github.com/adjust/ios_sdk/tree/v4.32.1
+[ios_sdk_v4.33.2]: https://github.com/adjust/ios_sdk/tree/v4.33.2
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -315,3 +327,4 @@
 [android_sdk_v4.30.1]: https://github.com/adjust/android_sdk/tree/v4.30.1
 [android_sdk_v4.31.0]: https://github.com/adjust/android_sdk/tree/v4.31.0
 [android_sdk_v4.32.0]: https://github.com/adjust/android_sdk/tree/v4.32.0
+[android_sdk_v4.33.2]: https://github.com/adjust/android_sdk/tree/v4.33.2
