@@ -18,6 +18,7 @@ static NSString *dartEventSuccessCallback;
 static NSString *dartEventFailureCallback;
 static NSString *dartDeferredDeeplinkCallback;
 static NSString *dartConversionValueUpdatedCallback;
+static NSString *dartSkad4ConversionValueUpdatedCallback;
 
 @implementation AdjustSdkDelegate
 
@@ -40,6 +41,7 @@ static NSString *dartConversionValueUpdatedCallback;
                              eventFailureCallback:(NSString *)swizzleEventFailureCallback
                          deferredDeeplinkCallback:(NSString *)swizzleDeferredDeeplinkCallback
                    conversionValueUpdatedCallback:(NSString *)swizzleConversionValueUpdatedCallback
+              skad4ConversionValueUpdatedCallback:(NSString *)swizzleSkad4ConversionValueUpdatedCallback
                      shouldLaunchDeferredDeeplink:(BOOL)shouldLaunchDeferredDeeplink
                                  andMethodChannel:(FlutterMethodChannel *)channel {
     
@@ -81,6 +83,11 @@ static NSString *dartConversionValueUpdatedCallback;
             [defaultInstance swizzleCallbackMethod:@selector(adjustConversionValueUpdated:)
                                   swizzledSelector:@selector(adjustConversionValueUpdatedWannabe:)];
             dartConversionValueUpdatedCallback = swizzleConversionValueUpdatedCallback;
+        }
+        if (swizzleSkad4ConversionValueUpdatedCallback != nil) {
+            [defaultInstance swizzleCallbackMethod:@selector(adjustConversionValueUpdated:coarseValue:lockWindow:)
+                                  swizzledSelector:@selector(adjustConversionValueUpdatedWannabe:coarseValue:lockWindow:)];
+            dartSkad4ConversionValueUpdatedCallback = swizzleSkad4ConversionValueUpdatedCallback;
         }
 
         [defaultInstance setShouldLaunchDeferredDeeplink:shouldLaunchDeferredDeeplink];
@@ -237,6 +244,18 @@ static NSString *dartConversionValueUpdatedCallback;
                                                                    forKeys:keys
                                                                      count:count];
     [self.channel invokeMethod:dartConversionValueUpdatedCallback arguments:conversionValueMap];
+}
+
+- (void)adjustConversionValueUpdatedWannabe:(nullable NSNumber *)fineValue
+                                coarseValue:(nullable NSString *)coarseValue
+                                 lockWindow:(nullable NSNumber *)lockWindow {
+    id keys[] = { @"fineValue", @"coarseValue", @"lockWindow" };
+    id values[] = { [fineValue stringValue], coarseValue, [lockWindow stringValue] };
+    NSUInteger count = sizeof(values) / sizeof(id);
+    NSDictionary *conversionValueMap = [NSDictionary dictionaryWithObjects:values
+                                                                   forKeys:keys
+                                                                     count:count];
+    [self.channel invokeMethod:dartSkad4ConversionValueUpdatedCallback arguments:conversionValueMap];
 }
 
 - (void)swizzleCallbackMethod:(SEL)originalSelector

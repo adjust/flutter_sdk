@@ -160,6 +160,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *dartEventFailureCallback = call.arguments[@"eventFailureCallback"];
     NSString *dartDeferredDeeplinkCallback = call.arguments[@"deferredDeeplinkCallback"];
     NSString *dartConversionValueUpdatedCallback = call.arguments[@"conversionValueUpdatedCallback"];
+    NSString *dartSkad4ConversionValueUpdatedCallback = call.arguments[@"skad4ConversionValueUpdatedCallback"];
     BOOL allowSuppressLogLevel = NO;
     BOOL launchDeferredDeeplink = [call.arguments[@"launchDeferredDeeplink"] boolValue];
 
@@ -294,7 +295,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         || dartEventSuccessCallback != nil
         || dartEventFailureCallback != nil
         || dartDeferredDeeplinkCallback != nil
-        || dartConversionValueUpdatedCallback != nil) {
+        || dartConversionValueUpdatedCallback != nil
+        || dartSkad4ConversionValueUpdatedCallback != nil) {
         [adjustConfig setDelegate:
          [AdjustSdkDelegate getInstanceWithSwizzleOfAttributionCallback:dartAttributionCallback
                                                  sessionSuccessCallback:dartSessionSuccessCallback
@@ -303,6 +305,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                                                    eventFailureCallback:dartEventFailureCallback
                                                deferredDeeplinkCallback:dartDeferredDeeplinkCallback
                                          conversionValueUpdatedCallback:dartConversionValueUpdatedCallback
+                                    skad4ConversionValueUpdatedCallback:dartSkad4ConversionValueUpdatedCallback
                                            shouldLaunchDeferredDeeplink:launchDeferredDeeplink
                                                        andMethodChannel:self.channel]];
     }

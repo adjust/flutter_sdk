@@ -235,6 +235,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           conversionValue!.toString());
     };
 
+    config.skad4ConversionValueUpdatedCallback = (num? conversionValue, String? coarseValue, bool? lockWindow) {
+      print('[Adjust]: Received conversion value update!');
+      print('[Adjust]: Conversion value: ' + conversionValue!.toString());
+      print('[Adjust]: Coarse value: ' + coarseValue!);
+      print('[Adjust]: Lock window: ' + lockWindow!.toString());
+    };
+
     // Add session callback parameters.
     Adjust.addSessionCallbackParameter('scp_foo_1', 'scp_bar');
     Adjust.addSessionCallbackParameter('scp_foo_2', 'scp_value');
