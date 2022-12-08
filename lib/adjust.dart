@@ -189,6 +189,23 @@ class Adjust {
     return deeplink;
   }
 
+  static Future<String?> updateConversionValueWithCallback(int conversionValue) async {
+    final String? error = await _channel.invokeMethod(
+        'updateConversionValueWithCallback', {'conversionValue': conversionValue});
+    return error;
+  }
+
+  static Future<String?> updateConversionValueWithCallbackSkad4(
+    int conversionValue,
+    String coarseValue,
+    bool lockWindow) async {
+    final String? error = await _channel.invokeMethod(
+        'updateConversionValueWithCallbackSkad4', {'conversionValue': conversionValue,
+                                                   'coarseValue': coarseValue,
+                                                   'lockWindow': lockWindow});
+    return error;
+  }
+
   // For testing purposes only. Do not use in production.
   @visibleForTesting
   static void setTestOptions(final dynamic testOptions) {

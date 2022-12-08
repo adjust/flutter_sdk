@@ -123,6 +123,10 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
          [Adjust checkForNewAttStatus];
     } else if ([@"getLastDeeplink" isEqualToString:call.method]) {
          [self getLastDeeplink:call withResult:result];
+    } else if ([@"updateConversionValueWithCallback" isEqualToString:call.method]) {
+        [self updateConversionValueWithCallback:call withResult:result];
+    } else if ([@"updateConversionValueWithCallbackSkad4" isEqualToString:call.method]) {
+        [self updateConversionValueWithCallbackSkad4:call withResult:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -693,6 +697,32 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         result(nil);
     } else {
         result([lastDeeplink absoluteString]);
+    }
+}
+
+- (void)updateConversionValueWithCallback:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *conversionValue = call.arguments[@"conversionValue"];
+    if ([self isFieldValid:conversionValue]) {
+        [Adjust updatePostbackConversionValue:[conversionValue intValue]
+                            completionHandler:^(NSError * _Nullable error) {
+            result([error localizedDescription]);
+        }];
+    }
+}
+
+- (void)updateConversionValueWithCallbackSkad4:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *conversionValue = call.arguments[@"conversionValue"];
+    NSString *coarseValue = call.arguments[@"coarseValue"];
+    NSString *lockWindow = call.arguments[@"lockWindow"];
+    if ([self isFieldValid:conversionValue] &&
+        [self isFieldValid:coarseValue] &&
+        [self isFieldValid:lockWindow]) {
+        [Adjust updatePostbackConversionValue:[conversionValue intValue]
+                                  coarseValue:coarseValue
+                                   lockWindow:(BOOL)lockWindow
+                            completionHandler:^(NSError * _Nullable error) {
+            result([error localizedDescription]);
+        }];
     }
 }
 
