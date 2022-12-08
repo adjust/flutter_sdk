@@ -39,6 +39,7 @@ class AdjustConfig {
 
   static const String UrlStrategyIndia = 'india';
   static const String UrlStrategyChina = 'china';
+  static const String UrlStrategyCn = 'cn';
 
   static const String DataResidencyEU = 'data-residency-eu';
   static const String DataResidencyTR = 'data-residency-tr';
