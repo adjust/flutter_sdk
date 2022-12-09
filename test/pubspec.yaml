@@ -1,6 +1,6 @@
 name: test_lib
 description: Flutter plugin for Adjust Testing Library. Intended exclusively for internal use.
-version: 4.32.0
+version: 4.33.0
 author: Adjust (sdk@adjust.com)
 
 environment:

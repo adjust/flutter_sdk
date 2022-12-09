@@ -19,7 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter4.32.0';
+  static const String _sdkPrefix = 'flutter4.33.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
 
@@ -187,6 +187,23 @@ class Adjust {
   static Future<String?> getLastDeeplink() async {
     final String? deeplink = await _channel.invokeMethod('getLastDeeplink');
     return deeplink;
+  }
+
+  static Future<String?> updateConversionValueWithErrorCallback(int conversionValue) async {
+    final String? error = await _channel.invokeMethod(
+        'updateConversionValueWithErrorCallback', {'conversionValue': conversionValue});
+    return error;
+  }
+
+  static Future<String?> updateConversionValueWithErrorCallbackSkad4(
+    int conversionValue,
+    String coarseValue,
+    bool lockWindow) async {
+    final String? error = await _channel.invokeMethod(
+        'updateConversionValueWithErrorCallbackSkad4', {'conversionValue': conversionValue,
+                                                   'coarseValue': coarseValue,
+                                                   'lockWindow': lockWindow});
+    return error;
   }
 
   // For testing purposes only. Do not use in production.

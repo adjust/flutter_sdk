@@ -24,6 +24,7 @@ typedef void EventSuccessCallback(AdjustEventSuccess successData);
 typedef void EventFailureCallback(AdjustEventFailure failureData);
 typedef void DeferredDeeplinkCallback(String? uri);
 typedef void ConversionValueUpdatedCallback(num? conversionValue);
+typedef void Skad4ConversionValueUpdatedCallback(num? conversionValue, String? coarseValue, bool? lockWindow);
 
 class AdjustConfig {
   static const MethodChannel _channel =
@@ -36,9 +37,12 @@ class AdjustConfig {
   static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
   static const String _conversionValueUpdatedCallbackName =
       'adj-conversion-value-updated';
+  static const String _skad4ConversionValueUpdatedCallbackName =
+      'adj-skad4-conversion-value-updated';
 
   static const String UrlStrategyIndia = 'india';
   static const String UrlStrategyChina = 'china';
+  static const String UrlStrategyCn = 'cn';
 
   static const String DataResidencyEU = 'data-residency-eu';
   static const String DataResidencyTR = 'data-residency-tr';
@@ -91,6 +95,7 @@ class AdjustConfig {
   EventFailureCallback? eventFailureCallback;
   DeferredDeeplinkCallback? deferredDeeplinkCallback;
   ConversionValueUpdatedCallback? conversionValueUpdatedCallback;
+  Skad4ConversionValueUpdatedCallback? skad4ConversionValueUpdatedCallback;
 
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
@@ -149,6 +154,19 @@ class AdjustConfig {
               String? conversionValue = call.arguments['conversionValue'];
               if (conversionValue != null) {
                 conversionValueUpdatedCallback!(int.parse(conversionValue));
+              }
+            }
+            break;
+          case _skad4ConversionValueUpdatedCallbackName:
+            if (skad4ConversionValueUpdatedCallback != null) {
+              String? conversionValue = call.arguments['fineValue'];
+              String? coarseValue = call.arguments['coarseValue'];
+              String? lockWindow = call.arguments['lockWindow'];
+              if (conversionValue != null && coarseValue != null && lockWindow != null) {
+                skad4ConversionValueUpdatedCallback!(
+                  int.parse(conversionValue),
+                  coarseValue,
+                  lockWindow.toLowerCase() == 'true');
               }
             }
             break;
@@ -282,6 +300,10 @@ class AdjustConfig {
     if (conversionValueUpdatedCallback != null) {
       configMap['conversionValueUpdatedCallback'] =
           _conversionValueUpdatedCallbackName;
+    }
+    if (skad4ConversionValueUpdatedCallback != null) {
+      configMap['skad4ConversionValueUpdatedCallback'] =
+          _skad4ConversionValueUpdatedCallbackName;
     }
 
     return configMap;

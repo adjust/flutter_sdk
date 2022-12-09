@@ -123,6 +123,10 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
          [Adjust checkForNewAttStatus];
     } else if ([@"getLastDeeplink" isEqualToString:call.method]) {
          [self getLastDeeplink:call withResult:result];
+    } else if ([@"updateConversionValueWithErrorCallback" isEqualToString:call.method]) {
+        [self updateConversionValueWithErrorCallback:call withResult:result];
+    } else if ([@"updateConversionValueWithErrorCallbackSkad4" isEqualToString:call.method]) {
+        [self updateConversionValueWithErrorCallbackSkad4:call withResult:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -160,6 +164,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *dartEventFailureCallback = call.arguments[@"eventFailureCallback"];
     NSString *dartDeferredDeeplinkCallback = call.arguments[@"deferredDeeplinkCallback"];
     NSString *dartConversionValueUpdatedCallback = call.arguments[@"conversionValueUpdatedCallback"];
+    NSString *dartSkad4ConversionValueUpdatedCallback = call.arguments[@"skad4ConversionValueUpdatedCallback"];
     BOOL allowSuppressLogLevel = NO;
     BOOL launchDeferredDeeplink = [call.arguments[@"launchDeferredDeeplink"] boolValue];
 
@@ -221,6 +226,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
             [adjustConfig setUrlStrategy:ADJUrlStrategyChina];
         } else if ([urlStrategy isEqualToString:@"india"]) {
             [adjustConfig setUrlStrategy:ADJUrlStrategyIndia];
+        } else if ([urlStrategy isEqualToString:@"cn"]) {
+            [adjustConfig setUrlStrategy:ADJUrlStrategyCn];
         } else if ([urlStrategy isEqualToString:@"data-residency-eu"]) {
             [adjustConfig setUrlStrategy:ADJDataResidencyEU];
         } else if ([urlStrategy isEqualToString:@"data-residency-tr"]) {
@@ -292,7 +299,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         || dartEventSuccessCallback != nil
         || dartEventFailureCallback != nil
         || dartDeferredDeeplinkCallback != nil
-        || dartConversionValueUpdatedCallback != nil) {
+        || dartConversionValueUpdatedCallback != nil
+        || dartSkad4ConversionValueUpdatedCallback != nil) {
         [adjustConfig setDelegate:
          [AdjustSdkDelegate getInstanceWithSwizzleOfAttributionCallback:dartAttributionCallback
                                                  sessionSuccessCallback:dartSessionSuccessCallback
@@ -301,6 +309,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                                                    eventFailureCallback:dartEventFailureCallback
                                                deferredDeeplinkCallback:dartDeferredDeeplinkCallback
                                          conversionValueUpdatedCallback:dartConversionValueUpdatedCallback
+                                    skad4ConversionValueUpdatedCallback:dartSkad4ConversionValueUpdatedCallback
                                            shouldLaunchDeferredDeeplink:launchDeferredDeeplink
                                                        andMethodChannel:self.channel]];
     }
@@ -688,6 +697,32 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         result(nil);
     } else {
         result([lastDeeplink absoluteString]);
+    }
+}
+
+- (void)updateConversionValueWithErrorCallback:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *conversionValue = call.arguments[@"conversionValue"];
+    if ([self isFieldValid:conversionValue]) {
+        [Adjust updatePostbackConversionValue:[conversionValue intValue]
+                            completionHandler:^(NSError * _Nullable error) {
+            result([error localizedDescription]);
+        }];
+    }
+}
+
+- (void)updateConversionValueWithErrorCallbackSkad4:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *conversionValue = call.arguments[@"conversionValue"];
+    NSString *coarseValue = call.arguments[@"coarseValue"];
+    NSString *lockWindow = call.arguments[@"lockWindow"];
+    if ([self isFieldValid:conversionValue] &&
+        [self isFieldValid:coarseValue] &&
+        [self isFieldValid:lockWindow]) {
+        [Adjust updatePostbackConversionValue:[conversionValue intValue]
+                                  coarseValue:coarseValue
+                                   lockWindow:(BOOL)lockWindow
+                            completionHandler:^(NSError * _Nullable error) {
+            result([error localizedDescription]);
+        }];
     }
 }
 
