@@ -392,29 +392,23 @@ Once you have received deep link content information in your app, add a call to 
 
 Once everything set up, inside of your native Android activity make a call to `appWillOpenUrl` method in following way:
 
-```java
+```kotlin
+import android.content.Intent
+import android.os.Bundle
 import com.adjust.sdk.flutter.AdjustSdk;
-import io.flutter.embedding.android.FlutterActivity; // Used for post flutter 1.12 Android projects
-//import io.flutter.app.FlutterActivity; // Used for pre flutter 1.12 Android projects
+import io.flutter.embedding.android.FlutterActivity
 
-public class MainActivity extends FlutterActivity {
-    // Either call make the call in onCreate.
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // GeneratedPluginRegistrant.registerWith(this); Used only for pre flutter 1.12 Android projects
-
-        Intent intent = getIntent();
-        Uri data = intent.getData();
-        AdjustSdk.appWillOpenUrl(data, this);
+class MainActivity : FlutterActivity() {
+    // Make the call in onCreate.
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        intent.data?.let { uri -> AdjustSdk.appWillOpenUrl(uri, this) }
     }
 
-    // Or make the cakll in onNewIntent.
-    @Override
-    protected void onNewIntent(Intent intent) {
+    // Make the call in onNewIntent.
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent);
-        Uri data = intent.getData();
-        AdjustSdk.appWillOpenUrl(data, this);
+        intent.data?.let { uri -> AdjustSdk.appWillOpenUrl(uri, this) }
     }
 }
 ```
@@ -423,32 +417,52 @@ Depending on the `android:launchMode` setting of your Activity in the `AndroidMa
 
 There are two places within your desired Activity where information about the deep link content will be delivered via the `Intent` object - either in the Activity's `onCreate` or `onNewIntent` methods. Once your app has launched and one of these methods has been triggered, you will be able to get the actual deep link passed in the `deep_link` parameter in the click URL.
 
-Once everything set up, inside of your native iOS app delegate make a call to `appWillOpenUrl` method in following way:
+Once everything set up, inside of your native iOS app, add Adjust to the bridging header:
 
-```objc
-#import "Adjust.h"
+```c
+// Runner-Bridging-Header.h
+#import "GeneratedPluginRegistrant.h"
+#import "Adjust.h" // Add this line
+```
 
-@implementation AppDelegate
+Then, delegate make a call to `appWillOpenUrl` method in following way:
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [GeneratedPluginRegistrant registerWithRegistry:self];
-    // Override point for customization after application launch.
-    return [super application:application didFinishLaunchingWithOptions:launchOptions];
-}
+```swift
+import UIKit
+import Flutter
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    [Adjust appWillOpenUrl:url];
-    return YES;
-}
-
-- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> *restorableObjects))restorationHandler {
-    if ([[userActivity activityType] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-        [Adjust appWillOpenUrl:[userActivity webpageURL]];
+@UIApplicationMain
+@objc class AppDelegate: FlutterAppDelegate {
+    override func application(
+        _ app: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        GeneratedPluginRegistrant.register(with: self)
+        return super.application(app, didFinishLaunchingWithOptions: launchOptions)
     }
-    return YES;
+    
+    override func application(
+        _ app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+    ) -> Bool {
+        Adjust.appWillOpen(url)
+        return super.application(app, open: url, options: options)
+    }
+    
+    override func application(
+        _ app: UIApplication,
+        continue userActivity: NSUserActivity,
+        restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+    ) -> Bool {
+        if (userActivity.activityType == NSUserActivityTypeBrowsingWeb) {
+            if let url = userActivity.webpageURL {
+                Adjust.appWillOpen(url)
+            }
+        }
+        return super.application(app, continue: userActivity, restorationHandler: restorationHandler)
+    }
 }
-
-@end
 ```
 
 ## Event tracking
