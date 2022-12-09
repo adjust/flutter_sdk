@@ -189,18 +189,18 @@ class Adjust {
     return deeplink;
   }
 
-  static Future<String?> updateConversionValueWithCallback(int conversionValue) async {
+  static Future<String?> updateConversionValueWithErrorCallback(int conversionValue) async {
     final String? error = await _channel.invokeMethod(
-        'updateConversionValueWithCallback', {'conversionValue': conversionValue});
+        'updateConversionValueWithErrorCallback', {'conversionValue': conversionValue});
     return error;
   }
 
-  static Future<String?> updateConversionValueWithCallbackSkad4(
+  static Future<String?> updateConversionValueWithErrorCallbackSkad4(
     int conversionValue,
     String coarseValue,
     bool lockWindow) async {
     final String? error = await _channel.invokeMethod(
-        'updateConversionValueWithCallbackSkad4', {'conversionValue': conversionValue,
+        'updateConversionValueWithErrorCallbackSkad4', {'conversionValue': conversionValue,
                                                    'coarseValue': coarseValue,
                                                    'lockWindow': lockWindow});
     return error;

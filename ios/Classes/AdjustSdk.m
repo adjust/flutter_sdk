@@ -123,10 +123,10 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
          [Adjust checkForNewAttStatus];
     } else if ([@"getLastDeeplink" isEqualToString:call.method]) {
          [self getLastDeeplink:call withResult:result];
-    } else if ([@"updateConversionValueWithCallback" isEqualToString:call.method]) {
-        [self updateConversionValueWithCallback:call withResult:result];
-    } else if ([@"updateConversionValueWithCallbackSkad4" isEqualToString:call.method]) {
-        [self updateConversionValueWithCallbackSkad4:call withResult:result];
+    } else if ([@"updateConversionValueWithErrorCallback" isEqualToString:call.method]) {
+        [self updateConversionValueWithErrorCallback:call withResult:result];
+    } else if ([@"updateConversionValueWithErrorCallbackSkad4" isEqualToString:call.method]) {
+        [self updateConversionValueWithErrorCallbackSkad4:call withResult:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -700,7 +700,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
 }
 
-- (void)updateConversionValueWithCallback:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+- (void)updateConversionValueWithErrorCallback:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *conversionValue = call.arguments[@"conversionValue"];
     if ([self isFieldValid:conversionValue]) {
         [Adjust updatePostbackConversionValue:[conversionValue intValue]
@@ -710,7 +710,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
 }
 
-- (void)updateConversionValueWithCallbackSkad4:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+- (void)updateConversionValueWithErrorCallbackSkad4:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *conversionValue = call.arguments[@"conversionValue"];
     NSString *coarseValue = call.arguments[@"coarseValue"];
     NSString *lockWindow = call.arguments[@"lockWindow"];
