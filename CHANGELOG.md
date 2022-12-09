@@ -1,7 +1,7 @@
-### Version 4.33.0 (xxth December 2022)
+### Version 4.33.0 (9th December 2022)
 #### Added
 - Added support for SKAD 4.0.
-- Added support for setting a new China URL Strategy. You can choose this setting by calling `setUrlStrategy` method of `AdjustConfig` instance with `AdjustConfig.UrlStrategyCn` parameter.
+- Added support for setting a new China URL Strategy. You can choose this setting by setting `urlStrategy` member of `AdjustConfig` instance to `AdjustConfig.UrlStrategyCn` value.
 
 #### Native SDKs
 - [iOS@v4.33.2][ios_sdk_v4.33.2]
