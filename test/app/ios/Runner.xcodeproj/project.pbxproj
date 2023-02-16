@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,8 +16,6 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		9D6D515025E068480074ED65 /* AdServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D6D514F25E068480074ED65 /* AdServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		9D6D515225E0684E0074ED65 /* AppTrackingTransparency.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D6D515125E0684E0074ED65 /* AppTrackingTransparency.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		9D6D515425E0685B0074ED65 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D6D515325E0685B0074ED65 /* CoreTelephony.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		9DF8057024F92ECB00A001CE /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8056F24F92ECB00A001CE /* iAd.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		9DF8057224F92ED000A001CE /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8057124F92ED000A001CE /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
@@ -65,10 +63,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				936021FAD72D80C63D28B147 /* Pods_Runner.framework in Frameworks */,
-				9DF8057024F92ECB00A001CE /* iAd.framework in Frameworks */,
 				9DF8057224F92ED000A001CE /* AdSupport.framework in Frameworks */,
 				9D6D515025E068480074ED65 /* AdServices.framework in Frameworks */,
-				9D6D515425E0685B0074ED65 /* CoreTelephony.framework in Frameworks */,
 				9D6D515225E0684E0074ED65 /* AppTrackingTransparency.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -236,6 +232,7 @@
 		};
 		3B06AD1E1E4923F5004D2608 /* Thin Binary */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -272,6 +269,7 @@
 		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
