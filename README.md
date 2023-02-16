@@ -104,7 +104,7 @@ You can add Adjust SDK to your Flutter app by adding following to your `pubspec.
 
 ```yaml
 dependencies:
-  adjust_sdk: ^4.33.0
+  adjust_sdk: ^4.33.1
 ```
 
 Then navigate to your project in the terminal and run:
@@ -216,7 +216,6 @@ As of v4.22.0, the Adjust SDK supports install tracking on Huawei devices with H
 
 Make sure that following iOS frameworks are linked with your iOS app:
 
-* `iAd.framework` - in case you are running iAd campaigns
 * `AdServices.framework` - in case you are running iAd campaigns
 * `AdSupport.framework` - for reading iOS Advertising Id (IDFA)
 * `StoreKit.framework` - for communication with SKAdNetwork framework

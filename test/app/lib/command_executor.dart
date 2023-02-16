@@ -166,10 +166,6 @@ class CommandExecutor {
       testOptions['noBackoffWait'] =
           _command.getFirstParameterValue('noBackoffWait');
     }
-    if (_command.containsParameter('iAdFrameworkEnabled')) {
-      testOptions['iAdFrameworkEnabled'] =
-          _command.getFirstParameterValue('iAdFrameworkEnabled');
-    }
     if (_command.containsParameter('adServicesFrameworkEnabled')) {
       testOptions['adServicesFrameworkEnabled'] =
           _command.getFirstParameterValue('adServicesFrameworkEnabled');
@@ -332,11 +328,6 @@ class CommandExecutor {
     if (_command.containsParameter('sendInBackground')) {
       adjustConfig!.sendInBackground =
           _command.getFirstParameterValue('sendInBackground') == 'true';
-    }
-
-    if (_command.containsParameter('allowiAdInfoReading')) {
-      adjustConfig!.allowiAdInfoReading =
-          _command.getFirstParameterValue('allowiAdInfoReading') == 'true';
     }
 
     if (_command.containsParameter('allowAdServicesInfoReading')) {
