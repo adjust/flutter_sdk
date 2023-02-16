@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = 'test_lib'
-  s.version               = '4.33.0'
+  s.version               = '4.33.1'
   s.summary               = 'Adjust test library for iOS platform'
   s.description           = <<-DESC
                             Adjust test library for iOS platform.
