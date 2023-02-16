@@ -249,12 +249,16 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
 - (void)adjustConversionValueUpdatedWannabe:(nullable NSNumber *)fineValue
                                 coarseValue:(nullable NSString *)coarseValue
                                  lockWindow:(nullable NSNumber *)lockWindow {
-    id keys[] = { @"fineValue", @"coarseValue", @"lockWindow" };
-    id values[] = { [fineValue stringValue], coarseValue, [lockWindow stringValue] };
-    NSUInteger count = sizeof(values) / sizeof(id);
-    NSDictionary *conversionValueMap = [NSDictionary dictionaryWithObjects:values
-                                                                   forKeys:keys
-                                                                     count:count];
+    NSMutableDictionary *conversionValueMap = [NSMutableDictionary dictionary];
+    if (![fineValue isKindOfClass:[NSNull class]] && fineValue != nil) {
+        [conversionValueMap setValue:[fineValue stringValue] forKey:@"fineValue"];
+    }
+    if (![coarseValue isKindOfClass:[NSNull class]] && coarseValue != nil) {
+        [conversionValueMap setValue:coarseValue forKey:@"coarseValue"];
+    }
+    if (![lockWindow isKindOfClass:[NSNull class]] && lockWindow != nil) {
+        [conversionValueMap setValue:[lockWindow stringValue] forKey:@"lockWindow"];
+    }
     [self.channel invokeMethod:dartSkad4ConversionValueUpdatedCallback arguments:conversionValueMap];
 }
 
