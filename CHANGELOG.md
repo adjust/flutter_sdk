@@ -1,11 +1,21 @@
+### Version 4.33.1 (16th February 2023)
+#### Fixed
+- Skipped invocation of SKAN 4.0 style callback in case SKAN 4.0 API was not invoked (https://github.com/adjust/flutter_sdk/issues/104).
+
+#### Native SDKs
+- [iOS@v4.33.4][ios_sdk_v4.33.4]
+- [Android@v4.33.3][android_sdk_v4.33.3]
+
+---
+
 ### Version 4.33.0 (9th December 2022)
 #### Added
-- Added support for SKAD 4.0.
+- Added support for SKAN 4.0.
 - Added support for setting a new China URL Strategy. You can choose this setting by setting `urlStrategy` member of `AdjustConfig` instance to `AdjustConfig.UrlStrategyCn` value.
 
 #### Native SDKs
 - [iOS@v4.33.2][ios_sdk_v4.33.2]
-- [Android@v4.33.2][android_sdk_v4.32.2]
+- [Android@v4.33.2][android_sdk_v4.33.2]
 
 ---
 
@@ -313,6 +323,7 @@
 [ios_sdk_v4.31.0]: https://github.com/adjust/ios_sdk/tree/v4.31.0
 [ios_sdk_v4.32.1]: https://github.com/adjust/ios_sdk/tree/v4.32.1
 [ios_sdk_v4.33.2]: https://github.com/adjust/ios_sdk/tree/v4.33.2
+[ios_sdk_v4.33.4]: https://github.com/adjust/ios_sdk/tree/v4.33.4
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -328,3 +339,4 @@
 [android_sdk_v4.31.0]: https://github.com/adjust/android_sdk/tree/v4.31.0
 [android_sdk_v4.32.0]: https://github.com/adjust/android_sdk/tree/v4.32.0
 [android_sdk_v4.33.2]: https://github.com/adjust/android_sdk/tree/v4.33.2
+[android_sdk_v4.33.3]: https://github.com/adjust/android_sdk/tree/v4.33.3
