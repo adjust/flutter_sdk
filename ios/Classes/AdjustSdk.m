@@ -153,7 +153,6 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *needsCost = call.arguments[@"needsCost"];
     NSString *coppaCompliantEnabled = call.arguments[@"coppaCompliantEnabled"];
     NSString *linkMeEnabled = call.arguments[@"linkMeEnabled"];
-    NSString *allowiAdInfoReading = call.arguments[@"allowiAdInfoReading"];
     NSString *allowAdServicesInfoReading = call.arguments[@"allowAdServicesInfoReading"];
     NSString *allowIdfaReading = call.arguments[@"allowIdfaReading"];
     NSString *skAdNetworkHandling = call.arguments[@"skAdNetworkHandling"];
@@ -245,11 +244,6 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     // Cost data.
     if ([self isFieldValid:needsCost]) {
         [adjustConfig setNeedsCost:[needsCost boolValue]];
-    }
-
-    // Allow iAd info reading.
-    if ([self isFieldValid:allowiAdInfoReading]) {
-        [adjustConfig setAllowiAdInfoReading:[allowiAdInfoReading boolValue]];
     }
 
     // Allow AdServices info reading.
@@ -739,7 +733,6 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *teardown = call.arguments[@"teardown"];
     NSString *deleteState = call.arguments[@"deleteState"];
     NSString *noBackoffWait = call.arguments[@"noBackoffWait"];
-    NSString *iAdFrameworkEnabled = call.arguments[@"iAdFrameworkEnabled"];
     NSString *adServicesFrameworkEnabled = call.arguments[@"adServicesFrameworkEnabled"];
     
     if ([self isFieldValid:baseUrl]) {
@@ -777,9 +770,6 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
     if ([self isFieldValid:noBackoffWait]) {
         testOptions.noBackoffWait = [noBackoffWait boolValue];
-    }
-    if ([self isFieldValid:iAdFrameworkEnabled]) {
-        testOptions.iAdFrameworkEnabled = [iAdFrameworkEnabled boolValue];
     }
     if ([self isFieldValid:adServicesFrameworkEnabled]) {
         testOptions.adServicesFrameworkEnabled = [adServicesFrameworkEnabled boolValue];
