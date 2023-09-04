@@ -22,6 +22,8 @@ import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustPlayStoreSubscription;
+import com.adjust.sdk.AdjustPurchase;
+import com.adjust.sdk.AdjustPurchaseVerificationResult;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.LogLevel;
@@ -32,6 +34,7 @@ import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
+import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -203,6 +206,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                 break;
             case "getLastDeeplink":
                 getLastDeeplink(call, result);
+                break;
+            case "verifyPlayStorePurchase":
+                verifyPlayStorePurchase(call, result);
                 break;
             case "setTestOptions":
                 setTestOptions(call, result);
@@ -1104,6 +1110,40 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         result.success("Error. No getLastDeeplink for Android platform!");
     }
 
+    private void verifyPlayStorePurchase(final MethodCall call, final Result result) {
+        Map purchaseMap = (Map) call.arguments;
+        if (purchaseMap == null) {
+            return;
+        }
+
+        // Product ID.
+        String productId = null;
+        if (purchaseMap.containsKey("productId")) {
+            productId = (String) purchaseMap.get("productId");
+        }
+
+        // Purchase token.
+        String purchaseToken = null;
+        if (purchaseMap.containsKey("purchaseToken")) {
+            purchaseToken = (String) purchaseMap.get("purchaseToken");
+        }
+
+        // Create purchase instance.
+        AdjustPurchase purchase = new AdjustPurchase(productId, purchaseToken);
+
+        // Verify purchase.
+        Adjust.verifyPurchase(purchase, new OnPurchaseVerificationFinishedListener() {
+            @Override
+            public void onVerificationFinished(AdjustPurchaseVerificationResult verificationResult) {
+                HashMap<String, String> adjustPurchaseMap = new HashMap<String, String>();
+                adjustPurchaseMap.put("code", String.valueOf(verificationResult.getCode()));
+                adjustPurchaseMap.put("verificationStatus", verificationResult.getVerificationStatus());
+                adjustPurchaseMap.put("message", verificationResult.getMessage());
+                result.success(adjustPurchaseMap);
+            }
+        });
+    }
+
     private void setTestOptions(final MethodCall call, final Result result) {
         AdjustTestOptions testOptions = new AdjustTestOptions();
         Map testOptionsMap = (Map) call.arguments;
@@ -1117,6 +1157,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         if (testOptionsMap.containsKey("subscriptionUrl")) {
             testOptions.subscriptionUrl = (String) testOptionsMap.get("subscriptionUrl");
         }
+        if (testOptionsMap.containsKey("purchaseVerificationUrl")) {
+            testOptions.purchaseVerificationUrl = (String) testOptionsMap.get("purchaseVerificationUrl");
+        }
         if (testOptionsMap.containsKey("basePath")) {
             testOptions.basePath = (String) testOptionsMap.get("basePath");
         }
@@ -1125,6 +1168,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         }
         if (testOptionsMap.containsKey("subscriptionPath")) {
             testOptions.subscriptionPath = (String) testOptionsMap.get("subscriptionPath");
+        }
+        if (testOptionsMap.containsKey("purchaseVerificationPath")) {
+            testOptions.purchaseVerificationPath = (String) testOptionsMap.get("purchaseVerificationPath");
         }
         // Kept for the record. Not needed anymore with test options extraction.
         // if (testOptionsMap.containsKey("useTestConnectionOptions")) {
