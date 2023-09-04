@@ -33,6 +33,7 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+    namespace 'com.adjust.sdk.flutter'
 }
 
 dependencies {
