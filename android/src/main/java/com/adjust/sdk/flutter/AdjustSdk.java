@@ -210,6 +210,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "verifyPlayStorePurchase":
                 verifyPlayStorePurchase(call, result);
                 break;
+            case "verifyAppStorePurchase":
+                verifyAppStorePurchase(call, result);
+                break;
             case "setTestOptions":
                 setTestOptions(call, result);
                 break;
@@ -1142,6 +1145,10 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                 result.success(adjustPurchaseMap);
             }
         });
+    }
+
+    private void verifyAppStorePurchase(final MethodCall call, final Result result) {
+        result.success("Error. No verifyAppStorePurchase for Android platform!");
     }
 
     private void setTestOptions(final MethodCall call, final Result result) {
