@@ -556,6 +556,12 @@ class CommandExecutor {
     if (_command.containsParameter('orderId')) {
       adjustEvent!.transactionId = _command.getFirstParameterValue('orderId');
     }
+    if (_command.containsParameter('productId')) {
+      adjustEvent!.productId = _command.getFirstParameterValue('productId');
+    }
+    if (_command.containsParameter('purchaseToken')) {
+      adjustEvent!.purchaseToken = _command.getFirstParameterValue('purchaseToken');
+    }
     if (_command.containsParameter('callbackId')) {
       adjustEvent!.callbackId = _command.getFirstParameterValue('callbackId');
     }
