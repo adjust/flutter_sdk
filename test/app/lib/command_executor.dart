@@ -11,6 +11,7 @@ import 'dart:io' show Platform;
 import 'package:adjust_sdk/adjust.dart';
 import 'package:adjust_sdk/adjust_ad_revenue.dart';
 import 'package:adjust_sdk/adjust_app_store_subscription.dart';
+import 'package:adjust_sdk/adjust_app_store_purchase.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
@@ -871,7 +872,20 @@ class CommandExecutor {
 
   void _verifyPurchase() {
     if (Platform.isIOS) {
+      String? receipt = _command.getFirstParameterValue('receipt');
+      String? productId = _command.getFirstParameterValue('productId');
+      String? transactionId = _command.getFirstParameterValue('transactionId');
 
+      AdjustAppStorePurchase purchase =
+          new AdjustAppStorePurchase(receipt, productId, transactionId);
+
+      Adjust.verifyAppStorePurchase(purchase).then((result) {
+        String? localBasePath = _basePath;
+        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
+        TestLib.addInfoToSend('code', result?.code.toString());
+        TestLib.addInfoToSend('message', result?.message);
+        TestLib.sendInfoToServer(localBasePath);
+      });
     } else if (Platform.isAndroid) {
       String? productId = _command.getFirstParameterValue('productId');
       String? purchaseToken = _command.getFirstParameterValue('purchaseToken');

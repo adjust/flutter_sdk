@@ -10,6 +10,7 @@ import 'dart:async';
 
 import 'package:adjust_sdk/adjust_ad_revenue.dart';
 import 'package:adjust_sdk/adjust_app_store_subscription.dart';
+import 'package:adjust_sdk/adjust_app_store_purchase.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
@@ -214,6 +215,13 @@ class Adjust {
     final dynamic playStorePurchaseMap = 
       await _channel.invokeMethod('verifyPlayStorePurchase', purchase.toMap);
     return AdjustPurchaseVerificationInfo.fromMap(playStorePurchaseMap);
+  }
+
+  static Future<AdjustPurchaseVerificationInfo?> verifyAppStorePurchase(
+    AdjustAppStorePurchase purchase) async {
+    final dynamic appStorePurchaseMap = 
+      await _channel.invokeMethod('verifyAppStorePurchase', purchase.toMap);
+    return AdjustPurchaseVerificationInfo.fromMap(appStorePurchaseMap);
   }
 
   // For testing purposes only. Do not use in production.

@@ -127,6 +127,10 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self updateConversionValueWithErrorCallback:call withResult:result];
     } else if ([@"updateConversionValueWithErrorCallbackSkad4" isEqualToString:call.method]) {
         [self updateConversionValueWithErrorCallbackSkad4:call withResult:result];
+    } else if ([@"verifyAppStorePurchase" isEqualToString:call.method]) {
+        [self verifyAppStorePurchase:call withResult:result];
+    } else if ([@"verifyPlayStorePurchase" isEqualToString:call.method]) {
+        [self verifyAppStorePurchase:call withResult:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -579,7 +583,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         }
     }
 
-    // Track event.
+    // Track subscription.
     [Adjust trackSubscription:subscription];
     result(nil);
 }
@@ -720,11 +724,55 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
 }
 
+- (void)verifyPlayStorePurchase:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    result([FlutterError errorWithCode:@"non_existing_method"
+                               message:@"verifyPlayStorePurchase not available for iOS platform"
+                               details:nil]);
+}
+
+- (void)verifyAppStorePurchase:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *receipt = call.arguments[@"receipt"];
+    NSString *productId = call.arguments[@"productId"];
+    NSString *transactionId = call.arguments[@"transactionId"];
+
+    // Receipt.
+    NSData *receiptValue;
+    if ([self isFieldValid:receipt]) {
+        receiptValue = [receipt dataUsingEncoding:NSUTF8StringEncoding];
+    }
+
+    // Create purchase instance.
+    ADJPurchase *purchase = [[ADJPurchase alloc] initWithTransactionId:transactionId
+                                                             productId:productId
+                                                            andReceipt:receiptValue];
+
+    // Verify purchase.
+    [Adjust verifyPurchase:purchase 
+         completionHandler:^(ADJPurchaseVerificationResult * _Nonnull verificationResult) {
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        if (verificationResult == nil) {
+            result(dictionary);
+        }
+        
+        [self addValueOrEmpty:verificationResult.verificationStatus
+                      withKey:@"verificationStatus"
+                 toDictionary:dictionary];
+        [self addValueOrEmpty:[NSString stringWithFormat:@"%d", verificationResult.code]
+                      withKey:@"code"
+                 toDictionary:dictionary];
+        [self addValueOrEmpty:verificationResult.message
+                      withKey:@"message"
+                 toDictionary:dictionary];
+        result(dictionary);
+    }];
+}
+
 - (void)setTestOptions:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     AdjustTestOptions *testOptions = [[AdjustTestOptions alloc] init];
     NSString *baseUrl = call.arguments[@"baseUrl"];
     NSString *gdprUrl = call.arguments[@"gdprUrl"];
     NSString *subscriptionUrl = call.arguments[@"subscriptionUrl"];
+    NSString *purchaseVerificationUrl = call.arguments[@"purchaseVerificationUrl"];
     NSString *extraPath = call.arguments[@"extraPath"];
     NSString *timerIntervalInMilliseconds = call.arguments[@"timerIntervalInMilliseconds"];
     NSString *timerStartInMilliseconds = call.arguments[@"timerStartInMilliseconds"];
@@ -743,6 +791,9 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
     if ([self isFieldValid:subscriptionUrl]) {
         testOptions.subscriptionUrl = subscriptionUrl;
+    }
+    if ([self isFieldValid:purchaseVerificationUrl]) {
+        testOptions.purchaseVerificationUrl = purchaseVerificationUrl;
     }
     if ([self isFieldValid:extraPath]) {
         testOptions.extraPath = extraPath;
