@@ -323,6 +323,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *revenue = call.arguments[@"revenue"];
     NSString *currency = call.arguments[@"currency"];
     NSString *callbackId = call.arguments[@"callbackId"];
+    NSString *receipt = call.arguments[@"receipt"];
+    NSString *productId = call.arguments[@"productId"];
     NSString *transactionId = call.arguments[@"transactionId"];
     NSString *strCallbackParametersJson = call.arguments[@"callbackParameters"];
     NSString *strPartnerParametersJson = call.arguments[@"partnerParameters"];
@@ -334,6 +336,18 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     if ([self isFieldValid:revenue]) {
         double revenueValue = [revenue doubleValue];
         [adjustEvent setRevenue:revenueValue currency:currency];
+    }
+
+    // Receipt.
+    if ([self isFieldValid:receipt]) {
+        NSData *receiptValue;
+        receiptValue = [receipt dataUsingEncoding:NSUTF8StringEncoding];
+        [adjustEvent setReceipt:receiptValue];
+    }
+
+    // Product ID.
+    if ([self isFieldValid:productId]) {
+        [adjustEvent setProductId:productId];
     }
 
     // Transaction ID.

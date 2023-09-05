@@ -11,6 +11,7 @@ import 'dart:convert';
 class AdjustEvent {
   String _eventToken;
   String? _currency;
+  String? receipt;
   String? transactionId;
   String? productId;
   String? purchaseToken;
@@ -48,6 +49,9 @@ class AdjustEvent {
     }
     if (transactionId != null) {
       eventMap['transactionId'] = transactionId;
+    }
+    if (receipt != null) {
+      eventMap['receipt'] = receipt;
     }
     if (productId != null) {
       eventMap['productId'] = productId;
