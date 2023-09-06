@@ -151,6 +151,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *info3 = call.arguments[@"info3"];
     NSString *info4 = call.arguments[@"info4"];
     NSString *delayStart = call.arguments[@"delayStart"];
+    NSString *attConsentWaitingInterval = call.arguments[@"attConsentWaitingInterval"];
     NSString *isDeviceKnown = call.arguments[@"isDeviceKnown"];
     NSString *eventBufferingEnabled = call.arguments[@"eventBufferingEnabled"];
     NSString *sendInBackground = call.arguments[@"sendInBackground"];
@@ -275,6 +276,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     // Delayed start.
     if ([self isFieldValid:delayStart]) {
         [adjustConfig setDelayStart:[delayStart doubleValue]];
+    }
+
+    // ATT consent delay.
+    if ([self isFieldValid:attConsentWaitingInterval]) {
+        [adjustConfig setAttConsentWaitingInterval:[attConsentWaitingInterval intValue]];
     }
     
     // App secret.
