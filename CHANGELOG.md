@@ -1,3 +1,15 @@
+### Version 4.34.0 (6th September 2023)
+#### Added
+- Added support for Android apps using Gradle 8.0 or later.
+- Added ability to delay SDK start on iOS platform in order to wait for an answer to the ATT dialog. You can set the number of seconds to wait (capped internally to 120) by setting the `attConsentWaitingInterval` method of the `AdjustConfig` instance.
+- Added support for purchase verification. In case you are using this feature, you can now use it by calling `verifyAppStorePurchase` (for iOS) and `verifyPlayStorePurchase` (for Android) methods of the `Adjust` instance.
+
+#### Native SDKs
+- [iOS@v4.34.2][ios_sdk_v4.34.2]
+- [Android@v4.34.0][android_sdk_v4.34.0]
+
+---
+
 ### Version 4.33.1 (16th February 2023)
 #### Fixed
 - Skipped invocation of SKAN 4.0 style callback in case SKAN 4.0 API was not invoked (https://github.com/adjust/flutter_sdk/issues/104).
@@ -324,6 +336,7 @@
 [ios_sdk_v4.32.1]: https://github.com/adjust/ios_sdk/tree/v4.32.1
 [ios_sdk_v4.33.2]: https://github.com/adjust/ios_sdk/tree/v4.33.2
 [ios_sdk_v4.33.4]: https://github.com/adjust/ios_sdk/tree/v4.33.4
+[ios_sdk_v4.34.2]: https://github.com/adjust/ios_sdk/tree/v4.34.2
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -340,3 +353,4 @@
 [android_sdk_v4.32.0]: https://github.com/adjust/android_sdk/tree/v4.32.0
 [android_sdk_v4.33.2]: https://github.com/adjust/android_sdk/tree/v4.33.2
 [android_sdk_v4.33.3]: https://github.com/adjust/android_sdk/tree/v4.33.3
+[android_sdk_v4.34.0]: https://github.com/adjust/android_sdk/tree/v4.34.0

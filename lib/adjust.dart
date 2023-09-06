@@ -10,16 +10,20 @@ import 'dart:async';
 
 import 'package:adjust_sdk/adjust_ad_revenue.dart';
 import 'package:adjust_sdk/adjust_app_store_subscription.dart';
+import 'package:adjust_sdk/adjust_app_store_purchase.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
+import 'package:adjust_sdk/adjust_play_store_purchase.dart';
 import 'package:adjust_sdk/adjust_play_store_subscription.dart';
+import 'package:adjust_sdk/adjust_purchase_verification_info.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
+
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter4.33.1';
+  static const String _sdkPrefix = 'flutter4.34.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
 
@@ -204,6 +208,20 @@ class Adjust {
                                                    'coarseValue': coarseValue,
                                                    'lockWindow': lockWindow});
     return error;
+  }
+
+  static Future<AdjustPurchaseVerificationInfo?> verifyPlayStorePurchase(
+    AdjustPlayStorePurchase purchase) async {
+    final dynamic playStorePurchaseMap = 
+      await _channel.invokeMethod('verifyPlayStorePurchase', purchase.toMap);
+    return AdjustPurchaseVerificationInfo.fromMap(playStorePurchaseMap);
+  }
+
+  static Future<AdjustPurchaseVerificationInfo?> verifyAppStorePurchase(
+    AdjustAppStorePurchase purchase) async {
+    final dynamic appStorePurchaseMap = 
+      await _channel.invokeMethod('verifyAppStorePurchase', purchase.toMap);
+    return AdjustPurchaseVerificationInfo.fromMap(appStorePurchaseMap);
   }
 
   // For testing purposes only. Do not use in production.

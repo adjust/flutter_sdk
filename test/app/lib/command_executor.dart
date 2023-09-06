@@ -11,15 +11,18 @@ import 'dart:io' show Platform;
 import 'package:adjust_sdk/adjust.dart';
 import 'package:adjust_sdk/adjust_ad_revenue.dart';
 import 'package:adjust_sdk/adjust_app_store_subscription.dart';
+import 'package:adjust_sdk/adjust_app_store_purchase.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
 import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_play_store_subscription.dart';
+import 'package:adjust_sdk/adjust_play_store_purchase.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
+import 'package:adjust_sdk/adjust_purchase_verification_info.dart';
 import 'package:test_app/command.dart';
 import 'package:test_lib/test_lib.dart';
 
@@ -30,15 +33,22 @@ class CommandExecutor {
   String? _gdprPath;
   String? _subscriptionUrl;
   String? _subscriptionPath;
+  String? _purchaseVerificationUrl;
+  String? _purchaseVerificationPath;
   String? _extraPath;
   late Command _command;
   Map<int, AdjustEvent?> _savedEvents = new Map<int, AdjustEvent?>();
   Map<int, AdjustConfig?> _savedConfigs = new Map<int, AdjustConfig?>();
 
-  CommandExecutor(String? baseUrl, String? gdprUrl, String? subscriptionUrl) {
+  CommandExecutor(
+    String? baseUrl,
+    String? gdprUrl,
+    String? subscriptionUrl,
+    String? purchaseVerificationUrl) {
     _baseUrl = baseUrl;
     _gdprUrl = gdprUrl;
     _subscriptionUrl = subscriptionUrl;
+    _purchaseVerificationUrl = purchaseVerificationUrl;
   }
 
   void executeCommand(Command command) {
@@ -128,6 +138,9 @@ class CommandExecutor {
       case 'getLastDeeplink':
         _getLastDeeplink();
         break;
+      case 'verifyPurchase':
+        _verifyPurchase();
+        break;
     }
   }
 
@@ -136,10 +149,12 @@ class CommandExecutor {
     testOptions['baseUrl'] = _baseUrl;
     testOptions['gdprUrl'] = _gdprUrl;
     testOptions['subscriptionUrl'] = _subscriptionUrl;
+    testOptions['purchaseVerificationUrl'] = _purchaseVerificationUrl;
     if (_command.containsParameter('basePath')) {
       _basePath = _command.getFirstParameterValue('basePath');
       _gdprPath = _command.getFirstParameterValue('basePath');
       _subscriptionPath = _command.getFirstParameterValue('basePath');
+      _purchaseVerificationPath = _command.getFirstParameterValue('basePath');
       _extraPath = _command.getFirstParameterValue('basePath');
     }
     if (_command.containsParameter('timerInterval')) {
@@ -179,6 +194,7 @@ class CommandExecutor {
           testOptions['basePath'] = _basePath;
           testOptions['gdprPath'] = _gdprPath;
           testOptions['subscriptionPath'] = _subscriptionPath;
+          testOptions['purchaseVerificationPath'] = _purchaseVerificationPath;
           testOptions['extraPath'] = _extraPath;
           // Android specific
           testOptions['useTestConnectionOptions'] = 'true';
@@ -541,6 +557,18 @@ class CommandExecutor {
     if (_command.containsParameter('orderId')) {
       adjustEvent!.transactionId = _command.getFirstParameterValue('orderId');
     }
+    if (_command.containsParameter('receipt')) {
+      adjustEvent!.receipt = _command.getFirstParameterValue('receipt');
+    }
+    if (_command.containsParameter('productId')) {
+      adjustEvent!.productId = _command.getFirstParameterValue('productId');
+    }
+    if (_command.containsParameter('transactionId')) {
+      adjustEvent!.transactionId = _command.getFirstParameterValue('transactionId');
+    }
+    if (_command.containsParameter('purchaseToken')) {
+      adjustEvent!.purchaseToken = _command.getFirstParameterValue('purchaseToken');
+    }
     if (_command.containsParameter('callbackId')) {
       adjustEvent!.callbackId = _command.getFirstParameterValue('callbackId');
     }
@@ -843,6 +871,39 @@ class CommandExecutor {
       Adjust.getLastDeeplink().then((lastDeeplink) {
         String? localBasePath = _basePath;
         TestLib.addInfoToSend('last_deeplink', lastDeeplink);
+        TestLib.sendInfoToServer(localBasePath);
+      });
+    }
+  }
+
+  void _verifyPurchase() {
+    if (Platform.isIOS) {
+      String? receipt = _command.getFirstParameterValue('receipt');
+      String? productId = _command.getFirstParameterValue('productId');
+      String? transactionId = _command.getFirstParameterValue('transactionId');
+
+      AdjustAppStorePurchase purchase =
+          new AdjustAppStorePurchase(receipt, productId, transactionId);
+
+      Adjust.verifyAppStorePurchase(purchase).then((result) {
+        String? localBasePath = _basePath;
+        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
+        TestLib.addInfoToSend('code', result?.code.toString());
+        TestLib.addInfoToSend('message', result?.message);
+        TestLib.sendInfoToServer(localBasePath);
+      });
+    } else if (Platform.isAndroid) {
+      String? productId = _command.getFirstParameterValue('productId');
+      String? purchaseToken = _command.getFirstParameterValue('purchaseToken');
+
+      AdjustPlayStorePurchase purchase =
+          new AdjustPlayStorePurchase(productId, purchaseToken);
+
+      Adjust.verifyPlayStorePurchase(purchase).then((result) {
+        String? localBasePath = _basePath;
+        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
+        TestLib.addInfoToSend('code', result?.code.toString());
+        TestLib.addInfoToSend('message', result?.message);
         TestLib.sendInfoToServer(localBasePath);
       });
     }

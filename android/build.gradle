@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath('com.android.tools.build:gradle:7.1.1')
+        classpath('com.android.tools.build:gradle:7.1.3')
     }
 }
 rootProject.allprojects {
@@ -24,7 +24,7 @@ rootProject.allprojects {
 }
 apply plugin: 'com.android.library'
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 16
@@ -33,8 +33,9 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+    namespace 'com.adjust.sdk.flutter'
 }
 
 dependencies {
-    api 'com.adjust.sdk:adjust-android:4.33.3'
+    api 'com.adjust.sdk:adjust-android:4.34.0'
 }
