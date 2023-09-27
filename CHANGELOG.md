@@ -1,7 +1,18 @@
+### Version 4.35.0 (27th September 2023)
+#### Added
+- Added support for SigV3 library. Update authorization header building logic to use `adj_signing_id`.
+- Added ability to indicate if only final Android attribution is needed in attribution callback (by default attribution callback return intermediate attribution as well before final attribution if not enabled with this setter method) by setting the `androidFinalAttributionEnabled` member of the `AdjustConfig` instance.
+
+#### Native SDKs
+- [iOS@v4.35.0][ios_sdk_v4.35.0]
+- [Android@v4.35.0][android_sdk_v4.35.0]
+
+---
+
 ### Version 4.34.0 (6th September 2023)
 #### Added
 - Added support for Android apps using Gradle 8.0 or later.
-- Added ability to delay SDK start on iOS platform in order to wait for an answer to the ATT dialog. You can set the number of seconds to wait (capped internally to 120) by setting the `attConsentWaitingInterval` method of the `AdjustConfig` instance.
+- Added ability to delay SDK start on iOS platform in order to wait for an answer to the ATT dialog. You can set the number of seconds to wait (capped internally to 120) by setting the `attConsentWaitingInterval` member of the `AdjustConfig` instance.
 - Added support for purchase verification. In case you are using this feature, you can now use it by calling `verifyAppStorePurchase` (for iOS) and `verifyPlayStorePurchase` (for Android) methods of the `Adjust` instance.
 
 #### Native SDKs
@@ -337,6 +348,7 @@
 [ios_sdk_v4.33.2]: https://github.com/adjust/ios_sdk/tree/v4.33.2
 [ios_sdk_v4.33.4]: https://github.com/adjust/ios_sdk/tree/v4.33.4
 [ios_sdk_v4.34.2]: https://github.com/adjust/ios_sdk/tree/v4.34.2
+[ios_sdk_v4.35.0]: https://github.com/adjust/ios_sdk/tree/v4.35.0
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -354,3 +366,4 @@
 [android_sdk_v4.33.2]: https://github.com/adjust/android_sdk/tree/v4.33.2
 [android_sdk_v4.33.3]: https://github.com/adjust/android_sdk/tree/v4.33.3
 [android_sdk_v4.34.0]: https://github.com/adjust/android_sdk/tree/v4.34.0
+[android_sdk_v4.35.0]: https://github.com/adjust/android_sdk/tree/v4.35.0
