@@ -306,6 +306,13 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             adjustConfig.setCoppaCompliantEnabled(coppaCompliantEnabled);
         }
 
+        // Final attribution.
+        if (configMap.containsKey("finalAndroidAttributionEnabled")) {
+            String strFinalAndroidAttributionEnabled = (String) configMap.get("finalAndroidAttributionEnabled");
+            boolean finalAndroidAttributionEnabled = Boolean.parseBoolean(strFinalAndroidAttributionEnabled);
+            adjustConfig.setFinalAttributionEnabled(finalAndroidAttributionEnabled);
+        }
+
         // Google Play Store kids apps.
         if (configMap.containsKey("playStoreKidsAppEnabled")) {
             String strPlayStoreKidsAppEnabled = (String) configMap.get("playStoreKidsAppEnabled");

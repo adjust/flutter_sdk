@@ -341,6 +341,11 @@ class CommandExecutor {
       _command.getFirstParameterValue('playStoreKids') == 'true';
     }
 
+    if (_command.containsParameter('finalAttributionEnabled')) {
+      adjustConfig!.finalAndroidAttributionEnabled =
+      _command.getFirstParameterValue('finalAttributionEnabled') == 'true';
+    }
+
     if (_command.containsParameter('sendInBackground')) {
       adjustConfig!.sendInBackground =
           _command.getFirstParameterValue('sendInBackground') == 'true';

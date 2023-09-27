@@ -81,6 +81,7 @@ class AdjustConfig {
   bool? playStoreKidsAppEnabled;
   bool? coppaCompliantEnabled;
   bool? linkMeEnabled;
+  bool? finalAndroidAttributionEnabled;
   String? sdkPrefix;
   String? userAgent;
   String? defaultTracker;
@@ -242,6 +243,9 @@ class AdjustConfig {
     }
     if (coppaCompliantEnabled != null) {
       configMap['coppaCompliantEnabled'] = coppaCompliantEnabled.toString();
+    }
+    if (finalAndroidAttributionEnabled != null) {
+      configMap['finalAndroidAttributionEnabled'] = finalAndroidAttributionEnabled.toString();
     }
     if (linkMeEnabled != null) {
       configMap['linkMeEnabled'] = linkMeEnabled.toString();
