@@ -216,7 +216,7 @@ As of v4.22.0, the Adjust SDK supports install tracking on Huawei devices with H
 
 Make sure that following iOS frameworks are linked with your iOS app:
 
-* `AdServices.framework` - in case you are running iAd campaigns
+* `AdServices.framework` - in case you are running Apple Search Ads campaigns
 * `AdSupport.framework` - for reading iOS Advertising Id (IDFA)
 * `StoreKit.framework` - for communication with SKAdNetwork framework
 * `AppTrackingTransparency.framework` - to ask for user's consent to be tracked and obtain status of that consent
