@@ -56,6 +56,8 @@ class AdjustConfig {
   static const String AdRevenueSourceUnity = 'unity_sdk';
   static const String AdRevenueSourceHeliumChartboost = 'helium_chartboost_sdk';
   static const String AdRevenueSourcePublisher = 'publisher_sdk';
+  static const String AdRevenueSourceTopOn = 'topon_sdk';
+  static const String AdRevenueSourceAdx = 'adx_sdk';
 
   String _appToken;
   AdjustEnvironment _environment;
