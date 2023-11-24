@@ -313,7 +313,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             adjustConfig.setFinalAttributionEnabled(finalAndroidAttributionEnabled);
         }
 
-        // Read Android device info only once
+        // Read Android device info only once.
         if (configMap.containsKey("readDeviceInfoOnceEnabled")) {
             String strReadDeviceInfoOnceEnabled = (String) configMap.get("readDeviceInfoOnceEnabled");
             boolean readDeviceInfoOnceEnabled = Boolean.parseBoolean(strReadDeviceInfoOnceEnabled);
@@ -349,6 +349,12 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         if (configMap.containsKey("preinstallFilePath")) {
             String preinstallFilePath = (String) configMap.get("preinstallFilePath");
             adjustConfig.setPreinstallFilePath(preinstallFilePath);
+        }
+
+        // META install referrer.
+        if (configMap.containsKey("fbAppId")) {
+            String fbAppId = (String) configMap.get("fbAppId");
+            adjustConfig.setFbAppId(fbAppId);
         }
 
         // URL strategy.

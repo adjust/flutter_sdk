@@ -93,6 +93,7 @@ class AdjustConfig {
   String? urlStrategy;
   String? processName;
   String? preinstallFilePath;
+  String? fbAppId;
   AdjustLogLevel? logLevel;
   AttributionCallback? attributionCallback;
   SessionSuccessCallback? sessionSuccessCallback;
@@ -222,6 +223,12 @@ class AdjustConfig {
     }
     if (externalDeviceId != null) {
       configMap['externalDeviceId'] = externalDeviceId;
+    }
+    if (preinstallFilePath != null) {
+      configMap['preinstallFilePath'] = preinstallFilePath;
+    }
+    if (fbAppId != null) {
+      configMap['fbAppId'] = fbAppId;
     }
     if (urlStrategy != null) {
       configMap['urlStrategy'] = urlStrategy;
