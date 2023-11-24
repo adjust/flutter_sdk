@@ -91,6 +91,11 @@ class Adjust {
     return idfa;
   }
 
+  static Future<String?> getIdfv() async {
+    final String? idfv = await _channel.invokeMethod('getIdfv');
+    return idfv;
+  }
+
   static Future<String?> getAmazonAdId() async {
     final String? amazonAdId = await _channel.invokeMethod('getAmazonAdId');
     return amazonAdId;

@@ -135,6 +135,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "getIdfa":
                 getIdfa(result);
                 break;
+            case "getIdfv":
+                getIdfv(result);
+                break;
             case "getGoogleAdId":
                 getGoogleAdId(result);
                 break;
@@ -752,6 +755,10 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
 
     private void getIdfa(final Result result) {
         result.success("Error. No IDFA on Android platform!");
+    }
+
+    private void getIdfv(final Result result) {
+        result.success("Error. No IDFV on Android platform!");
     }
 
     private void getGoogleAdId(final Result result) {
