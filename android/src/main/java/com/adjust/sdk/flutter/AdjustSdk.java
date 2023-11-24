@@ -313,6 +313,13 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             adjustConfig.setFinalAttributionEnabled(finalAndroidAttributionEnabled);
         }
 
+        // Read Android device info only once
+        if (configMap.containsKey("readDeviceInfoOnceEnabled")) {
+            String strReadDeviceInfoOnceEnabled = (String) configMap.get("readDeviceInfoOnceEnabled");
+            boolean readDeviceInfoOnceEnabled = Boolean.parseBoolean(strReadDeviceInfoOnceEnabled);
+            adjustConfig.setReadDeviceInfoOnceEnabled(readDeviceInfoOnceEnabled);
+        }
+
         // Google Play Store kids apps.
         if (configMap.containsKey("playStoreKidsAppEnabled")) {
             String strPlayStoreKidsAppEnabled = (String) configMap.get("playStoreKidsAppEnabled");
