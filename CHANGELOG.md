@@ -1,3 +1,17 @@
+### Version 4.36.0 (27th November 2023)
+#### Added
+- Added getter for obtaining IDFV value of the iOS device.
+- Added support for Meta install referrer.
+- Added support for Google Play Games on PC.
+- Added support for `TopOn` and `AD(X)` ad revenue tracking.
+- Added a new type of URL strategy called `AdjustConfig.UrlStrategyCnOnly`. This URL strategy represents `AdjustConfig.UrlStrategyCn` strategy, but without fallback domains.
+- Added `readDeviceInfoOnceEnabled` member to `AdjustConfig` to indicate if Android device info should be read only once.
+
+#### Native SDKs
+- [iOS@v4.36.0][ios_sdk_v4.36.0]
+- [Android@v4.37.0][android_sdk_v4.37.0]
+---
+
 ### Version 4.35.2 (9th October 2023)
 #### Added
 - Added sending of `event_callback_id` parameter (if set) with the event payload.
@@ -370,6 +384,7 @@
 [ios_sdk_v4.35.0]: https://github.com/adjust/ios_sdk/tree/v4.35.0
 [ios_sdk_v4.35.1]: https://github.com/adjust/ios_sdk/tree/v4.35.1
 [ios_sdk_v4.35.2]: https://github.com/adjust/ios_sdk/tree/v4.35.2
+[ios_sdk_v4.36.0]: https://github.com/adjust/ios_sdk/tree/v4.36.0
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -389,3 +404,4 @@
 [android_sdk_v4.34.0]: https://github.com/adjust/android_sdk/tree/v4.34.0
 [android_sdk_v4.35.0]: https://github.com/adjust/android_sdk/tree/v4.35.0
 [android_sdk_v4.35.1]: https://github.com/adjust/android_sdk/tree/v4.35.1
+[android_sdk_v4.37.0]: https://github.com/adjust/android_sdk/tree/v4.37.0

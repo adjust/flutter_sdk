@@ -54,6 +54,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self getAttribution:call withResult:result];
     } else if ([@"getIdfa" isEqualToString:call.method]) {
         [self getIdfa:call withResult:result];
+    } else if ([@"getIdfv" isEqualToString:call.method]) {
+        [self getIdfv:call withResult:result];
     } else if ([@"getGoogleAdId" isEqualToString:call.method]) {
         [self getGoogleAdId:call withResult:result];
     } else if ([@"getSdkVersion" isEqualToString:call.method]) {
@@ -232,6 +234,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
             [adjustConfig setUrlStrategy:ADJUrlStrategyIndia];
         } else if ([urlStrategy isEqualToString:@"cn"]) {
             [adjustConfig setUrlStrategy:ADJUrlStrategyCn];
+        } else if ([urlStrategy isEqualToString:@"cn-only"]) {
+            [adjustConfig setUrlStrategy:ADJUrlStrategyCnOnly];
         } else if ([urlStrategy isEqualToString:@"data-residency-eu"]) {
             [adjustConfig setUrlStrategy:ADJDataResidencyEU];
         } else if ([urlStrategy isEqualToString:@"data-residency-tr"]) {
@@ -632,6 +636,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 - (void)getIdfa:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *idfa = [Adjust idfa];
     result(idfa);
+}
+
+- (void)getIdfv:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *idfv = [Adjust idfv];
+    result(idfv);
 }
 
 - (void)getGoogleAdId:(FlutterMethodCall *)call withResult:(FlutterResult)result {

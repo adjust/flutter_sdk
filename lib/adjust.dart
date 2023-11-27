@@ -23,7 +23,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter4.35.2';
+  static const String _sdkPrefix = 'flutter4.36.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
 
@@ -89,6 +89,11 @@ class Adjust {
   static Future<String?> getIdfa() async {
     final String? idfa = await _channel.invokeMethod('getIdfa');
     return idfa;
+  }
+
+  static Future<String?> getIdfv() async {
+    final String? idfv = await _channel.invokeMethod('getIdfv');
+    return idfv;
   }
 
   static Future<String?> getAmazonAdId() async {

@@ -135,6 +135,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "getIdfa":
                 getIdfa(result);
                 break;
+            case "getIdfv":
+                getIdfv(result);
+                break;
             case "getGoogleAdId":
                 getGoogleAdId(result);
                 break;
@@ -313,6 +316,13 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             adjustConfig.setFinalAttributionEnabled(finalAndroidAttributionEnabled);
         }
 
+        // Read Android device info only once.
+        if (configMap.containsKey("readDeviceInfoOnceEnabled")) {
+            String strReadDeviceInfoOnceEnabled = (String) configMap.get("readDeviceInfoOnceEnabled");
+            boolean readDeviceInfoOnceEnabled = Boolean.parseBoolean(strReadDeviceInfoOnceEnabled);
+            adjustConfig.setReadDeviceInfoOnceEnabled(readDeviceInfoOnceEnabled);
+        }
+
         // Google Play Store kids apps.
         if (configMap.containsKey("playStoreKidsAppEnabled")) {
             String strPlayStoreKidsAppEnabled = (String) configMap.get("playStoreKidsAppEnabled");
@@ -344,6 +354,12 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             adjustConfig.setPreinstallFilePath(preinstallFilePath);
         }
 
+        // META install referrer.
+        if (configMap.containsKey("fbAppId")) {
+            String fbAppId = (String) configMap.get("fbAppId");
+            adjustConfig.setFbAppId(fbAppId);
+        }
+
         // URL strategy.
         if (configMap.containsKey("urlStrategy")) {
             String urlStrategy = (String) configMap.get("urlStrategy");
@@ -353,6 +369,8 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                 adjustConfig.setUrlStrategy(AdjustConfig.URL_STRATEGY_INDIA);
             } else if (urlStrategy.equalsIgnoreCase("cn")) {
                 adjustConfig.setUrlStrategy(AdjustConfig.URL_STRATEGY_CN);
+            } else if (urlStrategy.equalsIgnoreCase("cn-only")) {
+                adjustConfig.setUrlStrategy(AdjustConfig.URL_STRATEGY_CN_ONLY);
             } else if (urlStrategy.equalsIgnoreCase("data-residency-eu")) {
                 adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU);
             } else if (urlStrategy.equalsIgnoreCase("data-residency-tr")) {
@@ -737,6 +755,10 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
 
     private void getIdfa(final Result result) {
         result.success("Error. No IDFA on Android platform!");
+    }
+
+    private void getIdfv(final Result result) {
+        result.success("Error. No IDFV on Android platform!");
     }
 
     private void getGoogleAdId(final Result result) {
