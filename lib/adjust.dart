@@ -107,17 +107,18 @@ class Adjust {
   }
 
   static Future<num> requestTrackingAuthorizationWithCompletionHandler() async {
-    final num status = await _channel
+    final String requestAuth= await _channel
         .invokeMethod('requestTrackingAuthorizationWithCompletionHandler');
+    final num status = num.parse(requestAuth);
     return status;
   }
 
   static Future<int> getAppTrackingAuthorizationStatus() async {
-    final int authorizationStatus =
-        await _channel.invokeMethod('getAppTrackingAuthorizationStatus');
+    final String authStatus=await _channel.invokeMethod('getAppTrackingAuthorizationStatus');
+    final int authorizationStatus =int.parse(authStatus);
+    //final int authorizationStatus=await _channel.invokeMethod('getAppTrackingAuthorizationStatus');
     return authorizationStatus;
   }
-
   static Future<AdjustAttribution> getAttribution() async {
     final dynamic attributionMap =
         await _channel.invokeMethod('getAttribution');
