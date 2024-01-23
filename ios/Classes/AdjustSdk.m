@@ -163,6 +163,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *allowAdServicesInfoReading = call.arguments[@"allowAdServicesInfoReading"];
     NSString *allowIdfaReading = call.arguments[@"allowIdfaReading"];
     NSString *skAdNetworkHandling = call.arguments[@"skAdNetworkHandling"];
+    NSString *readDeviceInfoOnceEnabled = call.arguments[@"readDeviceInfoOnceEnabled"];
     NSString *dartAttributionCallback = call.arguments[@"attributionCallback"];
     NSString *dartSessionSuccessCallback = call.arguments[@"sessionSuccessCallback"];
     NSString *dartSessionFailureCallback = call.arguments[@"sessionFailureCallback"];
@@ -270,6 +271,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         if ([skAdNetworkHandling boolValue] == NO) {
             [adjustConfig deactivateSKAdNetworkHandling];
         }
+    }
+
+    // Read device info once.
+    if ([self isFieldValid:readDeviceInfoOnceEnabled]) {
+        [adjustConfig setReadDeviceInfoOnceEnabled:[readDeviceInfoOnceEnabled boolValue]];
     }
 
     // Set device known.
