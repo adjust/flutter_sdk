@@ -133,6 +133,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self verifyAppStorePurchase:call withResult:result];
     } else if ([@"verifyPlayStorePurchase" isEqualToString:call.method]) {
         [self verifyAppStorePurchase:call withResult:result];
+    } else if ([@"processDeeplink" isEqualToString:call.method]) {
+        [self processDeeplink:call withResult:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -163,6 +165,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *allowAdServicesInfoReading = call.arguments[@"allowAdServicesInfoReading"];
     NSString *allowIdfaReading = call.arguments[@"allowIdfaReading"];
     NSString *skAdNetworkHandling = call.arguments[@"skAdNetworkHandling"];
+    NSString *readDeviceInfoOnceEnabled = call.arguments[@"readDeviceInfoOnceEnabled"];
     NSString *dartAttributionCallback = call.arguments[@"attributionCallback"];
     NSString *dartSessionSuccessCallback = call.arguments[@"sessionSuccessCallback"];
     NSString *dartSessionFailureCallback = call.arguments[@"sessionFailureCallback"];
@@ -270,6 +273,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         if ([skAdNetworkHandling boolValue] == NO) {
             [adjustConfig deactivateSKAdNetworkHandling];
         }
+    }
+
+    // Read device info once.
+    if ([self isFieldValid:readDeviceInfoOnceEnabled]) {
+        [adjustConfig setReadDeviceInfoOnceEnabled:[readDeviceInfoOnceEnabled boolValue]];
     }
 
     // Set device known.
@@ -794,6 +802,29 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                  toDictionary:dictionary];
         result(dictionary);
     }];
+}
+
+- (void)processDeeplink:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *deeplink = call.arguments[@"deeplink"];
+    if ([self isFieldValid:deeplink]) {
+        NSURL *nsUrl;
+        if ([NSString instancesRespondToSelector:@selector(stringByAddingPercentEncodingWithAllowedCharacters:)]) {
+            nsUrl = [NSURL URLWithString:[deeplink stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+        } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            nsUrl = [NSURL URLWithString:[deeplink stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        }
+#pragma clang diagnostic pop
+
+        [Adjust processDeeplink:nsUrl completionHandler:^(NSString * _Nonnull resolvedLink) {
+            if (![self isFieldValid:resolvedLink]) {
+                result(nil);
+            } else {
+                result(resolvedLink);
+            }
+        }];
+    }
 }
 
 - (void)setTestOptions:(FlutterMethodCall *)call withResult:(FlutterResult)result {

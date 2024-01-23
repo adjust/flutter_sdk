@@ -23,7 +23,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter4.36.0';
+  static const String _sdkPrefix = 'flutter4.37.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
 
@@ -227,6 +227,12 @@ class Adjust {
     final dynamic appStorePurchaseMap = 
       await _channel.invokeMethod('verifyAppStorePurchase', purchase.toMap);
     return AdjustPurchaseVerificationInfo.fromMap(appStorePurchaseMap);
+  }
+
+  static Future<String?> processDeeplink(String deeplink) async {
+    final resolvedLink = 
+      await _channel.invokeMethod('processDeeplink', {'deeplink': deeplink});
+    return resolvedLink;
   }
 
   // For testing purposes only. Do not use in production.

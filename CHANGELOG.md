@@ -1,3 +1,12 @@
+### Version 4.37.0 (23rd January 2024)
+#### Added
+- Added ability to process shortened deep links and provide the unshortened link back as a response. You can achieve this by invoking `processDeeplink` method of the `Adjust` instance.
+
+#### Native SDKs
+- [iOS@v4.37.0][ios_sdk_v4.37.0]
+- [Android@v4.38.0][android_sdk_v4.38.0]
+---
+
 ### Version 4.36.0 (27th November 2023)
 #### Added
 - Added getter for obtaining IDFV value of the iOS device.
@@ -385,6 +394,7 @@
 [ios_sdk_v4.35.1]: https://github.com/adjust/ios_sdk/tree/v4.35.1
 [ios_sdk_v4.35.2]: https://github.com/adjust/ios_sdk/tree/v4.35.2
 [ios_sdk_v4.36.0]: https://github.com/adjust/ios_sdk/tree/v4.36.0
+[ios_sdk_v4.37.0]: https://github.com/adjust/ios_sdk/tree/v4.37.0
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -405,3 +415,4 @@
 [android_sdk_v4.35.0]: https://github.com/adjust/android_sdk/tree/v4.35.0
 [android_sdk_v4.35.1]: https://github.com/adjust/android_sdk/tree/v4.35.1
 [android_sdk_v4.37.0]: https://github.com/adjust/android_sdk/tree/v4.37.0
+[android_sdk_v4.38.0]: https://github.com/adjust/android_sdk/tree/v4.38.0

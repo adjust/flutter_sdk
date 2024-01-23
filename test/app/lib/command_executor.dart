@@ -141,6 +141,9 @@ class CommandExecutor {
       case 'verifyPurchase':
         _verifyPurchase();
         break;
+      case 'processDeeplink':
+        _processDeeplink();
+        break;
     }
   }
 
@@ -912,5 +915,14 @@ class CommandExecutor {
         TestLib.sendInfoToServer(localBasePath);
       });
     }
+  }
+
+  void _processDeeplink() {
+    String deeplink = _command.getFirstParameterValue('deeplink')!;
+    Adjust.processDeeplink(deeplink).then((resolvedLink) {
+      String? localBasePath = _basePath;
+      TestLib.addInfoToSend('resolved_link', resolvedLink);
+      TestLib.sendInfoToServer(localBasePath);
+    });
   }
 }

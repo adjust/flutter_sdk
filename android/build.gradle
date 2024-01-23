@@ -37,5 +37,5 @@ android {
 }
 
 dependencies {
-    api 'com.adjust.sdk:adjust-android:4.37.0'
+    api 'com.adjust.sdk:adjust-android:4.38.0'
 }
