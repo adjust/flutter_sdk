@@ -133,6 +133,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self verifyAppStorePurchase:call withResult:result];
     } else if ([@"verifyPlayStorePurchase" isEqualToString:call.method]) {
         [self verifyAppStorePurchase:call withResult:result];
+    } else if ([@"processDeeplink" isEqualToString:call.method]) {
+        [self processDeeplink:call withResult:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -800,6 +802,29 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                  toDictionary:dictionary];
         result(dictionary);
     }];
+}
+
+- (void)processDeeplink:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *deeplink = call.arguments[@"deeplink"];
+    if ([self isFieldValid:deeplink]) {
+        NSURL *nsUrl;
+        if ([NSString instancesRespondToSelector:@selector(stringByAddingPercentEncodingWithAllowedCharacters:)]) {
+            nsUrl = [NSURL URLWithString:[deeplink stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+        } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            nsUrl = [NSURL URLWithString:[deeplink stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        }
+#pragma clang diagnostic pop
+
+        [Adjust processDeeplink:nsUrl completionHandler:^(NSString * _Nonnull resolvedLink) {
+            if (![self isFieldValid:resolvedLink]) {
+                result(nil);
+            } else {
+                result(resolvedLink);
+            }
+        }];
+    }
 }
 
 - (void)setTestOptions:(FlutterMethodCall *)call withResult:(FlutterResult)result {

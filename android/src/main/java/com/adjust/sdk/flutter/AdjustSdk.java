@@ -35,6 +35,7 @@ import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
+import com.adjust.sdk.OnDeeplinkResolvedListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -215,6 +216,9 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                 break;
             case "verifyAppStorePurchase":
                 verifyAppStorePurchase(call, result);
+                break;
+            case "processDeeplink":
+                processDeeplink(call, result);
                 break;
             case "setTestOptions":
                 setTestOptions(call, result);
@@ -1184,6 +1188,21 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                 adjustPurchaseMap.put("verificationStatus", verificationResult.getVerificationStatus());
                 adjustPurchaseMap.put("message", verificationResult.getMessage());
                 result.success(adjustPurchaseMap);
+            }
+        });
+    }
+
+    private void processDeeplink(final MethodCall call, final Result result) {
+        Map urlParamsMap = (Map) call.arguments;
+        String url = null;
+        if (urlParamsMap.containsKey("deeplink")) {
+            url = urlParamsMap.get("deeplink").toString();
+        }
+
+        Adjust.processDeeplink(Uri.parse(url), applicationContext, new OnDeeplinkResolvedListener() {
+            @Override
+            public void onDeeplinkResolved(String resolvedLink) {
+                result.success(resolvedLink);
             }
         });
     }
