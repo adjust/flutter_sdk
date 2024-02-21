@@ -1,3 +1,16 @@
+### Version 4.37.1 (21st February 2024)
+#### Added
+- Added support for `TradPlus` ad revenue tracking.
+
+#### Fixed
+- Fixed return type mismatch between native Android and Dart implementation of iOS specific methods (https://github.com/adjust/flutter_sdk/issues/122).
+
+#### Native SDKs
+- [iOS@v4.37.1][ios_sdk_v4.37.1]
+- [Android@v4.38.1][android_sdk_v4.38.1]
+
+---
+
 ### Version 4.37.0 (23rd January 2024)
 #### Added
 - Added ability to process shortened deep links and provide the unshortened link back as a response. You can achieve this by invoking `processDeeplink` method of the `Adjust` instance.
@@ -5,6 +18,7 @@
 #### Native SDKs
 - [iOS@v4.37.0][ios_sdk_v4.37.0]
 - [Android@v4.38.0][android_sdk_v4.38.0]
+
 ---
 
 ### Version 4.36.0 (27th November 2023)
@@ -19,6 +33,7 @@
 #### Native SDKs
 - [iOS@v4.36.0][ios_sdk_v4.36.0]
 - [Android@v4.37.0][android_sdk_v4.37.0]
+
 ---
 
 ### Version 4.35.2 (9th October 2023)
@@ -28,6 +43,7 @@
 #### Native SDKs
 - [iOS@v4.35.2][ios_sdk_v4.35.2]
 - [Android@v4.35.1][android_sdk_v4.35.1]
+
 ---
 
 ### Version 4.35.1 (2nd October 2023)
@@ -395,6 +411,7 @@
 [ios_sdk_v4.35.2]: https://github.com/adjust/ios_sdk/tree/v4.35.2
 [ios_sdk_v4.36.0]: https://github.com/adjust/ios_sdk/tree/v4.36.0
 [ios_sdk_v4.37.0]: https://github.com/adjust/ios_sdk/tree/v4.37.0
+[ios_sdk_v4.37.1]: https://github.com/adjust/ios_sdk/tree/v4.37.1
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -416,3 +433,4 @@
 [android_sdk_v4.35.1]: https://github.com/adjust/android_sdk/tree/v4.35.1
 [android_sdk_v4.37.0]: https://github.com/adjust/android_sdk/tree/v4.37.0
 [android_sdk_v4.38.0]: https://github.com/adjust/android_sdk/tree/v4.38.0
+[android_sdk_v4.38.1]: https://github.com/adjust/android_sdk/tree/v4.38.1
