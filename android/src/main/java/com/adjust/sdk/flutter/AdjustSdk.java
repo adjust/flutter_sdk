@@ -1084,7 +1084,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void requestTrackingAuthorizationWithCompletionHandler(final Result result) {
-        result.success("Error. No requestTrackingAuthorizationWithCompletionHandler on Android platform!");
+        result.success(-1);
     }
 
     private void updateConversionValue(final Result result) {
@@ -1151,7 +1151,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void getAppTrackingAuthorizationStatus(final MethodCall call, final Result result) {
-        result.success("Error. No getAppTrackingAuthorizationStatus for Android platform!");
+        result.success(-1);
     }
 
     private void getLastDeeplink(final MethodCall call, final Result result) {
