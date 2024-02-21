@@ -59,6 +59,7 @@ class AdjustConfig {
   static const String AdRevenueSourcePublisher = 'publisher_sdk';
   static const String AdRevenueSourceTopOn = 'topon_sdk';
   static const String AdRevenueSourceAdx = 'adx_sdk';
+  static const String AdRevenueTradPlus = 'tradplus_sdk';
 
   String _appToken;
   AdjustEnvironment _environment;
