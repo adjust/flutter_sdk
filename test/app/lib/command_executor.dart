@@ -3,7 +3,7 @@
 //  Adjust SDK
 //
 //  Created by Srdjan Tubin (@2beens) on 25th April 2018.
-//  Copyright (c) 2018-2021 Adjust GmbH. All rights reserved.
+//  Copyright (c) 2018-Present Adjust GmbH. All rights reserved.
 //
 
 import 'dart:io' show Platform;
@@ -35,20 +35,18 @@ class CommandExecutor {
   String? _subscriptionPath;
   String? _purchaseVerificationUrl;
   String? _purchaseVerificationPath;
+  String? _overwriteUrl;
   String? _extraPath;
   late Command _command;
   Map<int, AdjustEvent?> _savedEvents = new Map<int, AdjustEvent?>();
   Map<int, AdjustConfig?> _savedConfigs = new Map<int, AdjustConfig?>();
 
-  CommandExecutor(
-    String? baseUrl,
-    String? gdprUrl,
-    String? subscriptionUrl,
-    String? purchaseVerificationUrl) {
-    _baseUrl = baseUrl;
-    _gdprUrl = gdprUrl;
-    _subscriptionUrl = subscriptionUrl;
-    _purchaseVerificationUrl = purchaseVerificationUrl;
+  CommandExecutor(String? overwriteUrl) {
+    _baseUrl = overwriteUrl;
+    _gdprUrl = overwriteUrl;
+    _subscriptionUrl = overwriteUrl;
+    _purchaseVerificationUrl = overwriteUrl;
+    _overwriteUrl = overwriteUrl;
   }
 
   void executeCommand(Command command) {
@@ -149,10 +147,11 @@ class CommandExecutor {
 
   void _testOptions() {
     final dynamic testOptions = {};
-    testOptions['baseUrl'] = _baseUrl;
-    testOptions['gdprUrl'] = _gdprUrl;
-    testOptions['subscriptionUrl'] = _subscriptionUrl;
-    testOptions['purchaseVerificationUrl'] = _purchaseVerificationUrl;
+    testOptions['baseUrl'] = _overwriteUrl;
+    testOptions['gdprUrl'] = _overwriteUrl;
+    testOptions['subscriptionUrl'] = _overwriteUrl;
+    testOptions['purchaseVerificationUrl'] = _overwriteUrl;
+    testOptions['urlOverwrite'] = _overwriteUrl;
     if (_command.containsParameter('basePath')) {
       _basePath = _command.getFirstParameterValue('basePath');
       _gdprPath = _command.getFirstParameterValue('basePath');
@@ -188,16 +187,24 @@ class CommandExecutor {
       testOptions['adServicesFrameworkEnabled'] =
           _command.getFirstParameterValue('adServicesFrameworkEnabled');
     }
+    if (_command.containsParameter('attStatus')) {
+      testOptions['attStatus'] =
+          _command.getFirstParameterValue('attStatus');
+    }
+    if (_command.containsParameter('idfa')) {
+      testOptions['idfa'] =
+          _command.getFirstParameterValue('idfa');
+    }
     bool useTestConnectionOptions = false;
     if (_command.containsParameter('teardown')) {
       List<dynamic> teardownOptions = _command.getParamteters('teardown')!;
       for (String teardownOption in teardownOptions) {
         if (teardownOption == 'resetSdk') {
           testOptions['teardown'] = 'true';
-          testOptions['basePath'] = _basePath;
-          testOptions['gdprPath'] = _gdprPath;
-          testOptions['subscriptionPath'] = _subscriptionPath;
-          testOptions['purchaseVerificationPath'] = _purchaseVerificationPath;
+          testOptions['basePath'] = _extraPath;
+          testOptions['gdprPath'] = _extraPath;
+          testOptions['subscriptionPath'] = _extraPath;
+          testOptions['purchaseVerificationPath'] = _extraPath;
           testOptions['extraPath'] = _extraPath;
           // Android specific
           testOptions['useTestConnectionOptions'] = 'true';
@@ -376,6 +383,11 @@ class CommandExecutor {
       adjustConfig!.userAgent = _command.getFirstParameterValue('userAgent');
     }
 
+    if (_command.containsParameter('attConsentWaitingSeconds')) {
+      adjustConfig!.attConsentWaitingInterval =
+          double.parse(_command.getFirstParameterValue('attConsentWaitingSeconds')!);
+    }
+
     // First clear all previous callback handlers.
     adjustConfig!.attributionCallback = null;
     adjustConfig.sessionSuccessCallback = null;
@@ -387,7 +399,7 @@ class CommandExecutor {
     // TODO: Deeplinking in Flutter example.
     // https://github.com/flutter/flutter/issues/8711#issuecomment-304681212
     if (_command.containsParameter('deferredDeeplinkCallback')) {
-      String? localBasePath = _basePath;
+      String? localBasePath = _extraPath;
       adjustConfig.launchDeferredDeeplink =
           _command.getFirstParameterValue('deferredDeeplinkCallback') == 'true';
       print(
@@ -400,7 +412,7 @@ class CommandExecutor {
     }
 
     if (_command.containsParameter('attributionCallbackSendAll')) {
-      String? localBasePath = _basePath;
+      String? localBasePath = _extraPath;
       adjustConfig.attributionCallback = (AdjustAttribution attribution) {
         print('[CommandExecutor]: Attribution Callback: $attribution');
         TestLib.addInfoToSend('trackerToken', attribution.trackerToken);
@@ -420,7 +432,7 @@ class CommandExecutor {
     }
 
     if (_command.containsParameter('sessionCallbackSendSuccess')) {
-      String? localBasePath = _basePath;
+      String? localBasePath = _extraPath;
       adjustConfig.sessionSuccessCallback =
           (AdjustSessionSuccess sessionSuccessResponseData) {
         print(
@@ -438,7 +450,7 @@ class CommandExecutor {
     }
 
     if (_command.containsParameter('sessionCallbackSendFailure')) {
-      String? localBasePath = _basePath;
+      String? localBasePath = _extraPath;
       adjustConfig.sessionFailureCallback =
           (AdjustSessionFailure sessionFailureResponseData) {
         print(
@@ -458,7 +470,7 @@ class CommandExecutor {
     }
 
     if (_command.containsParameter('eventCallbackSendSuccess')) {
-      String? localBasePath = _basePath;
+      String? localBasePath = _extraPath;
       adjustConfig.eventSuccessCallback =
           (AdjustEventSuccess eventSuccessResponseData) {
         print(
@@ -479,7 +491,7 @@ class CommandExecutor {
     }
 
     if (_command.containsParameter('eventCallbackSendFailure')) {
-      String? localBasePath = _basePath;
+      String? localBasePath = _extraPath;
       adjustConfig.eventFailureCallback =
           (AdjustEventFailure eventFailureResponseData) {
         print(

@@ -1,3 +1,16 @@
+### Version 4.38.0 (28th March 2024)
+#### Added
+- Added iOS Privacy Manifest for the Adjust SDK.
+- Added new domains and corresponding payload restrictions for the Adjust SDK to direct the iOS traffic to:
+    - https://consent.adjust.com - for consented users
+    - https://analytics.adjust.com - for non-consented users
+
+#### Native SDKs
+- [iOS@v4.38.0][ios_sdk_v4.38.0]
+- [Android@v4.38.3][android_sdk_v4.38.3]
+
+---
+
 ### Version 4.37.1 (21st February 2024)
 #### Added
 - Added support for `TradPlus` ad revenue tracking.
@@ -412,6 +425,7 @@
 [ios_sdk_v4.36.0]: https://github.com/adjust/ios_sdk/tree/v4.36.0
 [ios_sdk_v4.37.0]: https://github.com/adjust/ios_sdk/tree/v4.37.0
 [ios_sdk_v4.37.1]: https://github.com/adjust/ios_sdk/tree/v4.37.1
+[ios_sdk_v4.38.0]: https://github.com/adjust/ios_sdk/tree/v4.38.0
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -434,3 +448,4 @@
 [android_sdk_v4.37.0]: https://github.com/adjust/android_sdk/tree/v4.37.0
 [android_sdk_v4.38.0]: https://github.com/adjust/android_sdk/tree/v4.38.0
 [android_sdk_v4.38.1]: https://github.com/adjust/android_sdk/tree/v4.38.1
+[android_sdk_v4.38.3]: https://github.com/adjust/android_sdk/tree/v4.38.3

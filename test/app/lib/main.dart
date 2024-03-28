@@ -17,10 +17,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String? _baseUrl;
-  String? _gdprUrl;
-  String? _subscriptionUrl;
-  String? _purchaseVerificationUrl;
+  String? _overwriteUrl;
   late String _controlUrl;
   late CommandExecutor _commandExecutor;
 
@@ -28,28 +25,22 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    String _address = '192.168.86.21';
+    String _address = '192.168.86.53';
     if (Platform.isAndroid) {
       String _protocol = 'https';
       String _port = '8443';
-      _baseUrl = _protocol + '://' + _address + ':' + _port;
-      _gdprUrl = _protocol + '://' + _address + ':' + _port;
-      _subscriptionUrl = _protocol + '://' + _address + ':' + _port;
-      _purchaseVerificationUrl = _protocol + '://' + _address + ':' + _port;
+      _overwriteUrl = _protocol + '://' + _address + ':' + _port;
       _controlUrl = 'ws://' + _address + ':1987';
     } else {
       String _protocol = 'http';
       String _port = '8080';
-      _baseUrl = _protocol + '://' + _address + ':' + _port;
-      _gdprUrl = _protocol + '://' + _address + ':' + _port;
-      _subscriptionUrl = _protocol + '://' + _address + ':' + _port;
-      _purchaseVerificationUrl = _protocol + '://' + _address + ':' + _port;
+      _overwriteUrl = _protocol + '://' + _address + ':' + _port;
       _controlUrl = 'ws://' + _address + ':1987';
     }
 
     // Initialise command executor.
     _commandExecutor =
-        new CommandExecutor(_baseUrl, _gdprUrl, _subscriptionUrl, _purchaseVerificationUrl);
+        new CommandExecutor(_overwriteUrl);
 
     // Initialise test library.
     TestLib.setExecuteCommandHalder((final dynamic callArgs) {
@@ -59,7 +50,7 @@ class _MyAppState extends State<MyApp> {
           '[AdjustTestApp]: Executing command ${command.className}.${command.methodName}');
       _commandExecutor.executeCommand(command);
     });
-    TestLib.init(_baseUrl!, _controlUrl);
+    TestLib.init(_overwriteUrl!, _controlUrl);
   }
 
   @override
