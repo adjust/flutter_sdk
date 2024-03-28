@@ -829,10 +829,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 
 - (void)setTestOptions:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     AdjustTestOptions *testOptions = [[AdjustTestOptions alloc] init];
-    NSString *baseUrl = call.arguments[@"baseUrl"];
-    NSString *gdprUrl = call.arguments[@"gdprUrl"];
-    NSString *subscriptionUrl = call.arguments[@"subscriptionUrl"];
-    NSString *purchaseVerificationUrl = call.arguments[@"purchaseVerificationUrl"];
+    NSString *overwriteUrl = call.arguments[@"urlOverwrite"];
     NSString *extraPath = call.arguments[@"extraPath"];
     NSString *timerIntervalInMilliseconds = call.arguments[@"timerIntervalInMilliseconds"];
     NSString *timerStartInMilliseconds = call.arguments[@"timerStartInMilliseconds"];
@@ -842,18 +839,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *deleteState = call.arguments[@"deleteState"];
     NSString *noBackoffWait = call.arguments[@"noBackoffWait"];
     NSString *adServicesFrameworkEnabled = call.arguments[@"adServicesFrameworkEnabled"];
+    NSString *attStatus = call.arguments[@"attStatus"];
+    NSString *idfa = call.arguments[@"idfa"];
     
-    if ([self isFieldValid:baseUrl]) {
-        testOptions.baseUrl = baseUrl;
-    }
-    if ([self isFieldValid:gdprUrl]) {
-        testOptions.gdprUrl = gdprUrl;
-    }
-    if ([self isFieldValid:subscriptionUrl]) {
-        testOptions.subscriptionUrl = subscriptionUrl;
-    }
-    if ([self isFieldValid:purchaseVerificationUrl]) {
-        testOptions.purchaseVerificationUrl = purchaseVerificationUrl;
+    if ([self isFieldValid:overwriteUrl]) {
+        testOptions.urlOverwrite = overwriteUrl;
     }
     if ([self isFieldValid:extraPath]) {
         testOptions.extraPath = extraPath;
@@ -884,6 +874,12 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
     if ([self isFieldValid:adServicesFrameworkEnabled]) {
         testOptions.adServicesFrameworkEnabled = [adServicesFrameworkEnabled boolValue];
+    }
+    if ([self isFieldValid:attStatus]) {
+        testOptions.attStatusInt = [NSNumber numberWithInt:[attStatus intValue]];
+    }
+    if ([self isFieldValid:idfa]) {
+        testOptions.idfa = idfa;
     }
     
     [Adjust setTestOptions:testOptions];
