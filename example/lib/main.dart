@@ -97,6 +97,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     AdjustConfig config =
         new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
     config.logLevel = AdjustLogLevel.verbose;
+    config.eventDeduplicationIdsMaxSize = 20;
+
+    config.setUrlStrategy(['adjust.com'], true, false);
+
 
     config.attributionCallback = (AdjustAttribution attributionChangedData) {
       print('[Adjust]: Attribution changed!');
@@ -122,9 +126,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       }
       if (attributionChangedData.clickLabel != null) {
         print('[Adjust]: Click label: ' + attributionChangedData.clickLabel!);
-      }
-      if (attributionChangedData.adid != null) {
-        print('[Adjust]: Adid: ' + attributionChangedData.adid!);
       }
       if (attributionChangedData.costType != null) {
         print('[Adjust]: Cost type: ' + attributionChangedData.costType!);
@@ -243,22 +244,22 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     };
 
     // Add session callback parameters.
-    Adjust.addSessionCallbackParameter('scp_foo_1', 'scp_bar');
-    Adjust.addSessionCallbackParameter('scp_foo_2', 'scp_value');
+    Adjust.addGlobalCallbackParameter('scp_foo_1', 'scp_bar');
+    Adjust.addGlobalCallbackParameter('scp_foo_2', 'scp_value');
 
     // Add session Partner parameters.
-    Adjust.addSessionPartnerParameter('spp_foo_1', 'spp_bar');
-    Adjust.addSessionPartnerParameter('spp_foo_2', 'spp_value');
+    Adjust.addGlobalPartnerParameter('spp_foo_1', 'spp_bar');
+    Adjust.addGlobalPartnerParameter('spp_foo_2', 'spp_value');
 
     // Remove session callback parameters.
-    Adjust.removeSessionCallbackParameter('scp_foo_1');
-    Adjust.removeSessionPartnerParameter('spp_foo_1');
+    Adjust.removeGlobalCallbackParameter('scp_foo_1');
+    Adjust.removeGlobalPartnerParameter('spp_foo_1');
 
     // Clear all session callback parameters.
-    Adjust.resetSessionCallbackParameters();
+    Adjust.removeGlobalCallbackParameters();
 
     // Clear all session partner parameters.
-    Adjust.resetSessionPartnerParameters();
+    Adjust.removeGlobalPartnerParameters();
 
     // Ask for tracking consent.
     Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
@@ -381,7 +382,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                       value: _isSdkEnabled,
                       onChanged: (bool value) {
                         setState(() {
-                          Adjust.setEnabled(value);
+                          if(value == true){
+                            Adjust.enable();
+                          }else {
+                            Adjust.disable();
+                          }
                           _isSdkEnabled = value;
                           print('Switch state = $_isSdkEnabled');
                         });

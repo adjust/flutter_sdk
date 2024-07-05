@@ -14,7 +14,6 @@ class AdjustAttribution {
   final String? adgroup;
   final String? creative;
   final String? clickLabel;
-  final String? adid;
   final String? costType;
   final num? costAmount;
   final String? costCurrency;
@@ -29,7 +28,6 @@ class AdjustAttribution {
     required this.adgroup,
     required this.creative,
     required this.clickLabel,
-    required this.adid,
     required this.costType,
     required this.costAmount,
     required this.costCurrency,
@@ -53,7 +51,6 @@ class AdjustAttribution {
         adgroup: map['adgroup'],
         creative: map['creative'],
         clickLabel: map['clickLabel'],
-        adid: map['adid'],
         costType: map['costType'],
         costAmount: parsedCostAmount != -1 ? parsedCostAmount : null,
         costCurrency: map['costCurrency'],

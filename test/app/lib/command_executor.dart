@@ -88,23 +88,23 @@ class CommandExecutor {
       case 'sendFirstPackages':
         _sendFirstPackages();
         break;
-      case 'addSessionCallbackParameter':
-        _addSessionCallbackParameter();
+      case 'addGlobalCallbackParameter':
+        _addGlobalCallbackParameter();
         break;
-      case 'addSessionPartnerParameter':
-        _addSessionPartnerParameter();
+      case 'addGlobalPartnerParameter':
+        _addGlobalPartnerParameter();
         break;
-      case 'removeSessionCallbackParameter':
-        _removeSessionCallbackParameter();
+      case 'removeGlobalCallbackParameter':
+        _removeGlobalCallbackParameter();
         break;
-      case 'removeSessionPartnerParameter':
-        _removeSessionPartnerParameter();
+      case 'removeGlobalPartnerParameter':
+        _removeGlobalPartnerParameter();
         break;
-      case 'resetSessionCallbackParameters':
-        _resetSessionCallbackParameters();
+      case 'removeGlobalCallbackParameters':
+        _removeGlobalCallbackParameters();
         break;
-      case 'resetSessionPartnerParameters':
-        _resetSessionPartnerParameters();
+      case 'removeGlobalPartnerParameters':
+        _removeGlobalPartnerParameters();
         break;
       case 'setPushToken':
         _setPushToken();
@@ -115,9 +115,7 @@ class CommandExecutor {
       case 'gdprForgetMe':
         _gdprForgetMe();
         break;
-      case 'disableThirdPartySharing':
-        _disableThirdPartySharing();
-        break;
+
       case 'trackAdRevenue':
         _trackAdRevenue();
         break;
@@ -422,7 +420,6 @@ class CommandExecutor {
         TestLib.addInfoToSend('adgroup', attribution.adgroup);
         TestLib.addInfoToSend('creative', attribution.creative);
         TestLib.addInfoToSend('clickLabel', attribution.clickLabel);
-        TestLib.addInfoToSend('adid', attribution.adid);
         TestLib.addInfoToSend('costType', attribution.costType);
         TestLib.addInfoToSend('costAmount', attribution.costAmount.toString());
         TestLib.addInfoToSend('costCurrency', attribution.costCurrency);
@@ -649,11 +646,7 @@ class CommandExecutor {
     Adjust.gdprForgetMe();
   }
 
-  void _disableThirdPartySharing() {
-    Adjust.disableThirdPartySharing();
-  }
-
-  void _addSessionCallbackParameter() {
+  void _addGlobalCallbackParameter() {
     if (!_command.containsParameter('KeyValue')) {
       return;
     }
@@ -662,11 +655,11 @@ class CommandExecutor {
     for (int i = 0; i < keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
-      Adjust.addSessionCallbackParameter(key, value);
+      Adjust.addGlobalCallbackParameter(key, value);
     }
   }
 
-  void _addSessionPartnerParameter() {
+  void _addGlobalPartnerParameter() {
     if (!_command.containsParameter('KeyValue')) {
       return;
     }
@@ -675,11 +668,11 @@ class CommandExecutor {
     for (int i = 0; i < keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
-      Adjust.addSessionPartnerParameter(key, value);
+      Adjust.addGlobalPartnerParameter(key, value);
     }
   }
 
-  void _removeSessionCallbackParameter() {
+  void _removeGlobalCallbackParameter() {
     if (!_command.containsParameter('key')) {
       return;
     }
@@ -687,11 +680,11 @@ class CommandExecutor {
     List<dynamic> keys = _command.getParamteters('key')!;
     for (int i = 0; i < keys.length; i = i + 1) {
       String key = keys[i];
-      Adjust.removeSessionCallbackParameter(key);
+      Adjust.removeGlobalCallbackParameter(key);
     }
   }
 
-  void _removeSessionPartnerParameter() {
+  void _removeGlobalPartnerParameter() {
     if (!_command.containsParameter('key')) {
       return;
     }
@@ -699,16 +692,16 @@ class CommandExecutor {
     List<dynamic> keys = _command.getParamteters('key')!;
     for (int i = 0; i < keys.length; i = i + 1) {
       String key = keys[i];
-      Adjust.removeSessionPartnerParameter(key);
+      Adjust.removeGlobalPartnerParameter(key);
     }
   }
 
-  void _resetSessionCallbackParameters() {
-    Adjust.resetSessionCallbackParameters();
+  void _removeGlobalCallbackParameters() {
+    Adjust.removeGlobalCallbackParameters();
   }
 
-  void _resetSessionPartnerParameters() {
-    Adjust.resetSessionPartnerParameters();
+  void _removeGlobalPartnerParameters() {
+    Adjust.removeGlobalPartnerParameters();
   }
 
   void _trackAdRevenue() {

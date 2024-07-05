@@ -36,12 +36,20 @@ class Adjust {
     _channel.invokeMethod('trackEvent', event.toMap);
   }
 
-  static void setEnabled(bool isEnabled) {
-    _channel.invokeMethod('setEnabled', {'isEnabled': isEnabled});
+  static void enable() {
+    _channel.invokeMethod('enable');
   }
 
-  static void setOfflineMode(bool isOffline) {
-    _channel.invokeMethod('setOfflineMode', {'isOffline': isOffline});
+  static void disable() {
+    _channel.invokeMethod('disable');
+  }
+
+  static void switchToOfflineMode() {
+    _channel.invokeMethod('switchToOfflineMode');
+  }
+
+  static void switchBackToOnlineMode() {
+    _channel.invokeMethod('switchBackToOnlineMode');
   }
 
   static void setPushToken(String token) {
@@ -52,8 +60,8 @@ class Adjust {
     _channel.invokeMethod('setReferrer', {'referrer': referrer});
   }
 
-  static void appWillOpenUrl(String url) {
-    _channel.invokeMethod('appWillOpenUrl', {'url': url});
+  static void processDeeplink(String url) {
+    _channel.invokeMethod('processDeeplink', {'url': url});
   }
 
   static void sendFirstPackages() {
@@ -64,8 +72,20 @@ class Adjust {
     _channel.invokeMethod('gdprForgetMe');
   }
 
-  static void disableThirdPartySharing() {
-    _channel.invokeMethod('disableThirdPartySharing');
+  static void enableCoppaCompliance() {
+    _channel.invokeMethod('enableCoppaCompliance');
+  }
+
+  static void disableCoppaCompliance() {
+    _channel.invokeMethod('disableCoppaCompliance');
+  }
+
+  static void enablePlayStoreKidsApp() {
+    _channel.invokeMethod('enablePlayStoreKidsApp');
+  }
+
+  static void disablePlayStoreKidsApp() {
+    _channel.invokeMethod('disablePlayStoreKidsApp');
   }
 
   static void onResume() {
@@ -129,39 +149,34 @@ class Adjust {
     return _sdkPrefix + '@' + sdkVersion;
   }
 
-  static void addSessionCallbackParameter(String key, String value) {
+  static void addGlobalCallbackParameter(String key, String value) {
     _channel.invokeMethod(
-        'addSessionCallbackParameter', {'key': key, 'value': value});
+        'addGlobalCallbackParameter', {'key': key, 'value': value});
   }
 
-  static void addSessionPartnerParameter(String key, String value) {
+  static void addGlobalPartnerParameter(String key, String value) {
     _channel.invokeMethod(
-        'addSessionPartnerParameter', {'key': key, 'value': value});
+        'addGlobalPartnerParameter', {'key': key, 'value': value});
   }
 
-  static void removeSessionCallbackParameter(String key) {
-    _channel.invokeMethod('removeSessionCallbackParameter', {'key': key});
+  static void removeGlobalCallbackParameter(String key) {
+    _channel.invokeMethod('removeGlobalCallbackParameter', {'key': key});
   }
 
-  static void removeSessionPartnerParameter(String key) {
-    _channel.invokeMethod('removeSessionPartnerParameter', {'key': key});
+  static void removeGlobalPartnerParameter(String key) {
+    _channel.invokeMethod('removeGlobalPartnerParameter', {'key': key});
   }
 
-  static void resetSessionCallbackParameters() {
-    _channel.invokeMethod('resetSessionCallbackParameters');
+  static void removeGlobalCallbackParameters() {
+    _channel.invokeMethod('removeGlobalCallbackParameters');
   }
 
-  static void resetSessionPartnerParameters() {
-    _channel.invokeMethod('resetSessionPartnerParameters');
+  static void removeGlobalPartnerParameters() {
+    _channel.invokeMethod('removeGlobalPartnerParameters');
   }
 
-  static void trackAdRevenue(String source, String payload) {
-    _channel
-        .invokeMethod('trackAdRevenue', {'source': source, 'payload': payload});
-  }
-
-  static void trackAdRevenueNew(AdjustAdRevenue adRevenue) {
-    _channel.invokeMethod('trackAdRevenueNew', adRevenue.toMap);
+  static void trackAdRevenue(AdjustAdRevenue adRevenue) {
+    _channel.invokeMethod('trackAdRevenue', adRevenue.toMap);
   }
 
   static void trackAppStoreSubscription(
@@ -229,9 +244,9 @@ class Adjust {
     return AdjustPurchaseVerificationInfo.fromMap(appStorePurchaseMap);
   }
 
-  static Future<String?> processDeeplink(String deeplink) async {
+  static Future<String?> processAndResolveDeeplink(String deeplink) async {
     final resolvedLink = 
-      await _channel.invokeMethod('processDeeplink', {'deeplink': deeplink});
+      await _channel.invokeMethod('processAndResolveDeeplink', {'deeplink': deeplink});
     return resolvedLink;
   }
 

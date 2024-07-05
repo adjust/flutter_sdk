@@ -40,27 +40,6 @@ class AdjustConfig {
   static const String _skad4ConversionValueUpdatedCallbackName =
       'adj-skad4-conversion-value-updated';
 
-  static const String UrlStrategyIndia = 'india';
-  static const String UrlStrategyChina = 'china';
-  static const String UrlStrategyCn = 'cn';
-  static const String UrlStrategyCnOnly = 'cn-only';
-
-  static const String DataResidencyEU = 'data-residency-eu';
-  static const String DataResidencyTR = 'data-residency-tr';
-  static const String DataResidencyUS = 'data-residency-us';
-
-  static const String AdRevenueSourceAppLovinMAX = "applovin_max_sdk";
-  static const String AdRevenueSourceMopub = 'mopub';
-  static const String AdRevenueSourceAdMob = 'admob_sdk';
-  static const String AdRevenueSourceIronSource = 'ironsource_sdk';
-  static const String AdRevenueSourceAdMostSource = 'admost_sdk';
-  static const String AdRevenueSourceUnity = 'unity_sdk';
-  static const String AdRevenueSourceHeliumChartboost = 'helium_chartboost_sdk';
-  static const String AdRevenueSourcePublisher = 'publisher_sdk';
-  static const String AdRevenueSourceTopOn = 'topon_sdk';
-  static const String AdRevenueSourceAdx = 'adx_sdk';
-  static const String AdRevenueTradPlus = 'tradplus_sdk';
-
   String _appToken;
   AdjustEnvironment _environment;
 
@@ -72,26 +51,23 @@ class AdjustConfig {
   bool? _skAdNetworkHandling;
 
   num? attConsentWaitingInterval;
-  double? delayStart;
-  bool? isDeviceKnown;
   bool? sendInBackground;
-  bool? eventBufferingEnabled;
   bool? allowiAdInfoReading;
   bool? allowAdServicesInfoReading;
   bool? allowIdfaReading;
   bool? launchDeferredDeeplink;
   bool? needsCost;
   bool? preinstallTrackingEnabled;
-  bool? playStoreKidsAppEnabled;
-  bool? coppaCompliantEnabled;
   bool? linkMeEnabled;
   bool? finalAndroidAttributionEnabled;
   bool? readDeviceInfoOnceEnabled;
   String? sdkPrefix;
-  String? userAgent;
+  num? eventDeduplicationIdsMaxSize;
   String? defaultTracker;
   String? externalDeviceId;
-  String? urlStrategy;
+  List<String> domains  = [];
+  bool? useSubdomains;
+  bool? isDataResidency;
   String? processName;
   String? preinstallFilePath;
   String? fbAppId;
@@ -108,6 +84,12 @@ class AdjustConfig {
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
     _skAdNetworkHandling = true;
+  }
+
+  void setUrlStrategy(List<String> _domains, bool _useSubdomains, bool _isDataResidency){
+    domains.addAll(_domains);
+    useSubdomains = _useSubdomains;
+    isDataResidency = _isDataResidency;
   }
 
   void _initCallbackHandlers() {
@@ -209,9 +191,6 @@ class AdjustConfig {
           .substring(_environment.toString().indexOf('.') + 1),
     };
 
-    if (userAgent != null) {
-      configMap['userAgent'] = userAgent;
-    }
     if (processName != null) {
       configMap['processName'] = processName;
     }
@@ -225,23 +204,31 @@ class AdjustConfig {
     if (externalDeviceId != null) {
       configMap['externalDeviceId'] = externalDeviceId;
     }
+    if (eventDeduplicationIdsMaxSize != null) {
+      configMap['eventDeduplicationIdsMaxSize'] = eventDeduplicationIdsMaxSize.toString();
+    }
     if (preinstallFilePath != null) {
       configMap['preinstallFilePath'] = preinstallFilePath;
     }
     if (fbAppId != null) {
       configMap['fbAppId'] = fbAppId;
     }
-    if (urlStrategy != null) {
-      configMap['urlStrategy'] = urlStrategy;
+    if (domains.isEmpty != true ) {
+      configMap['domains'] = domains.toString();
     }
-    if (isDeviceKnown != null) {
-      configMap['isDeviceKnown'] = isDeviceKnown.toString();
+
+    if (isDataResidency != null) {
+      configMap['isDataResidency'] = isDataResidency.toString();
     }
+    if (useSubdomains != null) {
+      configMap['useSubdomains'] = useSubdomains.toString();
+    }
+    if (needsCost != null) {
+      configMap['needsCost'] = needsCost.toString();
+    }
+
     if (sendInBackground != null) {
       configMap['sendInBackground'] = sendInBackground.toString();
-    }
-    if (eventBufferingEnabled != null) {
-      configMap['eventBufferingEnabled'] = eventBufferingEnabled.toString();
     }
     if (needsCost != null) {
       configMap['needsCost'] = needsCost.toString();
@@ -249,12 +236,6 @@ class AdjustConfig {
     if (preinstallTrackingEnabled != null) {
       configMap['preinstallTrackingEnabled'] =
           preinstallTrackingEnabled.toString();
-    }
-    if (playStoreKidsAppEnabled != null) {
-      configMap['playStoreKidsAppEnabled'] = playStoreKidsAppEnabled.toString();
-    }
-    if (coppaCompliantEnabled != null) {
-      configMap['coppaCompliantEnabled'] = coppaCompliantEnabled.toString();
     }
     if (finalAndroidAttributionEnabled != null) {
       configMap['finalAndroidAttributionEnabled'] = finalAndroidAttributionEnabled.toString();
@@ -295,9 +276,6 @@ class AdjustConfig {
     }
     if (_secretId != null) {
       configMap['secretId'] = _secretId.toString();
-    }
-    if (delayStart != null) {
-      configMap['delayStart'] = delayStart.toString();
     }
     if (attConsentWaitingInterval != null) {
       configMap['attConsentWaitingInterval'] = attConsentWaitingInterval.toString();

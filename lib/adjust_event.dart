@@ -17,6 +17,7 @@ class AdjustEvent {
   String? purchaseToken;
   String? callbackId;
   num? _revenue;
+  String? _deduplicationId;
   Map<String, String>? _callbackParameters;
   Map<String, String>? _partnerParameters;
 
@@ -34,6 +35,11 @@ class AdjustEvent {
     _callbackParameters![key] = value;
   }
 
+  void setDeduplicationId(String deduplicationId) {
+    _deduplicationId = deduplicationId;
+  }
+
+
   void addPartnerParameter(String key, String value) {
     _partnerParameters![key] = value;
   }
@@ -46,6 +52,9 @@ class AdjustEvent {
     }
     if (_currency != null) {
       eventMap['currency'] = _currency;
+    }
+    if (_deduplicationId != null) {
+      eventMap['deduplicationId'] = _deduplicationId;
     }
     if (transactionId != null) {
       eventMap['transactionId'] = transactionId;

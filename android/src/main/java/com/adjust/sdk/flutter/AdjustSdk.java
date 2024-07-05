@@ -22,13 +22,12 @@ import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustPlayStoreSubscription;
-import com.adjust.sdk.AdjustPurchase;
 import com.adjust.sdk.AdjustPurchaseVerificationResult;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
-import com.adjust.sdk.OnDeeplinkResponseListener;
+import com.adjust.sdk.OnDeferredDeeplinkResponseListener;
 import com.adjust.sdk.OnDeviceIdsRead;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
@@ -36,11 +35,20 @@ import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 import com.adjust.sdk.OnDeeplinkResolvedListener;
+import com.adjust.sdk.OnIsEnabledListener;
+import com.adjust.sdk.OnAdidReadListener;
+import com.adjust.sdk.OnAmazonAdIdReadListener;
+import com.adjust.sdk.AdjustThirdPartySharing;
+import com.adjust.sdk.OnAttributionReadListener;
+import com.adjust.sdk.OnSdkVersionReadListener;
+import com.adjust.sdk.AdjustPlayStorePurchase;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import java.util.Arrays;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -115,20 +123,26 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "isEnabled":
                 isEnabled(result);
                 break;
-            case "setEnabled":
-                setEnabled(call, result);
+            case "enable":
+                enable(result);
                 break;
-            case "setOfflineMode":
-                setOfflineMode(call, result);
+            case "disable":
+                disable(result);
+                break;
+            case "switchToOfflineMode":
+                switchToOfflineMode(result);
+                break;
+            case "switchBackToOnlineMode":
+                switchBackToOnlineMode(result);
                 break;
             case "setPushToken":
                 setPushToken(call, result);
                 break;
-            case "appWillOpenUrl":
-                appWillOpenUrl(call, result);
+            case "processDeeplink":
+                processDeeplink(call, result);
                 break;
-            case "sendFirstPackages":
-                sendFirstPackages(result);
+            case "processAndResolveDeeplink":
+                processAndResolveDeeplink(call, result);
                 break;
             case "getAdid":
                 getAdid(result);
@@ -157,32 +171,26 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "gdprForgetMe":
                 gdprForgetMe(result);
                 break;
-            case "disableThirdPartySharing":
-                disableThirdPartySharing(result);
+            case "addGlobalCallbackParameter":
+                addGlobalCallbackParameter(call, result);
                 break;
-            case "addSessionCallbackParameter":
-                addSessionCallbackParameter(call, result);
+            case "addGlobalPartnerParameter":
+                addGlobalPartnerParameter(call, result);
                 break;
-            case "addSessionPartnerParameter":
-                addSessionPartnerParameter(call, result);
+            case "removeGlobalCallbackParameter":
+                removeGlobalCallbackParameter(call, result);
                 break;
-            case "removeSessionCallbackParameter":
-                removeSessionCallbackParameter(call, result);
+            case "removeGlobalPartnerParameter":
+                removeGlobalPartnerParameter(call, result);
                 break;
-            case "removeSessionPartnerParameter":
-                removeSessionPartnerParameter(call, result);
+            case "removeGlobalCallbackParameters":
+                removeGlobalCallbackParameters(result);
                 break;
-            case "resetSessionCallbackParameters":
-                resetSessionCallbackParameters(result);
-                break;
-            case "resetSessionPartnerParameters":
-                resetSessionPartnerParameters(result);
+            case "removeGlobalPartnerParameters":
+                removeGlobalPartnerParameters(result);
                 break;
             case "trackAdRevenue":
                 trackAdRevenue(call, result);
-                break;
-            case "trackAdRevenueNew":
-                trackAdRevenueNew(call, result);
                 break;
             case "trackAppStoreSubscription":
                 trackAppStoreSubscription(result);
@@ -217,11 +225,20 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "verifyAppStorePurchase":
                 verifyAppStorePurchase(call, result);
                 break;
-            case "processDeeplink":
-                processDeeplink(call, result);
-                break;
             case "setTestOptions":
                 setTestOptions(call, result);
+                break;
+            case "enableCoppaCompliance":
+                enableCoppaCompliance(result);
+                break;
+            case "disableCoppaCompliance":
+                disableCoppaCompliance(result);
+                break;
+            case "enablePlayStoreKidsApp":
+                enablePlayStoreKidsApp(result);
+                break;
+            case "disablePlayStoreKidsApp":
+                disablePlayStoreKidsApp(result);
                 break;
             default:
                 Log.e(TAG, "Not implemented method: " + call.method);
@@ -299,40 +316,38 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             }
         }
 
-        // Event buffering.
-        if (configMap.containsKey("eventBufferingEnabled")) {
-            String strEventBufferingEnabled = (String) configMap.get("eventBufferingEnabled");
-            boolean eventBufferingEnabled = Boolean.parseBoolean(strEventBufferingEnabled);
-            adjustConfig.setEventBufferingEnabled(eventBufferingEnabled);
-        }
-
-        // COPPA compliance.
-        if (configMap.containsKey("coppaCompliantEnabled")) {
-            String strCoppaCompliantEnabled = (String) configMap.get("coppaCompliantEnabled");
-            boolean coppaCompliantEnabled = Boolean.parseBoolean(strCoppaCompliantEnabled);
-            adjustConfig.setCoppaCompliantEnabled(coppaCompliantEnabled);
-        }
-
-        // Final attribution.
-        if (configMap.containsKey("finalAndroidAttributionEnabled")) {
-            String strFinalAndroidAttributionEnabled = (String) configMap.get("finalAndroidAttributionEnabled");
-            boolean finalAndroidAttributionEnabled = Boolean.parseBoolean(strFinalAndroidAttributionEnabled);
-            adjustConfig.setFinalAttributionEnabled(finalAndroidAttributionEnabled);
-        }
 
         // Read Android device info only once.
         if (configMap.containsKey("readDeviceInfoOnceEnabled")) {
             String strReadDeviceInfoOnceEnabled = (String) configMap.get("readDeviceInfoOnceEnabled");
             boolean readDeviceInfoOnceEnabled = Boolean.parseBoolean(strReadDeviceInfoOnceEnabled);
-            adjustConfig.setReadDeviceInfoOnceEnabled(readDeviceInfoOnceEnabled);
+            if (readDeviceInfoOnceEnabled) {
+                adjustConfig.enableDeviceIdsReadingOnce();
+            }
         }
 
-        // Google Play Store kids apps.
-        if (configMap.containsKey("playStoreKidsAppEnabled")) {
-            String strPlayStoreKidsAppEnabled = (String) configMap.get("playStoreKidsAppEnabled");
-            boolean playStoreKidsAppEnabled = Boolean.parseBoolean(strPlayStoreKidsAppEnabled);
-            adjustConfig.setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled);
+        // eventDeduplicationIdsMaxSize name.
+        if (configMap.containsKey("eventDeduplicationIdsMaxSize")) {
+            String eventDeduplicationIdsMaxSize = (String) configMap.get("eventDeduplicationIdsMaxSize");
+            adjustConfig.setEventDeduplicationIdsMaxSize(Integer.valueOf(eventDeduplicationIdsMaxSize));
         }
+
+        // Main process name.
+        if (configMap.containsKey("domains") && configMap.containsKey("useSubdomains") && configMap.containsKey("isDataResidency")) {
+            String strDomains = (String) configMap.get("domains");
+            //if you have the brackets remaining and don't want them, remove them
+            String strDomainsTemp = strDomains.replace("[","").replace("]","");
+            List<String> domainsArray = Arrays.asList(strDomainsTemp.split(","));
+            String strUseSubdomains = (String) configMap.get("useSubdomains");
+            boolean useSubdomains = Boolean.parseBoolean(strUseSubdomains);
+
+            String strIsDataResidency = (String) configMap.get("isDataResidency");
+            boolean isDataResidency = Boolean.parseBoolean(strIsDataResidency);
+
+            adjustConfig.setUrlStrategy(domainsArray,useSubdomains,isDataResidency);
+        }
+
+
 
         // Main process name.
         if (configMap.containsKey("processName")) {
@@ -364,89 +379,34 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             adjustConfig.setFbAppId(fbAppId);
         }
 
-        // URL strategy.
-        if (configMap.containsKey("urlStrategy")) {
-            String urlStrategy = (String) configMap.get("urlStrategy");
-            if (urlStrategy.equalsIgnoreCase("china")) {
-                adjustConfig.setUrlStrategy(AdjustConfig.URL_STRATEGY_CHINA);
-            } else if (urlStrategy.equalsIgnoreCase("india")) {
-                adjustConfig.setUrlStrategy(AdjustConfig.URL_STRATEGY_INDIA);
-            } else if (urlStrategy.equalsIgnoreCase("cn")) {
-                adjustConfig.setUrlStrategy(AdjustConfig.URL_STRATEGY_CN);
-            } else if (urlStrategy.equalsIgnoreCase("cn-only")) {
-                adjustConfig.setUrlStrategy(AdjustConfig.URL_STRATEGY_CN_ONLY);
-            } else if (urlStrategy.equalsIgnoreCase("data-residency-eu")) {
-                adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU);
-            } else if (urlStrategy.equalsIgnoreCase("data-residency-tr")) {
-                adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_TR);
-            } else if (urlStrategy.equalsIgnoreCase("data-residency-us")) {
-                adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_US);
-            }
-        }
-
-        // User agent.
-        if (configMap.containsKey("userAgent")) {
-            String userAgent = (String) configMap.get("userAgent");
-            adjustConfig.setUserAgent(userAgent);
-        }
 
         // Background tracking.
         if (configMap.containsKey("sendInBackground")) {
             String strSendInBackground = (String) configMap.get("sendInBackground");
             boolean sendInBackground = Boolean.parseBoolean(strSendInBackground);
-            adjustConfig.setSendInBackground(sendInBackground);
-        }
-
-        // Set device known.
-        if (configMap.containsKey("isDeviceKnown")) {
-            String strIsDeviceKnown = (String) configMap.get("isDeviceKnown");
-            boolean isDeviceKnown = Boolean.parseBoolean(strIsDeviceKnown);
-            adjustConfig.setDeviceKnown(isDeviceKnown);
+            if (sendInBackground) {
+                adjustConfig.enableSendingInBackground();
+            }
         }
 
         // Cost data.
         if (configMap.containsKey("needsCost")) {
             String strNeedsCost = (String) configMap.get("needsCost");
             boolean needsCost = Boolean.parseBoolean(strNeedsCost);
-            adjustConfig.setNeedsCost(needsCost);
+            if (needsCost) {
+                adjustConfig.enableCostDataInAttribution();
+            }
         }
 
         // Preinstall tracking.
         if (configMap.containsKey("preinstallTrackingEnabled")) {
             String strPreinstallTrackingEnabled = (String) configMap.get("preinstallTrackingEnabled");
             boolean preinstallTrackingEnabled = Boolean.parseBoolean(strPreinstallTrackingEnabled);
-            adjustConfig.setPreinstallTrackingEnabled(preinstallTrackingEnabled);
-        }
-
-        // Delayed start.
-        if (configMap.containsKey("delayStart")) {
-            String strDelayStart = (String) configMap.get("delayStart");
-            if (isNumber(strDelayStart)) {
-                double delayStart = Double.parseDouble(strDelayStart);
-                adjustConfig.setDelayStart(delayStart);
+            if (preinstallTrackingEnabled) {
+                adjustConfig.enablePreinstallTracking();
             }
         }
 
-        // App secret.
-        if (configMap.containsKey("secretId")
-                && configMap.containsKey("info1")
-                && configMap.containsKey("info2")
-                && configMap.containsKey("info3")
-                && configMap.containsKey("info4")) {
-            try {
-                String strSecretId = (String) configMap.get("secretId");
-                String strInfo1 = (String) configMap.get("info1");
-                String strInfo2 = (String) configMap.get("info2");
-                String strInfo3 = (String) configMap.get("info3");
-                String strInfo4 = (String) configMap.get("info4");
-                long secretId = Long.parseLong(strSecretId, 10);
-                long info1 = Long.parseLong(strInfo1, 10);
-                long info2 = Long.parseLong(strInfo2, 10);
-                long info3 = Long.parseLong(strInfo3, 10);
-                long info4 = Long.parseLong(strInfo4, 10);
-                adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
-            } catch (NumberFormatException ignore) {}
-        }
 
         // Launch deferred deep link.
         if (configMap.containsKey("launchDeferredDeeplink")) {
@@ -469,7 +429,6 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                         adjustAttributionMap.put("adgroup", adjustAttribution.adgroup);
                         adjustAttributionMap.put("creative", adjustAttribution.creative);
                         adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
-                        adjustAttributionMap.put("adid", adjustAttribution.adid);
                         adjustAttributionMap.put("costType", adjustAttribution.costType);
                         adjustAttributionMap.put("costAmount", adjustAttribution.costAmount != null ?
                                 adjustAttribution.costAmount.toString() : "");
@@ -581,7 +540,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         if (configMap.containsKey("deferredDeeplinkCallback")) {
             final String dartMethodName = (String) configMap.get("deferredDeeplinkCallback");
             if (dartMethodName != null) {
-                adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+                adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
                     @Override
                     public boolean launchReceivedDeeplink(Uri uri) {
                         HashMap<String, String> uriParamsMap = new HashMap<String, String>();
@@ -596,7 +555,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         }
 
         // Start SDK.
-        Adjust.onCreate(adjustConfig);
+        Adjust.initSdk(adjustConfig);
         Adjust.onResume();
         result.success(null);
     }
@@ -633,6 +592,12 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         if (eventMap.containsKey("transactionId")) {
             String orderId = (String) eventMap.get("transactionId");
             event.setOrderId(orderId);
+        }
+
+        // deduplicationId.
+        if (eventMap.containsKey("deduplicationId")) {
+            String deduplicationId = (String) eventMap.get("_deduplicationId");
+            event.setDeduplicationId(deduplicationId);
         }
 
         // Product ID.
@@ -690,10 +655,13 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         result.success(null);
     }
 
-    private void setOfflineMode(final MethodCall call, final Result result) {
-        Map isOfflineParamsMap = (Map) call.arguments;
-        boolean isOffline = (boolean) isOfflineParamsMap.get("isOffline");
-        Adjust.setOfflineMode(isOffline);
+    private void switchToOfflineMode(final Result result) {
+        Adjust.switchToOfflineMode();
+        result.success(null);
+    }
+
+    private void switchBackToOnlineMode(final Result result) {
+        Adjust.switchBackToOnlineMode();
         result.success(null);
     }
 
@@ -707,35 +675,22 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         result.success(null);
     }
 
-    private void setEnabled(final MethodCall call, final Result result) {
-        Map isEnabledParamsMap = (Map) call.arguments;
-        if (!isEnabledParamsMap.containsKey("isEnabled")) {
-            result.error("0", "Arguments null or wrong (missing argument of 'isEnabled' method.", null);
-            return;
-        }
-
-        boolean isEnabled = (boolean) isEnabledParamsMap.get("isEnabled");
-        Adjust.setEnabled(isEnabled);
+    private void enable( final Result result) {
+        Adjust.enable();
+        result.success(null);
+    }
+    private void disable( final Result result) {
+        Adjust.enable();
         result.success(null);
     }
 
-    private void appWillOpenUrl(final MethodCall call, final Result result) {
+    private void processDeeplink(final MethodCall call, final Result result) {
         Map urlParamsMap = (Map) call.arguments;
         String url = null;
         if (urlParamsMap.containsKey("url")) {
             url = urlParamsMap.get("url").toString();
         }
-        Adjust.appWillOpenUrl(Uri.parse(url), applicationContext);
-        result.success(null);
-    }
-
-    // Exposed for handling deep linking from native layer of the example app.
-    public static void appWillOpenUrl(Uri deeplink, Context context) {
-        Adjust.appWillOpenUrl(deeplink, context);
-    }
-
-    private void sendFirstPackages(final Result result) {
-        Adjust.sendFirstPackages();
+        Adjust.processDeeplink(Uri.parse(url), applicationContext);
         result.success(null);
     }
 
@@ -750,11 +705,21 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void isEnabled(final Result result) {
-        result.success(Adjust.isEnabled());
+        Adjust.isEnabled(applicationContext, new OnIsEnabledListener() {
+            @Override
+            public void onIsEnabledRead(boolean isEnabled) {
+                result.success(isEnabled);
+            }
+        });
     }
 
     private void getAdid(final Result result) {
-        result.success(Adjust.getAdid());
+        Adjust.getAdid(new OnAdidReadListener() {
+            @Override
+            public void onAdidRead(String adid) {
+                result.success(adid);
+            }
+        });
     }
 
     private void getIdfa(final Result result) {
@@ -775,7 +740,17 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void getAmazonAdId(final Result result) {
-        result.success(Adjust.getAmazonAdId(applicationContext));
+        Adjust.getAmazonAdId(applicationContext, new OnAmazonAdIdReadListener() {
+            @Override
+            public void onAmazonAdIdRead(String amazonAdId) {
+                result.success(amazonAdId);
+            }
+
+            @Override
+            public void onFail(String error) {
+                result.error(error, null, null);
+            }
+        });
     }
 
     private void gdprForgetMe(final Result result) {
@@ -783,36 +758,53 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         result.success(null);
     }
 
-    private void disableThirdPartySharing(final Result result) {
-        Adjust.disableThirdPartySharing(applicationContext);
+    private void enableCoppaCompliance(final Result result) {
+        Adjust.enableCoppaCompliance(applicationContext);
+        result.success(null);
+    }
+    private void disableCoppaCompliance(final Result result) {
+        Adjust.disableCoppaCompliance(applicationContext);
+        result.success(null);
+    }
+    private void enablePlayStoreKidsApp(final Result result) {
+        Adjust.enablePlayStoreKidsApp(applicationContext);
+        result.success(null);
+    }
+    private void disablePlayStoreKidsApp(final Result result) {
+        Adjust.disablePlayStoreKidsApp(applicationContext);
         result.success(null);
     }
 
     private void getAttribution(final Result result) {
-        AdjustAttribution adjustAttribution = Adjust.getAttribution();
-        if (adjustAttribution == null) {
-            adjustAttribution = new AdjustAttribution();
-        }
+        Adjust.getAttribution(new OnAttributionReadListener() {
+            @Override
+            public void onAttributionRead(AdjustAttribution attribution){
+                HashMap<String, String> adjustAttributionMap = new HashMap<String, String>();
+                adjustAttributionMap.put("trackerToken", attribution.trackerToken);
+                adjustAttributionMap.put("trackerName", attribution.trackerName);
+                adjustAttributionMap.put("network", attribution.network);
+                adjustAttributionMap.put("campaign", attribution.campaign);
+                adjustAttributionMap.put("adgroup", attribution.adgroup);
+                adjustAttributionMap.put("creative", attribution.creative);
+                adjustAttributionMap.put("clickLabel", attribution.clickLabel);
+                adjustAttributionMap.put("costType", attribution.costType);
+                adjustAttributionMap.put("costAmount", attribution.costAmount != null ?
+                        attribution.costAmount.toString() : "");
+                adjustAttributionMap.put("costCurrency", attribution.costCurrency);
+                adjustAttributionMap.put("fbInstallReferrer", attribution.fbInstallReferrer);
+                result.success(adjustAttributionMap);
+            }
+        });
 
-        HashMap<String, String> adjustAttributionMap = new HashMap<String, String>();
-        adjustAttributionMap.put("trackerToken", adjustAttribution.trackerToken);
-        adjustAttributionMap.put("trackerName", adjustAttribution.trackerName);
-        adjustAttributionMap.put("network", adjustAttribution.network);
-        adjustAttributionMap.put("campaign", adjustAttribution.campaign);
-        adjustAttributionMap.put("adgroup", adjustAttribution.adgroup);
-        adjustAttributionMap.put("creative", adjustAttribution.creative);
-        adjustAttributionMap.put("clickLabel", adjustAttribution.clickLabel);
-        adjustAttributionMap.put("adid", adjustAttribution.adid);
-        adjustAttributionMap.put("costType", adjustAttribution.costType);
-        adjustAttributionMap.put("costAmount", adjustAttribution.costAmount != null ?
-                adjustAttribution.costAmount.toString() : "");
-        adjustAttributionMap.put("costCurrency", adjustAttribution.costCurrency);
-        adjustAttributionMap.put("fbInstallReferrer", adjustAttribution.fbInstallReferrer);
-        result.success(adjustAttributionMap);
     }
 
     private void getSdkVersion(final Result result) {
-        result.success(Adjust.getSdkVersion());
+        Adjust.getSdkVersion(new OnSdkVersionReadListener (){
+            @Override
+            public void onSdkVersionRead(String sdkVersion) {
+                result.success(sdkVersion);
+            }
+        });
     }
 
     private void setReferrer(final MethodCall call, final Result result) {
@@ -824,73 +816,57 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         result.success(null);
     }
 
-    private void addSessionCallbackParameter(final MethodCall call, final Result result) {
+    private void addGlobalCallbackParameter(final MethodCall call, final Result result) {
         String key = null;
         String value = null;
         if (call.hasArgument("key") && call.hasArgument("value")) {
             key = (String) call.argument("key");
             value = (String) call.argument("value");
         }
-        Adjust.addSessionCallbackParameter(key, value);
+        Adjust.addGlobalCallbackParameter(key, value);
         result.success(null);
     }
 
-    private void addSessionPartnerParameter(final MethodCall call, final Result result) {
+    private void addGlobalPartnerParameter(final MethodCall call, final Result result) {
         String key = null;
         String value = null;
         if (call.hasArgument("key") && call.hasArgument("value")) {
             key = (String) call.argument("key");
             value = (String) call.argument("value");
         }
-        Adjust.addSessionPartnerParameter(key, value);
+        Adjust.addGlobalPartnerParameter(key, value);
         result.success(null);
     }
 
-    private void removeSessionCallbackParameter(final MethodCall call, final Result result) {
+    private void removeGlobalCallbackParameter(final MethodCall call, final Result result) {
         String key = null;
         if (call.hasArgument("key")) {
             key = (String) call.argument("key");
         }
-        Adjust.removeSessionCallbackParameter(key);
+        Adjust.removeGlobalCallbackParameter(key);
         result.success(null);
     }
 
-    private void removeSessionPartnerParameter(final MethodCall call, final Result result) {
+    private void removeGlobalPartnerParameter(final MethodCall call, final Result result) {
         String key = null;
         if (call.hasArgument("key")) {
             key = (String) call.argument("key");
         }
-        Adjust.removeSessionPartnerParameter(key);
+        Adjust.removeGlobalPartnerParameter(key);
         result.success(null);
     }
 
-    private void resetSessionCallbackParameters(final Result result) {
-        Adjust.resetSessionCallbackParameters();
+    private void removeGlobalCallbackParameters(final Result result) {
+        Adjust.removeGlobalCallbackParameters();
         result.success(null);
     }
 
-    private void resetSessionPartnerParameters(final Result result) {
-        Adjust.resetSessionPartnerParameters();
+    private void removeGlobalPartnerParameters(final Result result) {
+        Adjust.removeGlobalPartnerParameters();
         result.success(null);
     }
 
     private void trackAdRevenue(final MethodCall call, final Result result) {
-        if (call.hasArgument("source") && call.hasArgument("payload")) {
-            // Old (MoPub) API.
-            String source = (String) call.argument("source");
-            String payload = (String) call.argument("payload");
-
-            try {
-                JSONObject jsonPayload = new JSONObject(payload);
-                Adjust.trackAdRevenue(source, jsonPayload);
-            } catch (JSONException err) {
-                Log.e(TAG, "Given ad revenue payload is not a valid JSON string");
-            }
-        } 
-        result.success(null);
-    }
-
-    private void trackAdRevenueNew(final MethodCall call, final Result result) {
         // New API.
         Map adRevenueMap = (Map) call.arguments;
         if (adRevenueMap == null) {
@@ -1177,10 +1153,10 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         }
 
         // Create purchase instance.
-        AdjustPurchase purchase = new AdjustPurchase(productId, purchaseToken);
+        AdjustPlayStorePurchase purchase = new AdjustPlayStorePurchase(productId, purchaseToken);
 
         // Verify purchase.
-        Adjust.verifyPurchase(purchase, new OnPurchaseVerificationFinishedListener() {
+        Adjust.verifyPlayStorePurchase(purchase, new OnPurchaseVerificationFinishedListener() {
             @Override
             public void onVerificationFinished(AdjustPurchaseVerificationResult verificationResult) {
                 HashMap<String, String> adjustPurchaseMap = new HashMap<String, String>();
@@ -1192,14 +1168,14 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         });
     }
 
-    private void processDeeplink(final MethodCall call, final Result result) {
+    private void processAndResolveDeeplink(final MethodCall call, final Result result) {
         Map urlParamsMap = (Map) call.arguments;
         String url = null;
         if (urlParamsMap.containsKey("deeplink")) {
             url = urlParamsMap.get("deeplink").toString();
         }
 
-        Adjust.processDeeplink(Uri.parse(url), applicationContext, new OnDeeplinkResolvedListener() {
+        Adjust.processAndResolveDeeplink(Uri.parse(url), applicationContext, new OnDeeplinkResolvedListener() {
             @Override
             public void onDeeplinkResolved(String resolvedLink) {
                 result.success(resolvedLink);
@@ -1210,6 +1186,8 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     private void verifyAppStorePurchase(final MethodCall call, final Result result) {
         result.success("Error. No verifyAppStorePurchase for Android platform!");
     }
+
+
 
     private void setTestOptions(final MethodCall call, final Result result) {
         AdjustTestOptions testOptions = new AdjustTestOptions();
