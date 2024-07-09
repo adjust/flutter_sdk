@@ -231,18 +231,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       print('[Adjust]: Received deferred deeplink: ' + uri!);
     };
 
-    config.conversionValueUpdatedCallback = (num? conversionValue) {
-      print('[Adjust]: Received conversion value update: ' +
-          conversionValue!.toString());
-    };
-
-    config.skad4ConversionValueUpdatedCallback = (num? conversionValue, String? coarseValue, bool? lockWindow) {
-      print('[Adjust]: Received conversion value update!');
-      print('[Adjust]: Conversion value: ' + conversionValue!.toString());
-      print('[Adjust]: Coarse value: ' + coarseValue!);
-      print('[Adjust]: Lock window: ' + lockWindow!.toString());
-    };
-
     // Add session callback parameters.
     Adjust.addGlobalCallbackParameter('scp_foo_1', 'scp_bar');
     Adjust.addGlobalCallbackParameter('scp_foo_2', 'scp_value');
@@ -261,6 +249,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // Clear all session partner parameters.
     Adjust.removeGlobalPartnerParameters();
 
+    // update skan conversion value
+    Adjust.updateSkanConversionValue(4, "coarseValue", 1).then((error){
+      print(error);
+    });
     // Ask for tracking consent.
     Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
       print('[Adjust]: Authorization status update!');

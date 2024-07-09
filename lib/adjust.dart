@@ -217,23 +217,6 @@ class Adjust {
     return deeplink;
   }
 
-  static Future<String?> updateConversionValueWithErrorCallback(int conversionValue) async {
-    final String? error = await _channel.invokeMethod(
-        'updateConversionValueWithErrorCallback', {'conversionValue': conversionValue});
-    return error;
-  }
-
-  static Future<String?> updateConversionValueWithErrorCallbackSkad4(
-    int conversionValue,
-    String coarseValue,
-    bool lockWindow) async {
-    final String? error = await _channel.invokeMethod(
-        'updateConversionValueWithErrorCallbackSkad4', {'conversionValue': conversionValue,
-                                                   'coarseValue': coarseValue,
-                                                   'lockWindow': lockWindow});
-    return error;
-  }
-
   static Future<AdjustPurchaseVerificationInfo?> verifyPlayStorePurchase(
     AdjustPlayStorePurchase purchase) async {
     final dynamic playStorePurchaseMap = 
