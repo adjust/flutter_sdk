@@ -17,8 +17,6 @@ static NSString *dartSessionFailureCallback;
 static NSString *dartEventSuccessCallback;
 static NSString *dartEventFailureCallback;
 static NSString *dartDeferredDeeplinkCallback;
-static NSString *dartConversionValueUpdatedCallback;
-static NSString *dartSkad4ConversionValueUpdatedCallback;
 
 @implementation AdjustSdkDelegate
 
@@ -40,8 +38,6 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
                              eventSuccessCallback:(NSString *)swizzleEventSuccessCallback
                              eventFailureCallback:(NSString *)swizzleEventFailureCallback
                          deferredDeeplinkCallback:(NSString *)swizzleDeferredDeeplinkCallback
-                   conversionValueUpdatedCallback:(NSString *)swizzleConversionValueUpdatedCallback
-              skad4ConversionValueUpdatedCallback:(NSString *)swizzleSkad4ConversionValueUpdatedCallback
                      shouldLaunchDeferredDeeplink:(BOOL)shouldLaunchDeferredDeeplink
                                  andMethodChannel:(FlutterMethodChannel *)channel {
     
@@ -78,16 +74,6 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
             [defaultInstance swizzleCallbackMethod:@selector(adjustDeeplinkResponse:)
                                   swizzledSelector:@selector(adjustDeeplinkResponseWannabe:)];
             dartDeferredDeeplinkCallback = swizzleDeferredDeeplinkCallback;
-        }
-        if (swizzleConversionValueUpdatedCallback != nil) {
-            [defaultInstance swizzleCallbackMethod:@selector(adjustConversionValueUpdated:)
-                                  swizzledSelector:@selector(adjustConversionValueUpdatedWannabe:)];
-            dartConversionValueUpdatedCallback = swizzleConversionValueUpdatedCallback;
-        }
-        if (swizzleSkad4ConversionValueUpdatedCallback != nil) {
-            [defaultInstance swizzleCallbackMethod:@selector(adjustConversionValueUpdated:coarseValue:lockWindow:)
-                                  swizzledSelector:@selector(adjustConversionValueUpdatedWannabe:coarseValue:lockWindow:)];
-            dartSkad4ConversionValueUpdatedCallback = swizzleSkad4ConversionValueUpdatedCallback;
         }
 
         [defaultInstance setShouldLaunchDeferredDeeplink:shouldLaunchDeferredDeeplink];
@@ -221,43 +207,6 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
                                                                 forKeys:keys
                                                                   count:count];
     [self.channel invokeMethod:dartEventFailureCallback arguments:eventFailureMap];
-}
-
-- (BOOL)adjustDeeplinkResponseWannabe:(NSURL *)deeplink {
-    id keys[] = { @"uri" };
-    id values[] = { [deeplink absoluteString] };
-    NSUInteger count = sizeof(values) / sizeof(id);
-    NSDictionary *deeplinkMap = [NSDictionary dictionaryWithObjects:values
-                                                            forKeys:keys
-                                                              count:count];
-    [self.channel invokeMethod:dartDeferredDeeplinkCallback arguments:deeplinkMap];
-    return self.shouldLaunchDeferredDeeplink;
-}
-
-- (void)adjustConversionValueUpdatedWannabe:(NSNumber *)conversionValue {
-    id keys[] = { @"conversionValue" };
-    id values[] = { [conversionValue stringValue] };
-    NSUInteger count = sizeof(values) / sizeof(id);
-    NSDictionary *conversionValueMap = [NSDictionary dictionaryWithObjects:values
-                                                                   forKeys:keys
-                                                                     count:count];
-    [self.channel invokeMethod:dartConversionValueUpdatedCallback arguments:conversionValueMap];
-}
-
-- (void)adjustConversionValueUpdatedWannabe:(nullable NSNumber *)fineValue
-                                coarseValue:(nullable NSString *)coarseValue
-                                 lockWindow:(nullable NSNumber *)lockWindow {
-    NSMutableDictionary *conversionValueMap = [NSMutableDictionary dictionary];
-    if (![fineValue isKindOfClass:[NSNull class]] && fineValue != nil) {
-        [conversionValueMap setValue:[fineValue stringValue] forKey:@"fineValue"];
-    }
-    if (![coarseValue isKindOfClass:[NSNull class]] && coarseValue != nil) {
-        [conversionValueMap setValue:coarseValue forKey:@"coarseValue"];
-    }
-    if (![lockWindow isKindOfClass:[NSNull class]] && lockWindow != nil) {
-        [conversionValueMap setValue:[lockWindow stringValue] forKey:@"lockWindow"];
-    }
-    [self.channel invokeMethod:dartSkad4ConversionValueUpdatedCallback arguments:conversionValueMap];
 }
 
 - (void)swizzleCallbackMethod:(SEL)originalSelector

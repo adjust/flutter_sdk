@@ -199,9 +199,13 @@ class Adjust {
         'trackMeasurementConsent', {'measurementConsent': measurementConsent});
   }
 
-  static void updateConversionValue(int conversionValue) {
-    _channel.invokeMethod(
-        'updateConversionValue', {'conversionValue': conversionValue});
+  static Future<String?> updateSkanConversionValue(int conversionValue, String coarseValue,int lockWindow) async {
+    final String error = await _channel.invokeMethod('updateSkanConversionValue', {
+      'conversionValue': conversionValue,
+      'coarseValue': coarseValue,
+      'lockWindow': lockWindow
+    });
+    return error;
   }
 
   static void checkForNewAttStatus() {

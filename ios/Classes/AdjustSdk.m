@@ -80,7 +80,9 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self trackThirdPartySharing:call withResult:result];
     } else if ([@"trackMeasurementConsent" isEqualToString:call.method]) {
         [self trackMeasurementConsent:call withResult:result];
-    } else if ([@"addGlobalCallbackParameter" isEqualToString:call.method]) {
+    }else if ([@"updateSkanConversionValue" isEqualToString:call.method ]){
+        [self updateSkanConversionValue:call withResult:result];
+    }else if ([@"addGlobalCallbackParameter" isEqualToString:call.method]) {
         NSString *key = call.arguments[@"key"];
         NSString *value = call.arguments[@"value"];
         if (!([self isFieldValid:key]) || !([self isFieldValid:value])) {
@@ -139,16 +141,9 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *domains = call.arguments[@"domains"];
     BOOL isDataResidency = [call.arguments[@"isDataResidency"] boolValue];
     BOOL useSubdomains = [call.arguments[@"useSubdomains"] boolValue];
-    NSString *secretId = call.arguments[@"secretId"];
-    NSString *info1 = call.arguments[@"info1"];
-    NSString *info2 = call.arguments[@"info2"];
-    NSString *info3 = call.arguments[@"info3"];
-    NSString *info4 = call.arguments[@"info4"];
     NSString *attConsentWaitingInterval = call.arguments[@"attConsentWaitingInterval"];
-    NSString *eventBufferingEnabled = call.arguments[@"eventBufferingEnabled"];
     NSString *sendInBackground = call.arguments[@"sendInBackground"];
     NSString *needsCost = call.arguments[@"needsCost"];
-    NSString *coppaCompliantEnabled = call.arguments[@"coppaCompliantEnabled"];
     NSString *linkMeEnabled = call.arguments[@"linkMeEnabled"];
     NSString *allowAdServicesInfoReading = call.arguments[@"allowAdServicesInfoReading"];
     NSString *allowIdfaReading = call.arguments[@"allowIdfaReading"];
@@ -160,8 +155,6 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *dartEventSuccessCallback = call.arguments[@"eventSuccessCallback"];
     NSString *dartEventFailureCallback = call.arguments[@"eventFailureCallback"];
     NSString *dartDeferredDeeplinkCallback = call.arguments[@"deferredDeeplinkCallback"];
-    NSString *dartConversionValueUpdatedCallback = call.arguments[@"conversionValueUpdatedCallback"];
-    NSString *dartSkad4ConversionValueUpdatedCallback = call.arguments[@"skad4ConversionValueUpdatedCallback"];
     BOOL allowSuppressLogLevel = NO;
     BOOL launchDeferredDeeplink = [call.arguments[@"launchDeferredDeeplink"] boolValue];
 
@@ -262,9 +255,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         || dartSessionFailureCallback != nil
         || dartEventSuccessCallback != nil
         || dartEventFailureCallback != nil
-        || dartDeferredDeeplinkCallback != nil
-        || dartConversionValueUpdatedCallback != nil
-        || dartSkad4ConversionValueUpdatedCallback != nil) {
+        || dartDeferredDeeplinkCallback != nil) {
         [adjustConfig setDelegate:
          [AdjustSdkDelegate getInstanceWithSwizzleOfAttributionCallback:dartAttributionCallback
                                                  sessionSuccessCallback:dartSessionSuccessCallback
@@ -272,8 +263,6 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                                                    eventSuccessCallback:dartEventSuccessCallback
                                                    eventFailureCallback:dartEventFailureCallback
                                                deferredDeeplinkCallback:dartDeferredDeeplinkCallback
-                                         conversionValueUpdatedCallback:dartConversionValueUpdatedCallback
-                                    skad4ConversionValueUpdatedCallback:dartSkad4ConversionValueUpdatedCallback
                                            shouldLaunchDeferredDeeplink:launchDeferredDeeplink
                                                        andMethodChannel:self.channel]];
     }
@@ -659,6 +648,15 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [Adjust trackMeasurementConsent:[measurementConsent boolValue]];
     }
     result(nil);
+}
+
+- (void)updateSkanConversionValue:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSInteger conversionValue = [call.arguments[@"conversionValue"] integerValue];
+    NSString *coarseValue = call.arguments[@"coarseValue"];
+    NSNumber *lockWindow = call.arguments[@"lockWindow"];
+    [Adjust updateSkanConversionValue:conversionValue coarseValue:coarseValue lockWindow:lockWindow withCompletionHandler:^(NSError * _Nullable error) {
+        result(error);
+    }];
 }
 
 - (void)verifyPlayStorePurchase:(FlutterMethodCall *)call withResult:(FlutterResult)result {
