@@ -80,9 +80,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self trackThirdPartySharing:call withResult:result];
     } else if ([@"trackMeasurementConsent" isEqualToString:call.method]) {
         [self trackMeasurementConsent:call withResult:result];
-    }else if ([@"updateSkanConversionValue" isEqualToString:call.method ]){
-        [self updateSkanConversionValue:call withResult:result];
-    }else if ([@"addGlobalCallbackParameter" isEqualToString:call.method]) {
+    } else if ([@"addGlobalCallbackParameter" isEqualToString:call.method]) {
         NSString *key = call.arguments[@"key"];
         NSString *value = call.arguments[@"value"];
         if (!([self isFieldValid:key]) || !([self isFieldValid:value])) {
@@ -255,7 +253,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     if ([self isFieldValid:attConsentWaitingInterval]) {
         [adjustConfig setAttConsentWaitingInterval:[attConsentWaitingInterval intValue]];
     }
-    
+
 
     // Callbacks.
     if (dartAttributionCallback != nil
@@ -563,7 +561,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         if (attribution == nil) {
             result(dictionary);
         }
-        
+
         [self addValueOrEmpty:attribution.trackerToken withKey:@"trackerToken" toDictionary:dictionary];
         [self addValueOrEmpty:attribution.trackerName withKey:@"trackerName" toDictionary:dictionary];
         [self addValueOrEmpty:attribution.network withKey:@"network" toDictionary:dictionary];
