@@ -117,7 +117,6 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
         @"adgroup",
         @"creative",
         @"clickLabel",
-        @"adid",
         @"costType",
         @"costAmount",
         @"costCurrency" };
@@ -129,7 +128,6 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
         [self getValueOrEmpty:[attribution adgroup]],
         [self getValueOrEmpty:[attribution creative]],
         [self getValueOrEmpty:[attribution clickLabel]],
-        [self getValueOrEmpty:[attribution adid]],
         [self getValueOrEmpty:[attribution costType]],
         [self getNumberValueOrEmpty:[attribution costAmount]],
         [self getValueOrEmpty:[attribution costCurrency]]

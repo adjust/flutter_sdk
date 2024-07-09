@@ -7,7 +7,7 @@
 //
 
 #import <Flutter/Flutter.h>
-#import <Adjust/Adjust.h>
+#import <AdjustSdk/Adjust.h>
 
 @interface AdjustSdkDelegate : NSObject<AdjustDelegate>
 
