@@ -23,7 +23,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter4.38.1';
+  static const String _sdkPrefix = 'flutter4.38.2';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
 
