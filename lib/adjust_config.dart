@@ -43,24 +43,19 @@ class AdjustConfig {
   String _appToken;
   AdjustEnvironment _environment;
 
-  num? _info1;
-  num? _info2;
-  num? _info3;
-  num? _info4;
-  num? _secretId;
   bool? _skAdNetworkHandling;
 
   num? attConsentWaitingInterval;
-  bool? sendInBackground;
+  bool? _sendInBackground;
   bool? allowiAdInfoReading;
-  bool? allowAdServicesInfoReading;
-  bool? allowIdfaReading;
+  bool? _allowAdServicesInfoReading;
+  bool? _allowIdfaReading;
   bool? launchDeferredDeeplink;
-  bool? needsCost;
+  bool? _needsCost;
   bool? preinstallTrackingEnabled;
-  bool? linkMeEnabled;
+  bool? _linkMeEnabled;
   bool? finalAndroidAttributionEnabled;
-  bool? readDeviceInfoOnceEnabled;
+  bool? _readDeviceInfoOnceEnabled;
   String? sdkPrefix;
   num? eventDeduplicationIdsMaxSize;
   String? defaultTracker;
@@ -90,6 +85,30 @@ class AdjustConfig {
     domains.addAll(_domains);
     useSubdomains = _useSubdomains;
     isDataResidency = _isDataResidency;
+  }
+
+  void enableCostDataInAttribution(){
+    _needsCost = true;
+  }
+
+  void enableSendingInBackground(){
+    _sendInBackground = true;
+  }
+
+  void disableAdServices(){
+    _allowAdServicesInfoReading = false;
+  }
+
+  void disableIdfaReading(){
+    _allowIdfaReading = false;
+  }
+
+  void enableLinkMe(){
+    _linkMeEnabled = true;
+  }
+
+  void enableDeviceIdsReadingOnce(){
+    _readDeviceInfoOnceEnabled = true;
   }
 
   void _initCallbackHandlers() {
@@ -170,15 +189,7 @@ class AdjustConfig {
     });
   }
 
-  void setAppSecret(num secretId, num info1, num info2, num info3, num info4) {
-    _secretId = secretId;
-    _info1 = info1;
-    _info2 = info2;
-    _info3 = info3;
-    _info4 = info4;
-  }
-
-  void deactivateSKAdNetworkHandling() {
+  void disableSkanAttribution() {
     _skAdNetworkHandling = false;
   }
 
@@ -223,15 +234,15 @@ class AdjustConfig {
     if (useSubdomains != null) {
       configMap['useSubdomains'] = useSubdomains.toString();
     }
-    if (needsCost != null) {
-      configMap['needsCost'] = needsCost.toString();
+    if (_needsCost != null) {
+      configMap['needsCost'] = _needsCost.toString();
     }
 
-    if (sendInBackground != null) {
-      configMap['sendInBackground'] = sendInBackground.toString();
+    if (_sendInBackground != null) {
+      configMap['sendInBackground'] = _sendInBackground.toString();
     }
-    if (needsCost != null) {
-      configMap['needsCost'] = needsCost.toString();
+    if (_needsCost != null) {
+      configMap['needsCost'] = _needsCost.toString();
     }
     if (preinstallTrackingEnabled != null) {
       configMap['preinstallTrackingEnabled'] =
@@ -240,42 +251,27 @@ class AdjustConfig {
     if (finalAndroidAttributionEnabled != null) {
       configMap['finalAndroidAttributionEnabled'] = finalAndroidAttributionEnabled.toString();
     }
-    if (readDeviceInfoOnceEnabled != null) {
-      configMap['readDeviceInfoOnceEnabled'] = readDeviceInfoOnceEnabled.toString();
+    if (_readDeviceInfoOnceEnabled != null) {
+      configMap['readDeviceInfoOnceEnabled'] = _readDeviceInfoOnceEnabled.toString();
     }
-    if (linkMeEnabled != null) {
-      configMap['linkMeEnabled'] = linkMeEnabled.toString();
+    if (_linkMeEnabled != null) {
+      configMap['linkMeEnabled'] = _linkMeEnabled.toString();
     }
     if (allowiAdInfoReading != null) {
       configMap['allowiAdInfoReading'] = allowiAdInfoReading.toString();
     }
-    if (allowAdServicesInfoReading != null) {
+    if (_allowAdServicesInfoReading != null) {
       configMap['allowAdServicesInfoReading'] =
-          allowAdServicesInfoReading.toString();
+          _allowAdServicesInfoReading.toString();
     }
-    if (allowIdfaReading != null) {
-      configMap['allowIdfaReading'] = allowIdfaReading.toString();
+    if (_allowIdfaReading != null) {
+      configMap['allowIdfaReading'] = _allowIdfaReading.toString();
     }
     if (_skAdNetworkHandling != null) {
       configMap['skAdNetworkHandling'] = _skAdNetworkHandling.toString();
     }
     if (launchDeferredDeeplink != null) {
       configMap['launchDeferredDeeplink'] = launchDeferredDeeplink.toString();
-    }
-    if (_info1 != null) {
-      configMap['info1'] = _info1.toString();
-    }
-    if (_info2 != null) {
-      configMap['info2'] = _info2.toString();
-    }
-    if (_info3 != null) {
-      configMap['info3'] = _info3.toString();
-    }
-    if (_info4 != null) {
-      configMap['info4'] = _info4.toString();
-    }
-    if (_secretId != null) {
-      configMap['secretId'] = _secretId.toString();
     }
     if (attConsentWaitingInterval != null) {
       configMap['attConsentWaitingInterval'] = attConsentWaitingInterval.toString();

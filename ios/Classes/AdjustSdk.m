@@ -126,6 +126,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self verifyAppStorePurchase:call withResult:result];
     } else if ([@"processDeeplink" isEqualToString:call.method]) {
         [self processDeeplink:call withResult:result];
+    } else if ([@"processAndResolveDeeplink" isEqualToString:call.method]) {
+        [self processAndResolveDeeplink:call withResult:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -143,6 +145,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     BOOL useSubdomains = [call.arguments[@"useSubdomains"] boolValue];
     NSString *attConsentWaitingInterval = call.arguments[@"attConsentWaitingInterval"];
     NSString *sendInBackground = call.arguments[@"sendInBackground"];
+    NSInteger eventDeduplicationIdsMaxSize = [call.arguments[@"eventDeduplicationIdsMaxSize"] integerValue];
     NSString *needsCost = call.arguments[@"needsCost"];
     NSString *linkMeEnabled = call.arguments[@"linkMeEnabled"];
     NSString *allowAdServicesInfoReading = call.arguments[@"allowAdServicesInfoReading"];
@@ -206,6 +209,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         if ([sendInBackground boolValue]== YES) {
             [adjustConfig enableSendingInBackground];
         }
+    }
+
+    // eventDeduplicationIdsMaxSize.
+    if (eventDeduplicationIdsMaxSize > 0) {
+        [adjustConfig setEventDeduplicationIdsMaxSize:eventDeduplicationIdsMaxSize];
     }
 
     // Cost data.
@@ -725,27 +733,24 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
 }
 
-//- (void)setTestOptions:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-//    NSMutableDictionary *testOptions = [[NSMutableDictionary alloc] init];
-////    NSString *overwriteUrl = call.arguments[@"urlOverwrite"];
-//    NSString *extraPath = call.arguments[@"extraPath"];
-//    NSString *timerIntervalInMilliseconds = call.arguments[@"timerIntervalInMilliseconds"];
-//    NSString *timerStartInMilliseconds = call.arguments[@"timerStartInMilliseconds"];
-//    NSString *sessionIntervalInMilliseconds = call.arguments[@"sessionIntervalInMilliseconds"];
-//    NSString *subsessionIntervalInMilliseconds = call.arguments[@"subsessionIntervalInMilliseconds"];
-//    NSString *teardown = call.arguments[@"teardown"];
-//    NSString *deleteState = call.arguments[@"deleteState"];
-//    NSString *noBackoffWait = call.arguments[@"noBackoffWait"];
-//    NSString *adServicesFrameworkEnabled = call.arguments[@"adServicesFrameworkEnabled"];
-//    NSString *attStatus = call.arguments[@"attStatus"];
-//    NSString *idfa = call.arguments[@"idfa"];
-//    
-//    [testOptions setObject:call.arguments[@"urlOverwrite"] forKey:@"testUrlOverwrite"];
-//    [testOptions setObject:call.arguments[@"urlOverwrite"] forKey:@"testUrlOverwrite"];
-//
-//
-//    [Adjust setTestOptions:testOptions];
-//}
+- (void)setTestOptions:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSMutableDictionary *testOptions = [[NSMutableDictionary alloc] init];
+
+    [testOptions setObject:call.arguments[@"urlOverwrite"] forKey:@"testUrlOverwrite"];
+    [testOptions setObject:call.arguments[@"extraPath"] forKey:@"testExtraPath"];
+    [testOptions setObject:call.arguments[@"timerIntervalInMilliseconds"] forKey:@"testTimerIntervalInMilliseconds"];
+    [testOptions setObject:call.arguments[@"timerStartInMilliseconds"] forKey:@"testTimerStartInMilliseconds"];
+    [testOptions setObject:call.arguments[@"sessionIntervalInMilliseconds"] forKey:@"testSessionIntervalInMilliseconds"];
+    [testOptions setObject:call.arguments[@"subsessionIntervalInMilliseconds"] forKey:@"testSubsessionIntervalInMilliseconds"];
+    [testOptions setObject:call.arguments[@"teardown"] forKey:@"testTeardown"];
+    [testOptions setObject:call.arguments[@"deleteState"] forKey:@"testDeleteState"];
+    [testOptions setObject:call.arguments[@"noBackoffWait"] forKey:@"testNoBackoffWait"];
+    [testOptions setObject:call.arguments[@"adServicesFrameworkEnabled"] forKey:@"testAdServicesFrameworkEnabled"];
+    [testOptions setObject:call.arguments[@"attStatus"] forKey:@"testAttStatus"];
+    [testOptions setObject:call.arguments[@"idfa"] forKey:@"testIdfa"];
+
+    [Adjust setTestOptions:testOptions];
+}
 
 - (BOOL)isFieldValid:(NSObject *)field {
     if (field == nil) {

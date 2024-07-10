@@ -208,10 +208,6 @@ class Adjust {
     return error;
   }
 
-  static void checkForNewAttStatus() {
-    _channel.invokeMethod('checkForNewAttStatus');
-  }
-
   static Future<String?> getLastDeeplink() async {
     final String? deeplink = await _channel.invokeMethod('getLastDeeplink');
     return deeplink;
