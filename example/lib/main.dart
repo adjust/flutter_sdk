@@ -248,11 +248,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     // Clear all session partner parameters.
     Adjust.removeGlobalPartnerParameters();
-
-    // update skan conversion value
-    Adjust.updateSkanConversionValue(4, "coarseValue", 1).then((error){
-      print(error);
-    });
     // Ask for tracking consent.
     Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
       print('[Adjust]: Authorization status update!');
@@ -282,8 +277,15 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // Google Play Store kids apps.
     // config.playStoreKidsAppEnabled = true;
 
+    // update skan conversion value
+    Adjust.updateSkanConversionValue(4, "coarseValue", 0).then((error){
+      print(error);
+    });
+
     // Start SDK.
     Adjust.start(config);
+
+
   }
 
   @override

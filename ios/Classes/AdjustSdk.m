@@ -655,7 +655,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *coarseValue = call.arguments[@"coarseValue"];
     NSNumber *lockWindow = call.arguments[@"lockWindow"];
     [Adjust updateSkanConversionValue:conversionValue coarseValue:coarseValue lockWindow:lockWindow withCompletionHandler:^(NSError * _Nullable error) {
-        result(error);
+        NSLog(@"%@", error);
+        result(error.description);
     }];
 }
 
