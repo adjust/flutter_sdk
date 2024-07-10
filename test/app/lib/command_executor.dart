@@ -115,10 +115,6 @@ class CommandExecutor {
       case 'gdprForgetMe':
         _gdprForgetMe();
         break;
-
-      case 'trackAdRevenue':
-        _trackAdRevenue();
-        break;
       case 'trackSubscription':
         _trackSubscription();
         break;
@@ -129,7 +125,7 @@ class CommandExecutor {
         _trackMeasurementConsent();
         break;
       case 'trackAdRevenueV2':
-        _trackAdRevenueV2();
+        _trackAdRevenue();
         break;
       case 'getLastDeeplink':
         _getLastDeeplink();
@@ -304,81 +300,34 @@ class CommandExecutor {
           _command.getFirstParameterValue('externalDeviceId');
     }
 
-    if (_command.containsParameter('appSecret')) {
-      List<dynamic> appSecretArray = _command.getParamteters('appSecret')!;
-      bool appSecretValid = true;
-      for (String appSecretData in appSecretArray) {
-        if (appSecretData.length == 0) {
-          appSecretValid = false;
-          break;
-        }
-      }
-
-      if (appSecretValid) {
-        num secretId = num.parse(appSecretArray[0]);
-        num info1 = num.parse(appSecretArray[1]);
-        num info2 = num.parse(appSecretArray[2]);
-        num info3 = num.parse(appSecretArray[3]);
-        num info4 = num.parse(appSecretArray[4]);
-        adjustConfig!.setAppSecret(secretId, info1, info2, info3, info4);
-      }
-    }
-
-    if (_command.containsParameter('delayStart')) {
-      adjustConfig!.delayStart =
-          double.parse(_command.getFirstParameterValue('delayStart')!);
-    }
-
-    if (_command.containsParameter('deviceKnown')) {
-      adjustConfig!.isDeviceKnown =
-          _command.getFirstParameterValue('deviceKnown') == 'true';
-    }
-
-    if (_command.containsParameter('eventBufferingEnabled')) {
-      adjustConfig!.eventBufferingEnabled =
-          _command.getFirstParameterValue('eventBufferingEnabled') == 'true';
-    }
-
-    if (_command.containsParameter('coppaCompliant')) {
-      adjustConfig!.coppaCompliantEnabled =
-      _command.getFirstParameterValue('coppaCompliant') == 'true';
-    }
-
-    if (_command.containsParameter('playStoreKids')) {
-      adjustConfig!.playStoreKidsAppEnabled =
-      _command.getFirstParameterValue('playStoreKids') == 'true';
-    }
-
     if (_command.containsParameter('finalAttributionEnabled')) {
       adjustConfig!.finalAndroidAttributionEnabled =
       _command.getFirstParameterValue('finalAttributionEnabled') == 'true';
     }
 
     if (_command.containsParameter('sendInBackground')) {
-      adjustConfig!.sendInBackground =
-          _command.getFirstParameterValue('sendInBackground') == 'true';
+      if(_command.getFirstParameterValue('sendInBackground') == 'true')
+      adjustConfig!.enableSendingInBackground();
     }
 
     if (_command.containsParameter('allowAdServicesInfoReading')) {
-      adjustConfig!.allowAdServicesInfoReading =
-          _command.getFirstParameterValue('allowAdServicesInfoReading') ==
-              'true';
+      if(_command.getFirstParameterValue('allowAdServicesInfoReading') ==
+          'false'){
+        adjustConfig!.disableAdServices();
+      }
     }
 
     if (_command.containsParameter('allowSkAdNetworkHandling')) {
       if (_command.getFirstParameterValue('allowSkAdNetworkHandling') ==
           'false') {
-        adjustConfig!.deactivateSKAdNetworkHandling();
+        adjustConfig!.disableSkanAttribution();
       }
     }
 
     if (_command.containsParameter('allowIdfaReading')) {
-      adjustConfig!.allowIdfaReading =
-          _command.getFirstParameterValue('allowIdfaReading') == 'true';
-    }
-
-    if (_command.containsParameter('userAgent')) {
-      adjustConfig!.userAgent = _command.getFirstParameterValue('userAgent');
+      if(_command.getFirstParameterValue('allowIdfaReading') == 'false') {
+        adjustConfig!.disableIdfaReading();
+      }
     }
 
     if (_command.containsParameter('attConsentWaitingSeconds')) {
@@ -510,9 +459,9 @@ class CommandExecutor {
       };
     }
 
-    if (_command.containsParameter('urlStrategy')) {
-      adjustConfig.urlStrategy = _command.getFirstParameterValue('urlStrategy');
-    }
+    // if (_command.containsParameter('urlStrategy')) {
+    //   adjustConfig.urlStrategy = _command.getFirstParameterValue('urlStrategy');
+    // }
   }
 
   void _start() {
@@ -615,7 +564,11 @@ class CommandExecutor {
 
   void _setEnabled() {
     bool isEnabled = _command.getFirstParameterValue('enabled') == 'true';
-    Adjust.setEnabled(isEnabled);
+    if(isEnabled) {
+      Adjust.enable();
+    }else{
+      Adjust.disable();
+    }
   }
 
   void _setReferrer() {
@@ -625,7 +578,11 @@ class CommandExecutor {
 
   void _setOfflineMode() {
     bool isEnabled = _command.getFirstParameterValue('enabled') == 'true';
-    Adjust.setOfflineMode(isEnabled);
+    if(isEnabled){
+     Adjust.switchToOfflineMode();
+    }else{
+      Adjust.switchBackToOnlineMode();
+    }
   }
 
   void _sendFirstPackages() {
@@ -639,7 +596,7 @@ class CommandExecutor {
 
   void _openDeeplink() {
     String deeplink = _command.getFirstParameterValue('deeplink')!;
-    Adjust.appWillOpenUrl(deeplink);
+    Adjust.processDeeplink(deeplink);
   }
 
   void _gdprForgetMe() {
@@ -702,12 +659,6 @@ class CommandExecutor {
 
   void _removeGlobalPartnerParameters() {
     Adjust.removeGlobalPartnerParameters();
-  }
-
-  void _trackAdRevenue() {
-    String source = _command.getFirstParameterValue('adRevenueSource')!;
-    String payload = _command.getFirstParameterValue('adRevenueJsonString')!;
-    Adjust.trackAdRevenue(source, payload);
   }
 
   void _trackSubscription() {
@@ -831,7 +782,7 @@ class CommandExecutor {
     Adjust.trackMeasurementConsent(isEnabled);
   }
 
-  void _trackAdRevenueV2() {
+  void _trackAdRevenue() {
     String source = _command.getFirstParameterValue('adRevenueSource')!;
     AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(source);
 
@@ -876,7 +827,7 @@ class CommandExecutor {
           _command.getFirstParameterValue('adRevenueNetwork');
     }
 
-    Adjust.trackAdRevenueNew(adjustAdRevenue);
+    Adjust.trackAdRevenue(adjustAdRevenue);
   }
 
   void _getLastDeeplink() {
@@ -924,7 +875,7 @@ class CommandExecutor {
 
   void _processDeeplink() {
     String deeplink = _command.getFirstParameterValue('deeplink')!;
-    Adjust.processDeeplink(deeplink).then((resolvedLink) {
+    Adjust.processAndResolveDeeplink(deeplink).then((resolvedLink) {
       String? localBasePath = _basePath;
       TestLib.addInfoToSend('resolved_link', resolvedLink);
       TestLib.sendInfoToServer(localBasePath);
