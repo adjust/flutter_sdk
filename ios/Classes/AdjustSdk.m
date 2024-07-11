@@ -80,6 +80,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self trackThirdPartySharing:call withResult:result];
     } else if ([@"trackMeasurementConsent" isEqualToString:call.method]) {
         [self trackMeasurementConsent:call withResult:result];
+    }else if ([@"updateSkanConversionValue" isEqualToString:call.method ]){
+        [self updateSkanConversionValue:call withResult:result];
     } else if ([@"addGlobalCallbackParameter" isEqualToString:call.method]) {
         NSString *key = call.arguments[@"key"];
         NSString *value = call.arguments[@"value"];
