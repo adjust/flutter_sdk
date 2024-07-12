@@ -64,10 +64,6 @@ class Adjust {
     _channel.invokeMethod('processDeeplink', {'url': url});
   }
 
-  static void sendFirstPackages() {
-    _channel.invokeMethod('sendFirstPackages');
-  }
-
   static void gdprForgetMe() {
     _channel.invokeMethod('gdprForgetMe');
   }

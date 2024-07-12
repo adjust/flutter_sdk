@@ -35,10 +35,9 @@ class AdjustEvent {
     _callbackParameters![key] = value;
   }
 
-  void setDeduplicationId(String deduplicationId) {
+  void setDeduplicationId(String? deduplicationId) {
     _deduplicationId = deduplicationId;
   }
-
 
   void addPartnerParameter(String key, String value) {
     _partnerParameters![key] = value;

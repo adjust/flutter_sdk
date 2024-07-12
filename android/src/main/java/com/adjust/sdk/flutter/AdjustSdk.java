@@ -556,7 +556,6 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
 
         // Start SDK.
         Adjust.initSdk(adjustConfig);
-        Adjust.onResume();
         result.success(null);
     }
 
@@ -596,7 +595,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
 
         // deduplicationId.
         if (eventMap.containsKey("deduplicationId")) {
-            String deduplicationId = (String) eventMap.get("_deduplicationId");
+            String deduplicationId = (String) eventMap.get("deduplicationId");
             event.setDeduplicationId(deduplicationId);
         }
 
@@ -680,7 +679,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         result.success(null);
     }
     private void disable( final Result result) {
-        Adjust.enable();
+        Adjust.disable();
         result.success(null);
     }
 

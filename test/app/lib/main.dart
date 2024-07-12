@@ -25,7 +25,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    String _address = '192.168.86.53';
+    String _address = '10.0.2.2';
     if (Platform.isAndroid) {
       String _protocol = 'https';
       String _port = '8443';
@@ -69,8 +69,8 @@ class _MyAppState extends State<MyApp> {
                 buildCupertinoButton(
                     'Start Test Session',
                     () => Adjust.getSdkVersion().then((sdkVersion) {
-                          // TestLib.addTestDirectory('deeplink-getter');
-                          // TestLib.addTest('Test_Event_Revenue_invalid');
+                          // TestLib.addTestDirectory('disable-enable');
+                          TestLib.addTest('Test_Lifecycle_StartsForeground');
                           TestLib.startTestSession(sdkVersion);
                         }))
               ])))

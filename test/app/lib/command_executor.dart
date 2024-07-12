@@ -85,9 +85,6 @@ class CommandExecutor {
       case 'setOfflineMode':
         _setOfflineMode();
         break;
-      case 'sendFirstPackages':
-        _sendFirstPackages();
-        break;
       case 'addGlobalCallbackParameter':
         _addGlobalCallbackParameter();
         break;
@@ -124,7 +121,7 @@ class CommandExecutor {
       case 'measurementConsent':
         _trackMeasurementConsent();
         break;
-      case 'trackAdRevenueV2':
+      case 'trackAdRevenue':
         _trackAdRevenue();
         break;
       case 'getLastDeeplink':
@@ -135,6 +132,21 @@ class CommandExecutor {
         break;
       case 'processDeeplink':
         _processDeeplink();
+        break;
+      case 'attributionGetter':
+        _attributionGetter();
+        break;
+      case "enableCoppaCompliance" :
+        _enableCoppaCompliance();
+        break;
+      case "disableCoppaCompliance" :
+        _disableCoppaCompliance();
+        break;
+      case "enablePlayStoreKidsApp" :
+        _enablePlayStoreKidsApp();
+        break;
+      case "disablePlayStoreKidsApp" :
+        _disablePlayStoreKidsApp();
         break;
     }
   }
@@ -176,6 +188,14 @@ class CommandExecutor {
     if (_command.containsParameter('noBackoffWait')) {
       testOptions['noBackoffWait'] =
           _command.getFirstParameterValue('noBackoffWait');
+    }
+    if (_command.containsParameter("doNotIgnoreSystemLifecycleBootstrap")) {
+      String? doNotIgnoreSystemLifecycleBootstrapString =
+      _command.getFirstParameterValue("doNotIgnoreSystemLifecycleBootstrap");
+      bool doNotIgnoreSystemLifecycleBootstrap = (doNotIgnoreSystemLifecycleBootstrapString == 'true');
+      if (doNotIgnoreSystemLifecycleBootstrap) {
+        testOptions['ignoreSystemLifecycleBootstrap'] = false;
+      }
     }
     if (_command.containsParameter('adServicesFrameworkEnabled')) {
       testOptions['adServicesFrameworkEnabled'] =
@@ -317,6 +337,12 @@ class CommandExecutor {
       }
     }
 
+    if (_command.containsParameter('eventDeduplicationIdsMaxSize')) {
+      String? maxIds = _command.getFirstParameterValue("eventDeduplicationIdsMaxSize");
+      int maxIdCount = int.parse(maxIds!);
+      adjustConfig!.eventDeduplicationIdsMaxSize = maxIdCount;
+    }
+
     if (_command.containsParameter('allowSkAdNetworkHandling')) {
       if (_command.getFirstParameterValue('allowSkAdNetworkHandling') ==
           'false') {
@@ -362,17 +388,17 @@ class CommandExecutor {
       String? localBasePath = _extraPath;
       adjustConfig.attributionCallback = (AdjustAttribution attribution) {
         print('[CommandExecutor]: Attribution Callback: $attribution');
-        TestLib.addInfoToSend('trackerToken', attribution.trackerToken);
-        TestLib.addInfoToSend('trackerName', attribution.trackerName);
+        TestLib.addInfoToSend('tracker_token', attribution.trackerToken);
+        TestLib.addInfoToSend('tracker_name', attribution.trackerName);
         TestLib.addInfoToSend('network', attribution.network);
         TestLib.addInfoToSend('campaign', attribution.campaign);
         TestLib.addInfoToSend('adgroup', attribution.adgroup);
         TestLib.addInfoToSend('creative', attribution.creative);
-        TestLib.addInfoToSend('clickLabel', attribution.clickLabel);
-        TestLib.addInfoToSend('costType', attribution.costType);
-        TestLib.addInfoToSend('costAmount', attribution.costAmount.toString());
-        TestLib.addInfoToSend('costCurrency', attribution.costCurrency);
-        TestLib.addInfoToSend('fbInstallReferrer', attribution.fbInstallReferrer);
+        TestLib.addInfoToSend('click_label', attribution.clickLabel);
+        TestLib.addInfoToSend('cost_type', attribution.costType);
+        TestLib.addInfoToSend('cost_amount', attribution.costAmount.toString());
+        TestLib.addInfoToSend('cost_currency', attribution.costCurrency);
+        TestLib.addInfoToSend('fb_install_referrer', attribution.fbInstallReferrer);
         TestLib.sendInfoToServer(localBasePath);
       };
     }
@@ -532,6 +558,9 @@ class CommandExecutor {
     if (_command.containsParameter('transactionId')) {
       adjustEvent!.transactionId = _command.getFirstParameterValue('transactionId');
     }
+    if (_command.containsParameter('deduplicationId')) {
+      adjustEvent!.setDeduplicationId(_command.getFirstParameterValue('deduplicationId'));
+    }
     if (_command.containsParameter('purchaseToken')) {
       adjustEvent!.purchaseToken = _command.getFirstParameterValue('purchaseToken');
     }
@@ -583,10 +612,6 @@ class CommandExecutor {
     }else{
       Adjust.switchBackToOnlineMode();
     }
-  }
-
-  void _sendFirstPackages() {
-    Adjust.sendFirstPackages();
   }
 
   void _setPushToken() {
@@ -880,5 +905,40 @@ class CommandExecutor {
       TestLib.addInfoToSend('resolved_link', resolvedLink);
       TestLib.sendInfoToServer(localBasePath);
     });
+  }
+
+  void _attributionGetter(){
+
+    Adjust.getAttribution().then((attribution){
+      Map<String , String> fields = new Map();
+        fields["tracker_token"]= attribution.trackerToken!;
+        fields["tracker_name"]= attribution.trackerName!;
+        fields["network"]= attribution.network!;
+        fields["campaign"]= attribution.campaign!;
+        fields["adgroup"]= attribution.adgroup!;
+        fields["creative"]= attribution.creative!;
+        fields["click_label"]= attribution.clickLabel!;
+        fields["cost_type"]= attribution.costType!;
+        fields["cost_amount"]= attribution.costAmount.toString();
+        fields["cost_currency"]= attribution.costCurrency!;
+        fields["fb_install_referrer"]= attribution.fbInstallReferrer!;
+        fields.forEach((key , value){
+          TestLib.addInfoToSend(key, value);
+        });
+      TestLib.sendInfoToServer(_basePath);
+    });
+  }
+
+  void _enableCoppaCompliance(){
+    Adjust.enableCoppaCompliance();
+  }
+  void _disableCoppaCompliance(){
+    Adjust.disableCoppaCompliance();
+  }
+  void _enablePlayStoreKidsApp(){
+    Adjust.enablePlayStoreKidsApp();
+  }
+  void _disablePlayStoreKidsApp(){
+    Adjust.disablePlayStoreKidsApp();
   }
 }
