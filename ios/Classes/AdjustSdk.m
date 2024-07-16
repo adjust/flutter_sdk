@@ -277,7 +277,6 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 
     // Start SDK.
     [Adjust initSdk:adjustConfig];
-    [Adjust trackSubsessionStart];
     result(nil);
 }
 
