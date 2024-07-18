@@ -70,7 +70,7 @@ class _MyAppState extends State<MyApp> {
                     'Start Test Session',
                     () => Adjust.getSdkVersion().then((sdkVersion) {
                           // TestLib.addTestDirectory('disable-enable');
-                          TestLib.addTest('Test_Lifecycle_StartsForeground');
+                          // TestLib.addTest('Test_Lifecycle_StartsForeground');
                           TestLib.startTestSession(sdkVersion);
                         }))
               ])))
