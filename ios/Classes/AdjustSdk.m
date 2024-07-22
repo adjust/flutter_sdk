@@ -68,6 +68,10 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self processDeeplink:call withResult:result];
     } else if ([@"trackAdRevenue" isEqualToString:call.method]) {
         [self trackAdRevenue:call withResult:result];
+    } else if ([@"enableCoppaCompliance" isEqualToString:call.method]) {
+        [Adjust enableCoppaCompliance];
+    } else if ([@"disableCoppaCompliance" isEqualToString:call.method]) {
+        [Adjust disableCoppaCompliance];
     } else if ([@"trackAppStoreSubscription" isEqualToString:call.method]) {
         [self trackAppStoreSubscription:call withResult:result];
     } else if ([@"trackPlayStoreSubscription" isEqualToString:call.method]) {
@@ -128,6 +132,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self processDeeplink:call withResult:result];
     } else if ([@"processAndResolveDeeplink" isEqualToString:call.method]) {
         [self processAndResolveDeeplink:call withResult:result];
+    } else if ([@"setTestOptions" isEqualToString:call.method]) {
+        [self setTestOptions:call withResult:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -385,7 +391,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 - (void)setPushToken:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *pushToken = call.arguments[@"pushToken"];
     if ([self isFieldValid:pushToken]) {
-        [Adjust setPushToken:pushToken];
+        [Adjust setPushTokenAsString:pushToken];
     }
     result(nil);
 }
@@ -735,18 +741,52 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 - (void)setTestOptions:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSMutableDictionary *testOptions = [[NSMutableDictionary alloc] init];
 
-    [testOptions setObject:call.arguments[@"urlOverwrite"] forKey:@"testUrlOverwrite"];
-    [testOptions setObject:call.arguments[@"extraPath"] forKey:@"testExtraPath"];
-    [testOptions setObject:call.arguments[@"timerIntervalInMilliseconds"] forKey:@"testTimerIntervalInMilliseconds"];
-    [testOptions setObject:call.arguments[@"timerStartInMilliseconds"] forKey:@"testTimerStartInMilliseconds"];
-    [testOptions setObject:call.arguments[@"sessionIntervalInMilliseconds"] forKey:@"testSessionIntervalInMilliseconds"];
-    [testOptions setObject:call.arguments[@"subsessionIntervalInMilliseconds"] forKey:@"testSubsessionIntervalInMilliseconds"];
-    [testOptions setObject:call.arguments[@"teardown"] forKey:@"testTeardown"];
-    [testOptions setObject:call.arguments[@"deleteState"] forKey:@"testDeleteState"];
-    [testOptions setObject:call.arguments[@"noBackoffWait"] forKey:@"testNoBackoffWait"];
-    [testOptions setObject:call.arguments[@"adServicesFrameworkEnabled"] forKey:@"testAdServicesFrameworkEnabled"];
-    [testOptions setObject:call.arguments[@"attStatus"] forKey:@"testAttStatus"];
-    [testOptions setObject:call.arguments[@"idfa"] forKey:@"testIdfa"];
+    
+    if(call.arguments[@"urlOverwrite"] != nil) {
+        [testOptions setObject:call.arguments[@"urlOverwrite"] forKey:@"testUrlOverwrite"];
+    }
+    if(call.arguments[@"extraPath"] != nil) {
+        [testOptions setObject:call.arguments[@"extraPath"] forKey:@"extraPath"];
+    }
+    if(call.arguments[@"basePath"] != nil) {
+        [testOptions setObject:call.arguments[@"basePath"] forKey:@"basePath"];
+    }
+    if(call.arguments[@"timerIntervalInMilliseconds"] != nil) {
+        [testOptions setObject:call.arguments[@"timerIntervalInMilliseconds"] forKey:@"timerIntervalInMilliseconds"];
+    }
+    if(call.arguments[@"timerStartInMilliseconds"] != nil) {
+        [testOptions setObject:call.arguments[@"timerStartInMilliseconds"] forKey:@"timerStartInMilliseconds"];
+    }
+    if(call.arguments[@"sessionIntervalInMilliseconds"] != nil) {
+        [testOptions setObject:call.arguments[@"sessionIntervalInMilliseconds"] forKey:@"sessionIntervalInMilliseconds"];
+    }
+    if(call.arguments[@"subsessionIntervalInMilliseconds"] != nil) {
+        [testOptions setObject:call.arguments[@"subsessionIntervalInMilliseconds"] forKey:@"subsessionIntervalInMilliseconds"];
+    }
+    if(call.arguments[@"teardown"] != nil) {
+        [testOptions setObject:call.arguments[@"teardown"] forKey:@"teardown"];
+    }
+    if(call.arguments[@"resetSdk"] != nil) {
+        [testOptions setObject:call.arguments[@"resetSdk"] forKey:@"resetSdk"];
+    }
+    if(call.arguments[@"deleteState"] != nil) {
+        [testOptions setObject:call.arguments[@"deleteState"] forKey:@"deleteState"];
+    }
+    if(call.arguments[@"resetTest"] != nil) {
+        [testOptions setObject:call.arguments[@"resetTest"] forKey:@"resetTest"];
+    }
+    if (call.arguments[@"noBackoffWait"] != nil) {
+        [testOptions setObject:call.arguments[@"noBackoffWait"] forKey:@"noBackoffWait"];
+    }
+    if (call.arguments[@"adServicesFrameworkEnabled"] != nil) {
+        [testOptions setObject:call.arguments[@"adServicesFrameworkEnabled"] forKey:@"adServicesFrameworkEnabled"];
+    }
+    if (call.arguments[@"attStatus"] != nil) {
+        [testOptions setObject:call.arguments[@"attStatus"] forKey:@"attStatusInt"];
+    }
+    if (call.arguments[@"idfa"] != nil) {
+        [testOptions setObject:call.arguments[@"idfa"] forKey:@"idfa"];
+    }
 
     [Adjust setTestOptions:testOptions];
 }

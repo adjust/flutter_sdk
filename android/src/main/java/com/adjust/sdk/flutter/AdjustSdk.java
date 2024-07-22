@@ -28,7 +28,7 @@ import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeferredDeeplinkResponseListener;
-import com.adjust.sdk.OnDeviceIdsRead;
+import com.adjust.sdk.OnGoogleAdIdReadListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
@@ -42,6 +42,7 @@ import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.OnAttributionReadListener;
 import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.sdk.AdjustPlayStorePurchase;
+import com.adjust.sdk.AdjustDeeplink;
 
 
 import org.json.JSONArray;
@@ -234,11 +235,11 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "disableCoppaCompliance":
                 disableCoppaCompliance(result);
                 break;
-            case "enablePlayStoreKidsApp":
-                enablePlayStoreKidsApp(result);
+            case "enablePlayStoreKidsCompliance":
+                enablePlayStoreKidsCompliance(result);
                 break;
-            case "disablePlayStoreKidsApp":
-                disablePlayStoreKidsApp(result);
+            case "disablePlayStoreKidsCompliance":
+                disablePlayStoreKidsCompliance(result);
                 break;
             default:
                 Log.e(TAG, "Not implemented method: " + call.method);
@@ -448,7 +449,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             if (dartMethodName != null) {
                 adjustConfig.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
                     @Override
-                    public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess adjustSessionSuccess) {
+                    public void onSessionTrackingSucceeded(AdjustSessionSuccess adjustSessionSuccess) {
                         HashMap<String, String> adjustSessionSuccessMap = new HashMap<String, String>();
                         adjustSessionSuccessMap.put("message", adjustSessionSuccess.message);
                         adjustSessionSuccessMap.put("timestamp", adjustSessionSuccess.timestamp);
@@ -470,7 +471,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             if (dartMethodName != null) {
                 adjustConfig.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
                     @Override
-                    public void onFinishedSessionTrackingFailed(AdjustSessionFailure adjustSessionFailure) {
+                    public void onSessionTrackingFailed(AdjustSessionFailure adjustSessionFailure) {
                         HashMap<String, String> adjustSessionFailureMap = new HashMap<String, String>();
                         adjustSessionFailureMap.put("message", adjustSessionFailure.message);
                         adjustSessionFailureMap.put("timestamp", adjustSessionFailure.timestamp);
@@ -493,7 +494,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             if (dartMethodName != null) {
                 adjustConfig.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
                     @Override
-                    public void onFinishedEventTrackingSucceeded(AdjustEventSuccess adjustEventSuccess) {
+                    public void onEventTrackingSucceeded(AdjustEventSuccess adjustEventSuccess) {
                         HashMap<String, String> adjustEventSuccessMap = new HashMap<String, String>();
                         adjustEventSuccessMap.put("message", adjustEventSuccess.message);
                         adjustEventSuccessMap.put("timestamp", adjustEventSuccess.timestamp);
@@ -517,7 +518,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             if (dartMethodName != null) {
                 adjustConfig.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
                     @Override
-                    public void onFinishedEventTrackingFailed(AdjustEventFailure adjustEventFailure) {
+                    public void onEventTrackingFailed(AdjustEventFailure adjustEventFailure) {
                         HashMap<String, String> adjustEventFailureMap = new HashMap<String, String>();
                         adjustEventFailureMap.put("message", adjustEventFailure.message);
                         adjustEventFailureMap.put("timestamp", adjustEventFailure.timestamp);
@@ -689,7 +690,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         if (urlParamsMap.containsKey("url")) {
             url = urlParamsMap.get("url").toString();
         }
-        Adjust.processDeeplink(Uri.parse(url), applicationContext);
+        Adjust.processDeeplink(new AdjustDeeplink(Uri.parse(url)), applicationContext);
         result.success(null);
     }
 
@@ -730,7 +731,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
     }
 
     private void getGoogleAdId(final Result result) {
-        Adjust.getGoogleAdId(applicationContext, new OnDeviceIdsRead() {
+        Adjust.getGoogleAdId(applicationContext, new OnGoogleAdIdReadListener() {
             @Override
             public void onGoogleAdIdRead(String googleAdId) {
                 result.success(googleAdId);
@@ -743,11 +744,6 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             @Override
             public void onAmazonAdIdRead(String amazonAdId) {
                 result.success(amazonAdId);
-            }
-
-            @Override
-            public void onFail(String error) {
-                result.error(error, null, null);
             }
         });
     }
@@ -765,12 +761,12 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         Adjust.disableCoppaCompliance(applicationContext);
         result.success(null);
     }
-    private void enablePlayStoreKidsApp(final Result result) {
-        Adjust.enablePlayStoreKidsApp(applicationContext);
+    private void enablePlayStoreKidsCompliance(final Result result) {
+        Adjust.enablePlayStoreKidsCompliance(applicationContext);
         result.success(null);
     }
-    private void disablePlayStoreKidsApp(final Result result) {
-        Adjust.disablePlayStoreKidsApp(applicationContext);
+    private void disablePlayStoreKidsCompliance(final Result result) {
+        Adjust.disablePlayStoreKidsCompliance(applicationContext);
         result.success(null);
     }
 
@@ -1174,7 +1170,7 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             url = urlParamsMap.get("deeplink").toString();
         }
 
-        Adjust.processAndResolveDeeplink(Uri.parse(url), applicationContext, new OnDeeplinkResolvedListener() {
+        Adjust.processAndResolveDeeplink(new AdjustDeeplink(Uri.parse(url)), applicationContext, new OnDeeplinkResolvedListener() {
             @Override
             public void onDeeplinkResolved(String resolvedLink) {
                 result.success(resolvedLink);

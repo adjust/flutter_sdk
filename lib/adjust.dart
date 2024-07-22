@@ -76,12 +76,12 @@ class Adjust {
     _channel.invokeMethod('disableCoppaCompliance');
   }
 
-  static void enablePlayStoreKidsApp() {
-    _channel.invokeMethod('enablePlayStoreKidsApp');
+  static void enablePlayStoreKidsCompliance() {
+    _channel.invokeMethod('enablePlayStoreKidsCompliance');
   }
 
-  static void disablePlayStoreKidsApp() {
-    _channel.invokeMethod('disablePlayStoreKidsApp');
+  static void disablePlayStoreKidsCompliance() {
+    _channel.invokeMethod('disablePlayStoreKidsCompliance');
   }
 
   static void onResume() {
@@ -134,7 +134,7 @@ class Adjust {
     return authorizationStatus;
   }
 
-  static Future<AdjustAttribution> getAttribution() async {
+  static Future<AdjustAttribution?> getAttribution() async {
     final dynamic attributionMap =
         await _channel.invokeMethod('getAttribution');
     return AdjustAttribution.fromMap(attributionMap);

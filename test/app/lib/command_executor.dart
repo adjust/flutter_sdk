@@ -910,22 +910,24 @@ class CommandExecutor {
   void _attributionGetter(){
 
     Adjust.getAttribution().then((attribution){
-      Map<String , String> fields = new Map();
-        fields["tracker_token"]= attribution.trackerToken!;
-        fields["tracker_name"]= attribution.trackerName!;
-        fields["network"]= attribution.network!;
-        fields["campaign"]= attribution.campaign!;
-        fields["adgroup"]= attribution.adgroup!;
-        fields["creative"]= attribution.creative!;
-        fields["click_label"]= attribution.clickLabel!;
-        fields["cost_type"]= attribution.costType!;
-        fields["cost_amount"]= attribution.costAmount.toString();
-        fields["cost_currency"]= attribution.costCurrency!;
-        fields["fb_install_referrer"]= attribution.fbInstallReferrer!;
-        fields.forEach((key , value){
+      if(attribution != null) {
+        Map<String, String?> fields = new Map();
+        fields["tracker_token"] = attribution.trackerToken;
+        fields["tracker_name"] = attribution.trackerName;
+        fields["network"] = attribution.network;
+        fields["campaign"] = attribution.campaign;
+        fields["adgroup"] = attribution.adgroup;
+        fields["creative"] = attribution.creative;
+        fields["click_label"] = attribution.clickLabel;
+        fields["cost_type"] = attribution.costType;
+        fields["cost_amount"] = attribution.costAmount?.toString();
+        fields["cost_currency"] = attribution.costCurrency;
+        fields["fb_install_referrer"] = attribution.fbInstallReferrer;
+        fields.forEach((key, value) {
           TestLib.addInfoToSend(key, value);
         });
-      TestLib.sendInfoToServer(_basePath);
+        TestLib.sendInfoToServer(_basePath);
+      }
     });
   }
 
@@ -936,9 +938,9 @@ class CommandExecutor {
     Adjust.disableCoppaCompliance();
   }
   void _enablePlayStoreKidsApp(){
-    Adjust.enablePlayStoreKidsApp();
+    Adjust.enablePlayStoreKidsCompliance();
   }
   void _disablePlayStoreKidsApp(){
-    Adjust.disablePlayStoreKidsApp();
+    Adjust.disablePlayStoreKidsCompliance();
   }
 }
