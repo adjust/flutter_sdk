@@ -223,23 +223,14 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             case "verifyPlayStorePurchase":
                 verifyPlayStorePurchase(call, result);
                 break;
+            case "verifyAndTrackPlayStorePurchase":
+                verifyAndTrackPlayStorePurchase(call, result);
+                break;
             case "verifyAppStorePurchase":
                 verifyAppStorePurchase(call, result);
                 break;
             case "setTestOptions":
                 setTestOptions(call, result);
-                break;
-            case "enableCoppaCompliance":
-                enableCoppaCompliance(result);
-                break;
-            case "disableCoppaCompliance":
-                disableCoppaCompliance(result);
-                break;
-            case "enablePlayStoreKidsCompliance":
-                enablePlayStoreKidsCompliance(result);
-                break;
-            case "disablePlayStoreKidsCompliance":
-                disablePlayStoreKidsCompliance(result);
                 break;
             default:
                 Log.e(TAG, "Not implemented method: " + call.method);
@@ -317,6 +308,15 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             }
         }
 
+        // COPPA compliance.
+        if (configMap.containsKey("coppaCompliantEnabled")) {
+            String strCoppaCompliantEnabled = (String) configMap.get("coppaCompliantEnabled");
+            boolean coppaCompliantEnabled = Boolean.parseBoolean(strCoppaCompliantEnabled);
+            if(coppaCompliantEnabled) {
+                adjustConfig.enableCoppaCompliance();
+            }
+        }
+
 
         // Read Android device info only once.
         if (configMap.containsKey("readDeviceInfoOnceEnabled")) {
@@ -324,6 +324,15 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
             boolean readDeviceInfoOnceEnabled = Boolean.parseBoolean(strReadDeviceInfoOnceEnabled);
             if (readDeviceInfoOnceEnabled) {
                 adjustConfig.enableDeviceIdsReadingOnce();
+            }
+        }
+
+        // Google Play Store kids apps.
+        if (configMap.containsKey("playStoreKidsAppEnabled")) {
+            String strPlayStoreKidsAppEnabled = (String) configMap.get("playStoreKidsAppEnabled");
+            boolean playStoreKidsAppEnabled = Boolean.parseBoolean(strPlayStoreKidsAppEnabled);
+            if (playStoreKidsAppEnabled) {
+                adjustConfig.enablePlayStoreKidsCompliance();
             }
         }
 
@@ -753,23 +762,6 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
         result.success(null);
     }
 
-    private void enableCoppaCompliance(final Result result) {
-        Adjust.enableCoppaCompliance(applicationContext);
-        result.success(null);
-    }
-    private void disableCoppaCompliance(final Result result) {
-        Adjust.disableCoppaCompliance(applicationContext);
-        result.success(null);
-    }
-    private void enablePlayStoreKidsCompliance(final Result result) {
-        Adjust.enablePlayStoreKidsCompliance(applicationContext);
-        result.success(null);
-    }
-    private void disablePlayStoreKidsCompliance(final Result result) {
-        Adjust.disablePlayStoreKidsCompliance(applicationContext);
-        result.success(null);
-    }
-
     private void getAttribution(final Result result) {
         Adjust.getAttribution(new OnAttributionReadListener() {
             @Override
@@ -1161,6 +1153,110 @@ public class AdjustSdk implements FlutterPlugin, ActivityAware, MethodCallHandle
                 result.success(adjustPurchaseMap);
             }
         });
+    }
+
+    private void verifyAndTrackPlayStorePurchase(final MethodCall call, final Result result) {
+        Map eventMap = (Map) call.arguments;
+        if (eventMap == null) {
+            return;
+        }
+
+        // Event token.
+        String eventToken = null;
+        if (eventMap.containsKey("eventToken")) {
+            eventToken = (String) eventMap.get("eventToken");
+        }
+
+        // Create event object.
+        AdjustEvent event = new AdjustEvent(eventToken);
+
+        // Revenue.
+        if (eventMap.containsKey("revenue") || eventMap.containsKey("currency")) {
+            double revenue = -1.0;
+            String strRevenue = (String) eventMap.get("revenue");
+
+            try {
+                revenue = Double.parseDouble(strRevenue);
+            } catch (NumberFormatException ignore) {}
+
+            String currency = (String) eventMap.get("currency");
+            event.setRevenue(revenue, currency);
+        }
+
+        // Revenue deduplication.
+        if (eventMap.containsKey("transactionId")) {
+            String orderId = (String) eventMap.get("transactionId");
+            event.setOrderId(orderId);
+        }
+
+        // deduplicationId.
+        if (eventMap.containsKey("deduplicationId")) {
+            String deduplicationId = (String) eventMap.get("deduplicationId");
+            event.setDeduplicationId(deduplicationId);
+        }
+
+        // Product ID.
+        if (eventMap.containsKey("productId")) {
+            String productId = (String) eventMap.get("productId");
+            event.setProductId(productId);
+        }
+
+        // Purchase token.
+        if (eventMap.containsKey("purchaseToken")) {
+            String purchaseToken = (String) eventMap.get("purchaseToken");
+            event.setPurchaseToken(purchaseToken);
+        }
+
+        // Callback ID.
+        if (eventMap.containsKey("callbackId")) {
+            String callbackId = (String) eventMap.get("callbackId");
+            event.setCallbackId(callbackId);
+        }
+
+        // Callback parameters.
+        if (eventMap.containsKey("callbackParameters")) {
+            String strCallbackParametersJson = (String) eventMap.get("callbackParameters");
+            try {
+                JSONObject jsonCallbackParameters = new JSONObject(strCallbackParametersJson);
+                JSONArray callbackParametersKeys = jsonCallbackParameters.names();
+                for (int i = 0; i < callbackParametersKeys.length(); ++i) {
+                    String key = callbackParametersKeys.getString(i);
+                    String value = jsonCallbackParameters.getString(key);
+                    event.addCallbackParameter(key, value);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to parse event callback parameter! Details: " + e);
+            }
+        }
+
+        // Partner parameters.
+        if (eventMap.containsKey("partnerParameters")) {
+            String strPartnerParametersJson = (String) eventMap.get("partnerParameters");
+            try {
+                JSONObject jsonPartnerParameters = new JSONObject(strPartnerParametersJson);
+                JSONArray partnerParametersKeys = jsonPartnerParameters.names();
+                for (int i = 0; i < partnerParametersKeys.length(); ++i) {
+                    String key = partnerParametersKeys.getString(i);
+                    String value = jsonPartnerParameters.getString(key);
+                    event.addPartnerParameter(key, value);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to parse event partner parameter! Details: " + e);
+            }
+        }
+
+        // Verify purchase.
+        Adjust.verifyAndTrackPlayStorePurchase(event, new OnPurchaseVerificationFinishedListener() {
+            @Override
+            public void onVerificationFinished(AdjustPurchaseVerificationResult verificationResult) {
+                HashMap<String, String> adjustPurchaseMap = new HashMap<String, String>();
+                adjustPurchaseMap.put("code", String.valueOf(verificationResult.getCode()));
+                adjustPurchaseMap.put("verificationStatus", verificationResult.getVerificationStatus());
+                adjustPurchaseMap.put("message", verificationResult.getMessage());
+                result.success(adjustPurchaseMap);
+            }
+        });
+
     }
 
     private void processAndResolveDeeplink(final MethodCall call, final Result result) {

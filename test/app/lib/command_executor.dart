@@ -130,23 +130,14 @@ class CommandExecutor {
       case 'verifyPurchase':
         _verifyPurchase();
         break;
+      case 'verifyTrack':
+        _verifyTrack();
+        break;
       case 'processDeeplink':
         _processDeeplink();
         break;
       case 'attributionGetter':
         _attributionGetter();
-        break;
-      case "enableCoppaCompliance" :
-        _enableCoppaCompliance();
-        break;
-      case "disableCoppaCompliance" :
-        _disableCoppaCompliance();
-        break;
-      case "enablePlayStoreKidsApp" :
-        _enablePlayStoreKidsApp();
-        break;
-      case "disablePlayStoreKidsApp" :
-        _disablePlayStoreKidsApp();
         break;
     }
   }
@@ -318,6 +309,16 @@ class CommandExecutor {
     if (_command.containsParameter('externalDeviceId')) {
       adjustConfig!.externalDeviceId =
           _command.getFirstParameterValue('externalDeviceId');
+    }
+
+    if (_command.containsParameter('coppaCompliant')) {
+      adjustConfig!.coppaCompliantEnabled =
+          _command.getFirstParameterValue('coppaCompliant') == 'true';
+    }
+
+    if (_command.containsParameter('playStoreKids')) {
+      adjustConfig!.playStoreKidsAppEnabled =
+          _command.getFirstParameterValue('playStoreKids') == 'true';
     }
 
     if (_command.containsParameter('finalAttributionEnabled')) {
@@ -898,6 +899,26 @@ class CommandExecutor {
     }
   }
 
+  void _verifyTrack() {
+    _event();
+    int eventNumber = 0;
+    if (_command.containsParameter("eventName")) {
+      String eventName = _command.getFirstParameterValue("eventName")!;
+      eventNumber = int.parse(eventName.substring(eventName.length - 1));
+    }
+
+    AdjustEvent adjustEvent = _savedEvents[eventNumber]!;
+
+    Adjust.verifyAndTrackPlayStorePurchase(adjustEvent).then((result){
+      String? localBasePath = _basePath;
+      TestLib.addInfoToSend('verification_status', result?.verificationStatus);
+      TestLib.addInfoToSend('code', result?.code.toString());
+      TestLib.addInfoToSend('message', result?.message);
+      TestLib.sendInfoToServer(localBasePath);
+    });
+    _savedEvents.clear();
+  }
+
   void _processDeeplink() {
     String deeplink = _command.getFirstParameterValue('deeplink')!;
     Adjust.processAndResolveDeeplink(deeplink).then((resolvedLink) {
@@ -929,18 +950,5 @@ class CommandExecutor {
         TestLib.sendInfoToServer(_basePath);
       }
     });
-  }
-
-  void _enableCoppaCompliance(){
-    Adjust.enableCoppaCompliance();
-  }
-  void _disableCoppaCompliance(){
-    Adjust.disableCoppaCompliance();
-  }
-  void _enablePlayStoreKidsApp(){
-    Adjust.enablePlayStoreKidsCompliance();
-  }
-  void _disablePlayStoreKidsApp(){
-    Adjust.disablePlayStoreKidsCompliance();
   }
 }

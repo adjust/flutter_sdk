@@ -68,22 +68,6 @@ class Adjust {
     _channel.invokeMethod('gdprForgetMe');
   }
 
-  static void enableCoppaCompliance() {
-    _channel.invokeMethod('enableCoppaCompliance');
-  }
-
-  static void disableCoppaCompliance() {
-    _channel.invokeMethod('disableCoppaCompliance');
-  }
-
-  static void enablePlayStoreKidsCompliance() {
-    _channel.invokeMethod('enablePlayStoreKidsCompliance');
-  }
-
-  static void disablePlayStoreKidsCompliance() {
-    _channel.invokeMethod('disablePlayStoreKidsCompliance');
-  }
-
   static void onResume() {
     _channel.invokeMethod('onResume');
   }
@@ -214,6 +198,14 @@ class Adjust {
     final dynamic playStorePurchaseMap = 
       await _channel.invokeMethod('verifyPlayStorePurchase', purchase.toMap);
     return AdjustPurchaseVerificationInfo.fromMap(playStorePurchaseMap);
+  }
+
+  static Future<AdjustPurchaseVerificationInfo?> verifyAndTrackPlayStorePurchase(
+      AdjustEvent event) async {
+    final dynamic playStorePurchaseMap =
+    await _channel.invokeMethod('verifyAndTrackPlayStorePurchase', event.toMap);
+    return AdjustPurchaseVerificationInfo.fromMap(playStorePurchaseMap);
+
   }
 
   static Future<AdjustPurchaseVerificationInfo?> verifyAppStorePurchase(

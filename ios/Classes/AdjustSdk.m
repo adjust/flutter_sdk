@@ -68,10 +68,6 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self processDeeplink:call withResult:result];
     } else if ([@"trackAdRevenue" isEqualToString:call.method]) {
         [self trackAdRevenue:call withResult:result];
-    } else if ([@"enableCoppaCompliance" isEqualToString:call.method]) {
-        [Adjust enableCoppaCompliance];
-    } else if ([@"disableCoppaCompliance" isEqualToString:call.method]) {
-        [Adjust disableCoppaCompliance];
     } else if ([@"trackAppStoreSubscription" isEqualToString:call.method]) {
         [self trackAppStoreSubscription:call withResult:result];
     } else if ([@"trackPlayStoreSubscription" isEqualToString:call.method]) {
@@ -128,6 +124,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self verifyAppStorePurchase:call withResult:result];
     } else if ([@"verifyPlayStorePurchase" isEqualToString:call.method]) {
         [self verifyAppStorePurchase:call withResult:result];
+    } else if ([@"verifyAndTrackPlayStorePurchase" isEqualToString:call.method]) {
+        [self verifyAndTrackPlayStorePurchase:call withResult:result];
     } else if ([@"processDeeplink" isEqualToString:call.method]) {
         [self processDeeplink:call withResult:result];
     } else if ([@"processAndResolveDeeplink" isEqualToString:call.method]) {
@@ -153,6 +151,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *sendInBackground = call.arguments[@"sendInBackground"];
     NSInteger eventDeduplicationIdsMaxSize = [call.arguments[@"eventDeduplicationIdsMaxSize"] integerValue];
     NSString *needsCost = call.arguments[@"needsCost"];
+    NSString *coppaCompliantEnabled = call.arguments[@"coppaCompliantEnabled"];
     NSString *linkMeEnabled = call.arguments[@"linkMeEnabled"];
     NSString *allowAdServicesInfoReading = call.arguments[@"allowAdServicesInfoReading"];
     NSString *allowIdfaReading = call.arguments[@"allowIdfaReading"];
@@ -190,6 +189,13 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     // LinkMe.
     if ([self isFieldValid:linkMeEnabled]) {
         [adjustConfig enableLinkMe];
+    }
+
+    // COPPA compliance.
+    if ([self isFieldValid:coppaCompliantEnabled]) {
+        if (coppaCompliantEnabled == true) {
+            [Adjust enableCoppaCompliance];
+        }
     }
 
     // Default tracker.
@@ -736,6 +742,98 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
             }
         }];
     }
+}
+
+- (void) verifyAndTrackPlayStorePurchase:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *eventToken = call.arguments[@"eventToken"];
+    NSString *revenue = call.arguments[@"revenue"];
+    NSString *currency = call.arguments[@"currency"];
+    NSString *callbackId = call.arguments[@"callbackId"];
+    NSString *receipt = call.arguments[@"receipt"];
+    NSString *productId = call.arguments[@"productId"];
+    NSString *transactionId = call.arguments[@"transactionId"];
+    NSString *deduplicationId = call.arguments[@"deduplicationId"];
+    NSString *strCallbackParametersJson = call.arguments[@"callbackParameters"];
+    NSString *strPartnerParametersJson = call.arguments[@"partnerParameters"];
+
+    // Create event object.
+    ADJEvent *adjustEvent = [[ADJEvent alloc] initWithEventToken:eventToken];
+
+    // Revenue.
+    if ([self isFieldValid:revenue]) {
+        double revenueValue = [revenue doubleValue];
+        [adjustEvent setRevenue:revenueValue currency:currency];
+    }
+
+    // Receipt.
+    if ([self isFieldValid:receipt]) {
+        NSData *receiptValue;
+        receiptValue = [receipt dataUsingEncoding:NSUTF8StringEncoding];
+        [adjustEvent setReceipt:receiptValue];
+    }
+
+    // Product ID.
+    if ([self isFieldValid:productId]) {
+        [adjustEvent setProductId:productId];
+    }
+
+    // Transaction ID.
+    if ([self isFieldValid:transactionId]) {
+        [adjustEvent setTransactionId:transactionId];
+    }
+
+    // Deduplication ID.
+    if ([self isFieldValid:deduplicationId]) {
+        [adjustEvent setDeduplicationId:deduplicationId];
+    }
+
+    // Callback ID.
+    if ([self isFieldValid:callbackId]) {
+        [adjustEvent setCallbackId:callbackId];
+    }
+
+    // Callback parameters.
+    if (strCallbackParametersJson != nil) {
+        NSData *callbackParametersData = [strCallbackParametersJson dataUsingEncoding:NSUTF8StringEncoding];
+        id callbackParametersJson = [NSJSONSerialization JSONObjectWithData:callbackParametersData
+                                                                    options:0
+                                                                      error:NULL];
+        for (id key in callbackParametersJson) {
+            NSString *value = [callbackParametersJson objectForKey:key];
+            [adjustEvent addCallbackParameter:key value:value];
+        }
+    }
+
+    // Partner parameters.
+    if (strPartnerParametersJson != nil) {
+        NSData *partnerParametersData = [strPartnerParametersJson dataUsingEncoding:NSUTF8StringEncoding];
+        id partnerParametersJson = [NSJSONSerialization JSONObjectWithData:partnerParametersData
+                                                                   options:0
+                                                                     error:NULL];
+        for (id key in partnerParametersJson) {
+            NSString *value = [partnerParametersJson objectForKey:key];
+            [adjustEvent addPartnerParameter:key value:value];
+        }
+    }
+
+    // verifyAndTrackPlayStorePurchase.
+    [Adjust verifyAndTrackAppStorePurchase:adjustEvent withCompletionHandler:^(ADJPurchaseVerificationResult * _Nonnull verificationResult) {
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        if (verificationResult == nil) {
+            result(dictionary);
+        }
+        
+        [self addValueOrEmpty:verificationResult.verificationStatus
+                      withKey:@"verificationStatus"
+                 toDictionary:dictionary];
+        [self addValueOrEmpty:[NSString stringWithFormat:@"%d", verificationResult.code]
+                      withKey:@"code"
+                 toDictionary:dictionary];
+        [self addValueOrEmpty:verificationResult.message
+                      withKey:@"message"
+                 toDictionary:dictionary];
+        result(dictionary);
+    }];
 }
 
 - (void)setTestOptions:(FlutterMethodCall *)call withResult:(FlutterResult)result {

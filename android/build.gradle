@@ -4,9 +4,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
     }
 
     dependencies {
@@ -17,9 +14,6 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
     }
 
     gradle.projectsEvaluated {
@@ -43,5 +37,5 @@ android {
 }
 
 dependencies {
-    api 'com.adjust.sdk:adjust-android:5.0.0-SNAPSHOT'
+    api 'com.adjust.sdk:adjust-android:5.0.0'
 }

@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
                     'Start Test Session',
                     () => Adjust.getSdkVersion().then((sdkVersion) {
                           // TestLib.addTestDirectory('event-callbacks');
-                          // TestLib.addTest('Test_Google_Kids_all_packages');
+                          TestLib.addTest('Test_AttributionGetter_after_install');
                           TestLib.startTestSession(sdkVersion);
                         }))
               ])))

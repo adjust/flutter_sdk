@@ -60,6 +60,8 @@ class AdjustConfig {
   num? eventDeduplicationIdsMaxSize;
   String? defaultTracker;
   String? externalDeviceId;
+  bool? playStoreKidsAppEnabled;
+  bool? coppaCompliantEnabled;
   List<String> domains  = [];
   bool? useSubdomains;
   bool? isDataResidency;
@@ -247,6 +249,12 @@ class AdjustConfig {
     if (preinstallTrackingEnabled != null) {
       configMap['preinstallTrackingEnabled'] =
           preinstallTrackingEnabled.toString();
+    }
+    if (playStoreKidsAppEnabled != null) {
+      configMap['playStoreKidsAppEnabled'] = playStoreKidsAppEnabled.toString();
+    }
+    if (coppaCompliantEnabled != null) {
+      configMap['coppaCompliantEnabled'] = coppaCompliantEnabled.toString();
     }
     if (finalAndroidAttributionEnabled != null) {
       configMap['finalAndroidAttributionEnabled'] = finalAndroidAttributionEnabled.toString();
