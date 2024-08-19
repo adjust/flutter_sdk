@@ -23,6 +23,7 @@ import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
 import 'package:adjust_sdk/adjust_purchase_verification_info.dart';
+import 'package:adjust_sdk/adjust_deeplink.dart';
 import 'package:test_app/command.dart';
 import 'package:test_lib/test_lib.dart';
 
@@ -59,7 +60,7 @@ class CommandExecutor {
         _config();
         break;
       case 'start':
-        _start();
+        _initSdk();
         break;
       case 'event':
         _event();
@@ -75,12 +76,6 @@ class CommandExecutor {
         break;
       case 'setEnabled':
         _setEnabled();
-        break;
-      case 'setReferrer':
-        _setReferrer();
-        break;
-      case 'sendReferrer':
-        _setReferrer();
         break;
       case 'setOfflineMode':
         _setOfflineMode();
@@ -312,18 +307,13 @@ class CommandExecutor {
     }
 
     if (_command.containsParameter('coppaCompliant')) {
-      adjustConfig!.coppaCompliantEnabled =
+      adjustConfig!.isCoppaComplianceEnabled =
           _command.getFirstParameterValue('coppaCompliant') == 'true';
     }
 
     if (_command.containsParameter('playStoreKids')) {
-      adjustConfig!.playStoreKidsAppEnabled =
+      adjustConfig!.isPlayStoreKidsComplianceEnabled =
           _command.getFirstParameterValue('playStoreKids') == 'true';
-    }
-
-    if (_command.containsParameter('finalAttributionEnabled')) {
-      adjustConfig!.finalAndroidAttributionEnabled =
-      _command.getFirstParameterValue('finalAttributionEnabled') == 'true';
     }
 
     if (_command.containsParameter('sendInBackground')) {
@@ -369,15 +359,16 @@ class CommandExecutor {
     adjustConfig.eventSuccessCallback = null;
     adjustConfig.eventFailureCallback = null;
     adjustConfig.deferredDeeplinkCallback = null;
+    adjustConfig.skanUpdatedCallback = null;
 
     // TODO: Deeplinking in Flutter example.
     // https://github.com/flutter/flutter/issues/8711#issuecomment-304681212
     if (_command.containsParameter('deferredDeeplinkCallback')) {
       String? localBasePath = _extraPath;
-      adjustConfig.launchDeferredDeeplink =
+      adjustConfig.isDeferredDeeplinkOpeningEnabled =
           _command.getFirstParameterValue('deferredDeeplinkCallback') == 'true';
       print(
-          '[CommandExecutor]: Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink}');
+          '[CommandExecutor]: Deferred deeplink callback, isDeferredDeeplinkOpeningEnabled: ${adjustConfig.isDeferredDeeplinkOpeningEnabled}');
       adjustConfig.deferredDeeplinkCallback = (String? uri) {
         print('[CommandExecutor]: Sending deeplink info to server: $uri');
         TestLib.addInfoToSend('deeplink', uri);
@@ -486,12 +477,19 @@ class CommandExecutor {
       };
     }
 
-    // if (_command.containsParameter('urlStrategy')) {
-    //   adjustConfig.urlStrategy = _command.getFirstParameterValue('urlStrategy');
-    // }
+    if (_command.containsParameter('skanCallback')) {
+      String? localBasePath = _extraPath;
+      adjustConfig.skanUpdatedCallback =
+          (Map<String, String> data) {
+        print(
+            '[CommandExecutor]: Skan Callback: $data');
+        data.forEach((k, v) => TestLib.addInfoToSend(k, v));
+        TestLib.sendInfoToServer(localBasePath);
+      };
+    }
   }
 
-  void _start() {
+  void _initSdk() {
     _config();
     int configNumber = 0;
     if (_command.containsParameter('configName')) {
@@ -500,7 +498,7 @@ class CommandExecutor {
     }
 
     AdjustConfig adjustConfig = _savedConfigs[configNumber]!;
-    Adjust.start(adjustConfig);
+    Adjust.initSdk(adjustConfig);
     _savedConfigs.remove(configNumber);
   }
 
@@ -550,9 +548,6 @@ class CommandExecutor {
     if (_command.containsParameter('orderId')) {
       adjustEvent!.transactionId = _command.getFirstParameterValue('orderId');
     }
-    if (_command.containsParameter('receipt')) {
-      adjustEvent!.receipt = _command.getFirstParameterValue('receipt');
-    }
     if (_command.containsParameter('productId')) {
       adjustEvent!.productId = _command.getFirstParameterValue('productId');
     }
@@ -601,11 +596,6 @@ class CommandExecutor {
     }
   }
 
-  void _setReferrer() {
-    String referrer = _command.getFirstParameterValue('referrer')!;
-    Adjust.setReferrer(referrer);
-  }
-
   void _setOfflineMode() {
     bool isEnabled = _command.getFirstParameterValue('enabled') == 'true';
     if(isEnabled){
@@ -622,7 +612,8 @@ class CommandExecutor {
 
   void _openDeeplink() {
     String deeplink = _command.getFirstParameterValue('deeplink')!;
-    Adjust.processDeeplink(deeplink);
+    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplink);
+    Adjust.processDeeplink(adjustDeeplink);
   }
 
   void _gdprForgetMe() {
@@ -692,13 +683,12 @@ class CommandExecutor {
       String? price = _command.getFirstParameterValue('revenue');
       String? currency = _command.getFirstParameterValue('currency');
       String? transactionId = _command.getFirstParameterValue('transactionId');
-      String? receipt = _command.getFirstParameterValue('receipt');
       String transactionDate =
           _command.getFirstParameterValue('transactionDate')!;
       String salesRegion = _command.getFirstParameterValue('salesRegion')!;
 
       AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
-          price, currency, transactionId, receipt);
+          price, currency, transactionId);
 
       subscription.setTransactionDate(transactionDate);
       subscription.setSalesRegion(salesRegion);
@@ -868,12 +858,11 @@ class CommandExecutor {
 
   void _verifyPurchase() {
     if (Platform.isIOS) {
-      String? receipt = _command.getFirstParameterValue('receipt');
       String? productId = _command.getFirstParameterValue('productId');
       String? transactionId = _command.getFirstParameterValue('transactionId');
 
       AdjustAppStorePurchase purchase =
-          new AdjustAppStorePurchase(receipt, productId, transactionId);
+          new AdjustAppStorePurchase(productId, transactionId);
 
       Adjust.verifyAppStorePurchase(purchase).then((result) {
         String? localBasePath = _basePath;
@@ -909,27 +898,38 @@ class CommandExecutor {
 
     AdjustEvent adjustEvent = _savedEvents[eventNumber]!;
 
-    Adjust.verifyAndTrackPlayStorePurchase(adjustEvent).then((result){
-      String? localBasePath = _basePath;
-      TestLib.addInfoToSend('verification_status', result?.verificationStatus);
-      TestLib.addInfoToSend('code', result?.code.toString());
-      TestLib.addInfoToSend('message', result?.message);
-      TestLib.sendInfoToServer(localBasePath);
-    });
-    _savedEvents.clear();
+    if (Platform.isIOS) {
+      Adjust.verifyAndTrackAppStorePurchase(adjustEvent).then((result) {
+        String? localBasePath = _basePath;
+        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
+        TestLib.addInfoToSend('code', result?.code.toString());
+        TestLib.addInfoToSend('message', result?.message);
+        TestLib.sendInfoToServer(localBasePath);
+      });
+    } else if (Platform.isAndroid) {
+      Adjust.verifyAndTrackPlayStorePurchase(adjustEvent).then((result) {
+        String? localBasePath = _basePath;
+        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
+        TestLib.addInfoToSend('code', result?.code.toString());
+        TestLib.addInfoToSend('message', result?.message);
+        TestLib.sendInfoToServer(localBasePath);
+      });
+    }
+
+    _savedEvents.remove(eventNumber);
   }
 
   void _processDeeplink() {
     String deeplink = _command.getFirstParameterValue('deeplink')!;
-    Adjust.processAndResolveDeeplink(deeplink).then((resolvedLink) {
+    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplink);
+    Adjust.processAndResolveDeeplink(adjustDeeplink).then((resolvedLink) {
       String? localBasePath = _basePath;
       TestLib.addInfoToSend('resolved_link', resolvedLink);
       TestLib.sendInfoToServer(localBasePath);
     });
   }
 
-  void _attributionGetter(){
-
+  void _attributionGetter() {
     Adjust.getAttribution().then((attribution){
       if(attribution != null) {
         Map<String, String?> fields = new Map();

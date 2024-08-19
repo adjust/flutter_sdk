@@ -18,6 +18,7 @@ import 'package:adjust_sdk/adjust_play_store_purchase.dart';
 import 'package:adjust_sdk/adjust_play_store_subscription.dart';
 import 'package:adjust_sdk/adjust_purchase_verification_info.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
+import 'package:adjust_sdk/adjust_deeplink.dart';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
@@ -27,9 +28,9 @@ class Adjust {
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
 
-  static void start(AdjustConfig config) {
+  static void initSdk(AdjustConfig config) {
     config.sdkPrefix = _sdkPrefix;
-    _channel.invokeMethod('start', config.toMap);
+    _channel.invokeMethod('initSdk', config.toMap);
   }
 
   static void trackEvent(AdjustEvent event) {
@@ -56,24 +57,12 @@ class Adjust {
     _channel.invokeMethod('setPushToken', {'pushToken': token});
   }
 
-  static void setReferrer(String referrer) {
-    _channel.invokeMethod('setReferrer', {'referrer': referrer});
-  }
-
-  static void processDeeplink(String url) {
-    _channel.invokeMethod('processDeeplink', {'url': url});
+  static void processDeeplink(AdjustDeeplink deeplink) {
+    _channel.invokeMethod('processDeeplink', {'deeplink': deeplink.deeplink});
   }
 
   static void gdprForgetMe() {
     _channel.invokeMethod('gdprForgetMe');
-  }
-
-  static void onResume() {
-    _channel.invokeMethod('onResume');
-  }
-
-  static void onPause() {
-    _channel.invokeMethod('onPause');
   }
 
   static Future<bool> isEnabled() async {
@@ -106,9 +95,9 @@ class Adjust {
     return googleAdId;
   }
 
-  static Future<num> requestTrackingAuthorizationWithCompletionHandler() async {
+  static Future<num> requestAppTrackingAuthorization() async {
     final num status = await _channel
-        .invokeMethod('requestTrackingAuthorizationWithCompletionHandler');
+        .invokeMethod('requestAppTrackingAuthorization');
     return status;
   }
 
@@ -203,9 +192,8 @@ class Adjust {
   static Future<AdjustPurchaseVerificationInfo?> verifyAndTrackPlayStorePurchase(
       AdjustEvent event) async {
     final dynamic playStorePurchaseMap =
-    await _channel.invokeMethod('verifyAndTrackPlayStorePurchase', event.toMap);
+      await _channel.invokeMethod('verifyAndTrackPlayStorePurchase', event.toMap);
     return AdjustPurchaseVerificationInfo.fromMap(playStorePurchaseMap);
-
   }
 
   static Future<AdjustPurchaseVerificationInfo?> verifyAppStorePurchase(
@@ -215,15 +203,32 @@ class Adjust {
     return AdjustPurchaseVerificationInfo.fromMap(appStorePurchaseMap);
   }
 
-  static Future<String?> processAndResolveDeeplink(String deeplink) async {
+  static Future<AdjustPurchaseVerificationInfo?> verifyAndTrackAppStorePurchase(
+      AdjustEvent event) async {
+    final dynamic appStorePurchaseMap =
+      await _channel.invokeMethod('verifyAndTrackAppStorePurchase', event.toMap);
+    return AdjustPurchaseVerificationInfo.fromMap(appStorePurchaseMap);
+  }
+
+  static Future<String?> processAndResolveDeeplink(AdjustDeeplink deeplink) async {
     final resolvedLink = 
-      await _channel.invokeMethod('processAndResolveDeeplink', {'deeplink': deeplink});
+      await _channel.invokeMethod('processAndResolveDeeplink', {'deeplink': deeplink.deeplink});
     return resolvedLink;
   }
 
-  // For testing purposes only. Do not use in production.
+  // for testing purposes only, do not use in production!
   @visibleForTesting
   static void setTestOptions(final dynamic testOptions) {
     _channel.invokeMethod('setTestOptions', testOptions);
+  }
+
+  @visibleForTesting
+  static void onResume() {
+    _channel.invokeMethod('onResume');
+  }
+
+  @visibleForTesting
+  static void onPause() {
+    _channel.invokeMethod('onPause');
   }
 }

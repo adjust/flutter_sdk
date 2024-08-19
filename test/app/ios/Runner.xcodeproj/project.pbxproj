@@ -14,6 +14,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		9999701FCCAFA5113A47A686 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F70B9B87078232C44FC6AD5 /* Pods_Runner.framework */; };
+		9D2B91D62C73E84D00507EA6 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D2B91D52C73E84D00507EA6 /* StoreKit.framework */; };
 		9D6D515025E068480074ED65 /* AdServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D6D514F25E068480074ED65 /* AdServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		9D6D515225E0684E0074ED65 /* AppTrackingTransparency.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D6D515125E0684E0074ED65 /* AppTrackingTransparency.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		9DF8057224F92ED000A001CE /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8057124F92ED000A001CE /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -48,6 +49,7 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9D2B91D52C73E84D00507EA6 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		9D6D514F25E068480074ED65 /* AdServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdServices.framework; path = System/Library/Frameworks/AdServices.framework; sourceTree = SDKROOT; };
 		9D6D515125E0684E0074ED65 /* AppTrackingTransparency.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppTrackingTransparency.framework; path = System/Library/Frameworks/AppTrackingTransparency.framework; sourceTree = SDKROOT; };
 		9D6D515325E0685B0074ED65 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
@@ -64,6 +66,7 @@
 			files = (
 				9DF8057224F92ED000A001CE /* AdSupport.framework in Frameworks */,
 				9D6D515025E068480074ED65 /* AdServices.framework in Frameworks */,
+				9D2B91D62C73E84D00507EA6 /* StoreKit.framework in Frameworks */,
 				9D6D515225E0684E0074ED65 /* AppTrackingTransparency.framework in Frameworks */,
 				9999701FCCAFA5113A47A686 /* Pods_Runner.framework in Frameworks */,
 			);
@@ -75,6 +78,7 @@
 		1E115D8BF851445370C38B97 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9D2B91D52C73E84D00507EA6 /* StoreKit.framework */,
 				9D6D515325E0685B0074ED65 /* CoreTelephony.framework */,
 				9D6D515125E0684E0074ED65 /* AppTrackingTransparency.framework */,
 				9D6D514F25E068480074ED65 /* AdServices.framework */,
