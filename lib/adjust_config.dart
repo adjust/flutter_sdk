@@ -36,23 +36,21 @@ class AdjustConfig {
   static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
   static const String _skanUpdatedCallbackName = 'adj-skan-updated';
 
-  String _appToken;
-  AdjustEnvironment _environment;
+  final String _appToken;
+  final AdjustEnvironment _environment;
 
-  bool? _isSkanAttributionEnabled;
-  bool? _isSendingInBackgroundEnabled;
-  bool? _isAdServicesEnabled;
-  bool? _isIdfaReadingEnabled;
-  bool? _isIdfvReadingEnabled;
-  bool? _isCostDataInAttributionEnabled;
-  bool? _isPreinstallTrackingEnabled;
-  bool? _isLinkMeEnabled;
-  bool? _isDeviceIdsReadingOnceEnabled;
+  bool? isSkanAttributionEnabled;
+  bool? isSendingInBackgroundEnabled;
+  bool? isAdServicesEnabled;
+  bool? isIdfaReadingEnabled;
+  bool? isIdfvReadingEnabled;
+  bool? isCostDataInAttributionEnabled;
+  bool? isPreinstallTrackingEnabled;
+  bool? isLinkMeEnabled;
+  bool? isDeviceIdsReadingOnceEnabled;
   bool? isCoppaComplianceEnabled;
   bool? isPlayStoreKidsComplianceEnabled;
   bool? isDeferredDeeplinkOpeningEnabled;
-  bool? shouldUseSubdomains;
-  bool? isDataResidency;
 
   num? attConsentWaitingInterval;
   num? eventDeduplicationIdsMaxSize;
@@ -64,7 +62,9 @@ class AdjustConfig {
   String? preinstallFilePath;
   String? fbAppId;
 
-  List<String> urlStrategyDomains = [];
+  bool? _isDataResidency;
+  bool? _shouldUseSubdomains;
+  List<String> _urlStrategyDomains = [];
 
   AdjustLogLevel? logLevel;
   AttributionCallback? attributionCallback;
@@ -79,42 +79,10 @@ class AdjustConfig {
     _initCallbackHandlers();
   }
 
-  void enableCostDataInAttribution() {
-    _isCostDataInAttributionEnabled = true;
-  }
-
-  void enableSendingInBackground() {
-    _isSendingInBackgroundEnabled = true;
-  }
-
-  void disableAdServices() {
-    _isAdServicesEnabled = false;
-  }
-
-  void disableIdfaReading() {
-    _isIdfaReadingEnabled = false;
-  }
-
-  void disableIdfvReading() {
-    _isIdfvReadingEnabled = false;
-  }
-
-  void enableLinkMe() {
-    _isLinkMeEnabled = true;
-  }
-
-  void enableDeviceIdsReadingOnce() {
-    _isDeviceIdsReadingOnceEnabled = true;
-  }
-
-  void disableSkanAttribution() {
-    _isSkanAttributionEnabled = false;
-  }
-
-  void setUrlStrategy(List<String> _urlStrategyDomains, bool _shouldUseSubdomains, bool _isDataResidency) {
-    urlStrategyDomains.addAll(_urlStrategyDomains);
-    shouldUseSubdomains = _shouldUseSubdomains;
-    isDataResidency = _isDataResidency;
+  void setUrlStrategy(List<String> urlStrategyDomains, bool shouldUseSubdomains, bool isDataResidency) {
+    _urlStrategyDomains.addAll(urlStrategyDomains);
+    _shouldUseSubdomains = shouldUseSubdomains;
+    _isDataResidency = isDataResidency;
   }
 
   void _initCallbackHandlers() {
@@ -205,26 +173,26 @@ class AdjustConfig {
     if (fbAppId != null) {
       configMap['fbAppId'] = fbAppId;
     }
-    if (urlStrategyDomains.isEmpty != true ) {
-      configMap['urlStrategyDomains'] = urlStrategyDomains.toString();
+    if (_urlStrategyDomains.isEmpty != true ) {
+      configMap['urlStrategyDomains'] = _urlStrategyDomains.toString();
     }
-    if (isDataResidency != null) {
-      configMap['isDataResidency'] = isDataResidency.toString();
+    if (_isDataResidency != null) {
+      configMap['isDataResidency'] = _isDataResidency.toString();
     }
-    if (shouldUseSubdomains != null) {
-      configMap['shouldUseSubdomains'] = shouldUseSubdomains.toString();
+    if (_shouldUseSubdomains != null) {
+      configMap['shouldUseSubdomains'] = _shouldUseSubdomains.toString();
     }
-    if (_isCostDataInAttributionEnabled != null) {
-      configMap['isCostDataInAttributionEnabled'] = _isCostDataInAttributionEnabled.toString();
+    if (isCostDataInAttributionEnabled != null) {
+      configMap['isCostDataInAttributionEnabled'] = isCostDataInAttributionEnabled.toString();
     }
-    if (_isSendingInBackgroundEnabled != null) {
-      configMap['isSendingInBackgroundEnabled'] = _isSendingInBackgroundEnabled.toString();
+    if (isSendingInBackgroundEnabled != null) {
+      configMap['isSendingInBackgroundEnabled'] = isSendingInBackgroundEnabled.toString();
     }
-    if (_isCostDataInAttributionEnabled != null) {
-      configMap['isCostDataInAttributionEnabled'] = _isCostDataInAttributionEnabled.toString();
+    if (isCostDataInAttributionEnabled != null) {
+      configMap['isCostDataInAttributionEnabled'] = isCostDataInAttributionEnabled.toString();
     }
-    if (_isPreinstallTrackingEnabled != null) {
-      configMap['isPreinstallTrackingEnabled'] = _isPreinstallTrackingEnabled.toString();
+    if (isPreinstallTrackingEnabled != null) {
+      configMap['isPreinstallTrackingEnabled'] = isPreinstallTrackingEnabled.toString();
     }
     if (isPlayStoreKidsComplianceEnabled != null) {
       configMap['isPlayStoreKidsComplianceEnabled'] = isPlayStoreKidsComplianceEnabled.toString();
@@ -232,23 +200,23 @@ class AdjustConfig {
     if (isCoppaComplianceEnabled != null) {
       configMap['isCoppaComplianceEnabled'] = isCoppaComplianceEnabled.toString();
     }
-    if (_isDeviceIdsReadingOnceEnabled != null) {
-      configMap['isDeviceIdsReadingOnceEnabled'] = _isDeviceIdsReadingOnceEnabled.toString();
+    if (isDeviceIdsReadingOnceEnabled != null) {
+      configMap['isDeviceIdsReadingOnceEnabled'] = isDeviceIdsReadingOnceEnabled.toString();
     }
-    if (_isLinkMeEnabled != null) {
-      configMap['isLinkMeEnabled'] = _isLinkMeEnabled.toString();
+    if (isLinkMeEnabled != null) {
+      configMap['isLinkMeEnabled'] = isLinkMeEnabled.toString();
     }
-    if (_isAdServicesEnabled != null) {
-      configMap['isAdServicesEnabled'] = _isAdServicesEnabled.toString();
+    if (isAdServicesEnabled != null) {
+      configMap['isAdServicesEnabled'] = isAdServicesEnabled.toString();
     }
-    if (_isIdfaReadingEnabled != null) {
-      configMap['isIdfaReadingEnabled'] = _isIdfaReadingEnabled.toString();
+    if (isIdfaReadingEnabled != null) {
+      configMap['isIdfaReadingEnabled'] = isIdfaReadingEnabled.toString();
     }
-    if (_isIdfvReadingEnabled != null) {
-      configMap['isIdfvReadingEnabled'] = _isIdfvReadingEnabled.toString();
+    if (isIdfvReadingEnabled != null) {
+      configMap['isIdfvReadingEnabled'] = isIdfvReadingEnabled.toString();
     }
-    if (_isSkanAttributionEnabled != null) {
-      configMap['isSkanAttributionEnabled'] = _isSkanAttributionEnabled.toString();
+    if (isSkanAttributionEnabled != null) {
+      configMap['isSkanAttributionEnabled'] = isSkanAttributionEnabled.toString();
     }
     if (isDeferredDeeplinkOpeningEnabled != null) {
       configMap['isDeferredDeeplinkOpeningEnabled'] = isDeferredDeeplinkOpeningEnabled.toString();

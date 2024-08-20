@@ -9,28 +9,19 @@
 import 'dart:convert';
 
 class AdjustAppStoreSubscription {
-  String? _price;
-  String? _currency;
-  String? _transactionId;
-  String? _transactionDate;
-  String? _salesRegion;
+  final String _price;
+  final String _currency;
+  final String _transactionId;
+  String? transactionDate;
+  String? salesRegion;
   String? _billingStore;
   Map<String, String>? _callbackParameters;
   Map<String, String>? _partnerParameters;
 
-  AdjustAppStoreSubscription(
-      this._price, this._currency, this._transactionId) {
+  AdjustAppStoreSubscription(this._price, this._currency, this._transactionId) {
     _billingStore = "iOS";
     _callbackParameters = new Map<String, String>();
     _partnerParameters = new Map<String, String>();
-  }
-
-  void setTransactionDate(String transactionDate) {
-    _transactionDate = transactionDate;
-  }
-
-  void setSalesRegion(String salesRegion) {
-    _salesRegion = salesRegion;
   }
 
   void addCallbackParameter(String key, String value) {
@@ -53,11 +44,11 @@ class AdjustAppStoreSubscription {
     if (_transactionId != null) {
       subscriptionMap['transactionId'] = _transactionId;
     }
-    if (_transactionDate != null) {
-      subscriptionMap['transactionDate'] = _transactionDate;
+    if (transactionDate != null) {
+      subscriptionMap['transactionDate'] = transactionDate;
     }
-    if (_salesRegion != null) {
-      subscriptionMap['salesRegion'] = _salesRegion;
+    if (salesRegion != null) {
+      subscriptionMap['salesRegion'] = salesRegion;
     }
     if (_billingStore != null) {
       subscriptionMap['billingStore'] = _billingStore;

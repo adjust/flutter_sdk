@@ -15,12 +15,12 @@ class AdjustEventSuccess {
   final String? jsonResponse;
 
   AdjustEventSuccess({
-    required this.message,
-    required this.timestamp,
-    required this.adid,
-    required this.eventToken,
-    required this.callbackId,
-    required this.jsonResponse,
+    this.message,
+    this.timestamp,
+    this.adid,
+    this.eventToken,
+    this.callbackId,
+    this.jsonResponse,
   });
 
   factory AdjustEventSuccess.fromMap(dynamic map) {

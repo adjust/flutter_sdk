@@ -7,7 +7,7 @@
 //
 
 class AdjustThirdPartySharing {
-  bool? _isEnabled;
+  final bool? _isEnabled;
   late List<String> _granularOptions;
   late List<String> _partnerSharingSettings;
 

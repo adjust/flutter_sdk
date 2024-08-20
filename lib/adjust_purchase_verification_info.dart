@@ -9,9 +9,9 @@
 import 'dart:convert';
 
 class AdjustPurchaseVerificationInfo {
-  final num? code;
-  final String? message;
-  final String? verificationStatus;
+  final num code;
+  final String message;
+  final String verificationStatus;
 
   AdjustPurchaseVerificationInfo(this.code, this.message, this.verificationStatus);
 

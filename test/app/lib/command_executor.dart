@@ -318,13 +318,13 @@ class CommandExecutor {
 
     if (_command.containsParameter('sendInBackground')) {
       if(_command.getFirstParameterValue('sendInBackground') == 'true')
-      adjustConfig!.enableSendingInBackground();
+      adjustConfig!.isSendingInBackgroundEnabled = true;
     }
 
     if (_command.containsParameter('allowAdServicesInfoReading')) {
       if(_command.getFirstParameterValue('allowAdServicesInfoReading') ==
           'false'){
-        adjustConfig!.disableAdServices();
+        adjustConfig!.isAdServicesEnabled = false;
       }
     }
 
@@ -337,13 +337,13 @@ class CommandExecutor {
     if (_command.containsParameter('allowSkAdNetworkHandling')) {
       if (_command.getFirstParameterValue('allowSkAdNetworkHandling') ==
           'false') {
-        adjustConfig!.disableSkanAttribution();
+        adjustConfig!.isSkanAttributionEnabled = false;
       }
     }
 
     if (_command.containsParameter('allowIdfaReading')) {
       if(_command.getFirstParameterValue('allowIdfaReading') == 'false') {
-        adjustConfig!.disableIdfaReading();
+        adjustConfig!.isIdfaReadingEnabled = false;
       }
     }
 
@@ -555,7 +555,7 @@ class CommandExecutor {
       adjustEvent!.transactionId = _command.getFirstParameterValue('transactionId');
     }
     if (_command.containsParameter('deduplicationId')) {
-      adjustEvent!.setDeduplicationId(_command.getFirstParameterValue('deduplicationId'));
+      adjustEvent!.deduplicationId = _command.getFirstParameterValue('deduplicationId');
     }
     if (_command.containsParameter('purchaseToken')) {
       adjustEvent!.purchaseToken = _command.getFirstParameterValue('purchaseToken');
@@ -680,9 +680,9 @@ class CommandExecutor {
 
   void _trackSubscription() {
     if (Platform.isIOS) {
-      String? price = _command.getFirstParameterValue('revenue');
-      String? currency = _command.getFirstParameterValue('currency');
-      String? transactionId = _command.getFirstParameterValue('transactionId');
+      String price = _command.getFirstParameterValue('revenue')!;
+      String currency = _command.getFirstParameterValue('currency')!;
+      String transactionId = _command.getFirstParameterValue('transactionId')!;
       String transactionDate =
           _command.getFirstParameterValue('transactionDate')!;
       String salesRegion = _command.getFirstParameterValue('salesRegion')!;
@@ -690,8 +690,8 @@ class CommandExecutor {
       AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
           price, currency, transactionId);
 
-      subscription.setTransactionDate(transactionDate);
-      subscription.setSalesRegion(salesRegion);
+      subscription.transactionDate = transactionDate;
+      subscription.salesRegion = salesRegion;
 
       if (_command.containsParameter('callbackParams')) {
         List<dynamic> callbackParams =
@@ -717,18 +717,18 @@ class CommandExecutor {
 
       Adjust.trackAppStoreSubscription(subscription);
     } else if (Platform.isAndroid) {
-      String? price = _command.getFirstParameterValue('revenue');
-      String? currency = _command.getFirstParameterValue('currency');
-      String? sku = _command.getFirstParameterValue('productId');
-      String? signature = _command.getFirstParameterValue('receipt');
-      String? purchaseToken = _command.getFirstParameterValue('purchaseToken');
-      String? orderId = _command.getFirstParameterValue('transactionId');
+      String price = _command.getFirstParameterValue('revenue')!;
+      String currency = _command.getFirstParameterValue('currency')!;
+      String sku = _command.getFirstParameterValue('productId')!;
+      String signature = _command.getFirstParameterValue('receipt')!;
+      String purchaseToken = _command.getFirstParameterValue('purchaseToken')!;
+      String orderId = _command.getFirstParameterValue('transactionId')!;
       String purchaseTime = _command.getFirstParameterValue('transactionDate')!;
 
       AdjustPlayStoreSubscription subscription =
           new AdjustPlayStoreSubscription(
               price, currency, sku, orderId, signature, purchaseToken);
-      subscription.setPurchaseTime(purchaseTime);
+      subscription.purchaseTime = purchaseTime;
 
       if (_command.containsParameter('callbackParams')) {
         List<dynamic> callbackParams =
@@ -858,8 +858,8 @@ class CommandExecutor {
 
   void _verifyPurchase() {
     if (Platform.isIOS) {
-      String? productId = _command.getFirstParameterValue('productId');
-      String? transactionId = _command.getFirstParameterValue('transactionId');
+      String productId = _command.getFirstParameterValue('productId')!;
+      String transactionId = _command.getFirstParameterValue('transactionId')!;
 
       AdjustAppStorePurchase purchase =
           new AdjustAppStorePurchase(productId, transactionId);
@@ -872,8 +872,8 @@ class CommandExecutor {
         TestLib.sendInfoToServer(localBasePath);
       });
     } else if (Platform.isAndroid) {
-      String? productId = _command.getFirstParameterValue('productId');
-      String? purchaseToken = _command.getFirstParameterValue('purchaseToken');
+      String productId = _command.getFirstParameterValue('productId')!;
+      String purchaseToken = _command.getFirstParameterValue('purchaseToken')!;
 
       AdjustPlayStorePurchase purchase =
           new AdjustPlayStorePurchase(productId, purchaseToken);

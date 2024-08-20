@@ -16,13 +16,13 @@ class AdjustEventFailure {
   final bool? willRetry;
 
   AdjustEventFailure({
-    required this.message,
-    required this.timestamp,
-    required this.adid,
-    required this.eventToken,
-    required this.callbackId,
-    required this.jsonResponse,
-    required this.willRetry,
+    this.message,
+    this.timestamp,
+    this.adid,
+    this.eventToken,
+    this.callbackId,
+    this.jsonResponse,
+    this.willRetry,
   });
 
   factory AdjustEventFailure.fromMap(dynamic map) {

@@ -9,19 +9,16 @@
 import 'dart:convert';
 
 class AdjustEvent {
-  String _eventToken;
-  
+  final String _eventToken;
   num? _revenue;
   String? _currency;
   String? callbackId;
-  String? _deduplicationId;
+  String? deduplicationId;
   String? productId;
   Map<String, String>? _callbackParameters;
   Map<String, String>? _partnerParameters;
-
   // ios only
   String? transactionId;
-
   // android only
   String? purchaseToken;
 
@@ -39,10 +36,6 @@ class AdjustEvent {
     _callbackParameters![key] = value;
   }
 
-  void setDeduplicationId(String? deduplicationId) {
-    _deduplicationId = deduplicationId;
-  }
-
   void addPartnerParameter(String key, String value) {
     _partnerParameters![key] = value;
   }
@@ -56,8 +49,8 @@ class AdjustEvent {
     if (_currency != null) {
       eventMap['currency'] = _currency;
     }
-    if (_deduplicationId != null) {
-      eventMap['deduplicationId'] = _deduplicationId;
+    if (deduplicationId != null) {
+      eventMap['deduplicationId'] = deduplicationId;
     }
     if (transactionId != null) {
       eventMap['transactionId'] = transactionId;

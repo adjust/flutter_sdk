@@ -7,7 +7,7 @@
 //
 
 class AdjustDeeplink {
-  final String? deeplink;
+  final String deeplink;
 
   AdjustDeeplink(this.deeplink);
 }
