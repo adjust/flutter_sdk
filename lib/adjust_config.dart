@@ -65,7 +65,7 @@ class AdjustConfig {
   String? fbAppId;
 
   bool? _isDataResidency;
-  bool? _shouldUseSubdomains;
+  bool? _useSubdomains;
   List<String> _urlStrategyDomains = [];
 
   AdjustLogLevel? logLevel;
@@ -81,9 +81,9 @@ class AdjustConfig {
     _initCallbackHandlers();
   }
 
-  void setUrlStrategy(List<String> urlStrategyDomains, bool shouldUseSubdomains, bool isDataResidency) {
+  void setUrlStrategy(List<String> urlStrategyDomains, bool useSubdomains, bool isDataResidency) {
     _urlStrategyDomains.addAll(urlStrategyDomains);
-    _shouldUseSubdomains = shouldUseSubdomains;
+    _useSubdomains = useSubdomains;
     _isDataResidency = isDataResidency;
   }
 
@@ -181,8 +181,8 @@ class AdjustConfig {
     if (_isDataResidency != null) {
       configMap['isDataResidency'] = _isDataResidency.toString();
     }
-    if (_shouldUseSubdomains != null) {
-      configMap['shouldUseSubdomains'] = _shouldUseSubdomains.toString();
+    if (_useSubdomains != null) {
+      configMap['useSubdomains'] = _useSubdomains.toString();
     }
     if (isCostDataInAttributionEnabled != null) {
       configMap['isCostDataInAttributionEnabled'] = isCostDataInAttributionEnabled.toString();

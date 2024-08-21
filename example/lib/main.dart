@@ -96,6 +96,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
     config.logLevel = AdjustLogLevel.verbose;
 
+    config.setUrlStrategy(['adjust.net.in', 'adjust.com'], true, false);
+    //config.setUrlStrategy(['adjust.world', 'adjust.com'], true, false);
+    //config.setUrlStrategy(['adjust.cn'], true, false);
+    //config.setUrlStrategy(['eu.adjust.com'], true, true);
+    //config.setUrlStrategy(['us.adjust.com'], true, true);
+    //config.setUrlStrategy(['tr.adjust.com'], true, true);
+
     config.attributionCallback = (AdjustAttribution attributionChangedData) {
       print('[Adjust]: Attribution changed!');
 

@@ -321,7 +321,7 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
 
         // URL strategy
         if (configMap.containsKey("urlStrategyDomains")
-            && configMap.containsKey("shouldUseSubdomains") 
+            && configMap.containsKey("useSubdomains") 
             && configMap.containsKey("isDataResidency")) {
             String strUrlStrategyDomains = (String) configMap.get("urlStrategyDomains");
             try {
@@ -330,13 +330,13 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
                 for (int i = 0; i < jsonArray.length(); i += 1) {
                     urlStrategyDomainsArray.add((String)jsonArray.get(i));
                 }
-                String strShouldUseSubdomains = (String) configMap.get("shouldUseSubdomains");
-                boolean shouldUseSubdomains = Boolean.parseBoolean(strShouldUseSubdomains);
+                String strShouldUseSubdomains = (String) configMap.get("useSubdomains");
+                boolean useSubdomains = Boolean.parseBoolean(strShouldUseSubdomains);
 
                 String strIsDataResidency = (String) configMap.get("isDataResidency");
                 boolean isDataResidency = Boolean.parseBoolean(strIsDataResidency);
 
-                adjustConfig.setUrlStrategy(urlStrategyDomainsArray, shouldUseSubdomains, isDataResidency);
+                adjustConfig.setUrlStrategy(urlStrategyDomainsArray, useSubdomains, isDataResidency);
             } catch (JSONException ignored) {}
         }
 

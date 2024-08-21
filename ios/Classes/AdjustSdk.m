@@ -148,7 +148,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *externalDeviceId = call.arguments[@"externalDeviceId"];
     NSString *strUrlStrategyDomainsJson = call.arguments[@"urlStrategyDomains"];
     BOOL isDataResidency = [call.arguments[@"isDataResidency"] boolValue];
-    BOOL shouldUseSubdomains = [call.arguments[@"shouldUseSubdomains"] boolValue];
+    BOOL useSubdomains = [call.arguments[@"useSubdomains"] boolValue];
     NSString *attConsentWaitingInterval = call.arguments[@"attConsentWaitingInterval"];
     NSString *isSendingInBackgroundEnabled = call.arguments[@"isSendingInBackgroundEnabled"];
     NSInteger eventDeduplicationIdsMaxSize = [call.arguments[@"eventDeduplicationIdsMaxSize"] integerValue];
@@ -222,7 +222,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                                                                            options:NSJSONReadingMutableContainers
                                                                              error:nil];
         [adjustConfig setUrlStrategy:urlStrategyDomainsArray
-                       useSubdomains:shouldUseSubdomains
+                       useSubdomains:useSubdomains
                      isDataResidency:isDataResidency];
     }
 
