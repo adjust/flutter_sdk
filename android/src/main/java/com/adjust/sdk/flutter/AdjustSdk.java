@@ -39,7 +39,6 @@ import com.adjust.sdk.OnDeeplinkResolvedListener;
 import com.adjust.sdk.OnIsEnabledListener;
 import com.adjust.sdk.OnAdidReadListener;
 import com.adjust.sdk.OnAmazonAdIdReadListener;
-import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.OnAttributionReadListener;
 import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.sdk.AdjustPlayStorePurchase;
@@ -49,20 +48,16 @@ import com.adjust.sdk.AdjustDeeplink;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.Arrays;
-import java.util.List;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.embedding.engine.plugins.activity.ActivityAware;
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
-
-import static com.adjust.sdk.flutter.AdjustUtils.*;
 
 public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
     private static String TAG = "AdjustBridge";
@@ -329,17 +324,20 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
             && configMap.containsKey("shouldUseSubdomains") 
             && configMap.containsKey("isDataResidency")) {
             String strUrlStrategyDomains = (String) configMap.get("urlStrategyDomains");
-            // if you have the brackets remaining and don't want them, remove them
-            String strUrlStrategyDomainsTemp = strUrlStrategyDomains.replace("[","").replace("]","");
-            List<String> urlStrategyDomainsArray = Arrays.asList(strUrlStrategyDomainsTemp.split(","));
+            try {
+                JSONArray jsonArray = new JSONArray(strUrlStrategyDomains);
+                ArrayList<String> urlStrategyDomainsArray = new ArrayList<>();
+                for (int i = 0; i < jsonArray.length(); i += 1) {
+                    urlStrategyDomainsArray.add((String)jsonArray.get(i));
+                }
+                String strShouldUseSubdomains = (String) configMap.get("shouldUseSubdomains");
+                boolean shouldUseSubdomains = Boolean.parseBoolean(strShouldUseSubdomains);
 
-            String strShouldUseSubdomains = (String) configMap.get("shouldUseSubdomains");
-            boolean shouldUseSubdomains = Boolean.parseBoolean(strShouldUseSubdomains);
+                String strIsDataResidency = (String) configMap.get("isDataResidency");
+                boolean isDataResidency = Boolean.parseBoolean(strIsDataResidency);
 
-            String strIsDataResidency = (String) configMap.get("isDataResidency");
-            boolean isDataResidency = Boolean.parseBoolean(strIsDataResidency);
-
-            adjustConfig.setUrlStrategy(urlStrategyDomainsArray, shouldUseSubdomains, isDataResidency);
+                adjustConfig.setUrlStrategy(urlStrategyDomainsArray, shouldUseSubdomains, isDataResidency);
+            } catch (JSONException ignored) {}
         }
 
         // main process name

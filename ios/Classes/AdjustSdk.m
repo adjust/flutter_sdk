@@ -146,7 +146,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *sdkPrefix = call.arguments[@"sdkPrefix"];
     NSString *defaultTracker = call.arguments[@"defaultTracker"];
     NSString *externalDeviceId = call.arguments[@"externalDeviceId"];
-    NSString *urlStrategyDomains = call.arguments[@"urlStrategyDomains"];
+    NSString *strUrlStrategyDomainsJson = call.arguments[@"urlStrategyDomains"];
     BOOL isDataResidency = [call.arguments[@"isDataResidency"] boolValue];
     BOOL shouldUseSubdomains = [call.arguments[@"shouldUseSubdomains"] boolValue];
     NSString *attConsentWaitingInterval = call.arguments[@"attConsentWaitingInterval"];
@@ -216,10 +216,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
 
     // URL strategy
-    if ([self isFieldValid:urlStrategyDomains] && urlStrategyDomains.length > 0) {
-        urlStrategyDomains = [urlStrategyDomains stringByReplacingOccurrencesOfString:@"[" withString:@""];
-        urlStrategyDomains = [urlStrategyDomains stringByReplacingOccurrencesOfString:@"]" withString:@""];
-        NSArray *urlStrategyDomainsArray = [urlStrategyDomains componentsSeparatedByString:@","];
+    if ([self isFieldValid:strUrlStrategyDomainsJson]) {
+        NSData *data = [strUrlStrategyDomainsJson dataUsingEncoding:NSUTF8StringEncoding];
+        NSArray *urlStrategyDomainsArray = [NSJSONSerialization JSONObjectWithData:data
+                                                                           options:NSJSONReadingMutableContainers
+                                                                             error:nil];
         [adjustConfig setUrlStrategy:urlStrategyDomainsArray
                        useSubdomains:shouldUseSubdomains
                      isDataResidency:isDataResidency];

@@ -6,6 +6,8 @@
 //  Copyright (c) 2018-Present Adjust GmbH. All rights reserved.
 //
 
+import 'dart:convert';
+
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
@@ -174,7 +176,7 @@ class AdjustConfig {
       configMap['fbAppId'] = fbAppId;
     }
     if (_urlStrategyDomains.isEmpty != true ) {
-      configMap['urlStrategyDomains'] = _urlStrategyDomains.toString();
+      configMap['urlStrategyDomains'] = json.encode(_urlStrategyDomains);
     }
     if (_isDataResidency != null) {
       configMap['isDataResidency'] = _isDataResidency.toString();
