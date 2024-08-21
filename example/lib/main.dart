@@ -82,10 +82,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.resumed:
-        Adjust.onResume();
         break;
       case AppLifecycleState.paused:
-        Adjust.onPause();
         break;
       case AppLifecycleState.detached:
         break;
@@ -97,10 +95,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     AdjustConfig config =
         new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
     config.logLevel = AdjustLogLevel.verbose;
-    config.eventDeduplicationIdsMaxSize = 20;
-
-    config.setUrlStrategy(['adjust.com'], true, false);
-
 
     config.attributionCallback = (AdjustAttribution attributionChangedData) {
       print('[Adjust]: Attribution changed!');
@@ -248,8 +242,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     // Clear all session partner parameters.
     Adjust.removeGlobalPartnerParameters();
+
     // Ask for tracking consent.
-    Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
+    Adjust.requestAppTrackingAuthorization().then((status) {
       print('[Adjust]: Authorization status update!');
       switch (status) {
         case 0:
@@ -271,21 +266,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       }
     });
 
-    // COPPA compliance.
-    // config.coppaCompliantEnabled = true;
-
-    // Google Play Store kids apps.
-    // config.playStoreKidsAppEnabled = true;
-
-    // update skan conversion value
-    Adjust.updateSkanConversionValue(4, "coarseValue", 0).then((error){
-      print(error);
-    });
-
-    // Start SDK.
-    Adjust.start(config);
-
-
+    // start SDK
+    Adjust.initSdk(config);
   }
 
   @override
