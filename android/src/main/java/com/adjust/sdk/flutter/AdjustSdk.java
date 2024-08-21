@@ -1220,7 +1220,7 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
     }
 
     private void requestAppTrackingAuthorization(final Result result) {
-        result.success("Error. No requestAppTrackingAuthorization on Android platform!");
+        result.success(-1);
     }
 
     private void updateSkanConversionValue(final Result result) {
@@ -1228,7 +1228,7 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
     }
 
     private void getAppTrackingAuthorizationStatus(final MethodCall call, final Result result) {
-        result.success("Error. No getAppTrackingAuthorizationStatus on Android platform!");
+        result.success(-1);
     }
 
     private void trackAppStoreSubscription(final Result result) {
