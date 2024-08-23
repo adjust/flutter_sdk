@@ -168,7 +168,7 @@ class Adjust {
         'trackMeasurementConsent', {'measurementConsent': measurementConsent});
   }
 
-  static Future<String?> updateSkanConversionValue(int conversionValue, String coarseValue,int lockWindow) async {
+  static Future<String?> updateSkanConversionValue(int conversionValue, String coarseValue, bool lockWindow) async {
     final String error = await _channel.invokeMethod('updateSkanConversionValue', {
       'conversionValue': conversionValue,
       'coarseValue': coarseValue,
