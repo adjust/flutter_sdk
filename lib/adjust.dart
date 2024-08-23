@@ -16,7 +16,7 @@ import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
 import 'package:adjust_sdk/adjust_play_store_purchase.dart';
 import 'package:adjust_sdk/adjust_play_store_subscription.dart';
-import 'package:adjust_sdk/adjust_purchase_verification_info.dart';
+import 'package:adjust_sdk/adjust_purchase_verification_result.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
 import 'package:adjust_sdk/adjust_deeplink.dart';
 
@@ -182,32 +182,32 @@ class Adjust {
     return deeplink;
   }
 
-  static Future<AdjustPurchaseVerificationInfo?> verifyPlayStorePurchase(
+  static Future<AdjustPurchaseVerificationResult?> verifyPlayStorePurchase(
     AdjustPlayStorePurchase purchase) async {
     final dynamic playStorePurchaseMap = 
       await _channel.invokeMethod('verifyPlayStorePurchase', purchase.toMap);
-    return AdjustPurchaseVerificationInfo.fromMap(playStorePurchaseMap);
+    return AdjustPurchaseVerificationResult.fromMap(playStorePurchaseMap);
   }
 
-  static Future<AdjustPurchaseVerificationInfo?> verifyAndTrackPlayStorePurchase(
+  static Future<AdjustPurchaseVerificationResult?> verifyAndTrackPlayStorePurchase(
       AdjustEvent event) async {
     final dynamic playStorePurchaseMap =
       await _channel.invokeMethod('verifyAndTrackPlayStorePurchase', event.toMap);
-    return AdjustPurchaseVerificationInfo.fromMap(playStorePurchaseMap);
+    return AdjustPurchaseVerificationResult.fromMap(playStorePurchaseMap);
   }
 
-  static Future<AdjustPurchaseVerificationInfo?> verifyAppStorePurchase(
+  static Future<AdjustPurchaseVerificationResult?> verifyAppStorePurchase(
     AdjustAppStorePurchase purchase) async {
     final dynamic appStorePurchaseMap = 
       await _channel.invokeMethod('verifyAppStorePurchase', purchase.toMap);
-    return AdjustPurchaseVerificationInfo.fromMap(appStorePurchaseMap);
+    return AdjustPurchaseVerificationResult.fromMap(appStorePurchaseMap);
   }
 
-  static Future<AdjustPurchaseVerificationInfo?> verifyAndTrackAppStorePurchase(
+  static Future<AdjustPurchaseVerificationResult?> verifyAndTrackAppStorePurchase(
       AdjustEvent event) async {
     final dynamic appStorePurchaseMap =
       await _channel.invokeMethod('verifyAndTrackAppStorePurchase', event.toMap);
-    return AdjustPurchaseVerificationInfo.fromMap(appStorePurchaseMap);
+    return AdjustPurchaseVerificationResult.fromMap(appStorePurchaseMap);
   }
 
   static Future<String?> processAndResolveDeeplink(AdjustDeeplink deeplink) async {

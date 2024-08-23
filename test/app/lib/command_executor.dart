@@ -22,7 +22,7 @@ import 'package:adjust_sdk/adjust_play_store_purchase.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
-import 'package:adjust_sdk/adjust_purchase_verification_info.dart';
+import 'package:adjust_sdk/adjust_purchase_verification_result.dart';
 import 'package:adjust_sdk/adjust_deeplink.dart';
 import 'package:test_app/command.dart';
 import 'package:test_lib/test_lib.dart';
