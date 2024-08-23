@@ -107,7 +107,7 @@ class Adjust {
     return authorizationStatus;
   }
 
-  static Future<AdjustAttribution?> getAttribution() async {
+  static Future<AdjustAttribution> getAttribution() async {
     final dynamic attributionMap =
         await _channel.invokeMethod('getAttribution');
     return AdjustAttribution.fromMap(attributionMap);
