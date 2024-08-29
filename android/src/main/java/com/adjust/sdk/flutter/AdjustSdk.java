@@ -531,9 +531,9 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
             if (dartMethodName != null) {
                 adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
                     @Override
-                    public boolean launchReceivedDeeplink(Uri uri) {
+                    public boolean launchReceivedDeeplink(Uri deeplink) {
                         HashMap<String, String> uriParamsMap = new HashMap<String, String>();
-                        uriParamsMap.put("uri", uri.toString());
+                        uriParamsMap.put("deeplink", deeplink.toString());
                         if (channel != null) {
                             channel.invokeMethod(dartMethodName, uriParamsMap);
                         }

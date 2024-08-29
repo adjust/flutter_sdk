@@ -24,7 +24,7 @@ typedef void SessionSuccessCallback(AdjustSessionSuccess successData);
 typedef void SessionFailureCallback(AdjustSessionFailure failureData);
 typedef void EventSuccessCallback(AdjustEventSuccess successData);
 typedef void EventFailureCallback(AdjustEventFailure failureData);
-typedef void DeferredDeeplinkCallback(String? uri);
+typedef void DeferredDeeplinkCallback(String? deeplink);
 typedef void SkanUpdatedCallback(Map<String, String> skanUpdateData);
 
 class AdjustConfig {
@@ -123,9 +123,9 @@ class AdjustConfig {
             break;
           case _deferredDeeplinkCallbackName:
             if (deferredDeeplinkCallback != null) {
-              String? uri = call.arguments['uri'];
+              String? deeplink = call.arguments['deeplink'];
               if (deferredDeeplinkCallback != null) {
-                deferredDeeplinkCallback!(uri);
+                deferredDeeplinkCallback!(deeplink);
               }
             }
             break;

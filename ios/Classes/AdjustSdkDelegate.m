@@ -254,7 +254,7 @@ static NSString *dartSkanUpdatedCallback = nil;
         return NO;
     }
 
-    id keys[] = { @"uri" };
+    id keys[] = { @"deeplink" };
     id values[] = { [deeplink absoluteString] };
     NSUInteger count = sizeof(values) / sizeof(id);
     NSDictionary *deeplinkMap = [NSDictionary dictionaryWithObjects:values
