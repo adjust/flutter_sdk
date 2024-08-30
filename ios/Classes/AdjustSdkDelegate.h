@@ -7,7 +7,7 @@
 //
 
 #import <Flutter/Flutter.h>
-#import <Adjust/Adjust.h>
+#import <AdjustSdk/AdjustSdk.h>
 
 @interface AdjustSdkDelegate : NSObject<AdjustDelegate>
 
@@ -20,10 +20,9 @@
                              eventSuccessCallback:(NSString *)swizzleEventSuccessCallback
                              eventFailureCallback:(NSString *)swizzleEventFailureCallback
                          deferredDeeplinkCallback:(NSString *)swizzleDeferredDeeplinkCallback
-                   conversionValueUpdatedCallback:(NSString *)swizzleConversionValueUpdatedCallback
-              skad4ConversionValueUpdatedCallback:(NSString *)swizzleSkad4ConversionValueUpdatedCallback
+                              skanUpdatedCallback:(NSString *)swizzleSkanUpdatedCallback
                      shouldLaunchDeferredDeeplink:(BOOL)shouldLaunchDeferredDeeplink
-                                 andMethodChannel:(FlutterMethodChannel *)channel;
+                                    methodChannel:(FlutterMethodChannel *)channel;
 
 + (void)teardown;
 

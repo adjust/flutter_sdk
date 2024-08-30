@@ -1,5 +1,5 @@
 //
-//  adjust_purchase_verification_info.dart
+//  adjust_purchase_verification_result.dart
 //  Adjust SDK
 //
 //  Created by Ugljesa Erceg (@uerceg) on 4th September 2020.
@@ -8,14 +8,14 @@
 
 import 'dart:convert';
 
-class AdjustPurchaseVerificationInfo {
-  final num? code;
-  final String? message;
-  final String? verificationStatus;
+class AdjustPurchaseVerificationResult {
+  final num code;
+  final String message;
+  final String verificationStatus;
 
-  AdjustPurchaseVerificationInfo(this.code, this.message, this.verificationStatus);
+  AdjustPurchaseVerificationResult(this.code, this.message, this.verificationStatus);
 
-  factory AdjustPurchaseVerificationInfo.fromMap(dynamic map) {
+  factory AdjustPurchaseVerificationResult.fromMap(dynamic map) {
     try {
       int parsedCode = -1;
       try {
@@ -24,10 +24,10 @@ class AdjustPurchaseVerificationInfo {
         }
       } catch (ex) {}
 
-      return AdjustPurchaseVerificationInfo(parsedCode, map['message'], map['verificationStatus']);
+      return AdjustPurchaseVerificationResult(parsedCode, map['message'], map['verificationStatus']);
     } catch (e) {
       throw Exception(
-          '[AdjustFlutter]: Failed to create AdjustPurchaseVerificationInfo object from given map object. Details: ' +
+          '[AdjustFlutter]: Failed to create AdjustPurchaseVerificationResult object from given map object. Details: ' +
               e.toString());
     }
   }

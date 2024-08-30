@@ -9,7 +9,7 @@
 import 'dart:convert';
 
 class AdjustAdRevenue {
-  String _source;
+  final String _source;
   num? _revenue;
   String? _currency;
   num? adImpressionsCount;

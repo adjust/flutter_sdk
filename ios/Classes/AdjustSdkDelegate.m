@@ -11,14 +11,13 @@
 
 static dispatch_once_t onceToken;
 static AdjustSdkDelegate *defaultInstance = nil;
-static NSString *dartAttributionCallback;
-static NSString *dartSessionSuccessCallback;
-static NSString *dartSessionFailureCallback;
-static NSString *dartEventSuccessCallback;
-static NSString *dartEventFailureCallback;
-static NSString *dartDeferredDeeplinkCallback;
-static NSString *dartConversionValueUpdatedCallback;
-static NSString *dartSkad4ConversionValueUpdatedCallback;
+static NSString *dartAttributionCallback = nil;
+static NSString *dartSessionSuccessCallback = nil;
+static NSString *dartSessionFailureCallback = nil;
+static NSString *dartEventSuccessCallback = nil;
+static NSString *dartEventFailureCallback = nil;
+static NSString *dartDeferredDeeplinkCallback = nil;
+static NSString *dartSkanUpdatedCallback = nil;
 
 @implementation AdjustSdkDelegate
 
@@ -40,15 +39,13 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
                              eventSuccessCallback:(NSString *)swizzleEventSuccessCallback
                              eventFailureCallback:(NSString *)swizzleEventFailureCallback
                          deferredDeeplinkCallback:(NSString *)swizzleDeferredDeeplinkCallback
-                   conversionValueUpdatedCallback:(NSString *)swizzleConversionValueUpdatedCallback
-              skad4ConversionValueUpdatedCallback:(NSString *)swizzleSkad4ConversionValueUpdatedCallback
+                              skanUpdatedCallback:(NSString *)swizzleSkanUpdatedCallback
                      shouldLaunchDeferredDeeplink:(BOOL)shouldLaunchDeferredDeeplink
-                                 andMethodChannel:(FlutterMethodChannel *)channel {
-    
+                                    methodChannel:(FlutterMethodChannel *)channel {
     dispatch_once(&onceToken, ^{
         defaultInstance = [[AdjustSdkDelegate alloc] init];
         
-        // Do the swizzling where and if needed.
+        // do the swizzling where and if needed
         if (swizzleAttributionCallback != nil) {
             [defaultInstance swizzleCallbackMethod:@selector(adjustAttributionChanged:)
                                   swizzledSelector:@selector(adjustAttributionChangedWannabe:)];
@@ -75,19 +72,14 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
             dartEventFailureCallback = swizzleEventFailureCallback;
         }
         if (swizzleDeferredDeeplinkCallback != nil) {
-            [defaultInstance swizzleCallbackMethod:@selector(adjustDeeplinkResponse:)
-                                  swizzledSelector:@selector(adjustDeeplinkResponseWannabe:)];
+            [defaultInstance swizzleCallbackMethod:@selector(adjustDeferredDeeplinkReceived:)
+                                  swizzledSelector:@selector(adjustDeferredDeeplinkReceivedWannabe:)];
             dartDeferredDeeplinkCallback = swizzleDeferredDeeplinkCallback;
         }
-        if (swizzleConversionValueUpdatedCallback != nil) {
-            [defaultInstance swizzleCallbackMethod:@selector(adjustConversionValueUpdated:)
-                                  swizzledSelector:@selector(adjustConversionValueUpdatedWannabe:)];
-            dartConversionValueUpdatedCallback = swizzleConversionValueUpdatedCallback;
-        }
-        if (swizzleSkad4ConversionValueUpdatedCallback != nil) {
-            [defaultInstance swizzleCallbackMethod:@selector(adjustConversionValueUpdated:coarseValue:lockWindow:)
-                                  swizzledSelector:@selector(adjustConversionValueUpdatedWannabe:coarseValue:lockWindow:)];
-            dartSkad4ConversionValueUpdatedCallback = swizzleSkad4ConversionValueUpdatedCallback;
+        if (swizzleSkanUpdatedCallback != nil) {
+            [defaultInstance swizzleCallbackMethod:@selector(adjustSkanUpdatedWithConversionData:)
+                                  swizzledSelector:@selector(adjustSkanUpdatedWithConversionDataWannabe:)];
+            dartSkanUpdatedCallback = swizzleSkanUpdatedCallback;
         }
 
         [defaultInstance setShouldLaunchDeferredDeeplink:shouldLaunchDeferredDeeplink];
@@ -100,12 +92,19 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
 + (void)teardown {
     defaultInstance = nil;
     onceToken = 0;
+    dartAttributionCallback = nil;
+    dartSessionSuccessCallback = nil;
+    dartSessionFailureCallback = nil;
+    dartEventSuccessCallback = nil;
+    dartEventFailureCallback = nil;
+    dartDeferredDeeplinkCallback = nil;
+    dartSkanUpdatedCallback = nil;
 }
 
 #pragma mark - Private & helper methods
 
 - (void)adjustAttributionChangedWannabe:(ADJAttribution *)attribution {
-    if (attribution == nil) {
+    if (nil == attribution || nil == dartAttributionCallback) {
         return;
     }
     
@@ -117,10 +116,10 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
         @"adgroup",
         @"creative",
         @"clickLabel",
-        @"adid",
         @"costType",
         @"costAmount",
-        @"costCurrency" };
+        @"costCurrency"
+    };
     id values[] = {
         [self getValueOrEmpty:[attribution trackerToken]],
         [self getValueOrEmpty:[attribution trackerName]],
@@ -129,7 +128,6 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
         [self getValueOrEmpty:[attribution adgroup]],
         [self getValueOrEmpty:[attribution creative]],
         [self getValueOrEmpty:[attribution clickLabel]],
-        [self getValueOrEmpty:[attribution adid]],
         [self getValueOrEmpty:[attribution costType]],
         [self getNumberValueOrEmpty:[attribution costAmount]],
         [self getValueOrEmpty:[attribution costCurrency]]
@@ -142,14 +140,19 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
 }
 
 - (void)adjustSessionTrackingSucceededWannabe:(ADJSessionSuccess *)sessionSuccessResponseData {
-    if (nil == sessionSuccessResponseData) {
+    if (nil == sessionSuccessResponseData || nil == dartSessionSuccessCallback) {
         return;
     }
 
-    id keys[] = { @"message", @"timestamp", @"adid", @"jsonResponse" };
+    id keys[] = {
+        @"message",
+        @"timestamp",
+        @"adid",
+        @"jsonResponse"
+    };
     id values[] = {
         [self getValueOrEmpty:[sessionSuccessResponseData message]],
-        [self getValueOrEmpty:[sessionSuccessResponseData timeStamp]],
+        [self getValueOrEmpty:[sessionSuccessResponseData timestamp]],
         [self getValueOrEmpty:[sessionSuccessResponseData adid]],
         [self toJson:[self getObjectValueOrEmpty:[sessionSuccessResponseData jsonResponse]]]
     };
@@ -161,15 +164,21 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
 }
 
 - (void)adjustSessionTrackingFailedWananbe:(ADJSessionFailure *)sessionFailureResponseData {
-    if (nil == sessionFailureResponseData) {
+    if (nil == sessionFailureResponseData || nil == dartSessionFailureCallback) {
         return;
     }
 
     NSString *willRetryString = [sessionFailureResponseData willRetry] ? @"true" : @"false";
-    id keys[] = { @"message", @"timestamp", @"adid", @"willRetry", @"jsonResponse" };
+    id keys[] = {
+        @"message",
+        @"timestamp",
+        @"adid",
+        @"willRetry",
+        @"jsonResponse"
+    };
     id values[] = {
         [self getValueOrEmpty:[sessionFailureResponseData message]],
-        [self getValueOrEmpty:[sessionFailureResponseData timeStamp]],
+        [self getValueOrEmpty:[sessionFailureResponseData timestamp]],
         [self getValueOrEmpty:[sessionFailureResponseData adid]],
         willRetryString,
         [self toJson:[self getObjectValueOrEmpty:[sessionFailureResponseData jsonResponse]]]
@@ -182,14 +191,21 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
 }
 
 - (void)adjustEventTrackingSucceededWannabe:(ADJEventSuccess *)eventSuccessResponseData {
-    if (nil == eventSuccessResponseData) {
+    if (nil == eventSuccessResponseData || nil == dartEventSuccessCallback) {
         return;
     }
     
-    id keys[] = { @"message", @"timestamp", @"adid", @"eventToken", @"callbackId", @"jsonResponse" };
+    id keys[] = {
+        @"message",
+        @"timestamp",
+        @"adid",
+        @"eventToken",
+        @"callbackId",
+        @"jsonResponse"
+    };
     id values[] = {
         [self getValueOrEmpty:[eventSuccessResponseData message]],
-        [self getValueOrEmpty:[eventSuccessResponseData timeStamp]],
+        [self getValueOrEmpty:[eventSuccessResponseData timestamp]],
         [self getValueOrEmpty:[eventSuccessResponseData adid]],
         [self getValueOrEmpty:[eventSuccessResponseData eventToken]],
         [self getValueOrEmpty:[eventSuccessResponseData callbackId]],
@@ -203,15 +219,23 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
 }
 
 - (void)adjustEventTrackingFailedWannabe:(ADJEventFailure *)eventFailureResponseData {
-    if (nil == eventFailureResponseData) {
+    if (nil == eventFailureResponseData || nil == dartEventFailureCallback) {
         return;
     }
 
     NSString *willRetryString = [eventFailureResponseData willRetry] ? @"true" : @"false";
-    id keys[] = { @"message", @"timestamp", @"adid", @"eventToken", @"callbackId", @"willRetry", @"jsonResponse" };
+    id keys[] = {
+        @"message",
+        @"timestamp",
+        @"adid",
+        @"eventToken",
+        @"callbackId",
+        @"willRetry",
+        @"jsonResponse"
+    };
     id values[] = {
         [self getValueOrEmpty:[eventFailureResponseData message]],
-        [self getValueOrEmpty:[eventFailureResponseData timeStamp]],
+        [self getValueOrEmpty:[eventFailureResponseData timestamp]],
         [self getValueOrEmpty:[eventFailureResponseData adid]],
         [self getValueOrEmpty:[eventFailureResponseData eventToken]],
         [self getValueOrEmpty:[eventFailureResponseData callbackId]],
@@ -225,8 +249,12 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
     [self.channel invokeMethod:dartEventFailureCallback arguments:eventFailureMap];
 }
 
-- (BOOL)adjustDeeplinkResponseWannabe:(NSURL *)deeplink {
-    id keys[] = { @"uri" };
+- (BOOL)adjustDeferredDeeplinkReceivedWannabe:(NSURL *)deeplink {
+    if (nil == deeplink || nil == dartDeferredDeeplinkCallback) {
+        return NO;
+    }
+
+    id keys[] = { @"deeplink" };
     id values[] = { [deeplink absoluteString] };
     NSUInteger count = sizeof(values) / sizeof(id);
     NSDictionary *deeplinkMap = [NSDictionary dictionaryWithObjects:values
@@ -236,30 +264,12 @@ static NSString *dartSkad4ConversionValueUpdatedCallback;
     return self.shouldLaunchDeferredDeeplink;
 }
 
-- (void)adjustConversionValueUpdatedWannabe:(NSNumber *)conversionValue {
-    id keys[] = { @"conversionValue" };
-    id values[] = { [conversionValue stringValue] };
-    NSUInteger count = sizeof(values) / sizeof(id);
-    NSDictionary *conversionValueMap = [NSDictionary dictionaryWithObjects:values
-                                                                   forKeys:keys
-                                                                     count:count];
-    [self.channel invokeMethod:dartConversionValueUpdatedCallback arguments:conversionValueMap];
-}
+- (void)adjustSkanUpdatedWithConversionDataWannabe:(NSDictionary<NSString *,NSString *> *)data {
+    if (nil == data || nil == dartSkanUpdatedCallback) {
+        return;
+    }
 
-- (void)adjustConversionValueUpdatedWannabe:(nullable NSNumber *)fineValue
-                                coarseValue:(nullable NSString *)coarseValue
-                                 lockWindow:(nullable NSNumber *)lockWindow {
-    NSMutableDictionary *conversionValueMap = [NSMutableDictionary dictionary];
-    if (![fineValue isKindOfClass:[NSNull class]] && fineValue != nil) {
-        [conversionValueMap setValue:[fineValue stringValue] forKey:@"fineValue"];
-    }
-    if (![coarseValue isKindOfClass:[NSNull class]] && coarseValue != nil) {
-        [conversionValueMap setValue:coarseValue forKey:@"coarseValue"];
-    }
-    if (![lockWindow isKindOfClass:[NSNull class]] && lockWindow != nil) {
-        [conversionValueMap setValue:[lockWindow stringValue] forKey:@"lockWindow"];
-    }
-    [self.channel invokeMethod:dartSkad4ConversionValueUpdatedCallback arguments:conversionValueMap];
+    [self.channel invokeMethod:dartSkanUpdatedCallback arguments:data];
 }
 
 - (void)swizzleCallbackMethod:(SEL)originalSelector

@@ -8,7 +8,7 @@
 
 #import "AdjustSdk.h"
 #import "AdjustSdkDelegate.h"
-#import <Adjust/Adjust.h>
+#import <AdjustSdk/AdjustSdk.h>
 
 static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 
@@ -34,289 +34,265 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-    if ([@"start" isEqualToString:call.method]) {
-        [self start:call withResult:result];
-    } else if ([@"onResume" isEqualToString:call.method]) {
-        [Adjust trackSubsessionStart];
-    } else if ([@"onPause" isEqualToString:call.method]) {
-        [Adjust trackSubsessionEnd];
+    if ([@"initSdk" isEqualToString:call.method]) {
+        [self initSdk:call withResult:result];
     } else if ([@"trackEvent" isEqualToString:call.method]) {
         [self trackEvent:call withResult:result];
-    } else if ([@"setEnabled" isEqualToString:call.method]) {
-        [self setEnabled:call withResult:result];
-    } else if ([@"sendFirstPackages" isEqualToString:call.method]) {
-        [self sendFirstPackages:call withResult:result];
+    } else if ([@"enable" isEqualToString:call.method]) {
+        [Adjust enable];
+    } else if ([@"disable" isEqualToString:call.method]) {
+        [Adjust disable];
     } else if ([@"gdprForgetMe" isEqualToString:call.method]) {
         [self gdprForgetMe:call withResult:result];
-    } else if ([@"disableThirdPartySharing" isEqualToString:call.method]) {
-        [self disableThirdPartySharing:call withResult:result];
     } else if ([@"getAttribution" isEqualToString:call.method]) {
         [self getAttribution:call withResult:result];
     } else if ([@"getIdfa" isEqualToString:call.method]) {
         [self getIdfa:call withResult:result];
     } else if ([@"getIdfv" isEqualToString:call.method]) {
         [self getIdfv:call withResult:result];
-    } else if ([@"getGoogleAdId" isEqualToString:call.method]) {
-        [self getGoogleAdId:call withResult:result];
     } else if ([@"getSdkVersion" isEqualToString:call.method]) {
         [self getSdkVersion:call withResult:result];
-    } else if ([@"setOfflineMode" isEqualToString:call.method]) {
-        [self setOfflineMode:call withResult:result];
+    } else if ([@"switchToOfflineMode" isEqualToString:call.method]) {
+        [Adjust switchToOfflineMode];
+    } else if ([@"switchBackToOnlineMode" isEqualToString:call.method]) {
+        [Adjust switchBackToOnlineMode];
     } else if ([@"setPushToken" isEqualToString:call.method]) {
         [self setPushToken:call withResult:result];
     } else if ([@"appWillOpenUrl" isEqualToString:call.method]) {
-        [self appWillOpenUrl:call withResult:result];
+        [self processDeeplink:call withResult:result];
     } else if ([@"trackAdRevenue" isEqualToString:call.method]) {
         [self trackAdRevenue:call withResult:result];
-    } else if ([@"trackAdRevenueNew" isEqualToString:call.method]) {
-        [self trackAdRevenueNew:call withResult:result];
     } else if ([@"trackAppStoreSubscription" isEqualToString:call.method]) {
         [self trackAppStoreSubscription:call withResult:result];
-    } else if ([@"trackPlayStoreSubscription" isEqualToString:call.method]) {
-        [self trackPlayStoreSubscription:call withResult:result];
-    } else if ([@"requestTrackingAuthorizationWithCompletionHandler" isEqualToString:call.method]) {
-        [self requestTrackingAuthorizationWithCompletionHandler:call withResult:result];
+    } else if ([@"requestAppTrackingAuthorization" isEqualToString:call.method]) {
+        [self requestAppTrackingAuthorization:call withResult:result];
     } else if ([@"getAppTrackingAuthorizationStatus" isEqualToString:call.method]) {
         [self getAppTrackingAuthorizationStatus:call withResult:result];
-    } else if ([@"updateConversionValue" isEqualToString:call.method]) {
-        [self updateConversionValue:call withResult:result];
     } else if ([@"trackThirdPartySharing" isEqualToString:call.method]) {
         [self trackThirdPartySharing:call withResult:result];
     } else if ([@"trackMeasurementConsent" isEqualToString:call.method]) {
         [self trackMeasurementConsent:call withResult:result];
-    } else if ([@"setTestOptions" isEqualToString:call.method]) {
-        [self setTestOptions:call withResult:result];
-    } else if ([@"addSessionCallbackParameter" isEqualToString:call.method]) {
+    } else if ([@"updateSkanConversionValue" isEqualToString:call.method ]){
+        [self updateSkanConversionValue:call withResult:result];
+    } else if ([@"addGlobalCallbackParameter" isEqualToString:call.method]) {
         NSString *key = call.arguments[@"key"];
         NSString *value = call.arguments[@"value"];
         if (!([self isFieldValid:key]) || !([self isFieldValid:value])) {
             return;
         }
-        [Adjust addSessionCallbackParameter:key value:value];
-    } else if ([@"removeSessionCallbackParameter" isEqualToString:call.method]) {
+        [Adjust addGlobalCallbackParameter:value forKey:key];
+    } else if ([@"removeGlobalCallbackParameter" isEqualToString:call.method]) {
         NSString *key = call.arguments[@"key"];
         if (!([self isFieldValid:key])) {
             return;
         }
-        [Adjust removeSessionCallbackParameter:key];
-    } else if ([@"resetSessionCallbackParameters" isEqualToString:call.method]) {
-        [Adjust resetSessionCallbackParameters];
-    } else if ([@"addSessionPartnerParameter" isEqualToString:call.method]) {
+        [Adjust removeGlobalCallbackParameterForKey:key];
+    } else if ([@"removeGlobalCallbackParameters" isEqualToString:call.method]) {
+        [Adjust removeGlobalCallbackParameters];
+    } else if ([@"addGlobalPartnerParameter" isEqualToString:call.method]) {
         NSString *key = call.arguments[@"key"];
         NSString *value = call.arguments[@"value"];
         if (!([self isFieldValid:key]) || !([self isFieldValid:value])) {
             return;
         }
-        [Adjust addSessionPartnerParameter:key value:value];
-    } else if ([@"removeSessionPartnerParameter" isEqualToString:call.method]) {
+        [Adjust addGlobalPartnerParameter:value forKey:key];
+    } else if ([@"removeGlobalPartnerParameter" isEqualToString:call.method]) {
         NSString *key = call.arguments[@"key"];
         if (!([self isFieldValid:key])) {
             return;
         }
-        [Adjust removeSessionPartnerParameter:key];
-    } else if ([@"resetSessionPartnerParameters" isEqualToString:call.method]) {
-        [Adjust resetSessionPartnerParameters];
+        [Adjust removeGlobalPartnerParameterForKey:key];
+    } else if ([@"removeGlobalPartnerParameters" isEqualToString:call.method]) {
+        [Adjust removeGlobalPartnerParameters];
     } else if ([@"isEnabled" isEqualToString:call.method]) {
-        BOOL isEnabled = [Adjust isEnabled];
-        result(@(isEnabled));
+        [Adjust isEnabledWithCompletionHandler:^(BOOL isEnabled) {
+            result(@(isEnabled));
+        }];
     } else if ([@"getAdid" isEqualToString:call.method]) {
-        result([Adjust adid]);
-    } else if ([@"checkForNewAttStatus" isEqualToString:call.method]) {
-         [Adjust checkForNewAttStatus];
-    } else if ([@"getLastDeeplink" isEqualToString:call.method]) {
-         [self getLastDeeplink:call withResult:result];
-    } else if ([@"updateConversionValueWithErrorCallback" isEqualToString:call.method]) {
-        [self updateConversionValueWithErrorCallback:call withResult:result];
-    } else if ([@"updateConversionValueWithErrorCallbackSkad4" isEqualToString:call.method]) {
-        [self updateConversionValueWithErrorCallbackSkad4:call withResult:result];
+        [Adjust adidWithCompletionHandler:^(NSString * _Nullable adid) {
+            result(adid);
+        }];
     } else if ([@"verifyAppStorePurchase" isEqualToString:call.method]) {
         [self verifyAppStorePurchase:call withResult:result];
-    } else if ([@"verifyPlayStorePurchase" isEqualToString:call.method]) {
-        [self verifyAppStorePurchase:call withResult:result];
+    } else if ([@"verifyAndTrackAppStorePurchase" isEqualToString:call.method]) {
+        [self verifyAndTrackAppStorePurchase:call withResult:result];
     } else if ([@"processDeeplink" isEqualToString:call.method]) {
         [self processDeeplink:call withResult:result];
+    } else if ([@"processAndResolveDeeplink" isEqualToString:call.method]) {
+        [self processAndResolveDeeplink:call withResult:result];
+    } else if ([@"getGoogleAdId" isEqualToString:call.method]) {
+        [self getGoogleAdId:call withResult:result];
+    } else if ([@"trackPlayStoreSubscription" isEqualToString:call.method]) {
+        [self trackPlayStoreSubscription:call withResult:result];
+    } else if ([@"verifyPlayStorePurchase" isEqualToString:call.method]) {
+        [self verifyAppStorePurchase:call withResult:result];
+    } else if ([@"verifyAndTrackPlayStorePurchase" isEqualToString:call.method]) {
+        [self verifyAndTrackPlayStorePurchase:call withResult:result];
+    } else if ([@"onResume" isEqualToString:call.method]) {
+        [Adjust trackSubsessionStart];
+    } else if ([@"onPause" isEqualToString:call.method]) {
+        [Adjust trackSubsessionEnd];
+    } else if ([@"setTestOptions" isEqualToString:call.method]) {
+        [self setTestOptions:call withResult:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
 }
 
-- (void)start:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+- (void)initSdk:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *appToken = call.arguments[@"appToken"];
     NSString *environment = call.arguments[@"environment"];
     NSString *logLevel = call.arguments[@"logLevel"];
     NSString *sdkPrefix = call.arguments[@"sdkPrefix"];
     NSString *defaultTracker = call.arguments[@"defaultTracker"];
     NSString *externalDeviceId = call.arguments[@"externalDeviceId"];
-    NSString *userAgent = call.arguments[@"userAgent"];
-    NSString *urlStrategy = call.arguments[@"urlStrategy"];
-    NSString *secretId = call.arguments[@"secretId"];
-    NSString *info1 = call.arguments[@"info1"];
-    NSString *info2 = call.arguments[@"info2"];
-    NSString *info3 = call.arguments[@"info3"];
-    NSString *info4 = call.arguments[@"info4"];
-    NSString *delayStart = call.arguments[@"delayStart"];
+    NSString *strUrlStrategyDomainsJson = call.arguments[@"urlStrategyDomains"];
+    BOOL isDataResidency = [call.arguments[@"isDataResidency"] boolValue];
+    BOOL useSubdomains = [call.arguments[@"useSubdomains"] boolValue];
     NSString *attConsentWaitingInterval = call.arguments[@"attConsentWaitingInterval"];
-    NSString *isDeviceKnown = call.arguments[@"isDeviceKnown"];
-    NSString *eventBufferingEnabled = call.arguments[@"eventBufferingEnabled"];
-    NSString *sendInBackground = call.arguments[@"sendInBackground"];
-    NSString *needsCost = call.arguments[@"needsCost"];
-    NSString *coppaCompliantEnabled = call.arguments[@"coppaCompliantEnabled"];
-    NSString *linkMeEnabled = call.arguments[@"linkMeEnabled"];
-    NSString *allowAdServicesInfoReading = call.arguments[@"allowAdServicesInfoReading"];
-    NSString *allowIdfaReading = call.arguments[@"allowIdfaReading"];
-    NSString *skAdNetworkHandling = call.arguments[@"skAdNetworkHandling"];
-    NSString *readDeviceInfoOnceEnabled = call.arguments[@"readDeviceInfoOnceEnabled"];
+    NSString *isSendingInBackgroundEnabled = call.arguments[@"isSendingInBackgroundEnabled"];
+    NSInteger eventDeduplicationIdsMaxSize = [call.arguments[@"eventDeduplicationIdsMaxSize"] integerValue];
+    NSString *isCostDataInAttributionEnabled = call.arguments[@"isCostDataInAttributionEnabled"];
+    NSString *isCoppaComplianceEnabled = call.arguments[@"isCoppaComplianceEnabled"];
+    NSString *isLinkMeEnabled = call.arguments[@"isLinkMeEnabled"];
+    NSString *isAdServicesEnabled = call.arguments[@"isAdServicesEnabled"];
+    NSString *isIdfaReadingEnabled = call.arguments[@"isIdfaReadingEnabled"];
+    NSString *isIdfvReadingEnabled = call.arguments[@"isIdfvReadingEnabled"];
+    NSString *isSkanAttributionEnabled = call.arguments[@"isSkanAttributionEnabled"];
+    NSString *isDeviceIdsReadingOnceEnabled = call.arguments[@"isDeviceIdsReadingOnceEnabled"];
     NSString *dartAttributionCallback = call.arguments[@"attributionCallback"];
     NSString *dartSessionSuccessCallback = call.arguments[@"sessionSuccessCallback"];
     NSString *dartSessionFailureCallback = call.arguments[@"sessionFailureCallback"];
     NSString *dartEventSuccessCallback = call.arguments[@"eventSuccessCallback"];
     NSString *dartEventFailureCallback = call.arguments[@"eventFailureCallback"];
     NSString *dartDeferredDeeplinkCallback = call.arguments[@"deferredDeeplinkCallback"];
-    NSString *dartConversionValueUpdatedCallback = call.arguments[@"conversionValueUpdatedCallback"];
-    NSString *dartSkad4ConversionValueUpdatedCallback = call.arguments[@"skad4ConversionValueUpdatedCallback"];
+    NSString *dartSkanUpdatedCallback = call.arguments[@"skanUpdatedCallback"];
     BOOL allowSuppressLogLevel = NO;
     BOOL launchDeferredDeeplink = [call.arguments[@"launchDeferredDeeplink"] boolValue];
 
-    // Suppress log level.
+    // suppress log level
     if ([self isFieldValid:logLevel]) {
         if ([ADJLogger logLevelFromString:[logLevel lowercaseString]] == ADJLogLevelSuppress) {
             allowSuppressLogLevel = YES;
         }
     }
 
-    // Create config object.
-    ADJConfig *adjustConfig = [ADJConfig configWithAppToken:appToken
-                                                environment:environment
-                                      allowSuppressLogLevel:allowSuppressLogLevel];
-
-    // SDK prefix.
+    // create config object
+    ADJConfig *adjustConfig = [[ADJConfig alloc] initWithAppToken:appToken
+                                                      environment:environment
+                                                 suppressLogLevel:allowSuppressLogLevel];
+    // SDK prefix
     if ([self isFieldValid:sdkPrefix]) {
         [adjustConfig setSdkPrefix:sdkPrefix];
     }
 
-    // Log level.
+    // log level
     if ([self isFieldValid:logLevel]) {
         [adjustConfig setLogLevel:[ADJLogger logLevelFromString:[logLevel lowercaseString]]];
     }
 
-    // Event buffering.
-    if ([self isFieldValid:eventBufferingEnabled]) {
-        [adjustConfig setEventBufferingEnabled:[eventBufferingEnabled boolValue]];
+    // LinkMe
+    if ([self isFieldValid:isLinkMeEnabled]) {
+        if ([isLinkMeEnabled boolValue] == YES) {
+            [adjustConfig enableLinkMe];
+        }
     }
 
-    // COPPA compliance.
-    if ([self isFieldValid:coppaCompliantEnabled]) {
-        [adjustConfig setCoppaCompliantEnabled:[coppaCompliantEnabled boolValue]];
+    // COPPA compliance
+    if ([self isFieldValid:isCoppaComplianceEnabled]) {
+        if ([isCoppaComplianceEnabled boolValue] == YES) {
+            [adjustConfig enableCoppaCompliance];
+        }
     }
 
-    // LinkMe.
-    if ([self isFieldValid:linkMeEnabled]) {
-        [adjustConfig setLinkMeEnabled:[linkMeEnabled boolValue]];
-    }
-
-    // Default tracker.
+    // default tracker
     if ([self isFieldValid:defaultTracker]) {
         [adjustConfig setDefaultTracker:defaultTracker];
     }
 
-    // External device ID.
+    // external device ID
     if ([self isFieldValid:externalDeviceId]) {
         [adjustConfig setExternalDeviceId:externalDeviceId];
     }
 
-    // User agent.
-    if ([self isFieldValid:userAgent]) {
-        [adjustConfig setUserAgent:userAgent];
+    // URL strategy
+    if ([self isFieldValid:strUrlStrategyDomainsJson]) {
+        NSData *data = [strUrlStrategyDomainsJson dataUsingEncoding:NSUTF8StringEncoding];
+        NSArray *urlStrategyDomainsArray = [NSJSONSerialization JSONObjectWithData:data
+                                                                           options:NSJSONReadingMutableContainers
+                                                                             error:nil];
+        [adjustConfig setUrlStrategy:urlStrategyDomainsArray
+                       useSubdomains:useSubdomains
+                     isDataResidency:isDataResidency];
     }
 
-    // URL strategy.
-    if ([self isFieldValid:urlStrategy]) {
-        if ([urlStrategy isEqualToString:@"china"]) {
-            [adjustConfig setUrlStrategy:ADJUrlStrategyChina];
-        } else if ([urlStrategy isEqualToString:@"india"]) {
-            [adjustConfig setUrlStrategy:ADJUrlStrategyIndia];
-        } else if ([urlStrategy isEqualToString:@"cn"]) {
-            [adjustConfig setUrlStrategy:ADJUrlStrategyCn];
-        } else if ([urlStrategy isEqualToString:@"cn-only"]) {
-            [adjustConfig setUrlStrategy:ADJUrlStrategyCnOnly];
-        } else if ([urlStrategy isEqualToString:@"data-residency-eu"]) {
-            [adjustConfig setUrlStrategy:ADJDataResidencyEU];
-        } else if ([urlStrategy isEqualToString:@"data-residency-tr"]) {
-            [adjustConfig setUrlStrategy:ADJDataResidencyTR];
-        } else if ([urlStrategy isEqualToString:@"data-residency-us"]) {
-            [adjustConfig setUrlStrategy:ADJDataResidencyUS];
+    // sending in background
+    if ([self isFieldValid:isSendingInBackgroundEnabled]) {
+        if ([isSendingInBackgroundEnabled boolValue] == YES) {
+            [adjustConfig enableSendingInBackground];
         }
     }
 
-    // Background tracking.
-    if ([self isFieldValid:sendInBackground]) {
-        [adjustConfig setSendInBackground:[sendInBackground boolValue]];
+    // event deduplication
+    if (eventDeduplicationIdsMaxSize > 0) {
+        [adjustConfig setEventDeduplicationIdsMaxSize:eventDeduplicationIdsMaxSize];
     }
 
-    // Cost data.
-    if ([self isFieldValid:needsCost]) {
-        [adjustConfig setNeedsCost:[needsCost boolValue]];
+    // cost data in attribution callback
+    if ([self isFieldValid:isCostDataInAttributionEnabled]) {
+        if ([isCostDataInAttributionEnabled boolValue] == YES) {
+            [adjustConfig enableCostDataInAttribution];
+        }
     }
 
-    // Allow AdServices info reading.
-    if ([self isFieldValid:allowAdServicesInfoReading]) {
-        [adjustConfig setAllowAdServicesInfoReading:[allowAdServicesInfoReading boolValue]];
+    // AdServices.framework interaction
+    if ([self isFieldValid:isAdServicesEnabled]) {
+        if ([isAdServicesEnabled boolValue] == NO) {
+            [adjustConfig disableAdServices];
+        }
     }
 
-    // Allow IDFA reading.
-    if ([self isFieldValid:allowIdfaReading]) {
-        [adjustConfig setAllowIdfaReading:[allowIdfaReading boolValue]];
+    // IDFA reading
+    if ([self isFieldValid:isIdfaReadingEnabled]) {
+        if ([isIdfaReadingEnabled boolValue] == NO) {
+            [adjustConfig disableIdfaReading];
+        }
+    }
+
+    // IDFV reading
+    if ([self isFieldValid:isIdfvReadingEnabled]) {
+        if ([isIdfvReadingEnabled boolValue] == NO) {
+            [adjustConfig disableIdfvReading];
+        }
     }
     
-    // SKAdNetwork handling.
-    if ([self isFieldValid:skAdNetworkHandling]) {
-        if ([skAdNetworkHandling boolValue] == NO) {
-            [adjustConfig deactivateSKAdNetworkHandling];
+    // SKAdNetwork attribution
+    if ([self isFieldValid:isSkanAttributionEnabled]) {
+        if ([isSkanAttributionEnabled boolValue] == NO) {
+            [adjustConfig disableSkanAttribution];
         }
     }
 
-    // Read device info once.
-    if ([self isFieldValid:readDeviceInfoOnceEnabled]) {
-        [adjustConfig setReadDeviceInfoOnceEnabled:[readDeviceInfoOnceEnabled boolValue]];
+    // read device info once
+    if ([self isFieldValid:isDeviceIdsReadingOnceEnabled]) {
+        if ([isDeviceIdsReadingOnceEnabled boolValue] == YES) {
+            [adjustConfig enableDeviceIdsReadingOnce];
+        }
     }
 
-    // Set device known.
-    if ([self isFieldValid:isDeviceKnown]) {
-        [adjustConfig setIsDeviceKnown:[isDeviceKnown boolValue]];
-    }
-
-    // Delayed start.
-    if ([self isFieldValid:delayStart]) {
-        [adjustConfig setDelayStart:[delayStart doubleValue]];
-    }
-
-    // ATT consent delay.
+    // ATT consent delay
     if ([self isFieldValid:attConsentWaitingInterval]) {
         [adjustConfig setAttConsentWaitingInterval:[attConsentWaitingInterval intValue]];
     }
-    
-    // App secret.
-    if ([self isFieldValid:secretId]
-        && [self isFieldValid:info1]
-        && [self isFieldValid:info2]
-        && [self isFieldValid:info3]
-        && [self isFieldValid:info4]) {
-        [adjustConfig setAppSecret:[[NSNumber numberWithLongLong:[secretId longLongValue]] unsignedIntegerValue]
-                             info1:[[NSNumber numberWithLongLong:[info1 longLongValue]] unsignedIntegerValue]
-                             info2:[[NSNumber numberWithLongLong:[info2 longLongValue]] unsignedIntegerValue]
-                             info3:[[NSNumber numberWithLongLong:[info3 longLongValue]] unsignedIntegerValue]
-                             info4:[[NSNumber numberWithLongLong:[info4 longLongValue]] unsignedIntegerValue]];
-    }
 
-    // Callbacks.
+    // callbacks
     if (dartAttributionCallback != nil
         || dartSessionSuccessCallback != nil
         || dartSessionFailureCallback != nil
         || dartEventSuccessCallback != nil
         || dartEventFailureCallback != nil
         || dartDeferredDeeplinkCallback != nil
-        || dartConversionValueUpdatedCallback != nil
-        || dartSkad4ConversionValueUpdatedCallback != nil) {
+        || dartSkanUpdatedCallback != nil) {
         [adjustConfig setDelegate:
          [AdjustSdkDelegate getInstanceWithSwizzleOfAttributionCallback:dartAttributionCallback
                                                  sessionSuccessCallback:dartSessionSuccessCallback
@@ -324,15 +300,13 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                                                    eventSuccessCallback:dartEventSuccessCallback
                                                    eventFailureCallback:dartEventFailureCallback
                                                deferredDeeplinkCallback:dartDeferredDeeplinkCallback
-                                         conversionValueUpdatedCallback:dartConversionValueUpdatedCallback
-                                    skad4ConversionValueUpdatedCallback:dartSkad4ConversionValueUpdatedCallback
+                                                    skanUpdatedCallback:dartSkanUpdatedCallback
                                            shouldLaunchDeferredDeeplink:launchDeferredDeeplink
-                                                       andMethodChannel:self.channel]];
+                                                          methodChannel:self.channel]];
     }
 
-    // Start SDK.
-    [Adjust appDidLaunch:adjustConfig];
-    [Adjust trackSubsessionStart];
+    // start SDK
+    [Adjust initSdk:adjustConfig];
     result(nil);
 }
 
@@ -341,44 +315,42 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *revenue = call.arguments[@"revenue"];
     NSString *currency = call.arguments[@"currency"];
     NSString *callbackId = call.arguments[@"callbackId"];
-    NSString *receipt = call.arguments[@"receipt"];
     NSString *productId = call.arguments[@"productId"];
     NSString *transactionId = call.arguments[@"transactionId"];
+    NSString *deduplicationId = call.arguments[@"deduplicationId"];
     NSString *strCallbackParametersJson = call.arguments[@"callbackParameters"];
     NSString *strPartnerParametersJson = call.arguments[@"partnerParameters"];
 
-    // Create event object.
-    ADJEvent *adjustEvent = [ADJEvent eventWithEventToken:eventToken];
+    // create event object
+    ADJEvent *adjustEvent = [[ADJEvent alloc] initWithEventToken:eventToken];
 
-    // Revenue.
+    // revenue and currency
     if ([self isFieldValid:revenue]) {
         double revenueValue = [revenue doubleValue];
         [adjustEvent setRevenue:revenueValue currency:currency];
     }
 
-    // Receipt.
-    if ([self isFieldValid:receipt]) {
-        NSData *receiptValue;
-        receiptValue = [receipt dataUsingEncoding:NSUTF8StringEncoding];
-        [adjustEvent setReceipt:receiptValue];
-    }
-
-    // Product ID.
+    // rroduct ID
     if ([self isFieldValid:productId]) {
         [adjustEvent setProductId:productId];
     }
 
-    // Transaction ID.
+    // transaction ID
     if ([self isFieldValid:transactionId]) {
         [adjustEvent setTransactionId:transactionId];
     }
 
-    // Callback ID.
+    // deduplication ID
+    if ([self isFieldValid:deduplicationId]) {
+        [adjustEvent setDeduplicationId:deduplicationId];
+    }
+
+    // callback ID
     if ([self isFieldValid:callbackId]) {
         [adjustEvent setCallbackId:callbackId];
     }
 
-    // Callback parameters.
+    // callback parameters
     if (strCallbackParametersJson != nil) {
         NSData *callbackParametersData = [strCallbackParametersJson dataUsingEncoding:NSUTF8StringEncoding];
         id callbackParametersJson = [NSJSONSerialization JSONObjectWithData:callbackParametersData
@@ -390,7 +362,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         }
     }
 
-    // Partner parameters.
+    // partner parameters
     if (strPartnerParametersJson != nil) {
         NSData *partnerParametersData = [strPartnerParametersJson dataUsingEncoding:NSUTF8StringEncoding];
         id partnerParametersJson = [NSJSONSerialization JSONObjectWithData:partnerParametersData
@@ -402,21 +374,18 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         }
     }
 
-    // Track event.
+    // track event
     [Adjust trackEvent:adjustEvent];
     result(nil);
 }
 
-- (void)setEnabled:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    NSString *isEnabled = call.arguments[@"isEnabled"];
-    if ([self isFieldValid:isEnabled]) {
-        [Adjust setEnabled:[isEnabled boolValue]];
-    }
+- (void)enable:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    [Adjust enable];
     result(nil);
 }
 
-- (void)sendFirstPackages:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    [Adjust sendFirstPackages];
+- (void)disable:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    [Adjust disable];
     result(nil);
 }
 
@@ -425,29 +394,26 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     result(nil);
 }
 
-- (void)disableThirdPartySharing:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    [Adjust disableThirdPartySharing];
+- (void)switchToOfflineMode:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    [Adjust switchToOfflineMode];
     result(nil);
 }
 
-- (void)setOfflineMode:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    NSString *isOffline = call.arguments[@"isOffline"];
-    if ([self isFieldValid:isOffline]) {
-        [Adjust setOfflineMode:[isOffline boolValue]];
-    }
+- (void)switchBackToOnlineMode:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    [Adjust switchBackToOnlineMode];
     result(nil);
 }
 
 - (void)setPushToken:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *pushToken = call.arguments[@"pushToken"];
     if ([self isFieldValid:pushToken]) {
-        [Adjust setPushToken:pushToken];
+        [Adjust setPushTokenAsString:pushToken];
     }
     result(nil);
 }
 
-- (void)appWillOpenUrl:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    NSString *urlString = call.arguments[@"url"];
+- (void)processDeeplink:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *urlString = call.arguments[@"deeplink"];
     if (urlString == nil) {
         return;
     }
@@ -461,20 +427,13 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     }
 #pragma clang diagnostic pop
-    [Adjust appWillOpenUrl:url];
+
+    ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:url];
+    [Adjust processDeeplink:deeplink];
 }
+
 
 - (void)trackAdRevenue:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    NSString *source = call.arguments[@"source"];
-    NSString *payload = call.arguments[@"payload"];
-    if (!([self isFieldValid:source]) || !([self isFieldValid:payload])) {
-        return;
-    }
-    NSData *dataPayload = [payload dataUsingEncoding:NSUTF8StringEncoding];
-    [Adjust trackAdRevenue:source payload:dataPayload];
-}
-
-- (void)trackAdRevenueNew:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *source = call.arguments[@"source"];
     NSString *revenue = call.arguments[@"revenue"];
     NSString *currency = call.arguments[@"currency"];
@@ -485,37 +444,37 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *strCallbackParametersJson = call.arguments[@"callbackParameters"];
     NSString *strPartnerParametersJson = call.arguments[@"partnerParameters"];
 
-    // Create ad revenue object.
+    // create ad revenue object
     ADJAdRevenue *adjustAdRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 
-    // Revenue.
+    // revenue
     if ([self isFieldValid:revenue]) {
         double revenueValue = [revenue doubleValue];
         [adjustAdRevenue setRevenue:revenueValue currency:currency];
     }
 
-    // Ad impressions count.
+    // ad impressions count
     if ([self isFieldValid:adImpressionsCount]) {
         int adImpressionsCountValue = [adImpressionsCount intValue];
         [adjustAdRevenue setAdImpressionsCount:adImpressionsCountValue];
     }
 
-    // Ad revenue network.
+    // ad revenue network
     if ([self isFieldValid:adRevenueNetwork]) {
         [adjustAdRevenue setAdRevenueNetwork:adRevenueNetwork];
     }
     
-    // Ad revenue unit.
+    // ad revenue unit
     if ([self isFieldValid:adRevenueUnit]) {
         [adjustAdRevenue setAdRevenueUnit:adRevenueUnit];
     }
     
-    // Ad revenue placement.
+    // ad revenue placement
     if ([self isFieldValid:adRevenuePlacement]) {
         [adjustAdRevenue setAdRevenuePlacement:adRevenuePlacement];
     }
 
-    // Callback parameters.
+    // callback parameters
     if (strCallbackParametersJson != nil) {
         NSData *callbackParametersData = [strCallbackParametersJson dataUsingEncoding:NSUTF8StringEncoding];
         id callbackParametersJson = [NSJSONSerialization JSONObjectWithData:callbackParametersData
@@ -527,7 +486,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         }
     }
 
-    // Partner parameters.
+    // partner parameters
     if (strPartnerParametersJson != nil) {
         NSData *partnerParametersData = [strPartnerParametersJson dataUsingEncoding:NSUTF8StringEncoding];
         id partnerParametersJson = [NSJSONSerialization JSONObjectWithData:partnerParametersData
@@ -539,59 +498,46 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         }
     }
 
-    // Track ad revenue.
+    // track ad revenue
     [Adjust trackAdRevenue:adjustAdRevenue];
     result(nil);
-}
-
-- (void)trackPlayStoreSubscription:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    result([FlutterError errorWithCode:@"non_existing_method"
-                               message:@"trackPlayStoreSubscription not available for iOS platform"
-                               details:nil]);
 }
 
 - (void)trackAppStoreSubscription:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *price = call.arguments[@"price"];
     NSString *currency = call.arguments[@"currency"];
     NSString *transactionId = call.arguments[@"transactionId"];
-    NSString *receipt = call.arguments[@"receipt"];
     NSString *transactionDate = call.arguments[@"transactionDate"];
     NSString *salesRegion = call.arguments[@"salesRegion"];
     // NSString *billingStore = call.arguments[@"billingStore"];
     NSString *strCallbackParametersJson = call.arguments[@"callbackParameters"];
     NSString *strPartnerParametersJson = call.arguments[@"partnerParameters"];
 
-    // Price.
+    // price
     NSDecimalNumber *priceValue;
     if ([self isFieldValid:price]) {
         priceValue = [NSDecimalNumber decimalNumberWithString:price];
     }
 
-    // Receipt.
-    NSData *receiptValue;
-    if ([self isFieldValid:receipt]) {
-        receiptValue = [receipt dataUsingEncoding:NSUTF8StringEncoding];
-    }
+    // create subscription object
+    ADJAppStoreSubscription *subscription =
+    [[ADJAppStoreSubscription alloc] initWithPrice:priceValue
+                                          currency:currency
+                                     transactionId:transactionId];
 
-    // Create subscription object.
-    ADJSubscription *subscription = [[ADJSubscription alloc] initWithPrice:priceValue
-                                                                  currency:currency
-                                                             transactionId:transactionId
-                                                                andReceipt:receiptValue];
-
-    // Transaction date.
+    // transaction date
     if ([self isFieldValid:transactionDate]) {
         NSTimeInterval transactionDateInterval = [transactionDate doubleValue];
         NSDate *oTransactionDate = [NSDate dateWithTimeIntervalSince1970:transactionDateInterval];
         [subscription setTransactionDate:oTransactionDate];
     }
 
-    // Sales region.
+    // sales region
     if ([self isFieldValid:salesRegion]) {
         [subscription setSalesRegion:salesRegion];
     }
 
-    // Callback parameters.
+    // callback parameters
     if (strCallbackParametersJson != nil) {
         NSData *callbackParametersData = [strCallbackParametersJson dataUsingEncoding:NSUTF8StringEncoding];
         id callbackParametersJson = [NSJSONSerialization JSONObjectWithData:callbackParametersData
@@ -603,7 +549,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         }
     }
 
-    // Partner parameters.
+    // partner parameters
     if (strPartnerParametersJson != nil) {
         NSData *partnerParametersData = [strPartnerParametersJson dataUsingEncoding:NSUTF8StringEncoding];
         id partnerParametersJson = [NSJSONSerialization JSONObjectWithData:partnerParametersData
@@ -615,55 +561,52 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         }
     }
 
-    // Track subscription.
-    [Adjust trackSubscription:subscription];
+    // track subscription
+    [Adjust trackAppStoreSubscription:subscription];
     result(nil);
 }
 
 - (void)getAttribution:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    ADJAttribution *attribution = [Adjust attribution];
-    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    if (attribution == nil) {
+    [Adjust attributionWithCompletionHandler:^(ADJAttribution * _Nullable attribution) {
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        if (attribution == nil) {
+            result(dictionary);
+        }
+
+        [self addValueOrEmpty:attribution.trackerToken withKey:@"trackerToken" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.trackerName withKey:@"trackerName" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.network withKey:@"network" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.campaign withKey:@"campaign" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.creative withKey:@"creative" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.adgroup withKey:@"adgroup" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.clickLabel withKey:@"clickLabel" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.costType withKey:@"costType" toDictionary:dictionary];
+        [self addNumberOrEmpty:attribution.costAmount withKey:@"costAmount" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.costCurrency withKey:@"costCurrency" toDictionary:dictionary];
         result(dictionary);
-    }
-    
-    [self addValueOrEmpty:attribution.trackerToken withKey:@"trackerToken" toDictionary:dictionary];
-    [self addValueOrEmpty:attribution.trackerName withKey:@"trackerName" toDictionary:dictionary];
-    [self addValueOrEmpty:attribution.network withKey:@"network" toDictionary:dictionary];
-    [self addValueOrEmpty:attribution.campaign withKey:@"campaign" toDictionary:dictionary];
-    [self addValueOrEmpty:attribution.creative withKey:@"creative" toDictionary:dictionary];
-    [self addValueOrEmpty:attribution.adgroup withKey:@"adgroup" toDictionary:dictionary];
-    [self addValueOrEmpty:attribution.clickLabel withKey:@"clickLabel" toDictionary:dictionary];
-    [self addValueOrEmpty:attribution.adid withKey:@"adid" toDictionary:dictionary];
-    [self addValueOrEmpty:attribution.costType withKey:@"costType" toDictionary:dictionary];
-    [self addNumberOrEmpty:attribution.costAmount withKey:@"costAmount" toDictionary:dictionary];
-    [self addValueOrEmpty:attribution.costCurrency withKey:@"costCurrency" toDictionary:dictionary];
-    result(dictionary);
+    }];
 }
 
 - (void)getIdfa:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    NSString *idfa = [Adjust idfa];
-    result(idfa);
+    [Adjust idfaWithCompletionHandler:^(NSString * _Nullable idfa) {
+        result(idfa);
+    }];
 }
 
 - (void)getIdfv:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    NSString *idfv = [Adjust idfv];
-    result(idfv);
-}
-
-- (void)getGoogleAdId:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    result([FlutterError errorWithCode:@"non_existing_method"
-                               message:@"getGoogleAdId not available for iOS platform"
-                               details:nil]);
+    [Adjust idfvWithCompletionHandler:^(NSString * _Nullable idfv) {
+        result(idfv);
+    }];
 }
 
 - (void)getSdkVersion:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    NSString *sdkVersion = [Adjust sdkVersion];
-    result(sdkVersion);
+    [Adjust sdkVersionWithCompletionHandler:^(NSString * _Nullable sdkVersion) {
+        result(sdkVersion);
+    }];
 }
 
-- (void)requestTrackingAuthorizationWithCompletionHandler:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    [Adjust requestTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
+- (void)requestAppTrackingAuthorization:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    [Adjust requestAppTrackingAuthorizationWithCompletionHandler:^(NSUInteger status) {
         result([NSNumber numberWithUnsignedLong:status]);
     }];
 }
@@ -672,24 +615,16 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     result([NSNumber numberWithInt:[Adjust appTrackingAuthorizationStatus]]);
 }
 
-- (void)updateConversionValue:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    NSString *conversionValue = call.arguments[@"conversionValue"];
-    if ([self isFieldValid:conversionValue]) {
-        [Adjust updateConversionValue:[conversionValue intValue]];
-    }
-    result(nil);
-}
-
 - (void)trackThirdPartySharing:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSNumber *isEnabled = call.arguments[@"isEnabled"];
     NSString *strGranularOptions = call.arguments[@"granularOptions"];
     NSString *strPartnerSharingSettings = call.arguments[@"partnerSharingSettings"];
 
-    // Create third party sharing object.
+    // create third party sharing object
     ADJThirdPartySharing *adjustThirdPartySharing = [[ADJThirdPartySharing alloc]
-                                                     initWithIsEnabledNumberBool:[self isFieldValid:isEnabled] ? isEnabled : nil];
+                                                     initWithIsEnabled:[self isFieldValid:isEnabled] ? isEnabled : nil];
 
-    // Granular options.
+    // granular options
     if (strGranularOptions != nil) {
         NSArray *arrayGranularOptions = [strGranularOptions componentsSeparatedByString:@"__ADJ__"];
         if (arrayGranularOptions != nil) {
@@ -701,7 +636,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         }
     }
 
-    // Partner sharing settings.
+    // partner sharing settings
     if (strPartnerSharingSettings != nil) {
         NSArray *arrayPartnerSharingSettings = [strPartnerSharingSettings componentsSeparatedByString:@"__ADJ__"];
         if (arrayPartnerSharingSettings != nil) {
@@ -713,7 +648,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         }
     }
 
-    // Track third party sharing.
+    // track third party sharing
     [Adjust trackThirdPartySharing:adjustThirdPartySharing];
     result(nil);
 }
@@ -726,66 +661,28 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     result(nil);
 }
 
-- (void)getLastDeeplink:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    NSURL *lastDeeplink = [Adjust lastDeeplink];
-    if (![self isFieldValid:lastDeeplink]) {
-        result(nil);
-    } else {
-        result([lastDeeplink absoluteString]);
-    }
-}
-
-- (void)updateConversionValueWithErrorCallback:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    NSString *conversionValue = call.arguments[@"conversionValue"];
-    if ([self isFieldValid:conversionValue]) {
-        [Adjust updatePostbackConversionValue:[conversionValue intValue]
-                            completionHandler:^(NSError * _Nullable error) {
-            result([error localizedDescription]);
-        }];
-    }
-}
-
-- (void)updateConversionValueWithErrorCallbackSkad4:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    NSString *conversionValue = call.arguments[@"conversionValue"];
+- (void)updateSkanConversionValue:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSInteger conversionValue = [call.arguments[@"conversionValue"] integerValue];
     NSString *coarseValue = call.arguments[@"coarseValue"];
-    NSString *lockWindow = call.arguments[@"lockWindow"];
-    if ([self isFieldValid:conversionValue] &&
-        [self isFieldValid:coarseValue] &&
-        [self isFieldValid:lockWindow]) {
-        [Adjust updatePostbackConversionValue:[conversionValue intValue]
-                                  coarseValue:coarseValue
-                                   lockWindow:(BOOL)lockWindow
-                            completionHandler:^(NSError * _Nullable error) {
-            result([error localizedDescription]);
-        }];
-    }
-}
-
-- (void)verifyPlayStorePurchase:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    result([FlutterError errorWithCode:@"non_existing_method"
-                               message:@"verifyPlayStorePurchase not available for iOS platform"
-                               details:nil]);
+    NSNumber *lockWindow = call.arguments[@"lockWindow"];
+    [Adjust updateSkanConversionValue:conversionValue
+                          coarseValue:coarseValue
+                           lockWindow:lockWindow
+                withCompletionHandler:^(NSError * _Nullable error) {
+        result(error.description);
+    }];
 }
 
 - (void)verifyAppStorePurchase:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    NSString *receipt = call.arguments[@"receipt"];
     NSString *productId = call.arguments[@"productId"];
     NSString *transactionId = call.arguments[@"transactionId"];
 
-    // Receipt.
-    NSData *receiptValue;
-    if ([self isFieldValid:receipt]) {
-        receiptValue = [receipt dataUsingEncoding:NSUTF8StringEncoding];
-    }
+    // create purchase instance
+    ADJAppStorePurchase *purchase = [[ADJAppStorePurchase alloc] initWithTransactionId:transactionId
+                                                             productId:productId];
 
-    // Create purchase instance.
-    ADJPurchase *purchase = [[ADJPurchase alloc] initWithTransactionId:transactionId
-                                                             productId:productId
-                                                            andReceipt:receiptValue];
-
-    // Verify purchase.
-    [Adjust verifyPurchase:purchase 
-         completionHandler:^(ADJPurchaseVerificationResult * _Nonnull verificationResult) {
+    // verify purchase
+    [Adjust verifyAppStorePurchase:purchase withCompletionHandler:^(ADJPurchaseVerificationResult * _Nonnull verificationResult) {
         NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
         if (verificationResult == nil) {
             result(dictionary);
@@ -804,7 +701,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }];
 }
 
-- (void)processDeeplink:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+- (void)processAndResolveDeeplink:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *deeplink = call.arguments[@"deeplink"];
     if ([self isFieldValid:deeplink]) {
         NSURL *nsUrl;
@@ -817,7 +714,9 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         }
 #pragma clang diagnostic pop
 
-        [Adjust processDeeplink:nsUrl completionHandler:^(NSString * _Nonnull resolvedLink) {
+        ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:nsUrl];
+        [Adjust processAndResolveDeeplink:deeplink
+                    withCompletionHandler:^(NSString * _Nullable resolvedLink) {
             if (![self isFieldValid:resolvedLink]) {
                 result(nil);
             } else {
@@ -827,75 +726,187 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
 }
 
+- (void)verifyAndTrackAppStorePurchase:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *eventToken = call.arguments[@"eventToken"];
+    NSString *revenue = call.arguments[@"revenue"];
+    NSString *currency = call.arguments[@"currency"];
+    NSString *callbackId = call.arguments[@"callbackId"];
+    NSString *productId = call.arguments[@"productId"];
+    NSString *transactionId = call.arguments[@"transactionId"];
+    NSString *deduplicationId = call.arguments[@"deduplicationId"];
+    NSString *strCallbackParametersJson = call.arguments[@"callbackParameters"];
+    NSString *strPartnerParametersJson = call.arguments[@"partnerParameters"];
+
+    // create event object
+    ADJEvent *adjustEvent = [[ADJEvent alloc] initWithEventToken:eventToken];
+
+    // revenue
+    if ([self isFieldValid:revenue]) {
+        double revenueValue = [revenue doubleValue];
+        [adjustEvent setRevenue:revenueValue currency:currency];
+    }
+
+    // product ID
+    if ([self isFieldValid:productId]) {
+        [adjustEvent setProductId:productId];
+    }
+
+    // transaction ID
+    if ([self isFieldValid:transactionId]) {
+        [adjustEvent setTransactionId:transactionId];
+    }
+
+    // deduplication ID
+    if ([self isFieldValid:deduplicationId]) {
+        [adjustEvent setDeduplicationId:deduplicationId];
+    }
+
+    // callback ID
+    if ([self isFieldValid:callbackId]) {
+        [adjustEvent setCallbackId:callbackId];
+    }
+
+    // callback parameters
+    if (strCallbackParametersJson != nil) {
+        NSData *callbackParametersData = [strCallbackParametersJson dataUsingEncoding:NSUTF8StringEncoding];
+        id callbackParametersJson = [NSJSONSerialization JSONObjectWithData:callbackParametersData
+                                                                    options:0
+                                                                      error:NULL];
+        for (id key in callbackParametersJson) {
+            NSString *value = [callbackParametersJson objectForKey:key];
+            [adjustEvent addCallbackParameter:key value:value];
+        }
+    }
+
+    // partner parameters
+    if (strPartnerParametersJson != nil) {
+        NSData *partnerParametersData = [strPartnerParametersJson dataUsingEncoding:NSUTF8StringEncoding];
+        id partnerParametersJson = [NSJSONSerialization JSONObjectWithData:partnerParametersData
+                                                                   options:0
+                                                                     error:NULL];
+        for (id key in partnerParametersJson) {
+            NSString *value = [partnerParametersJson objectForKey:key];
+            [adjustEvent addPartnerParameter:key value:value];
+        }
+    }
+
+    // verify and track app store purchase
+    [Adjust verifyAndTrackAppStorePurchase:adjustEvent
+                     withCompletionHandler:^(ADJPurchaseVerificationResult * _Nonnull verificationResult) {
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        if (verificationResult == nil) {
+            result(dictionary);
+        }
+        
+        [self addValueOrEmpty:verificationResult.verificationStatus
+                      withKey:@"verificationStatus"
+                 toDictionary:dictionary];
+        [self addValueOrEmpty:[NSString stringWithFormat:@"%d", verificationResult.code]
+                      withKey:@"code"
+                 toDictionary:dictionary];
+        [self addValueOrEmpty:verificationResult.message
+                      withKey:@"message"
+                 toDictionary:dictionary];
+        result(dictionary);
+    }];
+}
+
+#pragma mark - Testing only methods
+
 - (void)setTestOptions:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    AdjustTestOptions *testOptions = [[AdjustTestOptions alloc] init];
-    NSString *overwriteUrl = call.arguments[@"urlOverwrite"];
-    NSString *extraPath = call.arguments[@"extraPath"];
-    NSString *timerIntervalInMilliseconds = call.arguments[@"timerIntervalInMilliseconds"];
-    NSString *timerStartInMilliseconds = call.arguments[@"timerStartInMilliseconds"];
-    NSString *sessionIntervalInMilliseconds = call.arguments[@"sessionIntervalInMilliseconds"];
-    NSString *subsessionIntervalInMilliseconds = call.arguments[@"subsessionIntervalInMilliseconds"];
-    NSString *teardown = call.arguments[@"teardown"];
-    NSString *deleteState = call.arguments[@"deleteState"];
-    NSString *noBackoffWait = call.arguments[@"noBackoffWait"];
-    NSString *adServicesFrameworkEnabled = call.arguments[@"adServicesFrameworkEnabled"];
-    NSString *attStatus = call.arguments[@"attStatus"];
-    NSString *idfa = call.arguments[@"idfa"];
-    
-    if ([self isFieldValid:overwriteUrl]) {
-        testOptions.urlOverwrite = overwriteUrl;
+    NSMutableDictionary *testOptions = [[NSMutableDictionary alloc] init];
+
+    if (call.arguments[@"urlOverwrite"] != nil) {
+        [testOptions setObject:call.arguments[@"urlOverwrite"] forKey:@"testUrlOverwrite"];
     }
-    if ([self isFieldValid:extraPath]) {
-        testOptions.extraPath = extraPath;
+    if (call.arguments[@"extraPath"] != nil) {
+        [testOptions setObject:call.arguments[@"extraPath"] forKey:@"extraPath"];
     }
-    if ([self isFieldValid:timerIntervalInMilliseconds]) {
-        testOptions.timerIntervalInMilliseconds = [NSNumber numberWithLongLong:[timerIntervalInMilliseconds longLongValue]];
+    if (call.arguments[@"basePath"] != nil) {
+        [testOptions setObject:call.arguments[@"basePath"] forKey:@"basePath"];
     }
-    if ([self isFieldValid:timerStartInMilliseconds]) {
-        testOptions.timerStartInMilliseconds = [NSNumber numberWithLongLong:[timerStartInMilliseconds longLongValue]];
+    if (call.arguments[@"timerIntervalInMilliseconds"] != nil) {
+        [testOptions setObject:call.arguments[@"timerIntervalInMilliseconds"] forKey:@"timerIntervalInMilliseconds"];
     }
-    if ([self isFieldValid:sessionIntervalInMilliseconds]) {
-        testOptions.sessionIntervalInMilliseconds = [NSNumber numberWithLongLong:[sessionIntervalInMilliseconds longLongValue]];
+    if (call.arguments[@"timerStartInMilliseconds"] != nil) {
+        [testOptions setObject:call.arguments[@"timerStartInMilliseconds"] forKey:@"timerStartInMilliseconds"];
     }
-    if ([self isFieldValid:subsessionIntervalInMilliseconds]) {
-        testOptions.subsessionIntervalInMilliseconds = [NSNumber numberWithLongLong:[subsessionIntervalInMilliseconds longLongValue]];
+    if (call.arguments[@"sessionIntervalInMilliseconds"] != nil) {
+        [testOptions setObject:call.arguments[@"sessionIntervalInMilliseconds"] forKey:@"sessionIntervalInMilliseconds"];
     }
-    if ([self isFieldValid:teardown]) {
-        testOptions.teardown = [teardown boolValue];
-        if (testOptions.teardown) {
+    if (call.arguments[@"subsessionIntervalInMilliseconds"] != nil) {
+        [testOptions setObject:call.arguments[@"subsessionIntervalInMilliseconds"] forKey:@"subsessionIntervalInMilliseconds"];
+    }
+    if (call.arguments[@"teardown"] != nil) {
+        [testOptions setObject:call.arguments[@"teardown"] forKey:@"teardown"];
+        if ([testOptions[@"teardown"] isEqualToString:@"true"] == YES) {
             [AdjustSdkDelegate teardown];
         }
     }
-    if ([self isFieldValid:deleteState]) {
-        testOptions.deleteState = [deleteState boolValue];
+    if (call.arguments[@"resetSdk"] != nil) {
+        [testOptions setObject:call.arguments[@"resetSdk"] forKey:@"resetSdk"];
     }
-    if ([self isFieldValid:noBackoffWait]) {
-        testOptions.noBackoffWait = [noBackoffWait boolValue];
+    if (call.arguments[@"deleteState"] != nil) {
+        [testOptions setObject:call.arguments[@"deleteState"] forKey:@"deleteState"];
     }
-    if ([self isFieldValid:adServicesFrameworkEnabled]) {
-        testOptions.adServicesFrameworkEnabled = [adServicesFrameworkEnabled boolValue];
+    if (call.arguments[@"resetTest"] != nil) {
+        [testOptions setObject:call.arguments[@"resetTest"] forKey:@"resetTest"];
     }
-    if ([self isFieldValid:attStatus]) {
-        testOptions.attStatusInt = [NSNumber numberWithInt:[attStatus intValue]];
+    if (call.arguments[@"noBackoffWait"] != nil) {
+        [testOptions setObject:call.arguments[@"noBackoffWait"] forKey:@"noBackoffWait"];
     }
-    if ([self isFieldValid:idfa]) {
-        testOptions.idfa = idfa;
+    if (call.arguments[@"adServicesFrameworkEnabled"] != nil) {
+        [testOptions setObject:call.arguments[@"adServicesFrameworkEnabled"] forKey:@"adServicesFrameworkEnabled"];
     }
-    
+    if (call.arguments[@"attStatus"] != nil) {
+        [testOptions setObject:call.arguments[@"attStatus"] forKey:@"attStatusInt"];
+    }
+    if (call.arguments[@"idfa"] != nil) {
+        [testOptions setObject:call.arguments[@"idfa"] forKey:@"idfa"];
+    }
+
     [Adjust setTestOptions:testOptions];
 }
+
+#pragma mark - Android only methods
+
+- (void)getGoogleAdId:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    result([FlutterError errorWithCode:@"non_existing_method"
+                               message:@"getGoogleAdId not available on iOS platform!"
+                               details:nil]);
+}
+
+- (void)trackPlayStoreSubscription:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    result([FlutterError errorWithCode:@"non_existing_method"
+                               message:@"trackPlayStoreSubscription not available on iOS platform!"
+                               details:nil]);
+}
+
+- (void)verifyPlayStorePurchase:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    result([FlutterError errorWithCode:@"non_existing_method"
+                               message:@"verifyPlayStorePurchase not available on iOS platform!"
+                               details:nil]);
+}
+
+- (void)verifyAndTrackPlayStorePurchase:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    result([FlutterError errorWithCode:@"non_existing_method"
+                               message:@"verifyAndTrackPlayStorePurchase not available on iOS platform!"
+                               details:nil]);
+}
+
+#pragma mark - Utility & helper methods
 
 - (BOOL)isFieldValid:(NSObject *)field {
     if (field == nil) {
         return NO;
     }
 
-    // Check if its an instance of the singleton NSNull.
+    // check if its an instance of the singleton NSNull
     if ([field isKindOfClass:[NSNull class]]) {
         return NO;
     }
 
-    // If field can be converted to a string, check if it has any content.
+    // if field can be converted to a string, check if it has any content
     NSString *str = [NSString stringWithFormat:@"%@", field];
     if (str != nil) {
         if ([str length] == 0) {

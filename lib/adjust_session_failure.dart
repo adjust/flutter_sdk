@@ -14,11 +14,11 @@ class AdjustSessionFailure {
   final bool? willRetry;
 
   AdjustSessionFailure({
-    required this.message,
-    required this.timestamp,
-    required this.adid,
-    required this.jsonResponse,
-    required this.willRetry,
+    this.message,
+    this.timestamp,
+    this.adid,
+    this.jsonResponse,
+    this.willRetry,
   });
 
   factory AdjustSessionFailure.fromMap(dynamic map) {

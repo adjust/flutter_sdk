@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = 'adjust_sdk'
-  s.version               = '4.38.2'
+  s.version               = '5.0.0'
   s.summary               = 'Adjust Flutter SDK for iOS platform'
   s.description           = <<-DESC
                             Adjust Flutter SDK for iOS platform.
@@ -11,8 +11,8 @@ Pod::Spec.new do |s|
   s.source                = { :path => '.' }
   s.source_files          = 'Classes/**/*'
   s.public_header_files   = 'Classes/**/*.h'
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '12.0'
 
   s.dependency 'Flutter'
-  s.dependency 'Adjust', '4.38.4'
+  s.dependency 'Adjust', '5.0.0'
 end

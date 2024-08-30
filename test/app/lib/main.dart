@@ -25,13 +25,14 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    String _address = '192.168.86.53';
     if (Platform.isAndroid) {
+      String _address = '192.168.86.80';
       String _protocol = 'https';
       String _port = '8443';
       _overwriteUrl = _protocol + '://' + _address + ':' + _port;
       _controlUrl = 'ws://' + _address + ':1987';
     } else {
+      String _address = '192.168.86.80';
       String _protocol = 'http';
       String _port = '8080';
       _overwriteUrl = _protocol + '://' + _address + ':' + _port;
@@ -69,8 +70,8 @@ class _MyAppState extends State<MyApp> {
                 buildCupertinoButton(
                     'Start Test Session',
                     () => Adjust.getSdkVersion().then((sdkVersion) {
-                          // TestLib.addTestDirectory('deeplink-getter');
-                          // TestLib.addTest('Test_Event_Revenue_invalid');
+                          // TestLib.addTestDirectory('event-callbacks');
+                          // TestLib.addTest('Test_AttributionGetter_after_install');
                           TestLib.startTestSession(sdkVersion);
                         }))
               ])))

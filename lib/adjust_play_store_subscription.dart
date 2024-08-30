@@ -9,26 +9,27 @@
 import 'dart:convert';
 
 class AdjustPlayStoreSubscription {
-  String? _price;
-  String? _currency;
-  String? _sku;
-  String? _orderId;
-  String? _signature;
-  String? _purchaseToken;
+  final String _price;
+  final String _currency;
+  final String _sku;
+  final String _orderId;
+  final String _signature;
+  final String _purchaseToken;
   String? _billingStore;
-  String? _purchaseTime;
+  String? purchaseTime;
   Map<String, String>? _callbackParameters;
   Map<String, String>? _partnerParameters;
 
-  AdjustPlayStoreSubscription(this._price, this._currency, this._sku,
-      this._orderId, this._signature, this._purchaseToken) {
+  AdjustPlayStoreSubscription(
+    this._price,
+    this._currency,
+    this._sku,
+    this._orderId,
+    this._signature,
+    this._purchaseToken) {
     _billingStore = "GooglePlay";
     _callbackParameters = new Map<String, String>();
     _partnerParameters = new Map<String, String>();
-  }
-
-  void setPurchaseTime(String purchaseTime) {
-    _purchaseTime = purchaseTime;
   }
 
   void addCallbackParameter(String key, String value) {
@@ -40,7 +41,7 @@ class AdjustPlayStoreSubscription {
   }
 
   Map<String, String?> get toMap {
-    Map<String, String?> subscriptionMap = new Map<String, String?>();
+    Map<String, String?> subscriptionMap = new Map<String, String>();
 
     if (_price != null) {
       subscriptionMap['price'] = _price;
@@ -63,8 +64,8 @@ class AdjustPlayStoreSubscription {
     if (_billingStore != null) {
       subscriptionMap['billingStore'] = _billingStore;
     }
-    if (_purchaseTime != null) {
-      subscriptionMap['purchaseTime'] = _purchaseTime;
+    if (purchaseTime != null) {
+      subscriptionMap['purchaseTime'] = purchaseTime;
     }
     if (_callbackParameters!.length > 0) {
       subscriptionMap['callbackParameters'] = json.encode(_callbackParameters);

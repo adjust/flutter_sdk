@@ -82,10 +82,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.resumed:
-        Adjust.onResume();
         break;
       case AppLifecycleState.paused:
-        Adjust.onPause();
         break;
       case AppLifecycleState.detached:
         break;
@@ -97,6 +95,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     AdjustConfig config =
         new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
     config.logLevel = AdjustLogLevel.verbose;
+
+    config.setUrlStrategy(['adjust.net.in', 'adjust.com'], true, false);
+    //config.setUrlStrategy(['adjust.world', 'adjust.com'], true, false);
+    //config.setUrlStrategy(['adjust.cn'], true, false);
+    //config.setUrlStrategy(['eu.adjust.com'], true, true);
+    //config.setUrlStrategy(['us.adjust.com'], true, true);
+    //config.setUrlStrategy(['tr.adjust.com'], true, true);
 
     config.attributionCallback = (AdjustAttribution attributionChangedData) {
       print('[Adjust]: Attribution changed!');
@@ -122,9 +127,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       }
       if (attributionChangedData.clickLabel != null) {
         print('[Adjust]: Click label: ' + attributionChangedData.clickLabel!);
-      }
-      if (attributionChangedData.adid != null) {
-        print('[Adjust]: Adid: ' + attributionChangedData.adid!);
       }
       if (attributionChangedData.costType != null) {
         print('[Adjust]: Cost type: ' + attributionChangedData.costType!);
@@ -230,38 +232,42 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       print('[Adjust]: Received deferred deeplink: ' + uri!);
     };
 
-    config.conversionValueUpdatedCallback = (num? conversionValue) {
-      print('[Adjust]: Received conversion value update: ' +
-          conversionValue!.toString());
-    };
-
-    config.skad4ConversionValueUpdatedCallback = (num? conversionValue, String? coarseValue, bool? lockWindow) {
-      print('[Adjust]: Received conversion value update!');
-      print('[Adjust]: Conversion value: ' + conversionValue!.toString());
-      print('[Adjust]: Coarse value: ' + coarseValue!);
-      print('[Adjust]: Lock window: ' + lockWindow!.toString());
+    config.skanUpdatedCallback = (Map<String, String> skanUpdateData) {
+      print('[Adjust]: Received SKAN update information!');
+      if (skanUpdateData["conversion_value"] != null) {
+        print('[Adjust]: Conversion value: ' + skanUpdateData["conversion_value"]!);
+      }
+      if (skanUpdateData["coarse_value"] != null) {
+        print('[Adjust]: Coarse value: ' + skanUpdateData["coarse_value"]!);
+      }
+      if (skanUpdateData["lock_window"] != null) {
+        print('[Adjust]: Lock window: ' + skanUpdateData["lock_window"]!);
+      }
+      if (skanUpdateData["error"] != null) {
+        print('[Adjust]: Error: ' + skanUpdateData["error"]!);
+      }
     };
 
     // Add session callback parameters.
-    Adjust.addSessionCallbackParameter('scp_foo_1', 'scp_bar');
-    Adjust.addSessionCallbackParameter('scp_foo_2', 'scp_value');
+    Adjust.addGlobalCallbackParameter('scp_foo_1', 'scp_bar');
+    Adjust.addGlobalCallbackParameter('scp_foo_2', 'scp_value');
 
     // Add session Partner parameters.
-    Adjust.addSessionPartnerParameter('spp_foo_1', 'spp_bar');
-    Adjust.addSessionPartnerParameter('spp_foo_2', 'spp_value');
+    Adjust.addGlobalPartnerParameter('spp_foo_1', 'spp_bar');
+    Adjust.addGlobalPartnerParameter('spp_foo_2', 'spp_value');
 
     // Remove session callback parameters.
-    Adjust.removeSessionCallbackParameter('scp_foo_1');
-    Adjust.removeSessionPartnerParameter('spp_foo_1');
+    Adjust.removeGlobalCallbackParameter('scp_foo_1');
+    Adjust.removeGlobalPartnerParameter('spp_foo_1');
 
     // Clear all session callback parameters.
-    Adjust.resetSessionCallbackParameters();
+    Adjust.removeGlobalCallbackParameters();
 
     // Clear all session partner parameters.
-    Adjust.resetSessionPartnerParameters();
+    Adjust.removeGlobalPartnerParameters();
 
     // Ask for tracking consent.
-    Adjust.requestTrackingAuthorizationWithCompletionHandler().then((status) {
+    Adjust.requestAppTrackingAuthorization().then((status) {
       print('[Adjust]: Authorization status update!');
       switch (status) {
         case 0:
@@ -283,14 +289,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       }
     });
 
-    // COPPA compliance.
-    // config.coppaCompliantEnabled = true;
-
-    // Google Play Store kids apps.
-    // config.playStoreKidsAppEnabled = true;
-
-    // Start SDK.
-    Adjust.start(config);
+    // start SDK
+    Adjust.initSdk(config);
   }
 
   @override
@@ -381,7 +381,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                       value: _isSdkEnabled,
                       onChanged: (bool value) {
                         setState(() {
-                          Adjust.setEnabled(value);
+                          if(value == true){
+                            Adjust.enable();
+                          }else {
+                            Adjust.disable();
+                          }
                           _isSdkEnabled = value;
                           print('Switch state = $_isSdkEnabled');
                         });

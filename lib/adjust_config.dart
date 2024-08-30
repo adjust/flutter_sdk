@@ -6,6 +6,8 @@
 //  Copyright (c) 2018-Present Adjust GmbH. All rights reserved.
 //
 
+import 'dart:convert';
+
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
@@ -22,9 +24,8 @@ typedef void SessionSuccessCallback(AdjustSessionSuccess successData);
 typedef void SessionFailureCallback(AdjustSessionFailure failureData);
 typedef void EventSuccessCallback(AdjustEventSuccess successData);
 typedef void EventFailureCallback(AdjustEventFailure failureData);
-typedef void DeferredDeeplinkCallback(String? uri);
-typedef void ConversionValueUpdatedCallback(num? conversionValue);
-typedef void Skad4ConversionValueUpdatedCallback(num? conversionValue, String? coarseValue, bool? lockWindow);
+typedef void DeferredDeeplinkCallback(String? deeplink);
+typedef void SkanUpdatedCallback(Map<String, String> skanUpdateData);
 
 class AdjustConfig {
   static const MethodChannel _channel =
@@ -35,66 +36,38 @@ class AdjustConfig {
   static const String _eventSuccessCallbackName = 'adj-event-success';
   static const String _eventFailureCallbackName = 'adj-event-failure';
   static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
-  static const String _conversionValueUpdatedCallbackName =
-      'adj-conversion-value-updated';
-  static const String _skad4ConversionValueUpdatedCallbackName =
-      'adj-skad4-conversion-value-updated';
+  static const String _skanUpdatedCallbackName = 'adj-skan-updated';
 
-  static const String UrlStrategyIndia = 'india';
-  static const String UrlStrategyChina = 'china';
-  static const String UrlStrategyCn = 'cn';
-  static const String UrlStrategyCnOnly = 'cn-only';
+  final String _appToken;
+  final AdjustEnvironment _environment;
 
-  static const String DataResidencyEU = 'data-residency-eu';
-  static const String DataResidencyTR = 'data-residency-tr';
-  static const String DataResidencyUS = 'data-residency-us';
-
-  static const String AdRevenueSourceAppLovinMAX = "applovin_max_sdk";
-  static const String AdRevenueSourceMopub = 'mopub';
-  static const String AdRevenueSourceAdMob = 'admob_sdk';
-  static const String AdRevenueSourceIronSource = 'ironsource_sdk';
-  static const String AdRevenueSourceAdMostSource = 'admost_sdk';
-  static const String AdRevenueSourceUnity = 'unity_sdk';
-  static const String AdRevenueSourceHeliumChartboost = 'helium_chartboost_sdk';
-  static const String AdRevenueSourcePublisher = 'publisher_sdk';
-  static const String AdRevenueSourceTopOn = 'topon_sdk';
-  static const String AdRevenueSourceAdx = 'adx_sdk';
-  static const String AdRevenueTradPlus = 'tradplus_sdk';
-
-  String _appToken;
-  AdjustEnvironment _environment;
-
-  num? _info1;
-  num? _info2;
-  num? _info3;
-  num? _info4;
-  num? _secretId;
-  bool? _skAdNetworkHandling;
+  bool? isSkanAttributionEnabled;
+  bool? isSendingInBackgroundEnabled;
+  bool? isAdServicesEnabled;
+  bool? isIdfaReadingEnabled;
+  bool? isIdfvReadingEnabled;
+  bool? isCostDataInAttributionEnabled;
+  bool? isPreinstallTrackingEnabled;
+  bool? isLinkMeEnabled;
+  bool? isDeviceIdsReadingOnceEnabled;
+  bool? isCoppaComplianceEnabled;
+  bool? isPlayStoreKidsComplianceEnabled;
+  bool? isDeferredDeeplinkOpeningEnabled;
 
   num? attConsentWaitingInterval;
-  double? delayStart;
-  bool? isDeviceKnown;
-  bool? sendInBackground;
-  bool? eventBufferingEnabled;
-  bool? allowiAdInfoReading;
-  bool? allowAdServicesInfoReading;
-  bool? allowIdfaReading;
-  bool? launchDeferredDeeplink;
-  bool? needsCost;
-  bool? preinstallTrackingEnabled;
-  bool? playStoreKidsAppEnabled;
-  bool? coppaCompliantEnabled;
-  bool? linkMeEnabled;
-  bool? finalAndroidAttributionEnabled;
-  bool? readDeviceInfoOnceEnabled;
+  num? eventDeduplicationIdsMaxSize;
+
   String? sdkPrefix;
-  String? userAgent;
   String? defaultTracker;
   String? externalDeviceId;
-  String? urlStrategy;
   String? processName;
   String? preinstallFilePath;
   String? fbAppId;
+
+  bool? _isDataResidency;
+  bool? _useSubdomains;
+  List<String> _urlStrategyDomains = [];
+
   AdjustLogLevel? logLevel;
   AttributionCallback? attributionCallback;
   SessionSuccessCallback? sessionSuccessCallback;
@@ -102,12 +75,16 @@ class AdjustConfig {
   EventSuccessCallback? eventSuccessCallback;
   EventFailureCallback? eventFailureCallback;
   DeferredDeeplinkCallback? deferredDeeplinkCallback;
-  ConversionValueUpdatedCallback? conversionValueUpdatedCallback;
-  Skad4ConversionValueUpdatedCallback? skad4ConversionValueUpdatedCallback;
+  SkanUpdatedCallback? skanUpdatedCallback;
 
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
-    _skAdNetworkHandling = true;
+  }
+
+  void setUrlStrategy(List<String> urlStrategyDomains, bool useSubdomains, bool isDataResidency) {
+    _urlStrategyDomains.addAll(urlStrategyDomains);
+    _useSubdomains = useSubdomains;
+    _isDataResidency = isDataResidency;
   }
 
   void _initCallbackHandlers() {
@@ -116,66 +93,45 @@ class AdjustConfig {
         switch (call.method) {
           case _attributionCallbackName:
             if (attributionCallback != null) {
-              AdjustAttribution attribution =
-                  AdjustAttribution.fromMap(call.arguments);
+              AdjustAttribution attribution = AdjustAttribution.fromMap(call.arguments);
               attributionCallback!(attribution);
             }
             break;
           case _sessionSuccessCallbackName:
             if (sessionSuccessCallback != null) {
-              AdjustSessionSuccess sessionSuccess =
-                  AdjustSessionSuccess.fromMap(call.arguments);
+              AdjustSessionSuccess sessionSuccess = AdjustSessionSuccess.fromMap(call.arguments);
               sessionSuccessCallback!(sessionSuccess);
             }
             break;
           case _sessionFailureCallbackName:
             if (sessionFailureCallback != null) {
-              AdjustSessionFailure sessionFailure =
-                  AdjustSessionFailure.fromMap(call.arguments);
+              AdjustSessionFailure sessionFailure = AdjustSessionFailure.fromMap(call.arguments);
               sessionFailureCallback!(sessionFailure);
             }
             break;
           case _eventSuccessCallbackName:
             if (eventSuccessCallback != null) {
-              AdjustEventSuccess eventSuccess =
-                  AdjustEventSuccess.fromMap(call.arguments);
+              AdjustEventSuccess eventSuccess = AdjustEventSuccess.fromMap(call.arguments);
               eventSuccessCallback!(eventSuccess);
             }
             break;
           case _eventFailureCallbackName:
             if (eventFailureCallback != null) {
-              AdjustEventFailure eventFailure =
-                  AdjustEventFailure.fromMap(call.arguments);
+              AdjustEventFailure eventFailure = AdjustEventFailure.fromMap(call.arguments);
               eventFailureCallback!(eventFailure);
             }
             break;
           case _deferredDeeplinkCallbackName:
             if (deferredDeeplinkCallback != null) {
-              String? uri = call.arguments['uri'];
+              String? deeplink = call.arguments['deeplink'];
               if (deferredDeeplinkCallback != null) {
-                deferredDeeplinkCallback!(uri);
+                deferredDeeplinkCallback!(deeplink);
               }
             }
             break;
-          case _conversionValueUpdatedCallbackName:
-            if (conversionValueUpdatedCallback != null) {
-              String? conversionValue = call.arguments['conversionValue'];
-              if (conversionValue != null) {
-                conversionValueUpdatedCallback!(int.parse(conversionValue));
-              }
-            }
-            break;
-          case _skad4ConversionValueUpdatedCallbackName:
-            if (skad4ConversionValueUpdatedCallback != null) {
-              String? conversionValue = call.arguments['fineValue'];
-              String? coarseValue = call.arguments['coarseValue'];
-              String? lockWindow = call.arguments['lockWindow'];
-              if (conversionValue != null && coarseValue != null && lockWindow != null) {
-                skad4ConversionValueUpdatedCallback!(
-                  int.parse(conversionValue),
-                  coarseValue,
-                  lockWindow.toLowerCase() == 'true');
-              }
+          case _skanUpdatedCallbackName:
+            if (skanUpdatedCallback != null) {
+              skanUpdatedCallback!(Map<String, String>.from(call.arguments));
             }
             break;
           default:
@@ -188,18 +144,6 @@ class AdjustConfig {
     });
   }
 
-  void setAppSecret(num secretId, num info1, num info2, num info3, num info4) {
-    _secretId = secretId;
-    _info1 = info1;
-    _info2 = info2;
-    _info3 = info3;
-    _info4 = info4;
-  }
-
-  void deactivateSKAdNetworkHandling() {
-    _skAdNetworkHandling = false;
-  }
-
   Map<String, String?> get toMap {
     Map<String, String?> configMap = {
       'sdkPrefix': sdkPrefix,
@@ -209,9 +153,6 @@ class AdjustConfig {
           .substring(_environment.toString().indexOf('.') + 1),
     };
 
-    if (userAgent != null) {
-      configMap['userAgent'] = userAgent;
-    }
     if (processName != null) {
       configMap['processName'] = processName;
     }
@@ -225,79 +166,62 @@ class AdjustConfig {
     if (externalDeviceId != null) {
       configMap['externalDeviceId'] = externalDeviceId;
     }
+    if (eventDeduplicationIdsMaxSize != null) {
+      configMap['eventDeduplicationIdsMaxSize'] = eventDeduplicationIdsMaxSize.toString();
+    }
     if (preinstallFilePath != null) {
       configMap['preinstallFilePath'] = preinstallFilePath;
     }
     if (fbAppId != null) {
       configMap['fbAppId'] = fbAppId;
     }
-    if (urlStrategy != null) {
-      configMap['urlStrategy'] = urlStrategy;
+    if (_urlStrategyDomains.isEmpty != true ) {
+      configMap['urlStrategyDomains'] = json.encode(_urlStrategyDomains);
     }
-    if (isDeviceKnown != null) {
-      configMap['isDeviceKnown'] = isDeviceKnown.toString();
+    if (_isDataResidency != null) {
+      configMap['isDataResidency'] = _isDataResidency.toString();
     }
-    if (sendInBackground != null) {
-      configMap['sendInBackground'] = sendInBackground.toString();
+    if (_useSubdomains != null) {
+      configMap['useSubdomains'] = _useSubdomains.toString();
     }
-    if (eventBufferingEnabled != null) {
-      configMap['eventBufferingEnabled'] = eventBufferingEnabled.toString();
+    if (isCostDataInAttributionEnabled != null) {
+      configMap['isCostDataInAttributionEnabled'] = isCostDataInAttributionEnabled.toString();
     }
-    if (needsCost != null) {
-      configMap['needsCost'] = needsCost.toString();
+    if (isSendingInBackgroundEnabled != null) {
+      configMap['isSendingInBackgroundEnabled'] = isSendingInBackgroundEnabled.toString();
     }
-    if (preinstallTrackingEnabled != null) {
-      configMap['preinstallTrackingEnabled'] =
-          preinstallTrackingEnabled.toString();
+    if (isCostDataInAttributionEnabled != null) {
+      configMap['isCostDataInAttributionEnabled'] = isCostDataInAttributionEnabled.toString();
     }
-    if (playStoreKidsAppEnabled != null) {
-      configMap['playStoreKidsAppEnabled'] = playStoreKidsAppEnabled.toString();
+    if (isPreinstallTrackingEnabled != null) {
+      configMap['isPreinstallTrackingEnabled'] = isPreinstallTrackingEnabled.toString();
     }
-    if (coppaCompliantEnabled != null) {
-      configMap['coppaCompliantEnabled'] = coppaCompliantEnabled.toString();
+    if (isPlayStoreKidsComplianceEnabled != null) {
+      configMap['isPlayStoreKidsComplianceEnabled'] = isPlayStoreKidsComplianceEnabled.toString();
     }
-    if (finalAndroidAttributionEnabled != null) {
-      configMap['finalAndroidAttributionEnabled'] = finalAndroidAttributionEnabled.toString();
+    if (isCoppaComplianceEnabled != null) {
+      configMap['isCoppaComplianceEnabled'] = isCoppaComplianceEnabled.toString();
     }
-    if (readDeviceInfoOnceEnabled != null) {
-      configMap['readDeviceInfoOnceEnabled'] = readDeviceInfoOnceEnabled.toString();
+    if (isDeviceIdsReadingOnceEnabled != null) {
+      configMap['isDeviceIdsReadingOnceEnabled'] = isDeviceIdsReadingOnceEnabled.toString();
     }
-    if (linkMeEnabled != null) {
-      configMap['linkMeEnabled'] = linkMeEnabled.toString();
+    if (isLinkMeEnabled != null) {
+      configMap['isLinkMeEnabled'] = isLinkMeEnabled.toString();
     }
-    if (allowiAdInfoReading != null) {
-      configMap['allowiAdInfoReading'] = allowiAdInfoReading.toString();
+    if (isAdServicesEnabled != null) {
+      configMap['isAdServicesEnabled'] = isAdServicesEnabled.toString();
     }
-    if (allowAdServicesInfoReading != null) {
-      configMap['allowAdServicesInfoReading'] =
-          allowAdServicesInfoReading.toString();
+    if (isIdfaReadingEnabled != null) {
+      configMap['isIdfaReadingEnabled'] = isIdfaReadingEnabled.toString();
     }
-    if (allowIdfaReading != null) {
-      configMap['allowIdfaReading'] = allowIdfaReading.toString();
+    if (isIdfvReadingEnabled != null) {
+      configMap['isIdfvReadingEnabled'] = isIdfvReadingEnabled.toString();
     }
-    if (_skAdNetworkHandling != null) {
-      configMap['skAdNetworkHandling'] = _skAdNetworkHandling.toString();
+    if (isSkanAttributionEnabled != null) {
+      configMap['isSkanAttributionEnabled'] = isSkanAttributionEnabled.toString();
     }
-    if (launchDeferredDeeplink != null) {
-      configMap['launchDeferredDeeplink'] = launchDeferredDeeplink.toString();
-    }
-    if (_info1 != null) {
-      configMap['info1'] = _info1.toString();
-    }
-    if (_info2 != null) {
-      configMap['info2'] = _info2.toString();
-    }
-    if (_info3 != null) {
-      configMap['info3'] = _info3.toString();
-    }
-    if (_info4 != null) {
-      configMap['info4'] = _info4.toString();
-    }
-    if (_secretId != null) {
-      configMap['secretId'] = _secretId.toString();
-    }
-    if (delayStart != null) {
-      configMap['delayStart'] = delayStart.toString();
+    if (isDeferredDeeplinkOpeningEnabled != null) {
+      configMap['isDeferredDeeplinkOpeningEnabled'] = isDeferredDeeplinkOpeningEnabled.toString();
     }
     if (attConsentWaitingInterval != null) {
       configMap['attConsentWaitingInterval'] = attConsentWaitingInterval.toString();
@@ -320,13 +244,8 @@ class AdjustConfig {
     if (deferredDeeplinkCallback != null) {
       configMap['deferredDeeplinkCallback'] = _deferredDeeplinkCallbackName;
     }
-    if (conversionValueUpdatedCallback != null) {
-      configMap['conversionValueUpdatedCallback'] =
-          _conversionValueUpdatedCallbackName;
-    }
-    if (skad4ConversionValueUpdatedCallback != null) {
-      configMap['skad4ConversionValueUpdatedCallback'] =
-          _skad4ConversionValueUpdatedCallbackName;
+    if (skanUpdatedCallback != null) {
+      configMap['skanUpdatedCallback'] = _skanUpdatedCallbackName;
     }
 
     return configMap;

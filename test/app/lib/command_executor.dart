@@ -22,7 +22,8 @@ import 'package:adjust_sdk/adjust_play_store_purchase.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
-import 'package:adjust_sdk/adjust_purchase_verification_info.dart';
+import 'package:adjust_sdk/adjust_purchase_verification_result.dart';
+import 'package:adjust_sdk/adjust_deeplink.dart';
 import 'package:test_app/command.dart';
 import 'package:test_lib/test_lib.dart';
 
@@ -59,7 +60,7 @@ class CommandExecutor {
         _config();
         break;
       case 'start':
-        _start();
+        _initSdk();
         break;
       case 'event':
         _event();
@@ -76,35 +77,26 @@ class CommandExecutor {
       case 'setEnabled':
         _setEnabled();
         break;
-      case 'setReferrer':
-        _setReferrer();
-        break;
-      case 'sendReferrer':
-        _setReferrer();
-        break;
       case 'setOfflineMode':
         _setOfflineMode();
         break;
-      case 'sendFirstPackages':
-        _sendFirstPackages();
+      case 'addGlobalCallbackParameter':
+        _addGlobalCallbackParameter();
         break;
-      case 'addSessionCallbackParameter':
-        _addSessionCallbackParameter();
+      case 'addGlobalPartnerParameter':
+        _addGlobalPartnerParameter();
         break;
-      case 'addSessionPartnerParameter':
-        _addSessionPartnerParameter();
+      case 'removeGlobalCallbackParameter':
+        _removeGlobalCallbackParameter();
         break;
-      case 'removeSessionCallbackParameter':
-        _removeSessionCallbackParameter();
+      case 'removeGlobalPartnerParameter':
+        _removeGlobalPartnerParameter();
         break;
-      case 'removeSessionPartnerParameter':
-        _removeSessionPartnerParameter();
+      case 'removeGlobalCallbackParameters':
+        _removeGlobalCallbackParameters();
         break;
-      case 'resetSessionCallbackParameters':
-        _resetSessionCallbackParameters();
-        break;
-      case 'resetSessionPartnerParameters':
-        _resetSessionPartnerParameters();
+      case 'removeGlobalPartnerParameters':
+        _removeGlobalPartnerParameters();
         break;
       case 'setPushToken':
         _setPushToken();
@@ -115,12 +107,6 @@ class CommandExecutor {
       case 'gdprForgetMe':
         _gdprForgetMe();
         break;
-      case 'disableThirdPartySharing':
-        _disableThirdPartySharing();
-        break;
-      case 'trackAdRevenue':
-        _trackAdRevenue();
-        break;
       case 'trackSubscription':
         _trackSubscription();
         break;
@@ -130,8 +116,8 @@ class CommandExecutor {
       case 'measurementConsent':
         _trackMeasurementConsent();
         break;
-      case 'trackAdRevenueV2':
-        _trackAdRevenueV2();
+      case 'trackAdRevenue':
+        _trackAdRevenue();
         break;
       case 'getLastDeeplink':
         _getLastDeeplink();
@@ -139,8 +125,14 @@ class CommandExecutor {
       case 'verifyPurchase':
         _verifyPurchase();
         break;
+      case 'verifyTrack':
+        _verifyTrack();
+        break;
       case 'processDeeplink':
         _processDeeplink();
+        break;
+      case 'attributionGetter':
+        _attributionGetter();
         break;
     }
   }
@@ -182,6 +174,14 @@ class CommandExecutor {
     if (_command.containsParameter('noBackoffWait')) {
       testOptions['noBackoffWait'] =
           _command.getFirstParameterValue('noBackoffWait');
+    }
+    if (_command.containsParameter("doNotIgnoreSystemLifecycleBootstrap")) {
+      String? doNotIgnoreSystemLifecycleBootstrapString =
+      _command.getFirstParameterValue("doNotIgnoreSystemLifecycleBootstrap");
+      bool doNotIgnoreSystemLifecycleBootstrap = (doNotIgnoreSystemLifecycleBootstrapString == 'true');
+      if (doNotIgnoreSystemLifecycleBootstrap) {
+        testOptions['ignoreSystemLifecycleBootstrap'] = false;
+      }
     }
     if (_command.containsParameter('adServicesFrameworkEnabled')) {
       testOptions['adServicesFrameworkEnabled'] =
@@ -306,81 +306,45 @@ class CommandExecutor {
           _command.getFirstParameterValue('externalDeviceId');
     }
 
-    if (_command.containsParameter('appSecret')) {
-      List<dynamic> appSecretArray = _command.getParamteters('appSecret')!;
-      bool appSecretValid = true;
-      for (String appSecretData in appSecretArray) {
-        if (appSecretData.length == 0) {
-          appSecretValid = false;
-          break;
-        }
-      }
-
-      if (appSecretValid) {
-        num secretId = num.parse(appSecretArray[0]);
-        num info1 = num.parse(appSecretArray[1]);
-        num info2 = num.parse(appSecretArray[2]);
-        num info3 = num.parse(appSecretArray[3]);
-        num info4 = num.parse(appSecretArray[4]);
-        adjustConfig!.setAppSecret(secretId, info1, info2, info3, info4);
-      }
-    }
-
-    if (_command.containsParameter('delayStart')) {
-      adjustConfig!.delayStart =
-          double.parse(_command.getFirstParameterValue('delayStart')!);
-    }
-
-    if (_command.containsParameter('deviceKnown')) {
-      adjustConfig!.isDeviceKnown =
-          _command.getFirstParameterValue('deviceKnown') == 'true';
-    }
-
-    if (_command.containsParameter('eventBufferingEnabled')) {
-      adjustConfig!.eventBufferingEnabled =
-          _command.getFirstParameterValue('eventBufferingEnabled') == 'true';
-    }
-
     if (_command.containsParameter('coppaCompliant')) {
-      adjustConfig!.coppaCompliantEnabled =
-      _command.getFirstParameterValue('coppaCompliant') == 'true';
+      adjustConfig!.isCoppaComplianceEnabled =
+          _command.getFirstParameterValue('coppaCompliant') == 'true';
     }
 
     if (_command.containsParameter('playStoreKids')) {
-      adjustConfig!.playStoreKidsAppEnabled =
-      _command.getFirstParameterValue('playStoreKids') == 'true';
-    }
-
-    if (_command.containsParameter('finalAttributionEnabled')) {
-      adjustConfig!.finalAndroidAttributionEnabled =
-      _command.getFirstParameterValue('finalAttributionEnabled') == 'true';
+      adjustConfig!.isPlayStoreKidsComplianceEnabled =
+          _command.getFirstParameterValue('playStoreKids') == 'true';
     }
 
     if (_command.containsParameter('sendInBackground')) {
-      adjustConfig!.sendInBackground =
-          _command.getFirstParameterValue('sendInBackground') == 'true';
+      if(_command.getFirstParameterValue('sendInBackground') == 'true')
+      adjustConfig!.isSendingInBackgroundEnabled = true;
     }
 
     if (_command.containsParameter('allowAdServicesInfoReading')) {
-      adjustConfig!.allowAdServicesInfoReading =
-          _command.getFirstParameterValue('allowAdServicesInfoReading') ==
-              'true';
+      if(_command.getFirstParameterValue('allowAdServicesInfoReading') ==
+          'false'){
+        adjustConfig!.isAdServicesEnabled = false;
+      }
+    }
+
+    if (_command.containsParameter('eventDeduplicationIdsMaxSize')) {
+      String? maxIds = _command.getFirstParameterValue("eventDeduplicationIdsMaxSize");
+      int maxIdCount = int.parse(maxIds!);
+      adjustConfig!.eventDeduplicationIdsMaxSize = maxIdCount;
     }
 
     if (_command.containsParameter('allowSkAdNetworkHandling')) {
       if (_command.getFirstParameterValue('allowSkAdNetworkHandling') ==
           'false') {
-        adjustConfig!.deactivateSKAdNetworkHandling();
+        adjustConfig!.isSkanAttributionEnabled = false;
       }
     }
 
     if (_command.containsParameter('allowIdfaReading')) {
-      adjustConfig!.allowIdfaReading =
-          _command.getFirstParameterValue('allowIdfaReading') == 'true';
-    }
-
-    if (_command.containsParameter('userAgent')) {
-      adjustConfig!.userAgent = _command.getFirstParameterValue('userAgent');
+      if(_command.getFirstParameterValue('allowIdfaReading') == 'false') {
+        adjustConfig!.isIdfaReadingEnabled = false;
+      }
     }
 
     if (_command.containsParameter('attConsentWaitingSeconds')) {
@@ -395,18 +359,19 @@ class CommandExecutor {
     adjustConfig.eventSuccessCallback = null;
     adjustConfig.eventFailureCallback = null;
     adjustConfig.deferredDeeplinkCallback = null;
+    adjustConfig.skanUpdatedCallback = null;
 
     // TODO: Deeplinking in Flutter example.
     // https://github.com/flutter/flutter/issues/8711#issuecomment-304681212
     if (_command.containsParameter('deferredDeeplinkCallback')) {
       String? localBasePath = _extraPath;
-      adjustConfig.launchDeferredDeeplink =
+      adjustConfig.isDeferredDeeplinkOpeningEnabled =
           _command.getFirstParameterValue('deferredDeeplinkCallback') == 'true';
       print(
-          '[CommandExecutor]: Deferred deeplink callback, launchDeferredDeeplink: ${adjustConfig.launchDeferredDeeplink}');
-      adjustConfig.deferredDeeplinkCallback = (String? uri) {
-        print('[CommandExecutor]: Sending deeplink info to server: $uri');
-        TestLib.addInfoToSend('deeplink', uri);
+          '[CommandExecutor]: Deferred deeplink callback, isDeferredDeeplinkOpeningEnabled: ${adjustConfig.isDeferredDeeplinkOpeningEnabled}');
+      adjustConfig.deferredDeeplinkCallback = (String? deeplink) {
+        print('[CommandExecutor]: Sending deeplink info to server: $deeplink');
+        TestLib.addInfoToSend('deeplink', deeplink);
         TestLib.sendInfoToServer(localBasePath);
       };
     }
@@ -415,18 +380,17 @@ class CommandExecutor {
       String? localBasePath = _extraPath;
       adjustConfig.attributionCallback = (AdjustAttribution attribution) {
         print('[CommandExecutor]: Attribution Callback: $attribution');
-        TestLib.addInfoToSend('trackerToken', attribution.trackerToken);
-        TestLib.addInfoToSend('trackerName', attribution.trackerName);
+        TestLib.addInfoToSend('tracker_token', attribution.trackerToken);
+        TestLib.addInfoToSend('tracker_name', attribution.trackerName);
         TestLib.addInfoToSend('network', attribution.network);
         TestLib.addInfoToSend('campaign', attribution.campaign);
         TestLib.addInfoToSend('adgroup', attribution.adgroup);
         TestLib.addInfoToSend('creative', attribution.creative);
-        TestLib.addInfoToSend('clickLabel', attribution.clickLabel);
-        TestLib.addInfoToSend('adid', attribution.adid);
-        TestLib.addInfoToSend('costType', attribution.costType);
-        TestLib.addInfoToSend('costAmount', attribution.costAmount.toString());
-        TestLib.addInfoToSend('costCurrency', attribution.costCurrency);
-        TestLib.addInfoToSend('fbInstallReferrer', attribution.fbInstallReferrer);
+        TestLib.addInfoToSend('click_label', attribution.clickLabel);
+        TestLib.addInfoToSend('cost_type', attribution.costType);
+        TestLib.addInfoToSend('cost_amount', attribution.costAmount.toString());
+        TestLib.addInfoToSend('cost_currency', attribution.costCurrency);
+        TestLib.addInfoToSend('fb_install_referrer', attribution.fbInstallReferrer);
         TestLib.sendInfoToServer(localBasePath);
       };
     }
@@ -513,12 +477,19 @@ class CommandExecutor {
       };
     }
 
-    if (_command.containsParameter('urlStrategy')) {
-      adjustConfig.urlStrategy = _command.getFirstParameterValue('urlStrategy');
+    if (_command.containsParameter('skanCallback')) {
+      String? localBasePath = _extraPath;
+      adjustConfig.skanUpdatedCallback =
+          (Map<String, String> data) {
+        print(
+            '[CommandExecutor]: Skan Callback: $data');
+        data.forEach((k, v) => TestLib.addInfoToSend(k, v));
+        TestLib.sendInfoToServer(localBasePath);
+      };
     }
   }
 
-  void _start() {
+  void _initSdk() {
     _config();
     int configNumber = 0;
     if (_command.containsParameter('configName')) {
@@ -527,7 +498,7 @@ class CommandExecutor {
     }
 
     AdjustConfig adjustConfig = _savedConfigs[configNumber]!;
-    Adjust.start(adjustConfig);
+    Adjust.initSdk(adjustConfig);
     _savedConfigs.remove(configNumber);
   }
 
@@ -577,14 +548,14 @@ class CommandExecutor {
     if (_command.containsParameter('orderId')) {
       adjustEvent!.transactionId = _command.getFirstParameterValue('orderId');
     }
-    if (_command.containsParameter('receipt')) {
-      adjustEvent!.receipt = _command.getFirstParameterValue('receipt');
-    }
     if (_command.containsParameter('productId')) {
       adjustEvent!.productId = _command.getFirstParameterValue('productId');
     }
     if (_command.containsParameter('transactionId')) {
       adjustEvent!.transactionId = _command.getFirstParameterValue('transactionId');
+    }
+    if (_command.containsParameter('deduplicationId')) {
+      adjustEvent!.deduplicationId = _command.getFirstParameterValue('deduplicationId');
     }
     if (_command.containsParameter('purchaseToken')) {
       adjustEvent!.purchaseToken = _command.getFirstParameterValue('purchaseToken');
@@ -618,21 +589,20 @@ class CommandExecutor {
 
   void _setEnabled() {
     bool isEnabled = _command.getFirstParameterValue('enabled') == 'true';
-    Adjust.setEnabled(isEnabled);
-  }
-
-  void _setReferrer() {
-    String referrer = _command.getFirstParameterValue('referrer')!;
-    Adjust.setReferrer(referrer);
+    if(isEnabled) {
+      Adjust.enable();
+    }else{
+      Adjust.disable();
+    }
   }
 
   void _setOfflineMode() {
     bool isEnabled = _command.getFirstParameterValue('enabled') == 'true';
-    Adjust.setOfflineMode(isEnabled);
-  }
-
-  void _sendFirstPackages() {
-    Adjust.sendFirstPackages();
+    if(isEnabled){
+     Adjust.switchToOfflineMode();
+    }else{
+      Adjust.switchBackToOnlineMode();
+    }
   }
 
   void _setPushToken() {
@@ -642,18 +612,15 @@ class CommandExecutor {
 
   void _openDeeplink() {
     String deeplink = _command.getFirstParameterValue('deeplink')!;
-    Adjust.appWillOpenUrl(deeplink);
+    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplink);
+    Adjust.processDeeplink(adjustDeeplink);
   }
 
   void _gdprForgetMe() {
     Adjust.gdprForgetMe();
   }
 
-  void _disableThirdPartySharing() {
-    Adjust.disableThirdPartySharing();
-  }
-
-  void _addSessionCallbackParameter() {
+  void _addGlobalCallbackParameter() {
     if (!_command.containsParameter('KeyValue')) {
       return;
     }
@@ -662,11 +629,11 @@ class CommandExecutor {
     for (int i = 0; i < keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
-      Adjust.addSessionCallbackParameter(key, value);
+      Adjust.addGlobalCallbackParameter(key, value);
     }
   }
 
-  void _addSessionPartnerParameter() {
+  void _addGlobalPartnerParameter() {
     if (!_command.containsParameter('KeyValue')) {
       return;
     }
@@ -675,11 +642,11 @@ class CommandExecutor {
     for (int i = 0; i < keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
-      Adjust.addSessionPartnerParameter(key, value);
+      Adjust.addGlobalPartnerParameter(key, value);
     }
   }
 
-  void _removeSessionCallbackParameter() {
+  void _removeGlobalCallbackParameter() {
     if (!_command.containsParameter('key')) {
       return;
     }
@@ -687,11 +654,11 @@ class CommandExecutor {
     List<dynamic> keys = _command.getParamteters('key')!;
     for (int i = 0; i < keys.length; i = i + 1) {
       String key = keys[i];
-      Adjust.removeSessionCallbackParameter(key);
+      Adjust.removeGlobalCallbackParameter(key);
     }
   }
 
-  void _removeSessionPartnerParameter() {
+  void _removeGlobalPartnerParameter() {
     if (!_command.containsParameter('key')) {
       return;
     }
@@ -699,39 +666,32 @@ class CommandExecutor {
     List<dynamic> keys = _command.getParamteters('key')!;
     for (int i = 0; i < keys.length; i = i + 1) {
       String key = keys[i];
-      Adjust.removeSessionPartnerParameter(key);
+      Adjust.removeGlobalPartnerParameter(key);
     }
   }
 
-  void _resetSessionCallbackParameters() {
-    Adjust.resetSessionCallbackParameters();
+  void _removeGlobalCallbackParameters() {
+    Adjust.removeGlobalCallbackParameters();
   }
 
-  void _resetSessionPartnerParameters() {
-    Adjust.resetSessionPartnerParameters();
-  }
-
-  void _trackAdRevenue() {
-    String source = _command.getFirstParameterValue('adRevenueSource')!;
-    String payload = _command.getFirstParameterValue('adRevenueJsonString')!;
-    Adjust.trackAdRevenue(source, payload);
+  void _removeGlobalPartnerParameters() {
+    Adjust.removeGlobalPartnerParameters();
   }
 
   void _trackSubscription() {
     if (Platform.isIOS) {
-      String? price = _command.getFirstParameterValue('revenue');
-      String? currency = _command.getFirstParameterValue('currency');
-      String? transactionId = _command.getFirstParameterValue('transactionId');
-      String? receipt = _command.getFirstParameterValue('receipt');
+      String price = _command.getFirstParameterValue('revenue')!;
+      String currency = _command.getFirstParameterValue('currency')!;
+      String transactionId = _command.getFirstParameterValue('transactionId')!;
       String transactionDate =
           _command.getFirstParameterValue('transactionDate')!;
       String salesRegion = _command.getFirstParameterValue('salesRegion')!;
 
       AdjustAppStoreSubscription subscription = new AdjustAppStoreSubscription(
-          price, currency, transactionId, receipt);
+          price, currency, transactionId);
 
-      subscription.setTransactionDate(transactionDate);
-      subscription.setSalesRegion(salesRegion);
+      subscription.transactionDate = transactionDate;
+      subscription.salesRegion = salesRegion;
 
       if (_command.containsParameter('callbackParams')) {
         List<dynamic> callbackParams =
@@ -757,18 +717,18 @@ class CommandExecutor {
 
       Adjust.trackAppStoreSubscription(subscription);
     } else if (Platform.isAndroid) {
-      String? price = _command.getFirstParameterValue('revenue');
-      String? currency = _command.getFirstParameterValue('currency');
-      String? sku = _command.getFirstParameterValue('productId');
-      String? signature = _command.getFirstParameterValue('receipt');
-      String? purchaseToken = _command.getFirstParameterValue('purchaseToken');
-      String? orderId = _command.getFirstParameterValue('transactionId');
+      String price = _command.getFirstParameterValue('revenue')!;
+      String currency = _command.getFirstParameterValue('currency')!;
+      String sku = _command.getFirstParameterValue('productId')!;
+      String signature = _command.getFirstParameterValue('receipt')!;
+      String purchaseToken = _command.getFirstParameterValue('purchaseToken')!;
+      String orderId = _command.getFirstParameterValue('transactionId')!;
       String purchaseTime = _command.getFirstParameterValue('transactionDate')!;
 
       AdjustPlayStoreSubscription subscription =
           new AdjustPlayStoreSubscription(
               price, currency, sku, orderId, signature, purchaseToken);
-      subscription.setPurchaseTime(purchaseTime);
+      subscription.purchaseTime = purchaseTime;
 
       if (_command.containsParameter('callbackParams')) {
         List<dynamic> callbackParams =
@@ -838,7 +798,7 @@ class CommandExecutor {
     Adjust.trackMeasurementConsent(isEnabled);
   }
 
-  void _trackAdRevenueV2() {
+  void _trackAdRevenue() {
     String source = _command.getFirstParameterValue('adRevenueSource')!;
     AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(source);
 
@@ -883,7 +843,7 @@ class CommandExecutor {
           _command.getFirstParameterValue('adRevenueNetwork');
     }
 
-    Adjust.trackAdRevenueNew(adjustAdRevenue);
+    Adjust.trackAdRevenue(adjustAdRevenue);
   }
 
   void _getLastDeeplink() {
@@ -898,12 +858,11 @@ class CommandExecutor {
 
   void _verifyPurchase() {
     if (Platform.isIOS) {
-      String? receipt = _command.getFirstParameterValue('receipt');
-      String? productId = _command.getFirstParameterValue('productId');
-      String? transactionId = _command.getFirstParameterValue('transactionId');
+      String productId = _command.getFirstParameterValue('productId')!;
+      String transactionId = _command.getFirstParameterValue('transactionId')!;
 
       AdjustAppStorePurchase purchase =
-          new AdjustAppStorePurchase(receipt, productId, transactionId);
+          new AdjustAppStorePurchase(productId, transactionId);
 
       Adjust.verifyAppStorePurchase(purchase).then((result) {
         String? localBasePath = _basePath;
@@ -913,8 +872,8 @@ class CommandExecutor {
         TestLib.sendInfoToServer(localBasePath);
       });
     } else if (Platform.isAndroid) {
-      String? productId = _command.getFirstParameterValue('productId');
-      String? purchaseToken = _command.getFirstParameterValue('purchaseToken');
+      String productId = _command.getFirstParameterValue('productId')!;
+      String purchaseToken = _command.getFirstParameterValue('purchaseToken')!;
 
       AdjustPlayStorePurchase purchase =
           new AdjustPlayStorePurchase(productId, purchaseToken);
@@ -929,12 +888,67 @@ class CommandExecutor {
     }
   }
 
+  void _verifyTrack() {
+    _event();
+    int eventNumber = 0;
+    if (_command.containsParameter("eventName")) {
+      String eventName = _command.getFirstParameterValue("eventName")!;
+      eventNumber = int.parse(eventName.substring(eventName.length - 1));
+    }
+
+    AdjustEvent adjustEvent = _savedEvents[eventNumber]!;
+
+    if (Platform.isIOS) {
+      Adjust.verifyAndTrackAppStorePurchase(adjustEvent).then((result) {
+        String? localBasePath = _basePath;
+        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
+        TestLib.addInfoToSend('code', result?.code.toString());
+        TestLib.addInfoToSend('message', result?.message);
+        TestLib.sendInfoToServer(localBasePath);
+      });
+    } else if (Platform.isAndroid) {
+      Adjust.verifyAndTrackPlayStorePurchase(adjustEvent).then((result) {
+        String? localBasePath = _basePath;
+        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
+        TestLib.addInfoToSend('code', result?.code.toString());
+        TestLib.addInfoToSend('message', result?.message);
+        TestLib.sendInfoToServer(localBasePath);
+      });
+    }
+
+    _savedEvents.remove(eventNumber);
+  }
+
   void _processDeeplink() {
     String deeplink = _command.getFirstParameterValue('deeplink')!;
-    Adjust.processDeeplink(deeplink).then((resolvedLink) {
+    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplink);
+    Adjust.processAndResolveDeeplink(adjustDeeplink).then((resolvedLink) {
       String? localBasePath = _basePath;
       TestLib.addInfoToSend('resolved_link', resolvedLink);
       TestLib.sendInfoToServer(localBasePath);
+    });
+  }
+
+  void _attributionGetter() {
+    Adjust.getAttribution().then((attribution){
+      if(attribution != null) {
+        Map<String, String?> fields = new Map();
+        fields["tracker_token"] = attribution.trackerToken;
+        fields["tracker_name"] = attribution.trackerName;
+        fields["network"] = attribution.network;
+        fields["campaign"] = attribution.campaign;
+        fields["adgroup"] = attribution.adgroup;
+        fields["creative"] = attribution.creative;
+        fields["click_label"] = attribution.clickLabel;
+        fields["cost_type"] = attribution.costType;
+        fields["cost_amount"] = attribution.costAmount?.toString();
+        fields["cost_currency"] = attribution.costCurrency;
+        fields["fb_install_referrer"] = attribution.fbInstallReferrer;
+        fields.forEach((key, value) {
+          TestLib.addInfoToSend(key, value);
+        });
+        TestLib.sendInfoToServer(_basePath);
+      }
     });
   }
 }

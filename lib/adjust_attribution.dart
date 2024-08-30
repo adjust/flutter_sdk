@@ -14,7 +14,6 @@ class AdjustAttribution {
   final String? adgroup;
   final String? creative;
   final String? clickLabel;
-  final String? adid;
   final String? costType;
   final num? costAmount;
   final String? costCurrency;
@@ -22,18 +21,17 @@ class AdjustAttribution {
   final String? fbInstallReferrer;
 
   AdjustAttribution({
-    required this.trackerToken,
-    required this.trackerName,
-    required this.network,
-    required this.campaign,
-    required this.adgroup,
-    required this.creative,
-    required this.clickLabel,
-    required this.adid,
-    required this.costType,
-    required this.costAmount,
-    required this.costCurrency,
-    required this.fbInstallReferrer,
+    this.trackerToken,
+    this.trackerName,
+    this.network,
+    this.campaign,
+    this.adgroup,
+    this.creative,
+    this.clickLabel,
+    this.costType,
+    this.costAmount,
+    this.costCurrency,
+    this.fbInstallReferrer,
   });
 
   factory AdjustAttribution.fromMap(dynamic map) {
@@ -53,7 +51,6 @@ class AdjustAttribution {
         adgroup: map['adgroup'],
         creative: map['creative'],
         clickLabel: map['clickLabel'],
-        adid: map['adid'],
         costType: map['costType'],
         costAmount: parsedCostAmount != -1 ? parsedCostAmount : null,
         costCurrency: map['costCurrency'],

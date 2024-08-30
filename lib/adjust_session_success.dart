@@ -13,10 +13,10 @@ class AdjustSessionSuccess {
   final String? jsonResponse;
 
   AdjustSessionSuccess({
-    required this.message,
-    required this.timestamp,
-    required this.adid,
-    required this.jsonResponse,
+    this.message,
+    this.timestamp,
+    this.adid,
+    this.jsonResponse,
   });
 
   factory AdjustSessionSuccess.fromMap(dynamic map) {
