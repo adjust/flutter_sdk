@@ -232,6 +232,22 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       print('[Adjust]: Received deferred deeplink: ' + uri!);
     };
 
+    config.skanUpdatedCallback = (Map<String, String> skanUpdateData) {
+      print('[Adjust]: Received SKAN update information!');
+      if (skanUpdateData["conversion_value"] != null) {
+        print('[Adjust]: Conversion value: ' + skanUpdateData["conversion_value"]!);
+      }
+      if (skanUpdateData["coarse_value"] != null) {
+        print('[Adjust]: Coarse value: ' + skanUpdateData["coarse_value"]!);
+      }
+      if (skanUpdateData["lock_window"] != null) {
+        print('[Adjust]: Lock window: ' + skanUpdateData["lock_window"]!);
+      }
+      if (skanUpdateData["error"] != null) {
+        print('[Adjust]: Error: ' + skanUpdateData["error"]!);
+      }
+    };
+
     // Add session callback parameters.
     Adjust.addGlobalCallbackParameter('scp_foo_1', 'scp_bar');
     Adjust.addGlobalCallbackParameter('scp_foo_2', 'scp_value');
