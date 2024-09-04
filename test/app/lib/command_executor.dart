@@ -847,13 +847,11 @@ class CommandExecutor {
   }
 
   void _getLastDeeplink() {
-    if (Platform.isIOS) {
-      Adjust.getLastDeeplink().then((lastDeeplink) {
-        String? localBasePath = _basePath;
-        TestLib.addInfoToSend('last_deeplink', lastDeeplink);
-        TestLib.sendInfoToServer(localBasePath);
-      });
-    }
+    Adjust.getLastDeeplink().then((lastDeeplink) {
+      String? localBasePath = _basePath;
+      TestLib.addInfoToSend('last_deeplink', lastDeeplink);
+      TestLib.sendInfoToServer(localBasePath);
+    });
   }
 
   void _verifyPurchase() {
