@@ -120,6 +120,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self processDeeplink:call withResult:result];
     } else if ([@"processAndResolveDeeplink" isEqualToString:call.method]) {
         [self processAndResolveDeeplink:call withResult:result];
+    } else if ([@"getLastDeeplink" isEqualToString:call.method]) {
+        [self getLastDeeplink:call withResult:result];
     } else if ([@"getGoogleAdId" isEqualToString:call.method]) {
         [self getGoogleAdId:call withResult:result];
     } else if ([@"trackPlayStoreSubscription" isEqualToString:call.method]) {
@@ -808,6 +810,16 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                       withKey:@"message"
                  toDictionary:dictionary];
         result(dictionary);
+    }];
+}
+
+- (void)getLastDeeplink:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    [Adjust lastDeeplinkWithCompletionHandler:^(NSURL * _Nullable lastDeeplink) {
+        if (![self isFieldValid:lastDeeplink]) {
+            result(nil);
+        } else {
+            result([lastDeeplink absoluteString]);
+        }
     }];
 }
 
