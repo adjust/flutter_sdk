@@ -273,7 +273,7 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
                         adjustConfig.setLogLevel(LogLevel.ASSERT);
                         break;
                     case "suppress":
-                        adjustConfig.setLogLevel(LogLevel.SUPRESS);
+                        adjustConfig.setLogLevel(LogLevel.SUPPRESS);
                         break;
                     case "info":
                     default:
