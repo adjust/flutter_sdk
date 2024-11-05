@@ -5,6 +5,7 @@ import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
+import 'package:adjust_sdk/adjust_extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -93,17 +94,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   // Platform messages are asynchronous, so we initialize in an async method.
   initPlatformState() async {
     AdjustConfig config =
-        new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
-    config.logLevel = AdjustLogLevel.verbose;
-
-    config.setUrlStrategy(['adjust.net.in', 'adjust.com'], true, false);
-    //config.setUrlStrategy(['adjust.world', 'adjust.com'], true, false);
-    //config.setUrlStrategy(['adjust.cn'], true, false);
-    //config.setUrlStrategy(['eu.adjust.com'], true, true);
-    //config.setUrlStrategy(['us.adjust.com'], true, true);
-    //config.setUrlStrategy(['tr.adjust.com'], true, true);
-
-    config.attributionCallback = (AdjustAttribution attributionChangedData) {
+        AdjustConfigBuilder.create('2fm9gkqubvpc', AdjustEnvironment.sandbox)
+            .setLogLevel(AdjustLogLevel.verbose)
+            .withUrlStrategy([
+      'adjust.net.in',
+      'adjust.com'
+    ], true, false).setAttributionCallback(
+                (AdjustAttribution attributionChangedData) {
       print('[Adjust]: Attribution changed!');
 
       if (attributionChangedData.trackerToken != null) {
@@ -139,9 +136,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         print(
             '[Adjust]: Cost currency: ' + attributionChangedData.costCurrency!);
       }
-    };
-
-    config.sessionSuccessCallback = (AdjustSessionSuccess sessionSuccessData) {
+    }).setSessionSuccessCallback((AdjustSessionSuccess sessionSuccessData) {
       print('[Adjust]: Session tracking success!');
 
       if (sessionSuccessData.message != null) {
@@ -156,9 +151,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       if (sessionSuccessData.jsonResponse != null) {
         print('[Adjust]: JSON response: ' + sessionSuccessData.jsonResponse!);
       }
-    };
-
-    config.sessionFailureCallback = (AdjustSessionFailure sessionFailureData) {
+    }).setSessionFailureCallback((AdjustSessionFailure sessionFailureData) {
       print('[Adjust]: Session tracking failure!');
 
       if (sessionFailureData.message != null) {
@@ -177,9 +170,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       if (sessionFailureData.jsonResponse != null) {
         print('[Adjust]: JSON response: ' + sessionFailureData.jsonResponse!);
       }
-    };
-
-    config.eventSuccessCallback = (AdjustEventSuccess eventSuccessData) {
+    }).setEventSuccessCallback((AdjustEventSuccess eventSuccessData) {
       print('[Adjust]: Event tracking success!');
 
       if (eventSuccessData.eventToken != null) {
@@ -200,9 +191,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       if (eventSuccessData.jsonResponse != null) {
         print('[Adjust]: JSON response: ' + eventSuccessData.jsonResponse!);
       }
-    };
-
-    config.eventFailureCallback = (AdjustEventFailure eventFailureData) {
+    }).setEventFailureCallback((AdjustEventFailure eventFailureData) {
       print('[Adjust]: Event tracking failure!');
 
       if (eventFailureData.eventToken != null) {
@@ -226,16 +215,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       if (eventFailureData.jsonResponse != null) {
         print('[Adjust]: JSON response: ' + eventFailureData.jsonResponse!);
       }
-    };
-
-    config.deferredDeeplinkCallback = (String? uri) {
+    }).setDeferredDeeplinkCallback((String? uri) {
       print('[Adjust]: Received deferred deeplink: ' + uri!);
-    };
-
-    config.skanUpdatedCallback = (Map<String, String> skanUpdateData) {
+    }).setSkanUpdatedCallback((Map<String, String> skanUpdateData) {
       print('[Adjust]: Received SKAN update information!');
       if (skanUpdateData["conversion_value"] != null) {
-        print('[Adjust]: Conversion value: ' + skanUpdateData["conversion_value"]!);
+        print('[Adjust]: Conversion value: ' +
+            skanUpdateData["conversion_value"]!);
       }
       if (skanUpdateData["coarse_value"] != null) {
         print('[Adjust]: Coarse value: ' + skanUpdateData["coarse_value"]!);
@@ -246,7 +232,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       if (skanUpdateData["error"] != null) {
         print('[Adjust]: Error: ' + skanUpdateData["error"]!);
       }
-    };
+    });
 
     // Add session callback parameters.
     Adjust.addGlobalCallbackParameter('scp_foo_1', 'scp_bar');
@@ -381,9 +367,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                       value: _isSdkEnabled,
                       onChanged: (bool value) {
                         setState(() {
-                          if(value == true){
+                          if (value == true) {
                             Adjust.enable();
-                          }else {
+                          } else {
                             Adjust.disable();
                           }
                           _isSdkEnabled = value;
