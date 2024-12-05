@@ -25,7 +25,8 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 32
+    namespace 'com.adjust.test.lib'
+    compileSdkVersion 35
 
     defaultConfig {
         minSdkVersion 16
