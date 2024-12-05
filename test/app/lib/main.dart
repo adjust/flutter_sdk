@@ -26,13 +26,13 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     if (Platform.isAndroid) {
-      String _address = '192.168.86.80';
+      String _address = '192.168.86.151';
       String _protocol = 'https';
       String _port = '8443';
       _overwriteUrl = _protocol + '://' + _address + ':' + _port;
       _controlUrl = 'ws://' + _address + ':1987';
     } else {
-      String _address = '192.168.86.80';
+      String _address = '192.168.86.151';
       String _protocol = 'http';
       String _port = '8080';
       _overwriteUrl = _protocol + '://' + _address + ':' + _port;
