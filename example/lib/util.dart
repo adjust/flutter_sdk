@@ -1,4 +1,5 @@
 import 'package:adjust_sdk/adjust_event.dart';
+import 'package:adjust_sdk/adjust_extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -63,28 +64,25 @@ class Util {
   }
 
   static AdjustEvent buildSimpleEvent() {
-    return new AdjustEvent(EVENT_TOKEN_SIMPLE);
+    return AdjustEventBuilder.create(EVENT_TOKEN_SIMPLE);
   }
 
   static AdjustEvent buildRevenueEvent() {
-    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_REVENUE);
-    event.setRevenue(100.0, 'EUR');
-    event.transactionId = 'DummyTransactionId';
-    return event;
+    return AdjustEventBuilder.create(EVENT_TOKEN_REVENUE)
+        .withRevenue(100.0, 'EUR')
+        .withTransactionId('DummyTransactionId');
   }
 
   static AdjustEvent buildCallbackEvent() {
-    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_CALLBACK);
-    event.addCallbackParameter('key1', 'value1');
-    event.addCallbackParameter('key2', 'value2');
-    return event;
+    return AdjustEventBuilder.create(EVENT_TOKEN_CALLBACK)
+        .withCallbackParameter('key1', 'value1')
+        .withCallbackParameter('key2', 'value2');
   }
 
   static AdjustEvent buildPartnerEvent() {
-    AdjustEvent event = new AdjustEvent(EVENT_TOKEN_PARTNER);
-    event.addPartnerParameter('foo1', 'bar1');
-    event.addPartnerParameter('foo2', 'bar2');
-    return event;
+    return AdjustEventBuilder.create(EVENT_TOKEN_PARTNER)
+        .withPartnerParameter('foo1', 'bar1')
+        .withPartnerParameter('foo2', 'bar2');
   }
 
   static void showMessage(
