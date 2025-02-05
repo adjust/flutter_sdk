@@ -70,7 +70,7 @@ class _MyAppState extends State<MyApp> {
                 buildCupertinoButton(
                     'Start Test Session',
                     () => Adjust.getSdkVersion().then((sdkVersion) {
-                          // TestLib.addTestDirectory('event-callbacks');
+                          TestLib.addTestDirectory('attribution-getter');
                           // TestLib.addTest('Test_AttributionGetter_after_install');
                           TestLib.startTestSession(sdkVersion);
                         }))

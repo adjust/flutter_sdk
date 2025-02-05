@@ -585,6 +585,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self addValueOrEmpty:attribution.costType withKey:@"costType" toDictionary:dictionary];
         [self addNumberOrEmpty:attribution.costAmount withKey:@"costAmount" toDictionary:dictionary];
         [self addValueOrEmpty:attribution.costCurrency withKey:@"costCurrency" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.jsonResponse withKey:@"jsonResponse" toDictionary:dictionary];
         result(dictionary);
     }];
 }

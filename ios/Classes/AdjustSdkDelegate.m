@@ -118,7 +118,8 @@ static NSString *dartSkanUpdatedCallback = nil;
         @"clickLabel",
         @"costType",
         @"costAmount",
-        @"costCurrency"
+        @"costCurrency",
+        @"jsonResponse"
     };
     id values[] = {
         [self getValueOrEmpty:[attribution trackerToken]],
@@ -130,7 +131,8 @@ static NSString *dartSkanUpdatedCallback = nil;
         [self getValueOrEmpty:[attribution clickLabel]],
         [self getValueOrEmpty:[attribution costType]],
         [self getNumberValueOrEmpty:[attribution costAmount]],
-        [self getValueOrEmpty:[attribution costCurrency]]
+        [self getValueOrEmpty:[attribution costCurrency]],
+        [self getValueOrEmpty:[attribution jsonResponse]]
     };
     NSUInteger count = sizeof(values) / sizeof(id);
     NSDictionary *attributionMap = [NSDictionary dictionaryWithObjects:values
