@@ -1,3 +1,18 @@
+### Version 5.0.4 (6th February 2025)
+#### Added
+- Added sending of the additional parameter to improve troubleshooting of `SKAdNetwork` related issues.
+
+#### Fixed
+- Fixed occasional occurrences in which ATT waiting interval timer was not being started.
+- Fixed occasional NPE occurrences when app was entering background (https://github.com/adjust/android_sdk/issues/630).
+- Fixed occasional NPE occurrences when `updateSkanConversionValue` returns `null` as error (https://github.com/adjust/flutter_sdk/issues/156).
+
+#### Native SDKs
+- [iOS@v5.1.0][ios_sdk_v5.1.0]
+- [Android@v5.1.0][android_sdk_v5.1.0]
+
+---
+
 ### Version 5.0.3 (6th December 2024)
 #### Changed
 - Switched to native Android SDK version that depends on a specific version of the signature library.
@@ -500,6 +515,7 @@ In case you were using beta version of the SDK v5, please switch to the official
 [ios_sdk_v4.38.4]: https://github.com/adjust/ios_sdk/tree/v4.38.4
 [ios_sdk_v5.0.0]: https://github.com/adjust/ios_sdk/tree/v5.0.0
 [ios_sdk_v5.0.1]: https://github.com/adjust/ios_sdk/tree/v5.0.1
+[ios_sdk_v5.1.0]: https://github.com/adjust/ios_sdk/tree/v5.1.0
 
 [android_sdk_v4.17.0]: https://github.com/adjust/android_sdk/tree/v4.17.0
 [android_sdk_v4.18.0]: https://github.com/adjust/android_sdk/tree/v4.18.0
@@ -527,3 +543,4 @@ In case you were using beta version of the SDK v5, please switch to the official
 [android_sdk_v5.0.0]: https://github.com/adjust/android_sdk/tree/v5.0.0
 [android_sdk_v5.0.1]: https://github.com/adjust/android_sdk/tree/v5.0.1
 [android_sdk_v5.0.2]: https://github.com/adjust/android_sdk/tree/v5.0.2
+[android_sdk_v5.1.0]: https://github.com/adjust/android_sdk/tree/v5.1.0

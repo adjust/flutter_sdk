@@ -24,7 +24,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter5.0.3';
+  static const String _sdkPrefix = 'flutter5.0.4';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
 
@@ -169,7 +169,7 @@ class Adjust {
   }
 
   static Future<String?> updateSkanConversionValue(int conversionValue, String coarseValue, bool lockWindow) async {
-    final String error = await _channel.invokeMethod('updateSkanConversionValue', {
+    final String? error = await _channel.invokeMethod('updateSkanConversionValue', {
       'conversionValue': conversionValue,
       'coarseValue': coarseValue,
       'lockWindow': lockWindow
