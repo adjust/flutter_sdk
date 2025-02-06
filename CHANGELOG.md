@@ -1,9 +1,11 @@
-### Version 5.0.4 (5th February 2025)
-#### Changed
-- Added `jsonResponse` field (JSON string) to `AdjustAttribution` where every key-value pair sent by the backend as part of the attribution response can be found. Equivalently, one can also find `jsonResponse` field being part of the attribution instance.
+### Version 5.0.4 (6th February 2025)
+#### Added
+- Added sending of the additional parameter to improve troubleshooting of `SKAdNetwork` related issues.
 
 #### Fixed
-- Fixed occasional NPE occurrences when error is null on updateSkanConversionValue (https://github.com/adjust/flutter_sdk/issues/156).
+- Fixed occasional occurrences in which ATT waiting interval timer was not being started.
+- Fixed occasional NPE occurrences when app was entering background (https://github.com/adjust/android_sdk/issues/630).
+- Fixed occasional NPE occurrences when `updateSkanConversionValue` returns `null` as error (https://github.com/adjust/flutter_sdk/issues/156).
 
 #### Native SDKs
 - [iOS@v5.1.0][ios_sdk_v5.1.0]
