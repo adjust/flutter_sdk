@@ -96,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         new AdjustConfig('2fm9gkqubvpc', AdjustEnvironment.sandbox);
     config.logLevel = AdjustLogLevel.verbose;
 
-    // config.setUrlStrategy(['adjust.net.in', 'adjust.com'], true, false);
+    config.setUrlStrategy(['adjust.net.in', 'adjust.com'], true, false);
     //config.setUrlStrategy(['adjust.world', 'adjust.com'], true, false);
     //config.setUrlStrategy(['adjust.cn'], true, false);
     //config.setUrlStrategy(['eu.adjust.com'], true, true);
@@ -361,47 +361,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     () => Adjust.getAttribution().then((attribution) {
                           _showDialogMessage('Attribution',
                               'Received attribution: ${attribution.toString()}');
-
-                          print('[Adjust]: Attribution changed!');
-
-                          if (attribution.trackerToken != null) {
-                            print(
-                                '[Adjust]: Tracker token: ' + attribution.trackerToken!);
-                          }
-                          if (attribution.trackerName != null) {
-                            print('[Adjust]: Tracker name: ' + attribution.trackerName!);
-                          }
-                          if (attribution.campaign != null) {
-                            print('[Adjust]: Campaign: ' + attribution.campaign!);
-                          }
-                          if (attribution.network != null) {
-                            print('[Adjust]: Network: ' + attribution.network!);
-                          }
-                          if (attribution.creative != null) {
-                            print('[Adjust]: Creative: ' + attribution.creative!);
-                          }
-                          if (attribution.adgroup != null) {
-                            print('[Adjust]: Adgroup: ' + attribution.adgroup!);
-                          }
-                          if (attribution.clickLabel != null) {
-                            print('[Adjust]: Click label: ' + attribution.clickLabel!);
-                          }
-                          if (attribution.costType != null) {
-                            print('[Adjust]: Cost type: ' + attribution.costType!);
-                          }
-                          if (attribution.costAmount != null) {
-                            print('[Adjust]: Cost amount: ' +
-                                attribution.costAmount!.toString());
-                          }
-                          if (attribution.costCurrency != null) {
-                            print(
-                                '[Adjust]: Cost currency: ' + attribution.costCurrency!);
-                          }
-                          if (attribution.jsonResponse != null) {
-                            print(
-                                '[Adjust]: jsonResponse: ' + attribution.jsonResponse!);
-                          }
-
                         })),
                 const Padding(padding: const EdgeInsets.all(7.0)),
 
