@@ -7,6 +7,7 @@
 //
 
 import 'dart:io' show Platform;
+import 'dart:convert';
 
 import 'package:adjust_sdk/adjust.dart';
 import 'package:adjust_sdk/adjust_ad_revenue.dart';
@@ -391,6 +392,28 @@ class CommandExecutor {
         TestLib.addInfoToSend('cost_amount', attribution.costAmount.toString());
         TestLib.addInfoToSend('cost_currency', attribution.costCurrency);
         TestLib.addInfoToSend('fb_install_referrer', attribution.fbInstallReferrer);
+
+        if(attribution.jsonResponse != null){
+          try {
+            String rawJson = attribution.jsonResponse!;
+            print(rawJson);
+
+            // Ensure it's a valid JSON string
+            if (rawJson.isEmpty) {
+              throw FormatException("Empty JSON response");
+            }
+
+            Map<String, dynamic> jsonMap = jsonDecode(rawJson);
+            if (Platform.isIOS) {
+              jsonMap.remove('fb_install_referrer');
+            }
+
+            String jsonString = jsonEncode(jsonMap);
+            TestLib.addInfoToSend('json_response', jsonString);
+          } catch (e) {
+            print("JSON Parsing Error: $e");
+          }
+        }
         TestLib.sendInfoToServer(localBasePath);
       };
     }
@@ -942,6 +965,27 @@ class CommandExecutor {
         fields["cost_amount"] = attribution.costAmount?.toString();
         fields["cost_currency"] = attribution.costCurrency;
         fields["fb_install_referrer"] = attribution.fbInstallReferrer;
+        if (attribution.jsonResponse != null) {
+          try {
+            String rawJson = attribution.jsonResponse!;
+            print(rawJson);
+
+            // Ensure it's a valid JSON string
+            if (rawJson.isEmpty) {
+              throw FormatException("Empty JSON response");
+            }
+
+            Map<String, dynamic> jsonMap = jsonDecode(rawJson);
+            if (Platform.isIOS) {
+              jsonMap.remove('fb_install_referrer');
+            }
+
+            String jsonString = jsonEncode(jsonMap);
+            TestLib.addInfoToSend('json_response', jsonString);
+          } catch (e) {
+            print("JSON Parsing Error: $e");
+          }
+        }
         fields.forEach((key, value) {
           TestLib.addInfoToSend(key, value);
         });

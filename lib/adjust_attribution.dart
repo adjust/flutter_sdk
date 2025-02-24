@@ -17,6 +17,7 @@ class AdjustAttribution {
   final String? costType;
   final num? costAmount;
   final String? costCurrency;
+  final String? jsonResponse;
   // Android only
   final String? fbInstallReferrer;
 
@@ -31,6 +32,7 @@ class AdjustAttribution {
     this.costType,
     this.costAmount,
     this.costCurrency,
+    this.jsonResponse,
     this.fbInstallReferrer,
   });
 
@@ -54,6 +56,7 @@ class AdjustAttribution {
         costType: map['costType'],
         costAmount: parsedCostAmount != -1 ? parsedCostAmount : null,
         costCurrency: map['costCurrency'],
+        jsonResponse: map['jsonResponse'],
         fbInstallReferrer: map['fbInstallReferrer'],
       );
     } catch (e) {
