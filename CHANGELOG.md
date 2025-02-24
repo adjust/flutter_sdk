@@ -1,4 +1,4 @@
-### Version 5.0.5 (24th February 2025)
+### Version 5.1.0 (24th February 2025)
 #### Added
 - Added `jsonResponse` field (JSON string) to `AdjustAttribution` where every key-value pair sent by the backend as part of the attribution response can be found.
 
