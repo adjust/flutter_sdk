@@ -1,3 +1,16 @@
+### Version 5.0.5 (24th February 2025)
+#### Added
+- Added `jsonResponse` field (JSON string) to `AdjustAttribution` where every key-value pair sent by the backend as part of the attribution response can be found.
+
+#### Fixed
+- Fixed double encoding problem in ios precessDeeplink and processAndResolveDeeplink
+
+#### Native SDKs
+- [iOS@v5.1.0][ios_sdk_v5.1.0]
+- [Android@v5.1.0][android_sdk_v5.1.0]
+
+---
+
 ### Version 5.0.4 (6th February 2025)
 #### Added
 - Added sending of the additional parameter to improve troubleshooting of `SKAdNetwork` related issues.
