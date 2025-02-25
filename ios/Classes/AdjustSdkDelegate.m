@@ -122,13 +122,11 @@ static NSString *dartSkanUpdatedCallback = nil;
         @"jsonResponse"
     };
     NSData *dataJsonResponse = [NSJSONSerialization dataWithJSONObject:attribution.jsonResponse
-                                                                       options:0 error:nil];
+                                                               options:0
+                                                                 error:nil];
     NSString *stringJsonResponse = [[NSString alloc] initWithBytes:[dataJsonResponse bytes]
-                                                                    length:[dataJsonResponse length]
-                                                                  encoding:NSUTF8StringEncoding];
-    
-    NSLog(@"generated string%@", stringJsonResponse);
-
+                                                            length:[dataJsonResponse length]
+                                                          encoding:NSUTF8StringEncoding];
     id values[] = {
         [self getValueOrEmpty:[attribution trackerToken]],
         [self getValueOrEmpty:[attribution trackerName]],
@@ -144,8 +142,8 @@ static NSString *dartSkanUpdatedCallback = nil;
     };
     NSUInteger count = sizeof(values) / sizeof(id);
     NSDictionary *attributionMap = [NSDictionary dictionaryWithObjects:values
-                                                                     forKeys:keys
-                                                                       count:count];
+                                                               forKeys:keys
+                                                                 count:count];
     [self.channel invokeMethod:dartAttributionCallback arguments:attributionMap];
 }
 

@@ -566,11 +566,6 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
             result(dictionary);
         }
 
-        NSData *dataJsonResponse = [NSJSONSerialization dataWithJSONObject:attribution.jsonResponse
-                                                                           options:0 error:nil];
-        NSString *stringJsonResponse = [[NSString alloc] initWithBytes:[dataJsonResponse bytes]
-                                                                        length:[dataJsonResponse length]
-                                                                      encoding:NSUTF8StringEncoding];
         [self addValueOrEmpty:attribution.trackerToken withKey:@"trackerToken" toDictionary:dictionary];
         [self addValueOrEmpty:attribution.trackerName withKey:@"trackerName" toDictionary:dictionary];
         [self addValueOrEmpty:attribution.network withKey:@"network" toDictionary:dictionary];
@@ -581,8 +576,13 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self addValueOrEmpty:attribution.costType withKey:@"costType" toDictionary:dictionary];
         [self addNumberOrEmpty:attribution.costAmount withKey:@"costAmount" toDictionary:dictionary];
         [self addValueOrEmpty:attribution.costCurrency withKey:@"costCurrency" toDictionary:dictionary];
+        NSData *dataJsonResponse = [NSJSONSerialization dataWithJSONObject:attribution.jsonResponse
+                                                                   options:0
+                                                                     error:nil];
+        NSString *stringJsonResponse = [[NSString alloc] initWithBytes:[dataJsonResponse bytes]
+                                                                length:[dataJsonResponse length]
+                                                              encoding:NSUTF8StringEncoding];
         [self addValueOrEmpty:stringJsonResponse withKey:@"jsonResponse" toDictionary:dictionary];
-        NSLog(@"generated string%@", attribution.jsonResponse);
         result(dictionary);
     }];
 }
