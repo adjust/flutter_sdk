@@ -420,16 +420,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         return;
     }
     
-    NSURL *url;
-    if ([NSString instancesRespondToSelector:@selector(stringByAddingPercentEncodingWithAllowedCharacters:)]) {
-        url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
-    } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-    }
-#pragma clang diagnostic pop
-
+    NSURL *url = [NSURL URLWithString:urlString];
     ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:url];
     [Adjust processDeeplink:deeplink];
 }
@@ -585,6 +576,13 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self addValueOrEmpty:attribution.costType withKey:@"costType" toDictionary:dictionary];
         [self addNumberOrEmpty:attribution.costAmount withKey:@"costAmount" toDictionary:dictionary];
         [self addValueOrEmpty:attribution.costCurrency withKey:@"costCurrency" toDictionary:dictionary];
+        NSData *dataJsonResponse = [NSJSONSerialization dataWithJSONObject:attribution.jsonResponse
+                                                                   options:0
+                                                                     error:nil];
+        NSString *stringJsonResponse = [[NSString alloc] initWithBytes:[dataJsonResponse bytes]
+                                                                length:[dataJsonResponse length]
+                                                              encoding:NSUTF8StringEncoding];
+        [self addValueOrEmpty:stringJsonResponse withKey:@"jsonResponse" toDictionary:dictionary];
         result(dictionary);
     }];
 }
@@ -706,16 +704,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 - (void)processAndResolveDeeplink:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *deeplink = call.arguments[@"deeplink"];
     if ([self isFieldValid:deeplink]) {
-        NSURL *nsUrl;
-        if ([NSString instancesRespondToSelector:@selector(stringByAddingPercentEncodingWithAllowedCharacters:)]) {
-            nsUrl = [NSURL URLWithString:[deeplink stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
-        } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            nsUrl = [NSURL URLWithString:[deeplink stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-        }
-#pragma clang diagnostic pop
-
+        NSURL *nsUrl = [NSURL URLWithString:deeplink];
         ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:nsUrl];
         [Adjust processAndResolveDeeplink:deeplink
                     withCompletionHandler:^(NSString * _Nullable resolvedLink) {
