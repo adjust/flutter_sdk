@@ -123,14 +123,14 @@ static NSString *dartSkanUpdatedCallback = nil;
     };
 
     // Add nil check before serializing jsonResponse
-    NSString *stringJsonResponse = @"";
+    NSString *strJsonResponse = nil;
     if (attribution.jsonResponse != nil) {
         NSData *dataJsonResponse = [NSJSONSerialization dataWithJSONObject:attribution.jsonResponse
-                                                                options:0
-                                                                  error:nil];
-        stringJsonResponse = [[NSString alloc] initWithBytes:[dataJsonResponse bytes]
-                                                     length:[dataJsonResponse length]
-                                                   encoding:NSUTF8StringEncoding];
+                                                                   options:0
+                                                                     error:nil];
+        strJsonResponse = [[NSString alloc] initWithBytes:[dataJsonResponse bytes]
+                                                   length:[dataJsonResponse length]
+                                                 encoding:NSUTF8StringEncoding];
     }
 
     id values[] = {
@@ -144,7 +144,7 @@ static NSString *dartSkanUpdatedCallback = nil;
         [self getValueOrEmpty:[attribution costType]],
         [self getNumberValueOrEmpty:[attribution costAmount]],
         [self getValueOrEmpty:[attribution costCurrency]],
-        [self getValueOrEmpty:stringJsonResponse]
+        [self getValueOrEmpty:strJsonResponse]
     };
     NSUInteger count = sizeof(values) / sizeof(id);
     NSDictionary *attributionMap = [NSDictionary dictionaryWithObjects:values
