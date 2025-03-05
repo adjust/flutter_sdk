@@ -423,7 +423,9 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
                                 adjustAttribution.costAmount.toString() : "");
                         adjustAttributionMap.put("costCurrency", adjustAttribution.costCurrency);
                         adjustAttributionMap.put("fbInstallReferrer", adjustAttribution.fbInstallReferrer);
-                        adjustAttributionMap.put("jsonResponse", adjustAttribution.jsonResponse);
+                        if (adjustAttributionMap.jsonResponse != null) {
+                            adjustAttributionMap.put("jsonResponse", adjustAttribution.jsonResponse);
+                        }
                         if (channel != null) {
                             channel.invokeMethod(dartMethodName, adjustAttributionMap);
                         }
@@ -735,7 +737,9 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
                         attribution.costAmount.toString() : "");
                 adjustAttributionMap.put("costCurrency", attribution.costCurrency);
                 adjustAttributionMap.put("fbInstallReferrer", attribution.fbInstallReferrer);
-                adjustAttributionMap.put("jsonResponse", attribution.jsonResponse);
+                if (adjustAttributionMap.jsonResponse != null) {
+                    adjustAttributionMap.put("jsonResponse", adjustAttribution.jsonResponse);
+                }
                 result.success(adjustAttributionMap);
             }
         });
