@@ -1,3 +1,13 @@
+### Version 5.1.1 (March 5th 2025)
+#### Fixed
+- Fixed crashes happening in cases where native iOS `jsonResponse` is `nil` (https://github.com/adjust/flutter_sdk/pull/160).
+
+#### Native SDKs
+- [iOS@v5.1.1][ios_sdk_v5.1.1]
+- [Android@v5.1.0][android_sdk_v5.1.0]
+
+---
+
 ### Version 5.1.0 (25th February 2025)
 #### Added
 - Added `jsonResponse` field (JSON string) to `AdjustAttribution` where every key-value pair sent by the backend as part of the attribution response can be found.
