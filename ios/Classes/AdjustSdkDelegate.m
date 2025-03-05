@@ -44,7 +44,7 @@ static NSString *dartSkanUpdatedCallback = nil;
                                     methodChannel:(FlutterMethodChannel *)channel {
     dispatch_once(&onceToken, ^{
         defaultInstance = [[AdjustSdkDelegate alloc] init];
-        
+
         // do the swizzling where and if needed
         if (swizzleAttributionCallback != nil) {
             [defaultInstance swizzleCallbackMethod:@selector(adjustAttributionChanged:)
@@ -107,7 +107,7 @@ static NSString *dartSkanUpdatedCallback = nil;
     if (nil == attribution || nil == dartAttributionCallback) {
         return;
     }
-    
+
     id keys[] = {
         @"trackerToken",
         @"trackerName",
@@ -121,12 +121,18 @@ static NSString *dartSkanUpdatedCallback = nil;
         @"costCurrency",
         @"jsonResponse"
     };
-    NSData *dataJsonResponse = [NSJSONSerialization dataWithJSONObject:attribution.jsonResponse
-                                                               options:0
-                                                                 error:nil];
-    NSString *stringJsonResponse = [[NSString alloc] initWithBytes:[dataJsonResponse bytes]
-                                                            length:[dataJsonResponse length]
-                                                          encoding:NSUTF8StringEncoding];
+
+    // Add nil check before serializing jsonResponse
+    NSString *strJsonResponse = nil;
+    if (attribution.jsonResponse != nil) {
+        NSData *dataJsonResponse = [NSJSONSerialization dataWithJSONObject:attribution.jsonResponse
+                                                                   options:0
+                                                                     error:nil];
+        strJsonResponse = [[NSString alloc] initWithBytes:[dataJsonResponse bytes]
+                                                   length:[dataJsonResponse length]
+                                                 encoding:NSUTF8StringEncoding];
+    }
+
     id values[] = {
         [self getValueOrEmpty:[attribution trackerToken]],
         [self getValueOrEmpty:[attribution trackerName]],
@@ -138,7 +144,7 @@ static NSString *dartSkanUpdatedCallback = nil;
         [self getValueOrEmpty:[attribution costType]],
         [self getNumberValueOrEmpty:[attribution costAmount]],
         [self getValueOrEmpty:[attribution costCurrency]],
-        [self getValueOrEmpty:stringJsonResponse]
+        [self getValueOrEmpty:strJsonResponse]
     };
     NSUInteger count = sizeof(values) / sizeof(id);
     NSDictionary *attributionMap = [NSDictionary dictionaryWithObjects:values
@@ -202,7 +208,7 @@ static NSString *dartSkanUpdatedCallback = nil;
     if (nil == eventSuccessResponseData || nil == dartEventSuccessCallback) {
         return;
     }
-    
+
     id keys[] = {
         @"message",
         @"timestamp",

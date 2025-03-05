@@ -267,7 +267,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
             [adjustConfig disableIdfvReading];
         }
     }
-    
+
     // SKAdNetwork attribution
     if ([self isFieldValid:isSkanAttributionEnabled]) {
         if ([isSkanAttributionEnabled boolValue] == NO) {
@@ -419,7 +419,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     if (urlString == nil) {
         return;
     }
-    
+
     NSURL *url = [NSURL URLWithString:urlString];
     ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:url];
     [Adjust processDeeplink:deeplink];
@@ -456,12 +456,12 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     if ([self isFieldValid:adRevenueNetwork]) {
         [adjustAdRevenue setAdRevenueNetwork:adRevenueNetwork];
     }
-    
+
     // ad revenue unit
     if ([self isFieldValid:adRevenueUnit]) {
         [adjustAdRevenue setAdRevenueUnit:adRevenueUnit];
     }
-    
+
     // ad revenue placement
     if ([self isFieldValid:adRevenuePlacement]) {
         [adjustAdRevenue setAdRevenuePlacement:adRevenuePlacement];
@@ -576,13 +576,19 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self addValueOrEmpty:attribution.costType withKey:@"costType" toDictionary:dictionary];
         [self addNumberOrEmpty:attribution.costAmount withKey:@"costAmount" toDictionary:dictionary];
         [self addValueOrEmpty:attribution.costCurrency withKey:@"costCurrency" toDictionary:dictionary];
-        NSData *dataJsonResponse = [NSJSONSerialization dataWithJSONObject:attribution.jsonResponse
+
+        // Add nil check before serializing jsonResponse
+        if (attribution.jsonResponse != nil) {
+            NSData *dataJsonResponse = [NSJSONSerialization dataWithJSONObject:attribution.jsonResponse
                                                                    options:0
                                                                      error:nil];
-        NSString *stringJsonResponse = [[NSString alloc] initWithBytes:[dataJsonResponse bytes]
+            NSString *stringJsonResponse = [[NSString alloc] initWithBytes:[dataJsonResponse bytes]
                                                                 length:[dataJsonResponse length]
                                                               encoding:NSUTF8StringEncoding];
-        [self addValueOrEmpty:stringJsonResponse withKey:@"jsonResponse" toDictionary:dictionary];
+            [self addValueOrEmpty:stringJsonResponse withKey:@"jsonResponse" toDictionary:dictionary];
+        } else {
+            [self addValueOrEmpty:@"" withKey:@"jsonResponse" toDictionary:dictionary];
+        }
         result(dictionary);
     }];
 }
@@ -687,7 +693,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         if (verificationResult == nil) {
             result(dictionary);
         }
-        
+
         [self addValueOrEmpty:verificationResult.verificationStatus
                       withKey:@"verificationStatus"
                  toDictionary:dictionary];
@@ -788,7 +794,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         if (verificationResult == nil) {
             result(dictionary);
         }
-        
+
         [self addValueOrEmpty:verificationResult.verificationStatus
                       withKey:@"verificationStatus"
                  toDictionary:dictionary];
