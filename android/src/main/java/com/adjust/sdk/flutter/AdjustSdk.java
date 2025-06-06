@@ -23,6 +23,7 @@ import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustPlayStoreSubscription;
 import com.adjust.sdk.AdjustPurchaseVerificationResult;
+import com.adjust.sdk.AdjustStoreInfo;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.LogLevel;
@@ -169,8 +170,23 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
             case "verifyPlayStorePurchase":
                 verifyPlayStorePurchase(call, result);
                 break;
-            case "verifyAndTrackPlayStorePurchase":
-                verifyAndTrackPlayStorePurchase(call, result);
+            case "endFirstSessionDelay":
+                endFirstSessionDelay(call, result);
+                break;
+            case "enableCoppaComplianceInDelay":
+                enableCoppaComplianceInDelay(call, result);
+                break;
+            case "disableCoppaComplianceInDelay":
+                disableCoppaComplianceInDelay(call, result);
+                break;
+            case "enablePlayStoreKidsComplianceInDelay":
+                enablePlayStoreKidsComplianceInDelay(call, result);
+                break;
+            case "disablePlayStoreKidsComplianceInDelay":
+                disablePlayStoreKidsComplianceInDelay(call, result);
+                break;
+            case "setExternalDeviceIdInDelay":
+                setExternalDeviceIdInDelay(call, result);
                 break;
             // ios only methods
             case "getIdfa":
@@ -193,6 +209,9 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
                 break;
             case "verifyAppStorePurchase":
                 verifyAppStorePurchase(call, result);
+                break;
+            case "verifyAndTrackPlayStorePurchase":
+                verifyAndTrackPlayStorePurchase(call, result);
                 break;
             case "verifyAndTrackAppStorePurchase":
                 verifyAndTrackAppStorePurchase(call, result);
@@ -283,6 +302,15 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
             }
         }
 
+        // first session delay
+        if (configMap.containsKey("isFirstSessionDelayEnabled")) {
+            String strIsFirstSessionDelayEnabled = (String) configMap.get("isFirstSessionDelayEnabled");
+            boolean isFirstSessionDelayEnabled = Boolean.parseBoolean(strIsFirstSessionDelayEnabled);
+            if (isFirstSessionDelayEnabled) {
+                adjustConfig.enableFirstSessionDelay();
+            }
+        }
+
         // COPPA compliance
         if (configMap.containsKey("isCoppaComplianceEnabled")) {
             String strIsCoppaComplianceEnabled = (String) configMap.get("isCoppaComplianceEnabled");
@@ -318,6 +346,19 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
                 adjustConfig.setEventDeduplicationIdsMaxSize(eventDeduplicationIdsMaxSize);
             } catch (Exception e) {}
         }
+
+        // set Store Info
+        if (configMap.containsKey("storeName")) {
+            String storeName = (String) configMap.get("storeName");
+            AdjustStoreInfo adjustStoreInfo = new AdjustStoreInfo(storeName);
+            if (configMap.containsKey("storeAppId")){
+                String storeAppId = (String) configMap.get("storeAppId");
+                adjustStoreInfo.setStoreAppId(storeAppId);
+            }
+            adjustConfig.setStoreInfo(adjustStoreInfo);
+        }
+
+
 
         // URL strategy
         if (configMap.containsKey("urlStrategyDomains")
@@ -672,10 +713,18 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
     private void processDeeplink(final MethodCall call, final Result result) {
         Map urlParamsMap = (Map) call.arguments;
         String url = null;
+        String referrer = null;
         if (urlParamsMap.containsKey("deeplink")) {
             url = urlParamsMap.get("deeplink").toString();
         }
-        Adjust.processDeeplink(new AdjustDeeplink(Uri.parse(url)), applicationContext);
+        if (urlParamsMap.containsKey("referrer") && urlParamsMap.get("referrer") != null) {
+            referrer = urlParamsMap.get("referrer").toString();
+        }
+        AdjustDeeplink adjustDeeplink = new AdjustDeeplink(Uri.parse(url));
+        if (referrer != null) {
+            adjustDeeplink.setReferrer(Uri.parse(referrer));
+        }
+        Adjust.processDeeplink(adjustDeeplink, applicationContext);
         result.success(null);
     }
 
@@ -1202,11 +1251,19 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
     private void processAndResolveDeeplink(final MethodCall call, final Result result) {
         Map urlParamsMap = (Map) call.arguments;
         String url = null;
+        String referrer = null;
         if (urlParamsMap.containsKey("deeplink")) {
             url = urlParamsMap.get("deeplink").toString();
         }
+        if (urlParamsMap.containsKey("referrer") && urlParamsMap.get("referrer") != null) {
+            referrer = urlParamsMap.get("referrer").toString();
+        }
+        AdjustDeeplink adjustDeeplink = new AdjustDeeplink(Uri.parse(url));
+        if (referrer != null) {
+            adjustDeeplink.setReferrer(Uri.parse(referrer));
+        }
 
-        Adjust.processAndResolveDeeplink(new AdjustDeeplink(Uri.parse(url)), applicationContext, new OnDeeplinkResolvedListener() {
+        Adjust.processAndResolveDeeplink(adjustDeeplink, applicationContext, new OnDeeplinkResolvedListener() {
             @Override
             public void onDeeplinkResolved(String resolvedLink) {
                 result.success(resolvedLink);
@@ -1245,6 +1302,36 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
 
     private void verifyAndTrackAppStorePurchase(final MethodCall call, final Result result) {
         result.success("Error. No verifyAndTrackAppStorePurchase on Android platform!");
+    }
+
+    private void endFirstSessionDelay(final MethodCall call, final Result result){
+        Adjust.endFirstSessionDelay();
+    }
+
+    private void enableCoppaComplianceInDelay(final MethodCall call, final Result result){
+        Adjust.enableCoppaComplianceInDelay();
+    }
+
+    private void disableCoppaComplianceInDelay(final MethodCall call, final Result result){
+        Adjust.disableCoppaComplianceInDelay();
+    }
+
+    private void enablePlayStoreKidsComplianceInDelay(final MethodCall call, final Result result){
+        Adjust.enablePlayStoreKidsComplianceInDelay();
+    }
+
+    private void disablePlayStoreKidsComplianceInDelay(final MethodCall call, final Result result){
+        Adjust.disablePlayStoreKidsComplianceInDelay();
+    }
+
+    private void setExternalDeviceIdInDelay(final MethodCall call, final Result result){
+        Map externalDeviceMap = (Map) call.arguments;
+        String externalDeviceId = null;
+        if (externalDeviceMap.containsKey("externalDeviceId")) {
+            externalDeviceId = externalDeviceMap.get("externalDeviceId").toString();
+        }
+        Adjust.setExternalDeviceIdInDelay(externalDeviceId);
+        result.success(null);
     }
 
     // used for testing only

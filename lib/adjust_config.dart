@@ -13,6 +13,7 @@ import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
+import 'package:adjust_sdk/store_info.dart';
 import 'package:flutter/services.dart';
 
 enum AdjustLogLevel { verbose, debug, info, warn, error, suppress }
@@ -53,6 +54,8 @@ class AdjustConfig {
   bool? isCoppaComplianceEnabled;
   bool? isPlayStoreKidsComplianceEnabled;
   bool? isDeferredDeeplinkOpeningEnabled;
+  bool? isFirstSessionDelayEnabled;
+  bool? isAppTrackingTransparencyUsageEnabled;
 
   num? attConsentWaitingInterval;
   num? eventDeduplicationIdsMaxSize;
@@ -63,6 +66,8 @@ class AdjustConfig {
   String? processName;
   String? preinstallFilePath;
   String? fbAppId;
+  String? storeName;
+  String? storeAppId;
 
   bool? _isDataResidency;
   bool? _useSubdomains;
@@ -79,6 +84,11 @@ class AdjustConfig {
 
   AdjustConfig(this._appToken, this._environment) {
     _initCallbackHandlers();
+  }
+
+  void setStoreInfo(StoreInfo storeInfo){
+    storeName = storeInfo.storeName;
+    storeAppId = storeInfo.storeAppId;
   }
 
   void setUrlStrategy(List<String> urlStrategyDomains, bool useSubdomains, bool isDataResidency) {
@@ -175,6 +185,12 @@ class AdjustConfig {
     if (fbAppId != null) {
       configMap['fbAppId'] = fbAppId;
     }
+    if (storeName != null) {
+      configMap['storeName'] = storeName;
+    }
+    if (storeAppId != null) {
+      configMap['storeAppId'] = storeAppId;
+    }
     if (_urlStrategyDomains.isEmpty != true ) {
       configMap['urlStrategyDomains'] = json.encode(_urlStrategyDomains);
     }
@@ -201,6 +217,12 @@ class AdjustConfig {
     }
     if (isCoppaComplianceEnabled != null) {
       configMap['isCoppaComplianceEnabled'] = isCoppaComplianceEnabled.toString();
+    }
+    if (isFirstSessionDelayEnabled != null) {
+      configMap['isFirstSessionDelayEnabled'] = isFirstSessionDelayEnabled.toString();
+    }
+    if (isAppTrackingTransparencyUsageEnabled != null) {
+      configMap['isAppTrackingTransparencyUsageEnabled'] = isAppTrackingTransparencyUsageEnabled.toString();
     }
     if (isDeviceIdsReadingOnceEnabled != null) {
       configMap['isDeviceIdsReadingOnceEnabled'] = isDeviceIdsReadingOnceEnabled.toString();

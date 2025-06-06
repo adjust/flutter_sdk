@@ -74,6 +74,18 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self trackMeasurementConsent:call withResult:result];
     } else if ([@"updateSkanConversionValue" isEqualToString:call.method ]){
         [self updateSkanConversionValue:call withResult:result];
+    }  else if ([@"endFirstSessionDelay" isEqualToString:call.method ]){
+        [self endFirstSessionDelay:call withResult:result];
+    }  else if ([@"enableCoppaComplianceInDelay" isEqualToString:call.method ]){
+        [self enableCoppaComplianceInDelay:call withResult:result];
+    }  else if ([@"disableCoppaComplianceInDelay" isEqualToString:call.method ]){
+        [self disableCoppaComplianceInDelay:call withResult:result];
+    }  else if ([@"enablePlayStoreKidsComplianceInDelay" isEqualToString:call.method ]){
+        [self enablePlayStoreKidsComplianceInDelay:call withResult:result];
+    }  else if ([@"disablePlayStoreKidsComplianceInDelay" isEqualToString:call.method ]){
+        [self disablePlayStoreKidsComplianceInDelay:call withResult:result];
+    }  else if ([@"setExternalDeviceIdInDelay" isEqualToString:call.method ]){
+        [self setExternalDeviceIdInDelay:call withResult:result];
     } else if ([@"addGlobalCallbackParameter" isEqualToString:call.method]) {
         NSString *key = call.arguments[@"key"];
         NSString *value = call.arguments[@"value"];
@@ -148,6 +160,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *sdkPrefix = call.arguments[@"sdkPrefix"];
     NSString *defaultTracker = call.arguments[@"defaultTracker"];
     NSString *externalDeviceId = call.arguments[@"externalDeviceId"];
+    NSString *storeName = call.arguments[@"storeName"];
+    NSString *storeAppId = call.arguments[@"storeAppId"];
     NSString *strUrlStrategyDomainsJson = call.arguments[@"urlStrategyDomains"];
     BOOL isDataResidency = [call.arguments[@"isDataResidency"] boolValue];
     BOOL useSubdomains = [call.arguments[@"useSubdomains"] boolValue];
@@ -156,6 +170,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSInteger eventDeduplicationIdsMaxSize = [call.arguments[@"eventDeduplicationIdsMaxSize"] integerValue];
     NSString *isCostDataInAttributionEnabled = call.arguments[@"isCostDataInAttributionEnabled"];
     NSString *isCoppaComplianceEnabled = call.arguments[@"isCoppaComplianceEnabled"];
+    NSString *isFirstSessionDelayEnabled = call.arguments[@"isFirstSessionDelayEnabled"];
+    NSString *isAppTrackingTransparencyUsageEnabled = call.arguments[@"isAppTrackingTransparencyUsageEnabled"];
     NSString *isLinkMeEnabled = call.arguments[@"isLinkMeEnabled"];
     NSString *isAdServicesEnabled = call.arguments[@"isAdServicesEnabled"];
     NSString *isIdfaReadingEnabled = call.arguments[@"isIdfaReadingEnabled"];
@@ -207,6 +223,20 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         }
     }
 
+    // First session delay
+    if ([self isFieldValid:isFirstSessionDelayEnabled]) {
+        if ([isFirstSessionDelayEnabled boolValue] == YES) {
+            [adjustConfig enableFirstSessionDelay];
+        }
+    }
+
+    // App Tracking transparency
+    if ([self isFieldValid:isAppTrackingTransparencyUsageEnabled]) {
+        if ([isAppTrackingTransparencyUsageEnabled boolValue] == NO) {
+            [adjustConfig disableAppTrackingTransparencyUsage];
+        }
+    }
+
     // default tracker
     if ([self isFieldValid:defaultTracker]) {
         [adjustConfig setDefaultTracker:defaultTracker];
@@ -215,6 +245,15 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     // external device ID
     if ([self isFieldValid:externalDeviceId]) {
         [adjustConfig setExternalDeviceId:externalDeviceId];
+    }
+
+    // Set store info
+    if ([self isFieldValid:storeName]) {
+        ADJStoreInfo *adjStoreInfo = [[ADJStoreInfo alloc] initWithStoreName:storeName];
+        if ([self isFieldValid:storeAppId]) {
+            adjStoreInfo.storeAppId = storeAppId;
+        }
+        [adjustConfig setStoreInfo:adjStoreInfo];
     }
 
     // URL strategy
@@ -414,14 +453,55 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     result(nil);
 }
 
+- (void)endFirstSessionDelay:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    [Adjust endFirstSessionDelay];
+    result(nil);
+}
+
+- (void)enableCoppaComplianceInDelay:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    [Adjust enableCoppaComplianceInDelay];
+    result(nil);
+}
+
+- (void)disableCoppaComplianceInDelay:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    [Adjust disableCoppaComplianceInDelay];
+    result(nil);
+}
+
+- (void)enablePlayStoreKidsComplianceInDelay:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    result([FlutterError errorWithCode:@"non_existing_method"
+                               message:@"enablePlayStoreKidsComplianceInDelay not available on iOS platform!"
+                               details:nil]);
+}
+
+- (void)disablePlayStoreKidsComplianceInDelay:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    result([FlutterError errorWithCode:@"non_existing_method"
+                               message:@"disablePlayStoreKidsComplianceInDelay not available on iOS platform!"
+                               details:nil]);
+}
+
+- (void)setExternalDeviceIdInDelay:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSString *externalDeviceId = call.arguments[@"externalDeviceId"];
+    if ([self isFieldValid:externalDeviceId]) {
+        [Adjust setExternalDeviceIdInDelay:externalDeviceId];
+    }
+    result(nil);
+}
+
 - (void)processDeeplink:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *urlString = call.arguments[@"deeplink"];
     if (urlString == nil) {
         return;
     }
+    NSString *referrerString = call.arguments[@"referrer"];
+    
 
     NSURL *url = [NSURL URLWithString:urlString];
     ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:url];
+    if (referrerString != nil && [self isFieldValid: referrerString]) {
+        NSURL *referrer = [NSURL URLWithString:referrerString];
+        [deeplink setReferrer:referrer];
+    }
     [Adjust processDeeplink:deeplink];
 }
 
@@ -709,9 +789,16 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 
 - (void)processAndResolveDeeplink:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *deeplink = call.arguments[@"deeplink"];
+    NSString *referrerString = call.arguments[@"referrer"];
+
     if ([self isFieldValid:deeplink]) {
         NSURL *nsUrl = [NSURL URLWithString:deeplink];
+        
         ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:nsUrl];
+        if (referrerString != nil && [self isFieldValid:referrerString]) {
+            NSURL *referrer = [NSURL URLWithString:referrerString];
+            [deeplink setReferrer:referrer];
+        }
         [Adjust processAndResolveDeeplink:deeplink
                     withCompletionHandler:^(NSString * _Nullable resolvedLink) {
             if (![self isFieldValid:resolvedLink]) {

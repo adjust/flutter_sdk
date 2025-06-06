@@ -8,6 +8,7 @@
 
 class AdjustDeeplink {
   final String deeplink;
+  final String? referrer;
 
-  AdjustDeeplink(this.deeplink);
+  AdjustDeeplink(this.deeplink,this.referrer);
 }

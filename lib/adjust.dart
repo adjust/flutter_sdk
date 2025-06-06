@@ -24,7 +24,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter5.1.1';
+  static const String _sdkPrefix = 'flutter5.4.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
 
@@ -58,7 +58,7 @@ class Adjust {
   }
 
   static void processDeeplink(AdjustDeeplink deeplink) {
-    _channel.invokeMethod('processDeeplink', {'deeplink': deeplink.deeplink});
+    _channel.invokeMethod('processDeeplink', {'deeplink': deeplink.deeplink, 'referrer': deeplink.referrer});
   }
 
   static void gdprForgetMe() {
@@ -212,8 +212,32 @@ class Adjust {
 
   static Future<String?> processAndResolveDeeplink(AdjustDeeplink deeplink) async {
     final resolvedLink = 
-      await _channel.invokeMethod('processAndResolveDeeplink', {'deeplink': deeplink.deeplink});
+      await _channel.invokeMethod('processAndResolveDeeplink', {'deeplink': deeplink.deeplink , 'referrer': deeplink.referrer});
     return resolvedLink;
+  }
+
+  static void endFirstSessionDelay() {
+    _channel.invokeMethod('endFirstSessionDelay');
+  }
+
+  static void enableCoppaComplianceInDelay() {
+    _channel.invokeMethod('enableCoppaComplianceInDelay');
+  }
+
+  static void disableCoppaComplianceInDelay() {
+    _channel.invokeMethod('disableCoppaComplianceInDelay');
+  }
+
+  static void enablePlayStoreKidsComplianceInDelay() {
+    _channel.invokeMethod('enablePlayStoreKidsComplianceInDelay');
+  }
+
+  static void disablePlayStoreKidsComplianceInDelay() {
+    _channel.invokeMethod('disablePlayStoreKidsComplianceInDelay');
+  }
+
+  static void setExternalDeviceIdInDelay(String externalDeviceId) {
+    _channel.invokeMethod('setExternalDeviceIdInDelay',{'externalDeviceId': externalDeviceId});
   }
 
   // for testing purposes only, do not use in production!

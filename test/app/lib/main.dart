@@ -26,13 +26,13 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     if (Platform.isAndroid) {
-      String _address = '192.168.86.187';
+      String _address = '192.168.0.34';
       String _protocol = 'https';
       String _port = '8443';
       _overwriteUrl = _protocol + '://' + _address + ':' + _port;
       _controlUrl = 'ws://' + _address + ':1987';
     } else {
-      String _address = '192.168.86.187';
+      String _address = '192.168.0.34';
       String _protocol = 'http';
       String _port = '8080';
       _overwriteUrl = _protocol + '://' + _address + ':' + _port;
@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
                     'Start Test Session',
                     () => Adjust.getSdkVersion().then((sdkVersion) {
                           // TestLib.addTestDirectory('event-callbacks');
-                          // TestLib.addTest('Test_AttributionGetter_after_install');
+                          // TestLib.addTest('Test_Parameters_FeatureFlags_present');
                           TestLib.startTestSession(sdkVersion);
                         }))
               ])))
