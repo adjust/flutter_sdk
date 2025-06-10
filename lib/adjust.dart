@@ -58,7 +58,7 @@ class Adjust {
   }
 
   static void processDeeplink(AdjustDeeplink deeplink) {
-    _channel.invokeMethod('processDeeplink', {'deeplink': deeplink.deeplink, 'referrer': deeplink.referrer});
+    _channel.invokeMethod('processDeeplink', deeplink.toMap);
   }
 
   static void gdprForgetMe() {
@@ -212,7 +212,7 @@ class Adjust {
 
   static Future<String?> processAndResolveDeeplink(AdjustDeeplink deeplink) async {
     final resolvedLink = 
-      await _channel.invokeMethod('processAndResolveDeeplink', {'deeplink': deeplink.deeplink , 'referrer': deeplink.referrer});
+      await _channel.invokeMethod('processAndResolveDeeplink', deeplink.toMap);
     return resolvedLink;
   }
 

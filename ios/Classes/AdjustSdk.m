@@ -496,22 +496,19 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 }
 
 - (void)processDeeplink:(FlutterMethodCall *)call withResult:(FlutterResult)result {
-    NSString *urlString = call.arguments[@"deeplink"];
-    if (urlString == nil) {
-        return;
-    }
-    NSString *referrerString = call.arguments[@"referrer"];
-    
+    NSString *deeplink = call.arguments[@"deeplink"];
+    NSString *referrer = call.arguments[@"referrer"];
 
-    NSURL *url = [NSURL URLWithString:urlString];
-    ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:url];
-    if (referrerString != nil && [self isFieldValid: referrerString]) {
-        NSURL *referrer = [NSURL URLWithString:referrerString];
-        [deeplink setReferrer:referrer];
+    if ([self isFieldValid:deeplink]) {
+        NSURL *urlDeeplink = [NSURL URLWithString:deeplink];
+        ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:urlDeeplink];
+        if ([self isFieldValid:referrer]) {
+            NSURL *urlReferrer = [NSURL URLWithString:referrer];
+            [deeplink setReferrer:urlReferrer];
+        }
+        [Adjust processDeeplink:deeplink];
     }
-    [Adjust processDeeplink:deeplink];
 }
-
 
 - (void)trackAdRevenue:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *source = call.arguments[@"source"];
@@ -796,15 +793,14 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 
 - (void)processAndResolveDeeplink:(FlutterMethodCall *)call withResult:(FlutterResult)result {
     NSString *deeplink = call.arguments[@"deeplink"];
-    NSString *referrerString = call.arguments[@"referrer"];
+    NSString *referrer = call.arguments[@"referrer"];
 
     if ([self isFieldValid:deeplink]) {
-        NSURL *nsUrl = [NSURL URLWithString:deeplink];
-        
-        ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:nsUrl];
-        if (referrerString != nil && [self isFieldValid:referrerString]) {
-            NSURL *referrer = [NSURL URLWithString:referrerString];
-            [deeplink setReferrer:referrer];
+        NSURL *urlDeeplink = [NSURL URLWithString:deeplink];
+        ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:urlDeeplink];
+        if ([self isFieldValid:referrer]) {
+            NSURL *urlReferrer = [NSURL URLWithString:referrer];
+            [deeplink setReferrer:urlReferrer];
         }
         [Adjust processAndResolveDeeplink:deeplink
                     withCompletionHandler:^(NSString * _Nullable resolvedLink) {

@@ -6,9 +6,24 @@
 //  Copyright (c) 2024-Present Adjust GmbH. All rights reserved.
 //
 
-class AdjustDeeplink {
-  final String deeplink;
-  final String? referrer;
+import 'dart:convert';
 
-  AdjustDeeplink(this.deeplink,this.referrer);
+class AdjustDeeplink {
+  String deeplink;
+  String? referrer;
+
+  AdjustDeeplink(this.deeplink);
+
+  Map<String, String?> get toMap {
+    Map<String, String?> deeplinkMap = new Map<String, String?>();
+
+    if (deeplink != null) {
+      deeplinkMap['deeplink'] = deeplink;
+    }
+    if (referrer != null) {
+      deeplinkMap['referrer'] = referrer;
+    }
+
+    return deeplinkMap;
+  }
 }

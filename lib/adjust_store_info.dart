@@ -1,3 +1,11 @@
+//
+//  adjust_deeplink.dart
+//  Adjust SDK
+//
+//  Created by Mahdi ZTD (@MahdiZTD) on 6th June 2025.
+//  Copyright (c) 2025-Present Adjust GmbH. All rights reserved.
+//
+
 import 'dart:convert';
 
 class AdjustStoreInfo {

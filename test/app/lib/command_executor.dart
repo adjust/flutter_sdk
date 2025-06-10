@@ -672,7 +672,8 @@ class CommandExecutor {
   void _openDeeplink() {
     String deeplink = _command.getFirstParameterValue('deeplink')!;
     String? referrer = _command.getFirstParameterValue('referrer');
-    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplink,referrer);
+    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplink);
+    adjustDeeplink!.referrer = referrer;
     Adjust.processDeeplink(adjustDeeplink);
   }
 
@@ -1009,7 +1010,8 @@ class CommandExecutor {
   void _processDeeplink() {
     String deeplink = _command.getFirstParameterValue('deeplink')!;
     String? referrer = _command.getFirstParameterValue('referrer');
-    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplink,referrer);
+    AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplink);
+    adjustDeeplink!.referrer = referrer;
     Adjust.processAndResolveDeeplink(adjustDeeplink).then((resolvedLink) {
       String? localBasePath = _basePath;
       TestLib.addInfoToSend('resolved_link', resolvedLink);

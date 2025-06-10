@@ -716,19 +716,21 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
     }
 
     private void processDeeplink(final MethodCall call, final Result result) {
-        Map urlParamsMap = (Map) call.arguments;
-        String url = null;
-        String referrer = null;
-        if (urlParamsMap.containsKey("deeplink")) {
-            url = urlParamsMap.get("deeplink").toString();
+        Map deeplinkMap = (Map) call.arguments;
+        if (deeplinkMap == null) {
+            return;
         }
-        if (urlParamsMap.containsKey("referrer") && urlParamsMap.get("referrer") != null) {
-            referrer = urlParamsMap.get("referrer").toString();
+
+        AdjustDeeplink adjustDeeplink = null;
+        if (deeplinkMap.containsKey("deeplink")) {
+            String deeplink = (String) deeplinkMap.get("deeplink");
+            adjustDeeplink = new AdjustDeeplink(Uri.parse(deeplink));
+            if (deeplinkMap.containsKey("referrer")) {
+                String referrer = (String) deeplinkMap.get("referrer");
+                adjustDeeplink.setReferrer(Uri.parse(referrer));
+            }
         }
-        AdjustDeeplink adjustDeeplink = new AdjustDeeplink(Uri.parse(url));
-        if (referrer != null) {
-            adjustDeeplink.setReferrer(Uri.parse(referrer));
-        }
+
         Adjust.processDeeplink(adjustDeeplink, applicationContext);
         result.success(null);
     }
@@ -1254,18 +1256,19 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
     }
 
     private void processAndResolveDeeplink(final MethodCall call, final Result result) {
-        Map urlParamsMap = (Map) call.arguments;
-        String url = null;
-        String referrer = null;
-        if (urlParamsMap.containsKey("deeplink")) {
-            url = urlParamsMap.get("deeplink").toString();
+        Map deeplinkMap = (Map) call.arguments;
+        if (deeplinkMap == null) {
+            return;
         }
-        if (urlParamsMap.containsKey("referrer") && urlParamsMap.get("referrer") != null) {
-            referrer = urlParamsMap.get("referrer").toString();
-        }
-        AdjustDeeplink adjustDeeplink = new AdjustDeeplink(Uri.parse(url));
-        if (referrer != null) {
-            adjustDeeplink.setReferrer(Uri.parse(referrer));
+
+        AdjustDeeplink adjustDeeplink = null;
+        if (deeplinkMap.containsKey("deeplink")) {
+            String deeplink = (String) deeplinkMap.get("deeplink");
+            adjustDeeplink = new AdjustDeeplink(Uri.parse(deeplink));
+            if (deeplinkMap.containsKey("referrer")) {
+                String referrer = (String) deeplinkMap.get("referrer");
+                adjustDeeplink.setReferrer(Uri.parse(referrer));
+            }
         }
 
         Adjust.processAndResolveDeeplink(adjustDeeplink, applicationContext, new OnDeeplinkResolvedListener() {
