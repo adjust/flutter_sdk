@@ -160,8 +160,6 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *sdkPrefix = call.arguments[@"sdkPrefix"];
     NSString *defaultTracker = call.arguments[@"defaultTracker"];
     NSString *externalDeviceId = call.arguments[@"externalDeviceId"];
-    NSString *storeName = call.arguments[@"storeName"];
-    NSString *storeAppId = call.arguments[@"storeAppId"];
     NSString *strUrlStrategyDomainsJson = call.arguments[@"urlStrategyDomains"];
     BOOL isDataResidency = [call.arguments[@"isDataResidency"] boolValue];
     BOOL useSubdomains = [call.arguments[@"useSubdomains"] boolValue];
@@ -176,6 +174,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *isAdServicesEnabled = call.arguments[@"isAdServicesEnabled"];
     NSString *isIdfaReadingEnabled = call.arguments[@"isIdfaReadingEnabled"];
     NSString *isIdfvReadingEnabled = call.arguments[@"isIdfvReadingEnabled"];
+    NSString *strStoreInfoJson = call.arguments[@"storeInfo"];
     NSString *isSkanAttributionEnabled = call.arguments[@"isSkanAttributionEnabled"];
     NSString *isDeviceIdsReadingOnceEnabled = call.arguments[@"isDeviceIdsReadingOnceEnabled"];
     NSString *dartAttributionCallback = call.arguments[@"attributionCallback"];
@@ -247,13 +246,21 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [adjustConfig setExternalDeviceId:externalDeviceId];
     }
 
-    // Set store info
-    if ([self isFieldValid:storeName]) {
-        ADJStoreInfo *adjStoreInfo = [[ADJStoreInfo alloc] initWithStoreName:storeName];
-        if ([self isFieldValid:storeAppId]) {
-            adjStoreInfo.storeAppId = storeAppId;
+    // store info
+    if ([self isFieldValid:strStoreInfoJson]) {
+        NSData *jsonData = [strStoreInfoJson dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *storeInfoDict = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                                      options:0
+                                                                        error:nil];
+        NSString *storeName = storeInfoDict[@"storeName"];
+        if ([self isFieldValid:storeName]) {
+            ADJStoreInfo *adjStoreInfo = [[ADJStoreInfo alloc] initWithStoreName:storeName];
+            NSString *storeAppId = storeInfoDict[@"storeAppId"];
+            if ([self isFieldValid:storeAppId]) {
+                [adjStoreInfo setStoreAppId:storeAppId];
+            }
+            [adjustConfig setStoreInfo:adjStoreInfo];
         }
-        [adjustConfig setStoreInfo:adjStoreInfo];
     }
 
     // URL strategy

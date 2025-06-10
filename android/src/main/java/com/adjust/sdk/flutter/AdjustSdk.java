@@ -347,18 +347,23 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
             } catch (Exception e) {}
         }
 
-        // set Store Info
-        if (configMap.containsKey("storeName")) {
-            String storeName = (String) configMap.get("storeName");
-            AdjustStoreInfo adjustStoreInfo = new AdjustStoreInfo(storeName);
-            if (configMap.containsKey("storeAppId")){
-                String storeAppId = (String) configMap.get("storeAppId");
-                adjustStoreInfo.setStoreAppId(storeAppId);
-            }
-            adjustConfig.setStoreInfo(adjustStoreInfo);
+        // set store info
+        if (configMap.containsKey("storeInfo")) {
+            try {
+                String strStoreInfo = (String) configMap.get("storeInfo");
+                JSONObject storeInfo = new JSONObject(strStoreInfo);
+
+                if (storeInfo.has("storeName") && !storeInfo.isNull("storeName")) {
+                    String storeName = storeInfo.getString("storeName");
+                    AdjustStoreInfo adjustStoreInfo = new AdjustStoreInfo(storeName);
+                    if (storeInfo.has("storeAppId") && !storeInfo.isNull("storeAppId")) {
+                        String storeAppId = storeInfo.getString("storeAppId");
+                        adjustStoreInfo.setStoreAppId(storeAppId);
+                    }
+                    adjustConfig.setStoreInfo(adjustStoreInfo);
+                }
+            } catch (JSONException ignored) {}
         }
-
-
 
         // URL strategy
         if (configMap.containsKey("urlStrategyDomains")

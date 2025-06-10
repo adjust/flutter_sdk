@@ -25,7 +25,7 @@ import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
 import 'package:adjust_sdk/adjust_purchase_verification_result.dart';
 import 'package:adjust_sdk/adjust_deeplink.dart';
-import 'package:adjust_sdk/store_info.dart';
+import 'package:adjust_sdk/adjust_store_info.dart';
 import 'package:test_app/command.dart';
 import 'package:test_lib/test_lib.dart';
 
@@ -288,9 +288,10 @@ class CommandExecutor {
     {
       var storeName = _command.getFirstParameterValue("storeName");
       var storeAppId = _command.getFirstParameterValue("storeAppId");
-      StoreInfo storeInfo = new StoreInfo(storeName,storeAppId);
+      AdjustStoreInfo storeInfo = new AdjustStoreInfo(storeName);
+      storeInfo.storeAppId = storeAppId;
 
-      adjustConfig!.setStoreInfo(storeInfo);
+      adjustConfig!.storeInfo = storeInfo;
     }
 
     if (_command.containsParameter('firstSessionDelayEnabled')) {

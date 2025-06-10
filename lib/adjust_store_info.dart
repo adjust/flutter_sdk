@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-class StoreInfo {
+class AdjustStoreInfo {
   String? storeName;
   String? storeAppId;
 
-  StoreInfo(this.storeName,this.storeAppId);
+  AdjustStoreInfo(this.storeName);
 
   Map<String, String?> get toMap {
     Map<String, String?> storeInfoMap = new Map<String, String?>();
@@ -18,5 +18,4 @@ class StoreInfo {
 
     return storeInfoMap;
   }
-
 }
