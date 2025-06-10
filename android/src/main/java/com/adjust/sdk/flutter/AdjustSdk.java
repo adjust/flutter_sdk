@@ -86,14 +86,33 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
     @Override
     public void onMethodCall(MethodCall call, final Result result) {
         switch (call.method) {
+            // common
             case "initSdk":
                 initSdk(call, result);
                 break;
             case "trackEvent":
                 trackEvent(call, result);
                 break;
-            case "isEnabled":
-                isEnabled(result);
+            case "trackAdRevenue":
+                trackAdRevenue(call, result);
+                break;
+            case "trackThirdPartySharing":
+                trackThirdPartySharing(call, result);
+                break;
+            case "trackMeasurementConsent":
+                trackMeasurementConsent(call, result);
+                break;
+            case "processDeeplink":
+                processDeeplink(call, result);
+                break;
+            case "processAndResolveDeeplink":
+                processAndResolveDeeplink(call, result);
+                break;
+            case "setPushToken":
+                setPushToken(call, result);
+                break;
+            case "gdprForgetMe":
+                gdprForgetMe(result);
                 break;
             case "enable":
                 enable(result);
@@ -106,33 +125,6 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
                 break;
             case "switchBackToOnlineMode":
                 switchBackToOnlineMode(result);
-                break;
-            case "setPushToken":
-                setPushToken(call, result);
-                break;
-            case "processDeeplink":
-                processDeeplink(call, result);
-                break;
-            case "processAndResolveDeeplink":
-                processAndResolveDeeplink(call, result);
-                break;
-            case "getAdid":
-                getAdid(result);
-                break;
-            case "getGoogleAdId":
-                getGoogleAdId(result);
-                break;
-            case "getAmazonAdId":
-                getAmazonAdId(result);
-                break;
-            case "getAttribution":
-                getAttribution(result);
-                break;
-            case "getSdkVersion":
-                getSdkVersion(result);
-                break;
-            case "gdprForgetMe":
-                gdprForgetMe(result);
                 break;
             case "addGlobalCallbackParameter":
                 addGlobalCallbackParameter(call, result);
@@ -152,24 +144,6 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
             case "removeGlobalPartnerParameters":
                 removeGlobalPartnerParameters(result);
                 break;
-            case "trackAdRevenue":
-                trackAdRevenue(call, result);
-                break;
-            case "trackPlayStoreSubscription":
-                trackPlayStoreSubscription(call, result);
-                break;
-            case "trackThirdPartySharing":
-                trackThirdPartySharing(call, result);
-                break;
-            case "trackMeasurementConsent":
-                trackMeasurementConsent(call, result);
-                break;
-            case "getLastDeeplink":
-                getLastDeeplink(result);
-                break;
-            case "verifyPlayStorePurchase":
-                verifyPlayStorePurchase(call, result);
-                break;
             case "endFirstSessionDelay":
                 endFirstSessionDelay(call, result);
                 break;
@@ -188,15 +162,46 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
             case "setExternalDeviceIdInDelay":
                 setExternalDeviceIdInDelay(call, result);
                 break;
+            case "isEnabled":
+                isEnabled(result);
+                break;
+            case "getAttribution":
+                getAttribution(result);
+                break;
+            case "getAdid":
+                getAdid(result);
+                break;
+            case "getLastDeeplink":
+                getLastDeeplink(result);
+                break;
+            case "getSdkVersion":
+                getSdkVersion(result);
+                break;
+            // android only
+            case "trackPlayStoreSubscription":
+                trackPlayStoreSubscription(call, result);
+                break;
+            case "verifyPlayStorePurchase":
+                verifyPlayStorePurchase(call, result);
+                break;
+            case "verifyAndTrackPlayStorePurchase":
+                verifyAndTrackPlayStorePurchase(call, result);
+                break;
+            case "getGoogleAdId":
+                getGoogleAdId(result);
+                break;
+            case "getAmazonAdId":
+                getAmazonAdId(result);
+                break;
             // ios only methods
-            case "getIdfa":
-                getIdfa(result);
-                break;
-            case "getIdfv":
-                getIdfv(result);
-                break;
             case "trackAppStoreSubscription":
                 trackAppStoreSubscription(result);
+                break;
+            case "verifyAppStorePurchase":
+                verifyAppStorePurchase(call, result);
+                break;
+            case "verifyAndTrackAppStorePurchase":
+                verifyAndTrackAppStorePurchase(call, result);
                 break;
             case "requestAppTrackingAuthorization":
                 requestAppTrackingAuthorization(result);
@@ -204,19 +209,16 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
             case "updateSkanConversionValue":
                 updateSkanConversionValue(result);
                 break;
+            case "getIdfa":
+                getIdfa(result);
+                break;
+            case "getIdfv":
+                getIdfv(result);
+                break;
             case "getAppTrackingAuthorizationStatus":
                 getAppTrackingAuthorizationStatus(call, result);
                 break;
-            case "verifyAppStorePurchase":
-                verifyAppStorePurchase(call, result);
-                break;
-            case "verifyAndTrackPlayStorePurchase":
-                verifyAndTrackPlayStorePurchase(call, result);
-                break;
-            case "verifyAndTrackAppStorePurchase":
-                verifyAndTrackAppStorePurchase(call, result);
-                break;
-            // used for testing only
+            // testing only
             case "onPause":
                 onPause(result);
                 break;
@@ -232,6 +234,8 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
                 break;
         }
     }
+
+    // common
 
     private void initSdk(final MethodCall call, final Result result) {
         Map configMap = (Map) call.arguments;
@@ -686,189 +690,6 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
         result.success(null);
     }
 
-    private void switchToOfflineMode(final Result result) {
-        Adjust.switchToOfflineMode();
-        result.success(null);
-    }
-
-    private void switchBackToOnlineMode(final Result result) {
-        Adjust.switchBackToOnlineMode();
-        result.success(null);
-    }
-
-    private void setPushToken(final MethodCall call, final Result result) {
-        Map tokenParamsMap = (Map) call.arguments;
-        String pushToken = null;
-        if (tokenParamsMap.containsKey("pushToken")) {
-            pushToken = tokenParamsMap.get("pushToken").toString();
-        }
-        Adjust.setPushToken(pushToken, applicationContext);
-        result.success(null);
-    }
-
-    private void enable(final Result result) {
-        Adjust.enable();
-        result.success(null);
-    }
-    private void disable( final Result result) {
-        Adjust.disable();
-        result.success(null);
-    }
-
-    private void processDeeplink(final MethodCall call, final Result result) {
-        Map deeplinkMap = (Map) call.arguments;
-        if (deeplinkMap == null) {
-            return;
-        }
-
-        AdjustDeeplink adjustDeeplink = null;
-        if (deeplinkMap.containsKey("deeplink")) {
-            String deeplink = (String) deeplinkMap.get("deeplink");
-            adjustDeeplink = new AdjustDeeplink(Uri.parse(deeplink));
-            if (deeplinkMap.containsKey("referrer")) {
-                String referrer = (String) deeplinkMap.get("referrer");
-                adjustDeeplink.setReferrer(Uri.parse(referrer));
-            }
-        }
-
-        Adjust.processDeeplink(adjustDeeplink, applicationContext);
-        result.success(null);
-    }
-
-    private void isEnabled(final Result result) {
-        Adjust.isEnabled(applicationContext, new OnIsEnabledListener() {
-            @Override
-            public void onIsEnabledRead(boolean isEnabled) {
-                result.success(isEnabled);
-            }
-        });
-    }
-
-    private void getAdid(final Result result) {
-        Adjust.getAdid(new OnAdidReadListener() {
-            @Override
-            public void onAdidRead(String adid) {
-                result.success(adid);
-            }
-        });
-    }
-
-    private void getGoogleAdId(final Result result) {
-        Adjust.getGoogleAdId(applicationContext, new OnGoogleAdIdReadListener() {
-            @Override
-            public void onGoogleAdIdRead(String googleAdId) {
-                result.success(googleAdId);
-            }
-        });
-    }
-
-    private void getAmazonAdId(final Result result) {
-        Adjust.getAmazonAdId(applicationContext, new OnAmazonAdIdReadListener() {
-            @Override
-            public void onAmazonAdIdRead(String amazonAdId) {
-                result.success(amazonAdId);
-            }
-        });
-    }
-
-    private void gdprForgetMe(final Result result) {
-        Adjust.gdprForgetMe(applicationContext);
-        result.success(null);
-    }
-
-    private void getAttribution(final Result result) {
-        Adjust.getAttribution(new OnAttributionReadListener() {
-            @Override
-            public void onAttributionRead(AdjustAttribution attribution) {
-                HashMap<String, String> adjustAttributionMap = new HashMap<String, String>();
-                adjustAttributionMap.put("trackerToken", attribution.trackerToken);
-                adjustAttributionMap.put("trackerName", attribution.trackerName);
-                adjustAttributionMap.put("network", attribution.network);
-                adjustAttributionMap.put("campaign", attribution.campaign);
-                adjustAttributionMap.put("adgroup", attribution.adgroup);
-                adjustAttributionMap.put("creative", attribution.creative);
-                adjustAttributionMap.put("clickLabel", attribution.clickLabel);
-                adjustAttributionMap.put("costType", attribution.costType);
-                adjustAttributionMap.put("costAmount", attribution.costAmount != null ?
-                        attribution.costAmount.toString() : "");
-                adjustAttributionMap.put("costCurrency", attribution.costCurrency);
-                adjustAttributionMap.put("fbInstallReferrer", attribution.fbInstallReferrer);
-                if (attribution.jsonResponse != null) {
-                    adjustAttributionMap.put("jsonResponse", attribution.jsonResponse);
-                }
-                result.success(adjustAttributionMap);
-            }
-        });
-    }
-
-    private void getSdkVersion(final Result result) {
-        Adjust.getSdkVersion(new OnSdkVersionReadListener (){
-            @Override
-            public void onSdkVersionRead(String sdkVersion) {
-                result.success(sdkVersion);
-            }
-        });
-    }
-
-    private void setReferrer(final MethodCall call, final Result result) {
-        String referrer = null;
-        if (call.hasArgument("referrer")) {
-            referrer = (String) call.argument("referrer");
-        }
-        Adjust.setReferrer(referrer, applicationContext);
-        result.success(null);
-    }
-
-    private void addGlobalCallbackParameter(final MethodCall call, final Result result) {
-        String key = null;
-        String value = null;
-        if (call.hasArgument("key") && call.hasArgument("value")) {
-            key = (String) call.argument("key");
-            value = (String) call.argument("value");
-        }
-        Adjust.addGlobalCallbackParameter(key, value);
-        result.success(null);
-    }
-
-    private void addGlobalPartnerParameter(final MethodCall call, final Result result) {
-        String key = null;
-        String value = null;
-        if (call.hasArgument("key") && call.hasArgument("value")) {
-            key = (String) call.argument("key");
-            value = (String) call.argument("value");
-        }
-        Adjust.addGlobalPartnerParameter(key, value);
-        result.success(null);
-    }
-
-    private void removeGlobalCallbackParameter(final MethodCall call, final Result result) {
-        String key = null;
-        if (call.hasArgument("key")) {
-            key = (String) call.argument("key");
-        }
-        Adjust.removeGlobalCallbackParameter(key);
-        result.success(null);
-    }
-
-    private void removeGlobalPartnerParameter(final MethodCall call, final Result result) {
-        String key = null;
-        if (call.hasArgument("key")) {
-            key = (String) call.argument("key");
-        }
-        Adjust.removeGlobalPartnerParameter(key);
-        result.success(null);
-    }
-
-    private void removeGlobalCallbackParameters(final Result result) {
-        Adjust.removeGlobalCallbackParameters();
-        result.success(null);
-    }
-
-    private void removeGlobalPartnerParameters(final Result result) {
-        Adjust.removeGlobalPartnerParameters();
-        result.success(null);
-    }
-
     private void trackAdRevenue(final MethodCall call, final Result result) {
         Map adRevenueMap = (Map) call.arguments;
         if (adRevenueMap == null) {
@@ -957,6 +778,286 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
         Adjust.trackAdRevenue(adRevenue);
         result.success(null);
     }
+
+    private void trackThirdPartySharing(final MethodCall call, final Result result) {
+        Map thirdPartySharingMap = (Map) call.arguments;
+        if (thirdPartySharingMap == null) {
+            return;
+        }
+
+        Boolean isEnabled = null;
+        if (thirdPartySharingMap.containsKey("isEnabled")) {
+            isEnabled = (Boolean) thirdPartySharingMap.get("isEnabled");
+        }
+
+        // create third party sharing object
+        AdjustThirdPartySharing thirdPartySharing = new AdjustThirdPartySharing(isEnabled);
+
+        // granular options
+        if (thirdPartySharingMap.containsKey("granularOptions")) {
+            String strGranularOptions = (String) thirdPartySharingMap.get("granularOptions");
+            String[] arrayGranularOptions = strGranularOptions.split("__ADJ__", -1);
+            for (int i = 0; i < arrayGranularOptions.length; i += 3) {
+                thirdPartySharing.addGranularOption(
+                    arrayGranularOptions[i],
+                    arrayGranularOptions[i+1],
+                    arrayGranularOptions[i+2]);
+            }
+        }
+
+        // partner sharing settings
+        if (thirdPartySharingMap.containsKey("partnerSharingSettings")) {
+            String strPartnerSharingSettings = (String) thirdPartySharingMap.get("partnerSharingSettings");
+            String[] arrayPartnerSharingSettings = strPartnerSharingSettings.split("__ADJ__", -1);
+            for (int i = 0; i < arrayPartnerSharingSettings.length; i += 3) {
+                thirdPartySharing.addPartnerSharingSetting(
+                    arrayPartnerSharingSettings[i],
+                    arrayPartnerSharingSettings[i+1],
+                    Boolean.parseBoolean(arrayPartnerSharingSettings[i+2]));
+            }
+        }
+
+        // track third party sharing
+        Adjust.trackThirdPartySharing(thirdPartySharing);
+        result.success(null);
+    }
+
+    private void trackMeasurementConsent(final MethodCall call, final Result result) {
+        Map measurementConsentMap = (Map) call.arguments;
+        if (!measurementConsentMap.containsKey("measurementConsent")) {
+            result.error("0", "Arguments null or wrong (missing argument of 'trackMeasurementConsent' method.", null);
+            return;
+        }
+
+        boolean measurementConsent = (boolean) measurementConsentMap.get("measurementConsent");
+        Adjust.trackMeasurementConsent(measurementConsent);
+        result.success(null);
+    }
+
+    private void processDeeplink(final MethodCall call, final Result result) {
+        Map deeplinkMap = (Map) call.arguments;
+        if (deeplinkMap == null) {
+            return;
+        }
+
+        AdjustDeeplink adjustDeeplink = null;
+        if (deeplinkMap.containsKey("deeplink")) {
+            String deeplink = (String) deeplinkMap.get("deeplink");
+            adjustDeeplink = new AdjustDeeplink(Uri.parse(deeplink));
+            if (deeplinkMap.containsKey("referrer")) {
+                String referrer = (String) deeplinkMap.get("referrer");
+                adjustDeeplink.setReferrer(Uri.parse(referrer));
+            }
+        }
+
+        Adjust.processDeeplink(adjustDeeplink, applicationContext);
+        result.success(null);
+    }
+
+    private void processAndResolveDeeplink(final MethodCall call, final Result result) {
+        Map deeplinkMap = (Map) call.arguments;
+        if (deeplinkMap == null) {
+            return;
+        }
+
+        AdjustDeeplink adjustDeeplink = null;
+        if (deeplinkMap.containsKey("deeplink")) {
+            String deeplink = (String) deeplinkMap.get("deeplink");
+            adjustDeeplink = new AdjustDeeplink(Uri.parse(deeplink));
+            if (deeplinkMap.containsKey("referrer")) {
+                String referrer = (String) deeplinkMap.get("referrer");
+                adjustDeeplink.setReferrer(Uri.parse(referrer));
+            }
+        }
+
+        Adjust.processAndResolveDeeplink(adjustDeeplink, applicationContext, new OnDeeplinkResolvedListener() {
+            @Override
+            public void onDeeplinkResolved(String resolvedLink) {
+                result.success(resolvedLink);
+            }
+        });
+    }
+
+    private void setPushToken(final MethodCall call, final Result result) {
+        Map tokenParamsMap = (Map) call.arguments;
+        String pushToken = null;
+        if (tokenParamsMap.containsKey("pushToken")) {
+            pushToken = tokenParamsMap.get("pushToken").toString();
+        }
+        Adjust.setPushToken(pushToken, applicationContext);
+        result.success(null);
+    }
+
+    private void gdprForgetMe(final Result result) {
+        Adjust.gdprForgetMe(applicationContext);
+        result.success(null);
+    }
+
+    private void enable(final Result result) {
+        Adjust.enable();
+        result.success(null);
+    }
+    private void disable( final Result result) {
+        Adjust.disable();
+        result.success(null);
+    }
+
+    private void switchToOfflineMode(final Result result) {
+        Adjust.switchToOfflineMode();
+        result.success(null);
+    }
+
+    private void switchBackToOnlineMode(final Result result) {
+        Adjust.switchBackToOnlineMode();
+        result.success(null);
+    }
+
+    private void addGlobalCallbackParameter(final MethodCall call, final Result result) {
+        String key = null;
+        String value = null;
+        if (call.hasArgument("key") && call.hasArgument("value")) {
+            key = (String) call.argument("key");
+            value = (String) call.argument("value");
+        }
+        Adjust.addGlobalCallbackParameter(key, value);
+        result.success(null);
+    }
+
+    private void addGlobalPartnerParameter(final MethodCall call, final Result result) {
+        String key = null;
+        String value = null;
+        if (call.hasArgument("key") && call.hasArgument("value")) {
+            key = (String) call.argument("key");
+            value = (String) call.argument("value");
+        }
+        Adjust.addGlobalPartnerParameter(key, value);
+        result.success(null);
+    }
+
+    private void removeGlobalCallbackParameter(final MethodCall call, final Result result) {
+        String key = null;
+        if (call.hasArgument("key")) {
+            key = (String) call.argument("key");
+        }
+        Adjust.removeGlobalCallbackParameter(key);
+        result.success(null);
+    }
+
+    private void removeGlobalPartnerParameter(final MethodCall call, final Result result) {
+        String key = null;
+        if (call.hasArgument("key")) {
+            key = (String) call.argument("key");
+        }
+        Adjust.removeGlobalPartnerParameter(key);
+        result.success(null);
+    }
+
+    private void removeGlobalCallbackParameters(final Result result) {
+        Adjust.removeGlobalCallbackParameters();
+        result.success(null);
+    }
+
+    private void removeGlobalPartnerParameters(final Result result) {
+        Adjust.removeGlobalPartnerParameters();
+        result.success(null);
+    }
+
+    private void endFirstSessionDelay(final MethodCall call, final Result result) {
+        Adjust.endFirstSessionDelay();
+    }
+
+    private void enableCoppaComplianceInDelay(final MethodCall call, final Result result) {
+        Adjust.enableCoppaComplianceInDelay();
+    }
+
+    private void disableCoppaComplianceInDelay(final MethodCall call, final Result result) {
+        Adjust.disableCoppaComplianceInDelay();
+    }
+
+    private void enablePlayStoreKidsComplianceInDelay(final MethodCall call, final Result result) {
+        Adjust.enablePlayStoreKidsComplianceInDelay();
+    }
+
+    private void disablePlayStoreKidsComplianceInDelay(final MethodCall call, final Result result) {
+        Adjust.disablePlayStoreKidsComplianceInDelay();
+    }
+
+    private void setExternalDeviceIdInDelay(final MethodCall call, final Result result) {
+        Map externalDeviceMap = (Map) call.arguments;
+        String externalDeviceId = null;
+        if (externalDeviceMap.containsKey("externalDeviceId")) {
+            externalDeviceId = externalDeviceMap.get("externalDeviceId").toString();
+        }
+        Adjust.setExternalDeviceIdInDelay(externalDeviceId);
+        result.success(null);
+    }
+
+    private void isEnabled(final Result result) {
+        Adjust.isEnabled(applicationContext, new OnIsEnabledListener() {
+            @Override
+            public void onIsEnabledRead(boolean isEnabled) {
+                result.success(isEnabled);
+            }
+        });
+    }
+
+    private void getAdid(final Result result) {
+        Adjust.getAdid(new OnAdidReadListener() {
+            @Override
+            public void onAdidRead(String adid) {
+                result.success(adid);
+            }
+        });
+    }
+
+    private void getAttribution(final Result result) {
+        Adjust.getAttribution(new OnAttributionReadListener() {
+            @Override
+            public void onAttributionRead(AdjustAttribution attribution) {
+                HashMap<String, String> adjustAttributionMap = new HashMap<String, String>();
+                adjustAttributionMap.put("trackerToken", attribution.trackerToken);
+                adjustAttributionMap.put("trackerName", attribution.trackerName);
+                adjustAttributionMap.put("network", attribution.network);
+                adjustAttributionMap.put("campaign", attribution.campaign);
+                adjustAttributionMap.put("adgroup", attribution.adgroup);
+                adjustAttributionMap.put("creative", attribution.creative);
+                adjustAttributionMap.put("clickLabel", attribution.clickLabel);
+                adjustAttributionMap.put("costType", attribution.costType);
+                adjustAttributionMap.put("costAmount", attribution.costAmount != null ?
+                        attribution.costAmount.toString() : "");
+                adjustAttributionMap.put("costCurrency", attribution.costCurrency);
+                adjustAttributionMap.put("fbInstallReferrer", attribution.fbInstallReferrer);
+                if (attribution.jsonResponse != null) {
+                    adjustAttributionMap.put("jsonResponse", attribution.jsonResponse);
+                }
+                result.success(adjustAttributionMap);
+            }
+        });
+    }
+
+    private void getLastDeeplink(final Result result) {
+        Adjust.getLastDeeplink(applicationContext, new OnLastDeeplinkReadListener() {
+            @Override
+            public void onLastDeeplinkRead(Uri deeplink) {
+                if (deeplink != null) {
+                    result.success(deeplink.toString());
+                } else {
+                    result.success("");
+                }
+            }
+        });
+    }
+
+    private void getSdkVersion(final Result result) {
+        Adjust.getSdkVersion(new OnSdkVersionReadListener() {
+            @Override
+            public void onSdkVersionRead(String sdkVersion) {
+                result.success(sdkVersion);
+            }
+        });
+    }
+
+    // android only
 
     private void trackPlayStoreSubscription(final MethodCall call, final Result result) {
         Map subscriptionMap = (Map) call.arguments;
@@ -1054,74 +1155,6 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
         // track subscription
         Adjust.trackPlayStoreSubscription(subscription);
         result.success(null);
-    }
-
-    private void trackThirdPartySharing(final MethodCall call, final Result result) {
-        Map thirdPartySharingMap = (Map) call.arguments;
-        if (thirdPartySharingMap == null) {
-            return;
-        }
-
-        Boolean isEnabled = null;
-        if (thirdPartySharingMap.containsKey("isEnabled")) {
-            isEnabled = (Boolean) thirdPartySharingMap.get("isEnabled");
-        }
-
-        // create third party sharing object
-        AdjustThirdPartySharing thirdPartySharing = new AdjustThirdPartySharing(isEnabled);
-
-        // granular options
-        if (thirdPartySharingMap.containsKey("granularOptions")) {
-            String strGranularOptions = (String) thirdPartySharingMap.get("granularOptions");
-            String[] arrayGranularOptions = strGranularOptions.split("__ADJ__", -1);
-            for (int i = 0; i < arrayGranularOptions.length; i += 3) {
-                thirdPartySharing.addGranularOption(
-                    arrayGranularOptions[i],
-                    arrayGranularOptions[i+1],
-                    arrayGranularOptions[i+2]);
-            }
-        }
-
-        // partner sharing settings
-        if (thirdPartySharingMap.containsKey("partnerSharingSettings")) {
-            String strPartnerSharingSettings = (String) thirdPartySharingMap.get("partnerSharingSettings");
-            String[] arrayPartnerSharingSettings = strPartnerSharingSettings.split("__ADJ__", -1);
-            for (int i = 0; i < arrayPartnerSharingSettings.length; i += 3) {
-                thirdPartySharing.addPartnerSharingSetting(
-                    arrayPartnerSharingSettings[i],
-                    arrayPartnerSharingSettings[i+1],
-                    Boolean.parseBoolean(arrayPartnerSharingSettings[i+2]));
-            }
-        }
-
-        // track third party sharing
-        Adjust.trackThirdPartySharing(thirdPartySharing);
-        result.success(null);
-    }
-
-    private void trackMeasurementConsent(final MethodCall call, final Result result) {
-        Map measurementConsentMap = (Map) call.arguments;
-        if (!measurementConsentMap.containsKey("measurementConsent")) {
-            result.error("0", "Arguments null or wrong (missing argument of 'trackMeasurementConsent' method.", null);
-            return;
-        }
-
-        boolean measurementConsent = (boolean) measurementConsentMap.get("measurementConsent");
-        Adjust.trackMeasurementConsent(measurementConsent);
-        result.success(null);
-    }
-
-    private void getLastDeeplink(final Result result) {
-        Adjust.getLastDeeplink(applicationContext, new OnLastDeeplinkReadListener() {
-            @Override
-            public void onLastDeeplinkRead(Uri deeplink) {
-                if (deeplink != null) {
-                    result.success(deeplink.toString());
-                } else {
-                    result.success("");
-                }
-            }
-        });
     }
 
     private void verifyPlayStorePurchase(final MethodCall call, final Result result) {
@@ -1255,50 +1288,34 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
         });
     }
 
-    private void processAndResolveDeeplink(final MethodCall call, final Result result) {
-        Map deeplinkMap = (Map) call.arguments;
-        if (deeplinkMap == null) {
-            return;
+    private void setReferrer(final MethodCall call, final Result result) {
+        String referrer = null;
+        if (call.hasArgument("referrer")) {
+            referrer = (String) call.argument("referrer");
         }
+        Adjust.setReferrer(referrer, applicationContext);
+        result.success(null);
+    }
 
-        AdjustDeeplink adjustDeeplink = null;
-        if (deeplinkMap.containsKey("deeplink")) {
-            String deeplink = (String) deeplinkMap.get("deeplink");
-            adjustDeeplink = new AdjustDeeplink(Uri.parse(deeplink));
-            if (deeplinkMap.containsKey("referrer")) {
-                String referrer = (String) deeplinkMap.get("referrer");
-                adjustDeeplink.setReferrer(Uri.parse(referrer));
-            }
-        }
-
-        Adjust.processAndResolveDeeplink(adjustDeeplink, applicationContext, new OnDeeplinkResolvedListener() {
+    private void getGoogleAdId(final Result result) {
+        Adjust.getGoogleAdId(applicationContext, new OnGoogleAdIdReadListener() {
             @Override
-            public void onDeeplinkResolved(String resolvedLink) {
-                result.success(resolvedLink);
+            public void onGoogleAdIdRead(String googleAdId) {
+                result.success(googleAdId);
             }
         });
     }
 
-    // ios only methods
-    private void getIdfa(final Result result) {
-        result.success("Error. No getIdfa on Android platform!");
+    private void getAmazonAdId(final Result result) {
+        Adjust.getAmazonAdId(applicationContext, new OnAmazonAdIdReadListener() {
+            @Override
+            public void onAmazonAdIdRead(String amazonAdId) {
+                result.success(amazonAdId);
+            }
+        });
     }
 
-    private void getIdfv(final Result result) {
-        result.success("Error. No getIdfv on Android platform!");
-    }
-
-    private void requestAppTrackingAuthorization(final Result result) {
-        result.success(-1);
-    }
-
-    private void updateSkanConversionValue(final Result result) {
-        result.success("Error. No updateSkanConversionValue on Android platform!");
-    }
-
-    private void getAppTrackingAuthorizationStatus(final MethodCall call, final Result result) {
-        result.success(-1);
-    }
+    // ios only
 
     private void trackAppStoreSubscription(final Result result) {
         result.success("Error. No trackAppStoreSubscription on Android platform!");
@@ -1312,37 +1329,28 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
         result.success("Error. No verifyAndTrackAppStorePurchase on Android platform!");
     }
 
-    private void endFirstSessionDelay(final MethodCall call, final Result result){
-        Adjust.endFirstSessionDelay();
+    private void requestAppTrackingAuthorization(final Result result) {
+        result.success(-1);
     }
 
-    private void enableCoppaComplianceInDelay(final MethodCall call, final Result result){
-        Adjust.enableCoppaComplianceInDelay();
+    private void updateSkanConversionValue(final Result result) {
+        result.success("Error. No updateSkanConversionValue on Android platform!");
     }
 
-    private void disableCoppaComplianceInDelay(final MethodCall call, final Result result){
-        Adjust.disableCoppaComplianceInDelay();
+    private void getIdfa(final Result result) {
+        result.success("Error. No getIdfa on Android platform!");
     }
 
-    private void enablePlayStoreKidsComplianceInDelay(final MethodCall call, final Result result){
-        Adjust.enablePlayStoreKidsComplianceInDelay();
+    private void getIdfv(final Result result) {
+        result.success("Error. No getIdfv on Android platform!");
     }
 
-    private void disablePlayStoreKidsComplianceInDelay(final MethodCall call, final Result result){
-        Adjust.disablePlayStoreKidsComplianceInDelay();
+    private void getAppTrackingAuthorizationStatus(final MethodCall call, final Result result) {
+        result.success(-1);
     }
 
-    private void setExternalDeviceIdInDelay(final MethodCall call, final Result result){
-        Map externalDeviceMap = (Map) call.arguments;
-        String externalDeviceId = null;
-        if (externalDeviceMap.containsKey("externalDeviceId")) {
-            externalDeviceId = externalDeviceMap.get("externalDeviceId").toString();
-        }
-        Adjust.setExternalDeviceIdInDelay(externalDeviceId);
-        result.success(null);
-    }
+    // testing only
 
-    // used for testing only
     private void onResume(final Result result) {
         Adjust.onResume();
         result.success(null);
@@ -1381,11 +1389,6 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
         if (testOptionsMap.containsKey("purchaseVerificationPath")) {
             testOptions.purchaseVerificationPath = (String) testOptionsMap.get("purchaseVerificationPath");
         }
-        // kept for the record
-        // not needed anymore with test options extraction
-        // if (testOptionsMap.containsKey("useTestConnectionOptions")) {
-        //     testOptions.useTestConnectionOptions = testOptionsMap.get("useTestConnectionOptions").toString().equals("true");
-        // }
         if (testOptionsMap.containsKey("noBackoffWait")) {
             testOptions.noBackoffWait = testOptionsMap.get("noBackoffWait").toString().equals("true");
         }

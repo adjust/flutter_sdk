@@ -1,15 +1,16 @@
-### Version 5.4.0 (Jun 6th 2025)
+### Version 5.4.0 (xxth June 2025)
 #### Added
-- Added support for configuring store information via the `AdjustStoreInfo` object. You can now specify the store name and store app ID assigning `StoreInfo` property on your `AdjustConfig` instance. This enables the SDK to record the intended app store source during initialization.
-- Added ability to initialize the SDK for the first session in delayed mode. You can start the SDK in the delayed mode by setting the `IsFirstSessionDelayEnabled` property on your `AdjustConfig` instance to `true`. To end the delay, make sure to call `EndFirstSessionDelay` method of `Adjust` instance. For more details about this feature, refer to the [official documentation](https://dev.adjust.com/en/sdk/unity/features/first-session-delay).
-- Added ability to send organic search referrer together with deep link. You can send it by setting the `Referrer` property of the `AdjustDeeplink` instance.
-- Added ability to disable SDK's interaction with `AppTrackingTransparency.framework` API. You can disable it by setting the `IsAppTrackingTransparencyUsageEnabled` property on your `AdjustConfig` instance to `false`.
+- Added support for configuring store information via the `AdjustStoreInfo` object. You can now specify the store name and store app ID by assigning the `storeInfo` member of your `AdjustConfig` instance. This enables the SDK to record the intended app store source during initialization. For more details about this feature, refer to the [official documentation](https://dev.adjust.com/en/sdk/flutter/setup/store-type).
+- Added ability to initialize the SDK for the first session in delayed mode. You can start the SDK in the delayed mode by setting the `isFirstSessionDelayEnabled` member on your `AdjustConfig` instance to `true`. To end the delay, make sure to call `endFirstSessionDelay` method of `Adjust` instance. For more details about this feature, refer to the [official documentation](https://dev.adjust.com/en/sdk/flutter/features/first-session-delay).
+- Added ability to send organic search referrer together with deep link. You can send it via `referrer` member of the `AdjustDeeplink` instance. For more details about this feature, refer to the [official documentation](https://dev.adjust.com/en/sdk/flutter/features/deep-links#handling-deeplinks-with-referrer).
+- Added ability to disable SDK's interaction with `AppTrackingTransparency.framework` API. You can disable it by setting the `isAppTrackingTransparencyUsageEnabled` member on your `AdjustConfig` instance to `false`. For more details about this feature, refer to the [official documentation](https://dev.adjust.com/en/sdk/flutter/features/att#disable-att-framework).
 
 #### Native SDKs
 - [iOS@v5.4.0][ios_sdk_v5.4.0]
 - [Android@v5.4.0][android_sdk_v5.4.0]
 
 ---
+
 ### Version 5.1.1 (March 5th 2025)
 #### Fixed
 - Fixed crashes happening in cases where native iOS `jsonResponse` is `nil` (https://github.com/adjust/flutter_sdk/pull/160).
