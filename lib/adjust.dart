@@ -24,9 +24,11 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter5.1.1';
+  static const String _sdkPrefix = 'flutter5.4.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
+
+  // common
 
   static void initSdk(AdjustConfig config) {
     config.sdkPrefix = _sdkPrefix;
@@ -35,6 +37,38 @@ class Adjust {
 
   static void trackEvent(AdjustEvent event) {
     _channel.invokeMethod('trackEvent', event.toMap);
+  }
+
+  static void trackAdRevenue(AdjustAdRevenue adRevenue) {
+    _channel.invokeMethod('trackAdRevenue', adRevenue.toMap);
+  }
+
+  static void trackThirdPartySharing(
+      AdjustThirdPartySharing thirdPartySharing) {
+    _channel.invokeMethod('trackThirdPartySharing', thirdPartySharing.toMap);
+  }
+
+  static void trackMeasurementConsent(bool measurementConsent) {
+    _channel.invokeMethod(
+        'trackMeasurementConsent', {'measurementConsent': measurementConsent});
+  }
+
+  static void processDeeplink(AdjustDeeplink deeplink) {
+    _channel.invokeMethod('processDeeplink', deeplink.toMap);
+  }
+
+  static Future<String?> processAndResolveDeeplink(AdjustDeeplink deeplink) async {
+    final resolvedLink = 
+      await _channel.invokeMethod('processAndResolveDeeplink', deeplink.toMap);
+    return resolvedLink;
+  }
+
+  static void setPushToken(String token) {
+    _channel.invokeMethod('setPushToken', {'pushToken': token});
+  }
+
+  static void gdprForgetMe() {
+    _channel.invokeMethod('gdprForgetMe');
   }
 
   static void enable() {
@@ -51,71 +85,6 @@ class Adjust {
 
   static void switchBackToOnlineMode() {
     _channel.invokeMethod('switchBackToOnlineMode');
-  }
-
-  static void setPushToken(String token) {
-    _channel.invokeMethod('setPushToken', {'pushToken': token});
-  }
-
-  static void processDeeplink(AdjustDeeplink deeplink) {
-    _channel.invokeMethod('processDeeplink', {'deeplink': deeplink.deeplink});
-  }
-
-  static void gdprForgetMe() {
-    _channel.invokeMethod('gdprForgetMe');
-  }
-
-  static Future<bool> isEnabled() async {
-    final bool isEnabled = await _channel.invokeMethod('isEnabled');
-    return isEnabled;
-  }
-
-  static Future<String?> getAdid() async {
-    final String? adid = await _channel.invokeMethod('getAdid');
-    return adid;
-  }
-
-  static Future<String?> getIdfa() async {
-    final String? idfa = await _channel.invokeMethod('getIdfa');
-    return idfa;
-  }
-
-  static Future<String?> getIdfv() async {
-    final String? idfv = await _channel.invokeMethod('getIdfv');
-    return idfv;
-  }
-
-  static Future<String?> getAmazonAdId() async {
-    final String? amazonAdId = await _channel.invokeMethod('getAmazonAdId');
-    return amazonAdId;
-  }
-
-  static Future<String?> getGoogleAdId() async {
-    final String? googleAdId = await _channel.invokeMethod('getGoogleAdId');
-    return googleAdId;
-  }
-
-  static Future<num> requestAppTrackingAuthorization() async {
-    final num status = await _channel
-        .invokeMethod('requestAppTrackingAuthorization');
-    return status;
-  }
-
-  static Future<int> getAppTrackingAuthorizationStatus() async {
-    final int authorizationStatus =
-        await _channel.invokeMethod('getAppTrackingAuthorizationStatus');
-    return authorizationStatus;
-  }
-
-  static Future<AdjustAttribution> getAttribution() async {
-    final dynamic attributionMap =
-        await _channel.invokeMethod('getAttribution');
-    return AdjustAttribution.fromMap(attributionMap);
-  }
-
-  static Future<String> getSdkVersion() async {
-    final String sdkVersion = await _channel.invokeMethod('getSdkVersion');
-    return _sdkPrefix + '@' + sdkVersion;
   }
 
   static void addGlobalCallbackParameter(String key, String value) {
@@ -144,37 +113,36 @@ class Adjust {
     _channel.invokeMethod('removeGlobalPartnerParameters');
   }
 
-  static void trackAdRevenue(AdjustAdRevenue adRevenue) {
-    _channel.invokeMethod('trackAdRevenue', adRevenue.toMap);
+  static void endFirstSessionDelay() {
+    _channel.invokeMethod('endFirstSessionDelay');
   }
 
-  static void trackAppStoreSubscription(
-      AdjustAppStoreSubscription subscription) {
-    _channel.invokeMethod('trackAppStoreSubscription', subscription.toMap);
+  static void enableCoppaComplianceInDelay() {
+    _channel.invokeMethod('enableCoppaComplianceInDelay');
   }
 
-  static void trackPlayStoreSubscription(
-      AdjustPlayStoreSubscription subscription) {
-    _channel.invokeMethod('trackPlayStoreSubscription', subscription.toMap);
+  static void disableCoppaComplianceInDelay() {
+    _channel.invokeMethod('disableCoppaComplianceInDelay');
   }
 
-  static void trackThirdPartySharing(
-      AdjustThirdPartySharing thirdPartySharing) {
-    _channel.invokeMethod('trackThirdPartySharing', thirdPartySharing.toMap);
+  static void setExternalDeviceIdInDelay(String externalDeviceId) {
+    _channel.invokeMethod('setExternalDeviceIdInDelay',{'externalDeviceId': externalDeviceId});
   }
 
-  static void trackMeasurementConsent(bool measurementConsent) {
-    _channel.invokeMethod(
-        'trackMeasurementConsent', {'measurementConsent': measurementConsent});
+  static Future<bool> isEnabled() async {
+    final bool isEnabled = await _channel.invokeMethod('isEnabled');
+    return isEnabled;
   }
 
-  static Future<String?> updateSkanConversionValue(int conversionValue, String coarseValue, bool lockWindow) async {
-    final String? error = await _channel.invokeMethod('updateSkanConversionValue', {
-      'conversionValue': conversionValue,
-      'coarseValue': coarseValue,
-      'lockWindow': lockWindow
-    });
-    return error;
+  static Future<String?> getAdid() async {
+    final String? adid = await _channel.invokeMethod('getAdid');
+    return adid;
+  }
+
+  static Future<AdjustAttribution> getAttribution() async {
+    final dynamic attributionMap =
+        await _channel.invokeMethod('getAttribution');
+    return AdjustAttribution.fromMap(attributionMap);
   }
 
   static Future<String?> getLastDeeplink() async {
@@ -182,18 +150,16 @@ class Adjust {
     return deeplink;
   }
 
-  static Future<AdjustPurchaseVerificationResult?> verifyPlayStorePurchase(
-    AdjustPlayStorePurchase purchase) async {
-    final dynamic playStorePurchaseMap = 
-      await _channel.invokeMethod('verifyPlayStorePurchase', purchase.toMap);
-    return AdjustPurchaseVerificationResult.fromMap(playStorePurchaseMap);
+  static Future<String> getSdkVersion() async {
+    final String sdkVersion = await _channel.invokeMethod('getSdkVersion');
+    return _sdkPrefix + '@' + sdkVersion;
   }
 
-  static Future<AdjustPurchaseVerificationResult?> verifyAndTrackPlayStorePurchase(
-      AdjustEvent event) async {
-    final dynamic playStorePurchaseMap =
-      await _channel.invokeMethod('verifyAndTrackPlayStorePurchase', event.toMap);
-    return AdjustPurchaseVerificationResult.fromMap(playStorePurchaseMap);
+  // ios only
+
+  static void trackAppStoreSubscription(
+      AdjustAppStoreSubscription subscription) {
+    _channel.invokeMethod('trackAppStoreSubscription', subscription.toMap);
   }
 
   static Future<AdjustPurchaseVerificationResult?> verifyAppStorePurchase(
@@ -210,17 +176,77 @@ class Adjust {
     return AdjustPurchaseVerificationResult.fromMap(appStorePurchaseMap);
   }
 
-  static Future<String?> processAndResolveDeeplink(AdjustDeeplink deeplink) async {
-    final resolvedLink = 
-      await _channel.invokeMethod('processAndResolveDeeplink', {'deeplink': deeplink.deeplink});
-    return resolvedLink;
+  static Future<num> requestAppTrackingAuthorization() async {
+    final num status = await _channel
+        .invokeMethod('requestAppTrackingAuthorization');
+    return status;
+  }
+
+  static Future<String?> updateSkanConversionValue(int conversionValue, String coarseValue, bool lockWindow) async {
+    final String? error = await _channel.invokeMethod('updateSkanConversionValue', {
+      'conversionValue': conversionValue,
+      'coarseValue': coarseValue,
+      'lockWindow': lockWindow
+    });
+    return error;
+  }
+
+  static Future<String?> getIdfa() async {
+    final String? idfa = await _channel.invokeMethod('getIdfa');
+    return idfa;
+  }
+
+  static Future<String?> getIdfv() async {
+    final String? idfv = await _channel.invokeMethod('getIdfv');
+    return idfv;
+  }
+
+  static Future<int> getAppTrackingAuthorizationStatus() async {
+    final int authorizationStatus =
+        await _channel.invokeMethod('getAppTrackingAuthorizationStatus');
+    return authorizationStatus;
+  }
+
+  // android only
+
+  static void trackPlayStoreSubscription(
+      AdjustPlayStoreSubscription subscription) {
+    _channel.invokeMethod('trackPlayStoreSubscription', subscription.toMap);
+  }
+
+  static Future<AdjustPurchaseVerificationResult?> verifyPlayStorePurchase(
+    AdjustPlayStorePurchase purchase) async {
+    final dynamic playStorePurchaseMap = 
+      await _channel.invokeMethod('verifyPlayStorePurchase', purchase.toMap);
+    return AdjustPurchaseVerificationResult.fromMap(playStorePurchaseMap);
+  }
+
+  static Future<AdjustPurchaseVerificationResult?> verifyAndTrackPlayStorePurchase(
+      AdjustEvent event) async {
+    final dynamic playStorePurchaseMap =
+      await _channel.invokeMethod('verifyAndTrackPlayStorePurchase', event.toMap);
+    return AdjustPurchaseVerificationResult.fromMap(playStorePurchaseMap);
+  }
+
+  static void enablePlayStoreKidsComplianceInDelay() {
+    _channel.invokeMethod('enablePlayStoreKidsComplianceInDelay');
+  }
+
+  static void disablePlayStoreKidsComplianceInDelay() {
+    _channel.invokeMethod('disablePlayStoreKidsComplianceInDelay');
+  }
+
+  static Future<String?> getAmazonAdId() async {
+    final String? amazonAdId = await _channel.invokeMethod('getAmazonAdId');
+    return amazonAdId;
+  }
+
+  static Future<String?> getGoogleAdId() async {
+    final String? googleAdId = await _channel.invokeMethod('getGoogleAdId');
+    return googleAdId;
   }
 
   // for testing purposes only, do not use in production!
-  @visibleForTesting
-  static void setTestOptions(final dynamic testOptions) {
-    _channel.invokeMethod('setTestOptions', testOptions);
-  }
 
   @visibleForTesting
   static void onResume() {
@@ -230,5 +256,10 @@ class Adjust {
   @visibleForTesting
   static void onPause() {
     _channel.invokeMethod('onPause');
+  }
+
+  @visibleForTesting
+  static void setTestOptions(final dynamic testOptions) {
+    _channel.invokeMethod('setTestOptions', testOptions);
   }
 }

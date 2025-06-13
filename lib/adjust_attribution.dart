@@ -18,7 +18,7 @@ class AdjustAttribution {
   final num? costAmount;
   final String? costCurrency;
   final String? jsonResponse;
-  // Android only
+  // android only
   final String? fbInstallReferrer;
 
   AdjustAttribution({

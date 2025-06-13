@@ -13,6 +13,7 @@ import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
+import 'package:adjust_sdk/adjust_store_info.dart';
 import 'package:flutter/services.dart';
 
 enum AdjustLogLevel { verbose, debug, info, warn, error, suppress }
@@ -53,6 +54,8 @@ class AdjustConfig {
   bool? isCoppaComplianceEnabled;
   bool? isPlayStoreKidsComplianceEnabled;
   bool? isDeferredDeeplinkOpeningEnabled;
+  bool? isFirstSessionDelayEnabled;
+  bool? isAppTrackingTransparencyUsageEnabled;
 
   num? attConsentWaitingInterval;
   num? eventDeduplicationIdsMaxSize;
@@ -70,6 +73,7 @@ class AdjustConfig {
 
   AdjustLogLevel? logLevel;
   AttributionCallback? attributionCallback;
+  AdjustStoreInfo? storeInfo;
   SessionSuccessCallback? sessionSuccessCallback;
   SessionFailureCallback? sessionFailureCallback;
   EventSuccessCallback? eventSuccessCallback;
@@ -175,6 +179,9 @@ class AdjustConfig {
     if (fbAppId != null) {
       configMap['fbAppId'] = fbAppId;
     }
+    if (storeInfo != null) {
+      configMap['storeInfo'] = json.encode(storeInfo!.toMap);
+    }
     if (_urlStrategyDomains.isEmpty != true ) {
       configMap['urlStrategyDomains'] = json.encode(_urlStrategyDomains);
     }
@@ -201,6 +208,12 @@ class AdjustConfig {
     }
     if (isCoppaComplianceEnabled != null) {
       configMap['isCoppaComplianceEnabled'] = isCoppaComplianceEnabled.toString();
+    }
+    if (isFirstSessionDelayEnabled != null) {
+      configMap['isFirstSessionDelayEnabled'] = isFirstSessionDelayEnabled.toString();
+    }
+    if (isAppTrackingTransparencyUsageEnabled != null) {
+      configMap['isAppTrackingTransparencyUsageEnabled'] = isAppTrackingTransparencyUsageEnabled.toString();
     }
     if (isDeviceIdsReadingOnceEnabled != null) {
       configMap['isDeviceIdsReadingOnceEnabled'] = isDeviceIdsReadingOnceEnabled.toString();

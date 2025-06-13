@@ -54,5 +54,5 @@ flutter {
 }
 
 dependencies {
-    implementation 'com.adjust.sdk:adjust-android:5.1.0'
+    implementation 'com.adjust.sdk:adjust-android:5.4.0'
 }

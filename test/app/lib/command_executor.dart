@@ -25,6 +25,7 @@ import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
 import 'package:adjust_sdk/adjust_purchase_verification_result.dart';
 import 'package:adjust_sdk/adjust_deeplink.dart';
+import 'package:adjust_sdk/adjust_store_info.dart';
 import 'package:test_app/command.dart';
 import 'package:test_lib/test_lib.dart';
 
@@ -128,6 +129,18 @@ class CommandExecutor {
         break;
       case 'verifyTrack':
         _verifyTrack();
+        break;
+      case 'endFirstSessionDelay':
+        _endFirstSessionDelay();
+        break;
+      case 'coppaComplianceInDelay':
+        _coppaComplianceInDelay();
+        break;
+      case 'playStoreKidsComplianceInDelay':
+        _playStoreKidsComplianceInDelay();
+        break;
+      case 'externalDeviceIdInDelay':
+        _externalDeviceIdInDelay();
         break;
       case 'processDeeplink':
         _processDeeplink();
@@ -271,6 +284,23 @@ class CommandExecutor {
       _savedConfigs.putIfAbsent(configNumber, () => adjustConfig);
     }
 
+    if (_command.containsParameter("storeName") && _command.containsParameter("storeAppId"))
+    {
+      var storeName = _command.getFirstParameterValue("storeName");
+      var storeAppId = _command.getFirstParameterValue("storeAppId");
+      AdjustStoreInfo storeInfo = new AdjustStoreInfo(storeName);
+      storeInfo.storeAppId = storeAppId;
+
+      adjustConfig!.storeInfo = storeInfo;
+    }
+
+    if (_command.containsParameter('firstSessionDelayEnabled')) {
+      if(_command.getFirstParameterValue('firstSessionDelayEnabled') ==
+          'true'){
+        adjustConfig!.isFirstSessionDelayEnabled = true;
+      }
+    }
+
     if (_command.containsParameter('logLevel')) {
       String? logLevelString = _command.getFirstParameterValue('logLevel');
       AdjustLogLevel? logLevel;
@@ -345,6 +375,12 @@ class CommandExecutor {
     if (_command.containsParameter('allowIdfaReading')) {
       if(_command.getFirstParameterValue('allowIdfaReading') == 'false') {
         adjustConfig!.isIdfaReadingEnabled = false;
+      }
+    }
+
+    if (_command.containsParameter('allowAttUsage')) {
+      if(_command.getFirstParameterValue('allowAttUsage') == 'false') {
+        adjustConfig!.isAppTrackingTransparencyUsageEnabled = false;
       }
     }
 
@@ -635,7 +671,9 @@ class CommandExecutor {
 
   void _openDeeplink() {
     String deeplink = _command.getFirstParameterValue('deeplink')!;
+    String? referrer = _command.getFirstParameterValue('referrer');
     AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplink);
+    adjustDeeplink!.referrer = referrer;
     Adjust.processDeeplink(adjustDeeplink);
   }
 
@@ -940,9 +978,40 @@ class CommandExecutor {
     _savedEvents.remove(eventNumber);
   }
 
+  void _endFirstSessionDelay(){
+    Adjust.endFirstSessionDelay();
+  }
+
+  void _coppaComplianceInDelay(){
+    bool isEnabled = _command.getFirstParameterValue('isEnabled') == 'true';
+    if(isEnabled) {
+      Adjust.enableCoppaComplianceInDelay();
+    }else{
+      Adjust.disableCoppaComplianceInDelay();
+    }
+  }
+
+  void _playStoreKidsComplianceInDelay(){
+    bool isEnabled = _command.getFirstParameterValue('isEnabled') == 'true';
+    if(isEnabled) {
+      print("enablePlayStoreKidsComplianceInDelay");
+      Adjust.enablePlayStoreKidsComplianceInDelay();
+    }else{
+      print("disablePlayStoreKidsComplianceInDelay");
+      Adjust.disablePlayStoreKidsComplianceInDelay();
+    }
+  }
+
+  void _externalDeviceIdInDelay(){
+    String externalDeviceId = _command.getFirstParameterValue("externalDeviceId")!;
+    Adjust.setExternalDeviceIdInDelay(externalDeviceId);
+  }
+
   void _processDeeplink() {
     String deeplink = _command.getFirstParameterValue('deeplink')!;
+    String? referrer = _command.getFirstParameterValue('referrer');
     AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplink);
+    adjustDeeplink!.referrer = referrer;
     Adjust.processAndResolveDeeplink(adjustDeeplink).then((resolvedLink) {
       String? localBasePath = _basePath;
       TestLib.addInfoToSend('resolved_link', resolvedLink);
