@@ -1,4 +1,4 @@
-### Version 5.4.0 (xxth June 2025)
+### Version 5.4.0 (13th June 2025)
 #### Added
 - Added support for configuring store information via the `AdjustStoreInfo` object. You can now specify the store name and store app ID by assigning the `storeInfo` member of your `AdjustConfig` instance. This enables the SDK to record the intended app store source during initialization. For more details about this feature, refer to the [official documentation](https://dev.adjust.com/en/sdk/flutter/setup/store-type).
 - Added ability to initialize the SDK for the first session in delayed mode. You can start the SDK in the delayed mode by setting the `isFirstSessionDelayEnabled` member on your `AdjustConfig` instance to `true`. To end the delay, make sure to call `endFirstSessionDelay` method of `Adjust` instance. For more details about this feature, refer to the [official documentation](https://dev.adjust.com/en/sdk/flutter/features/first-session-delay).
