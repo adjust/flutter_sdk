@@ -262,7 +262,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // Ask for tracking consent.
     Adjust.requestAppTrackingAuthorization().then((status) {
       print('[Adjust]: Authorization status update!');
-      switch (status) {
+      final int statusInt = status.toInt();
+      switch (statusInt) {
         case 0:
           print(
               '[Adjust]: Authorization status update: ATTrackingManagerAuthorizationStatusNotDetermined');
