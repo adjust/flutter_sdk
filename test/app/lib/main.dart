@@ -26,13 +26,13 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     if (Platform.isAndroid) {
-      String _address = '192.168.8.78';
+      String _address = '192.168.86.237';
       String _protocol = 'https';
       String _port = '8443';
       _overwriteUrl = _protocol + '://' + _address + ':' + _port;
       _controlUrl = 'ws://' + _address + ':1987';
     } else {
-      String _address = '192.168.8.78';
+      String _address = '192.168.86.237';
       String _protocol = 'http';
       String _port = '8080';
       _overwriteUrl = _protocol + '://' + _address + ':' + _port;
@@ -56,36 +56,72 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: const Text('Adjust Flutter SDK Test App'),
+    return MaterialApp(
+      title: 'Adjust Test App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Adjust Test App'),
+          centerTitle: true,
+          backgroundColor: const Color(0xFF1B2951), // Adjust dark navy color
+          foregroundColor: Colors.white,
+          elevation: 0,
         ),
-        body: new CustomScrollView(shrinkWrap: true, slivers: <Widget>[
-          new SliverPadding(
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF1B2951), // Adjust dark navy
+                Color(0xFF2A3A5C), // Slightly lighter navy
+              ],
+            ),
+          ),
+          child: Center(
+            child: Padding(
               padding: const EdgeInsets.all(20.0),
-              sliver: new SliverList(
-                  delegate: new SliverChildListDelegate(<Widget>[
-                new Text('Running'),
-                buildCupertinoButton(
-                    'Start Test Session',
-                    () => Adjust.getSdkVersion().then((sdkVersion) {
-                          // TestLib.addTestDirectory('event-callbacks');
-                          // TestLib.addTest('Test_Parameters_FeatureFlags_present');
-                          TestLib.startTestSession(sdkVersion);
-                        }))
-              ])))
-        ]),
+              child: _buildActionButton(
+                'Start Test Session',
+                () => Adjust.getSdkVersion().then((sdkVersion) {
+                  TestLib.startTestSession(sdkVersion);
+                }),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  static Widget buildCupertinoButton(String text, Function action) {
-    return new CupertinoButton(
-      child: Text(text),
-      color: CupertinoColors.activeBlue,
-      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 30.0),
-      onPressed: action as void Function()?,
+  Widget _buildActionButton(String text, VoidCallback onPressed) {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: const Color(0xFF1B2951),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
+          ),
+          elevation: 3,
+          shadowColor: Colors.black26,
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
     );
   }
 }
