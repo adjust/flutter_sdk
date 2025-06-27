@@ -29,8 +29,7 @@ class Command {
       }
     } catch (e) {
       print(
-          '[Command]: Error! Failed to map Command from incoming data. Details: ' +
-              e.toString());
+          '[Command]: Error! Failed to map Command from incoming data. Details: ${e.toString()}');
     }
   }
 
@@ -39,7 +38,7 @@ class Command {
 
   String? getFirstParameterValue(String parameterKey) {
     List<dynamic>? parameterValues = _parameters![parameterKey];
-    if (parameterValues == null || parameterValues.length == 0) {
+    if (parameterValues == null || parameterValues.isEmpty) {
       return null;
     }
     return parameterValues.first;

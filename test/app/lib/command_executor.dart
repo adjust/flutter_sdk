@@ -41,8 +41,8 @@ class CommandExecutor {
   String? _overwriteUrl;
   String? _extraPath;
   late Command _command;
-  Map<int, AdjustEvent?> _savedEvents = new Map<int, AdjustEvent?>();
-  Map<int, AdjustConfig?> _savedConfigs = new Map<int, AdjustConfig?>();
+  Map<int, AdjustEvent?> _savedEvents = <int, AdjustEvent?>{};
+  Map<int, AdjustConfig?> _savedConfigs = <int, AdjustConfig?>{};
 
   CommandExecutor(String? overwriteUrl) {
     _baseUrl = overwriteUrl;
@@ -1022,7 +1022,7 @@ class CommandExecutor {
   void _attributionGetter() {
     Adjust.getAttribution().then((attribution){
       if(attribution != null) {
-        Map<String, String?> fields = new Map();
+        Map<String, String?> fields = <String, String?>{};
         fields["tracker_token"] = attribution.trackerToken;
         fields["tracker_name"] = attribution.trackerName;
         fields["network"] = attribution.network;

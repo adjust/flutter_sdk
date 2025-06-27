@@ -13,7 +13,7 @@ void main() {
 
 class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => new _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -40,13 +40,12 @@ class _MyAppState extends State<MyApp> {
     }
 
     // Initialise command executor.
-    _commandExecutor =
-        new CommandExecutor(_overwriteUrl);
+    _commandExecutor = CommandExecutor(_overwriteUrl);
 
     // Initialise test library.
     TestLib.setExecuteCommandHalder((final dynamic callArgs) {
       print('[AdjustTestApp]: executeCommandHandler pinged in test app!');
-      Command command = new Command(callArgs);
+      Command command = Command(callArgs);
       print(
           '[AdjustTestApp]: Executing command ${command.className}.${command.methodName}');
       _commandExecutor.executeCommand(command);
