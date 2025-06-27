@@ -1,12 +1,12 @@
-# =============================================================================
+# =============================================
 # ADJUST FLUTTER SDK - COMPREHENSIVE .GITIGNORE
-# =============================================================================
+# =============================================
 # This file handles all ignore patterns for the entire project.
 # Organized by category for easy maintenance.
 
-# =============================================================================
+# =====================
 # SYSTEM & EDITOR FILES
-# =============================================================================
+# =====================
 # miscellaneous system files
 *.class
 *.lock
@@ -34,9 +34,9 @@ migrate_working_dir/
 .settings/
 .vscode/
 
-# =============================================================================
+# ==============
 # FLUTTER & DART
-# =============================================================================
+# ==============
 # flutter/dart/pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
@@ -55,9 +55,9 @@ linked_*.ds
 unlinked.ds
 unlinked_spec.ds
 
-# =============================================================================
+# ====================
 # ANDROID BUILD SYSTEM
-# =============================================================================
+# ====================
 # android build artifacts
 **/android/.gradle
 **/android/captures/
@@ -75,9 +75,9 @@ unlinked_spec.ds
 /android/app/profile
 /android/app/release
 
-# =============================================================================
+# =================
 # IOS BUILD SYSTEM
-# =============================================================================
+# =================
 # ios/xcode related
 **/ios/**/*.mode1v3
 **/ios/**/*.mode2v3
@@ -112,9 +112,9 @@ unlinked_spec.ds
 # macos
 **/macos/Flutter/GeneratedPluginRegistrant.swift
 
-# =============================================================================
+# ====================
 # FLUTTER SDK SPECIFIC
-# =============================================================================
+# ====================
 # flutter repo-specific (for SDK development)
 /bin/cache/
 /bin/internal/bootstrap.bat
@@ -134,18 +134,18 @@ unlinked_spec.ds
 version
 analysis_benchmark.json
 
-# =============================================================================
+# =========================
 # BUILD ARTIFACTS & SYMBOLS
-# =============================================================================
+# =========================
 # symbolication related
 app.*.symbols
 
 # obfuscation related
 app.*.map.json
 
-# =============================================================================
+# =======================================
 # EXCEPTIONS - FILES THAT MUST BE TRACKED
-# =============================================================================
+# =======================================
 # these files are essential for building the apps after cloning
 
 # allow default ios files
