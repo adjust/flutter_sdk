@@ -116,3 +116,8 @@ app.*.symbols
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
+
+# Allow gradlew files for test app so it can be run after cloning
+!app/android/gradlew
+!app/android/gradlew.bat
+!app/android/gradle/wrapper/gradle-wrapper.jar
