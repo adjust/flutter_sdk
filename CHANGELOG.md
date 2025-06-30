@@ -1,3 +1,18 @@
+### Version 5.4.1 (1st July 2025)
+
+#### Added
+- Added support for Google On-Device-Measurement. For more details about this feature, refer to the [official documentation](https://dev.adjust.com/en/sdk/flutter/plugins/google-odm).
+- Optimized the logic behind the `processAndResolveDeeplink` method to immediately return links that have already been resolved.
+
+#### Changed
+- Updated the Adjust Signature library version to 3.47.0.
+
+#### Native SDKs
+- **iOS:** [v5.4.1](https://github.com/adjust/ios_sdk/tree/v5.4.1)
+- **Android:** [v5.4.1](https://github.com/adjust/android_sdk/tree/v5.4.1)
+
+---
+
 ### Version 5.4.0 (13th June 2025)
 
 #### Added
