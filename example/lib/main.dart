@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  /// initialize the Adjust SDK with comprehensive configuration
+  /// initialize the Adjust SDK with configuration
   Future<void> _initializeAdjustSdk() async {
     setState(() => _isLoading = true);
     
@@ -316,7 +316,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
         const SizedBox(height: 8),
         Text(
-          'Explore the full functionality of the Adjust SDK\nwith this comprehensive example application',
+          'Explore the full functionality of the Adjust SDK\nwith this example application',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 16,
@@ -370,7 +370,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         const SizedBox(height: 16),
         _buildActionButton('Get Google AdId', Icons.android, _getGoogleAdId),
         const SizedBox(height: 12),
-        _buildActionButton('Get Adjust Identifier', Icons.fingerprint, _getAdjustIdentifier),
+        _buildActionButton('Get Adjust Identifier', Icons.alternate_email, _getAdjustIdentifier),
         const SizedBox(height: 12),
         _buildActionButton('Get IDFA', Icons.phone_iphone, _getIdfa),
         const SizedBox(height: 12),
