@@ -6,6 +6,7 @@
 
 #### Changed
 - Updated the Adjust Signature library version to 3.47.0.
+- Updated look & feel of example and test apps.
 
 #### Native SDKs
 - **iOS:** [v5.4.1](https://github.com/adjust/ios_sdk/tree/v5.4.1)
