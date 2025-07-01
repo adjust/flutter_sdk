@@ -35,15 +35,9 @@ class AdjustAppStoreSubscription {
   Map<String, String?> get toMap {
     Map<String, String?> subscriptionMap = new Map<String, String?>();
 
-    if (_price != null) {
-      subscriptionMap['price'] = _price;
-    }
-    if (_currency != null) {
-      subscriptionMap['currency'] = _currency;
-    }
-    if (_transactionId != null) {
-      subscriptionMap['transactionId'] = _transactionId;
-    }
+    subscriptionMap['price'] = _price;
+    subscriptionMap['currency'] = _currency;
+    subscriptionMap['transactionId'] = _transactionId;
     if (transactionDate != null) {
       subscriptionMap['transactionDate'] = transactionDate;
     }

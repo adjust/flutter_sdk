@@ -6,8 +6,6 @@
 //  Copyright (c) 2020-Present Adjust GmbH. All rights reserved.
 //
 
-import 'dart:convert';
-
 class AdjustPurchaseVerificationResult {
   final num code;
   final String message;
@@ -35,15 +33,9 @@ class AdjustPurchaseVerificationResult {
   Map<String, String?> get toMap {
     Map<String, String?> verificationInfoMap = new Map<String, String?>();
 
-    if (code != null) {
-      verificationInfoMap['code'] = code.toString();
-    }
-    if (message != null) {
-      verificationInfoMap['message'] = message;
-    }
-    if (verificationStatus != null) {
-      verificationInfoMap['verificationStatus'] = verificationStatus;
-    }
+    verificationInfoMap['code'] = code.toString();
+    verificationInfoMap['message'] = message;
+    verificationInfoMap['verificationStatus'] = verificationStatus;
 
     return verificationInfoMap;
   }

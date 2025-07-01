@@ -15,12 +15,8 @@ class AdjustPlayStorePurchase {
   Map<String, String?> get toMap {
     Map<String, String?> purchaseMap = new Map<String, String?>();
 
-    if (_productId != null) {
-      purchaseMap['productId'] = _productId;
-    }
-    if (_purchaseToken != null) {
-      purchaseMap['purchaseToken'] = _purchaseToken;
-    }
+    purchaseMap['productId'] = _productId;
+    purchaseMap['purchaseToken'] = _purchaseToken;
 
     return purchaseMap;
   }

@@ -41,26 +41,14 @@ class AdjustPlayStoreSubscription {
   }
 
   Map<String, String?> get toMap {
-    Map<String, String?> subscriptionMap = new Map<String, String>();
+    Map<String, String?> subscriptionMap = new Map<String, String?>();
 
-    if (_price != null) {
-      subscriptionMap['price'] = _price;
-    }
-    if (_currency != null) {
-      subscriptionMap['currency'] = _currency;
-    }
-    if (_sku != null) {
-      subscriptionMap['sku'] = _sku;
-    }
-    if (_orderId != null) {
-      subscriptionMap['orderId'] = _orderId;
-    }
-    if (_signature != null) {
-      subscriptionMap['signature'] = _signature;
-    }
-    if (_purchaseToken != null) {
-      subscriptionMap['purchaseToken'] = _purchaseToken;
-    }
+    subscriptionMap['price'] = _price;
+    subscriptionMap['currency'] = _currency;
+    subscriptionMap['sku'] = _sku;
+    subscriptionMap['orderId'] = _orderId;
+    subscriptionMap['signature'] = _signature;
+    subscriptionMap['purchaseToken'] = _purchaseToken;
     if (_billingStore != null) {
       subscriptionMap['billingStore'] = _billingStore;
     }

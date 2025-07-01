@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath('com.android.tools.build:gradle:8.1.4')
+        classpath('com.android.tools.build:gradle:8.2.1')
     }
 }
 rootProject.allprojects {
@@ -37,5 +37,5 @@ android {
 }
 
 dependencies {
-    implementation 'com.adjust.sdk:adjust-android:5.4.0'
+    implementation 'com.adjust.sdk:adjust-android:5.4.1'
 }

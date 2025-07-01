@@ -29,6 +29,8 @@ import 'package:adjust_sdk/adjust_store_info.dart';
 import 'package:test_app/command.dart';
 import 'package:test_lib/test_lib.dart';
 
+/// executes test commands received from the test framework
+/// handles all Adjust SDK method calls and configurations
 class CommandExecutor {
   String? _baseUrl;
   String? _basePath;
@@ -41,9 +43,10 @@ class CommandExecutor {
   String? _overwriteUrl;
   String? _extraPath;
   late Command _command;
-  Map<int, AdjustEvent?> _savedEvents = new Map<int, AdjustEvent?>();
-  Map<int, AdjustConfig?> _savedConfigs = new Map<int, AdjustConfig?>();
+  final Map<int, AdjustEvent?> _savedEvents = <int, AdjustEvent?>{};
+  final Map<int, AdjustConfig?> _savedConfigs = <int, AdjustConfig?>{};
 
+  /// creates a new CommandExecutor with the specified base URL
   CommandExecutor(String? overwriteUrl) {
     _baseUrl = overwriteUrl;
     _gdprUrl = overwriteUrl;
@@ -52,6 +55,7 @@ class CommandExecutor {
     _overwriteUrl = overwriteUrl;
   }
 
+  /// executes the given command by dispatching to the appropriate method
   void executeCommand(Command command) {
     _command = command;
     switch (command.methodName) {
@@ -151,6 +155,7 @@ class CommandExecutor {
     }
   }
 
+  /// configure test options for the SDK
   void _testOptions() {
     final dynamic testOptions = {};
     testOptions['baseUrl'] = _overwriteUrl;
@@ -158,6 +163,7 @@ class CommandExecutor {
     testOptions['subscriptionUrl'] = _overwriteUrl;
     testOptions['purchaseVerificationUrl'] = _overwriteUrl;
     testOptions['urlOverwrite'] = _overwriteUrl;
+    
     if (_command.containsParameter('basePath')) {
       _basePath = _command.getFirstParameterValue('basePath');
       _gdprPath = _command.getFirstParameterValue('basePath');
@@ -165,54 +171,66 @@ class CommandExecutor {
       _purchaseVerificationPath = _command.getFirstParameterValue('basePath');
       _extraPath = _command.getFirstParameterValue('basePath');
     }
+    
     if (_command.containsParameter('timerInterval')) {
       testOptions['timerIntervalInMilliseconds'] =
           _command.getFirstParameterValue('timerInterval');
     }
+    
     if (_command.containsParameter('timerStart')) {
       testOptions['timerStartInMilliseconds'] =
           _command.getFirstParameterValue('timerStart');
     }
+    
     if (_command.containsParameter('sessionInterval')) {
       testOptions['sessionIntervalInMilliseconds'] =
           _command.getFirstParameterValue('sessionInterval');
     }
+    
     if (_command.containsParameter('subsessionInterval')) {
       testOptions['subsessionIntervalInMilliseconds'] =
           _command.getFirstParameterValue('subsessionInterval');
     }
+    
     if (_command.containsParameter('tryInstallReferrer')) {
       testOptions['tryInstallReferrer'] =
           _command.getFirstParameterValue('tryInstallReferrer');
     }
+    
     if (_command.containsParameter('noBackoffWait')) {
       testOptions['noBackoffWait'] =
           _command.getFirstParameterValue('noBackoffWait');
     }
+    
     if (_command.containsParameter("doNotIgnoreSystemLifecycleBootstrap")) {
-      String? doNotIgnoreSystemLifecycleBootstrapString =
-      _command.getFirstParameterValue("doNotIgnoreSystemLifecycleBootstrap");
-      bool doNotIgnoreSystemLifecycleBootstrap = (doNotIgnoreSystemLifecycleBootstrapString == 'true');
+      final String? doNotIgnoreSystemLifecycleBootstrapString =
+          _command.getFirstParameterValue("doNotIgnoreSystemLifecycleBootstrap");
+      final bool doNotIgnoreSystemLifecycleBootstrap = 
+          (doNotIgnoreSystemLifecycleBootstrapString == 'true');
       if (doNotIgnoreSystemLifecycleBootstrap) {
         testOptions['ignoreSystemLifecycleBootstrap'] = false;
       }
     }
+    
     if (_command.containsParameter('adServicesFrameworkEnabled')) {
       testOptions['adServicesFrameworkEnabled'] =
           _command.getFirstParameterValue('adServicesFrameworkEnabled');
     }
+    
     if (_command.containsParameter('attStatus')) {
       testOptions['attStatus'] =
           _command.getFirstParameterValue('attStatus');
     }
+    
     if (_command.containsParameter('idfa')) {
       testOptions['idfa'] =
           _command.getFirstParameterValue('idfa');
     }
+    
     bool useTestConnectionOptions = false;
     if (_command.containsParameter('teardown')) {
-      List<dynamic> teardownOptions = _command.getParamteters('teardown')!;
-      for (String teardownOption in teardownOptions) {
+      final List<dynamic> teardownOptions = _command.getParameters('teardown')!;
+      for (final String teardownOption in teardownOptions) {
         if (teardownOption == 'resetSdk') {
           testOptions['teardown'] = 'true';
           testOptions['basePath'] = _extraPath;
@@ -220,7 +238,7 @@ class CommandExecutor {
           testOptions['subscriptionPath'] = _extraPath;
           testOptions['purchaseVerificationPath'] = _extraPath;
           testOptions['extraPath'] = _extraPath;
-          // Android specific
+          // android specific
           testOptions['useTestConnectionOptions'] = 'true';
           testOptions['tryInstallReferrer'] = 'false';
           useTestConnectionOptions = true;
@@ -242,7 +260,7 @@ class CommandExecutor {
           testOptions['gdprPath'] = null;
           testOptions['subscriptionPath'] = null;
           testOptions['extraPath'] = null;
-          // Android specific.
+          // android specific
           testOptions['useTestConnectionOptions'] = 'false';
           useTestConnectionOptions = false;
         }
@@ -578,14 +596,14 @@ class CommandExecutor {
     }
 
     if (_command.containsParameter('revenue')) {
-      List<dynamic> revenueParams = _command.getParamteters('revenue')!;
+      List<dynamic> revenueParams = _command.getParameters('revenue')!;
       // TODO: find better way to filter null values for Flutter platform
       if (revenueParams[0] != null && revenueParams[1] != null) {
         adjustEvent!.setRevenue(num.parse(revenueParams[1]), revenueParams[0]);
       }
     }
     if (_command.containsParameter('callbackParams')) {
-      List<dynamic> callbackParams = _command.getParamteters('callbackParams')!;
+      List<dynamic> callbackParams = _command.getParameters('callbackParams')!;
       for (int i = 0; i < callbackParams.length; i = i + 2) {
         if (callbackParams[i] != null && callbackParams[i + 1] != null) {
           String key = callbackParams[i];
@@ -595,7 +613,7 @@ class CommandExecutor {
       }
     }
     if (_command.containsParameter('partnerParams')) {
-      List<dynamic> partnerParams = _command.getParamteters('partnerParams')!;
+      List<dynamic> partnerParams = _command.getParameters('partnerParams')!;
       for (int i = 0; i < partnerParams.length; i = i + 2) {
         if (partnerParams[i] != null && partnerParams[i + 1] != null) {
           String key = partnerParams[i];
@@ -686,7 +704,7 @@ class CommandExecutor {
       return;
     }
 
-    List<dynamic> keyValuePairs = _command.getParamteters('KeyValue')!;
+    List<dynamic> keyValuePairs = _command.getParameters('KeyValue')!;
     for (int i = 0; i < keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
@@ -699,7 +717,7 @@ class CommandExecutor {
       return;
     }
 
-    List<dynamic> keyValuePairs = _command.getParamteters('KeyValue')!;
+    List<dynamic> keyValuePairs = _command.getParameters('KeyValue')!;
     for (int i = 0; i < keyValuePairs.length; i = i + 2) {
       String key = keyValuePairs[i];
       String value = keyValuePairs[i + 1];
@@ -712,7 +730,7 @@ class CommandExecutor {
       return;
     }
 
-    List<dynamic> keys = _command.getParamteters('key')!;
+    List<dynamic> keys = _command.getParameters('key')!;
     for (int i = 0; i < keys.length; i = i + 1) {
       String key = keys[i];
       Adjust.removeGlobalCallbackParameter(key);
@@ -724,7 +742,7 @@ class CommandExecutor {
       return;
     }
 
-    List<dynamic> keys = _command.getParamteters('key')!;
+    List<dynamic> keys = _command.getParameters('key')!;
     for (int i = 0; i < keys.length; i = i + 1) {
       String key = keys[i];
       Adjust.removeGlobalPartnerParameter(key);
@@ -756,7 +774,7 @@ class CommandExecutor {
 
       if (_command.containsParameter('callbackParams')) {
         List<dynamic> callbackParams =
-            _command.getParamteters('callbackParams')!;
+            _command.getParameters('callbackParams')!;
         for (int i = 0; i < callbackParams.length; i = i + 2) {
           if (callbackParams[i] != null && callbackParams[i + 1] != null) {
             String key = callbackParams[i];
@@ -766,7 +784,7 @@ class CommandExecutor {
         }
       }
       if (_command.containsParameter('partnerParams')) {
-        List<dynamic> partnerParams = _command.getParamteters('partnerParams')!;
+        List<dynamic> partnerParams = _command.getParameters('partnerParams')!;
         for (int i = 0; i < partnerParams.length; i = i + 2) {
           if (partnerParams[i] != null && partnerParams[i + 1] != null) {
             String key = partnerParams[i];
@@ -793,7 +811,7 @@ class CommandExecutor {
 
       if (_command.containsParameter('callbackParams')) {
         List<dynamic> callbackParams =
-            _command.getParamteters('callbackParams')!;
+            _command.getParameters('callbackParams')!;
         for (int i = 0; i < callbackParams.length; i = i + 2) {
           if (callbackParams[i] != null && callbackParams[i + 1] != null) {
             String key = callbackParams[i];
@@ -803,7 +821,7 @@ class CommandExecutor {
         }
       }
       if (_command.containsParameter('partnerParams')) {
-        List<dynamic> partnerParams = _command.getParamteters('partnerParams')!;
+        List<dynamic> partnerParams = _command.getParameters('partnerParams')!;
         for (int i = 0; i < partnerParams.length; i = i + 2) {
           if (partnerParams[i] != null && partnerParams[i + 1] != null) {
             String key = partnerParams[i];
@@ -827,7 +845,7 @@ class CommandExecutor {
 
     if (_command.containsParameter('granularOptions')) {
       List<dynamic> granularOptions =
-          _command.getParamteters('granularOptions')!;
+          _command.getParameters('granularOptions')!;
       for (var i = 0; i < granularOptions.length; i += 3) {
         if (granularOptions[i] != null && granularOptions[i + 1] != null && granularOptions[i + 2] != null) {
           String partnerName = granularOptions[i];
@@ -840,7 +858,7 @@ class CommandExecutor {
 
     if (_command.containsParameter('partnerSharingSettings')) {
       List<dynamic> partnerSharingSettings =
-          _command.getParamteters('partnerSharingSettings')!;
+          _command.getParameters('partnerSharingSettings')!;
       for (var i = 0; i < partnerSharingSettings.length; i += 3) {
         if (partnerSharingSettings[i] != null && partnerSharingSettings[i + 1] != null && partnerSharingSettings[i + 2] != null) {
           String partnerName = partnerSharingSettings[i];
@@ -864,11 +882,11 @@ class CommandExecutor {
     AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(source);
 
     if (_command.containsParameter('revenue')) {
-      List<dynamic> revenueParams = _command.getParamteters('revenue')!;
+      List<dynamic> revenueParams = _command.getParameters('revenue')!;
       adjustAdRevenue.setRevenue(num.parse(revenueParams[1]), revenueParams[0]);
     }
     if (_command.containsParameter('callbackParams')) {
-      List<dynamic> callbackParams = _command.getParamteters('callbackParams')!;
+      List<dynamic> callbackParams = _command.getParameters('callbackParams')!;
       for (int i = 0; i < callbackParams.length; i = i + 2) {
         if (callbackParams[i] != null && callbackParams[i + 1] != null) {
           String key = callbackParams[i];
@@ -878,7 +896,7 @@ class CommandExecutor {
       }
     }
     if (_command.containsParameter('partnerParams')) {
-      List<dynamic> partnerParams = _command.getParamteters('partnerParams')!;
+      List<dynamic> partnerParams = _command.getParameters('partnerParams')!;
       for (int i = 0; i < partnerParams.length; i = i + 2) {
         if (partnerParams[i] != null && partnerParams[i + 1] != null) {
           String key = partnerParams[i];
@@ -1022,7 +1040,7 @@ class CommandExecutor {
   void _attributionGetter() {
     Adjust.getAttribution().then((attribution){
       if(attribution != null) {
-        Map<String, String?> fields = new Map();
+        Map<String, String?> fields = <String, String?>{};
         fields["tracker_token"] = attribution.trackerToken;
         fields["tracker_name"] = attribution.trackerName;
         fields["network"] = attribution.network;

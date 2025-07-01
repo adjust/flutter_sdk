@@ -1,4 +1,13 @@
-# Miscellaneous
+# =============================================
+# ADJUST FLUTTER SDK - COMPREHENSIVE .GITIGNORE
+# =============================================
+# This file handles all ignore patterns for the entire project.
+# Organized by category for easy maintenance.
+
+# =====================
+# SYSTEM & EDITOR FILES
+# =====================
+# miscellaneous system files
 *.class
 *.lock
 *.log
@@ -6,23 +15,107 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
+migrate_working_dir/
 
-# IntelliJ related
+# intellij related
 *.iml
 *.ipr
 *.iws
 .idea/
 
-# Visual Studio Code related
+# visual studio code related
 .classpath
 .project
 .settings/
 .vscode/
 
-# Flutter repo-specific
+# ==============
+# FLUTTER & DART
+# ==============
+# flutter/dart/pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+**/generated_plugin_registrant.dart
+.packages
+.packages.generated
+.pub-cache/
+.pub/
+build/
+coverage/
+flutter_*.png
+linked_*.ds
+unlinked.ds
+unlinked_spec.ds
+
+# ====================
+# ANDROID BUILD SYSTEM
+# ====================
+# android build artifacts
+**/android/.gradle
+**/android/captures/
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/android/key.properties
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
+*.jks
+*.keystore
+
+# android studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# =================
+# IOS BUILD SYSTEM
+# =================
+# ios/xcode related
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/Podfile.lock
+**/ios/**/profile
+**/ios/**/xcuserdata
+**/ios/.generated/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/**/dgph
+
+# macos
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# ====================
+# FLUTTER SDK SPECIFIC
+# ====================
+# flutter repo-specific (for SDK development)
 /bin/cache/
 /bin/internal/bootstrap.bat
 /bin/internal/bootstrap.sh
@@ -38,80 +131,38 @@
 /dev/integration_tests/**/xcuserdata
 /dev/integration_tests/**/Pods
 /packages/flutter/coverage/
+version
 analysis_benchmark.json
 
-# packages file containing multi-root paths
-.packages.generated
-
-# Flutter/Dart/Pub related
-**/doc/api/
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-**/generated_plugin_registrant.dart
-.packages
-.pub-cache/
-.pub/
-build/
-flutter_*.png
-linked_*.ds
-unlinked.ds
-unlinked_spec.ds
-
-# Android related
-**/android/**/gradle-wrapper.jar
-**/android/.gradle
-**/android/captures/
-**/android/gradlew
-**/android/gradlew.bat
-**/android/local.properties
-**/android/**/GeneratedPluginRegistrant.java
-**/android/key.properties
-*.jks
-
-# iOS/XCode related
-**/ios/**/*.mode1v3
-**/ios/**/*.mode2v3
-**/ios/**/*.moved-aside
-**/ios/**/*.pbxuser
-**/ios/**/*.perspectivev3
-**/ios/**/*sync/
-**/ios/**/.sconsign.dblite
-**/ios/**/.tags*
-**/ios/**/.vagrant/
-**/ios/**/DerivedData/
-**/ios/**/Icon?
-**/ios/**/Pods/
-**/ios/**/.symlinks/
-**/ios/**/profile
-**/ios/**/xcuserdata
-**/ios/.generated/
-**/ios/Flutter/.last_build_id
-**/ios/Flutter/App.framework
-**/ios/Flutter/Flutter.framework
-**/ios/Flutter/Flutter.podspec
-**/ios/Flutter/Generated.xcconfig
-**/ios/Flutter/ephemeral
-**/ios/Flutter/app.flx
-**/ios/Flutter/app.zip
-**/ios/Flutter/flutter_assets/
-**/ios/Flutter/flutter_export_environment.sh
-**/ios/ServiceDefinitions.json
-**/ios/Runner/GeneratedPluginRegistrant.*
-
-# macOS
-**/macos/Flutter/GeneratedPluginRegistrant.swift
-
-# Coverage
-coverage/
-
-# Symbols
+# =========================
+# BUILD ARTIFACTS & SYMBOLS
+# =========================
+# symbolication related
 app.*.symbols
 
-# Exceptions to above rules.
+# obfuscation related
+app.*.map.json
+
+# =======================================
+# EXCEPTIONS - FILES THAT MUST BE TRACKED
+# =======================================
+# these files are essential for building the apps after cloning
+
+# allow default ios files
 !**/ios/**/default.mode1v3
 !**/ios/**/default.mode2v3
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
+
+# allow essential flutter tools test data
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
+
+# allow gradle build system files for example and test apps
+# these are essential for building without local gradle installation
+!example/android/gradlew
+!example/android/gradlew.bat
+!example/android/gradle/wrapper/gradle-wrapper.jar
+!test/app/android/gradlew
+!test/app/android/gradlew.bat
+!test/app/android/gradle/wrapper/gradle-wrapper.jar

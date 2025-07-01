@@ -1,0 +1,17 @@
+# Exclude test directory from published package
+test/
+
+# Exclude build artifacts and development files
+**/build/
+**/.dart_tool/
+**/Pods/
+**/.pub-cache/
+**/example/build/
+**/example/ios/build/
+**/example/android/build/
+**/example/.dart_tool/
+**/example/ios/Pods/
+**/example/ios/Podfile.lock
+**/example/android/local.properties
+**/*.iml
+**/.DS_Store 

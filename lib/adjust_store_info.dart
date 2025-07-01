@@ -6,8 +6,6 @@
 //  Copyright (c) 2025-Present Adjust GmbH. All rights reserved.
 //
 
-import 'dart:convert';
-
 class AdjustStoreInfo {
   String? storeName;
   String? storeAppId;
