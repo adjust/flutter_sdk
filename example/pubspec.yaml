@@ -12,6 +12,11 @@ dependencies:
   adjust_sdk:
     path: ../
 
+dependency_overrides:
+  characters: ^1.4.1
+  material_color_utilities: ^0.13.0
+  meta: ^1.17.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -15,12 +15,8 @@ class AdjustAppStorePurchase {
   Map<String, String?> get toMap {
     Map<String, String?> purchaseMap = new Map<String, String?>();
 
-    if (_productId != null) {
-      purchaseMap['productId'] = _productId;
-    }
-    if (_transactionId != null) {
-      purchaseMap['transactionId'] = _transactionId;
-    }
+    purchaseMap['productId'] = _productId;
+    purchaseMap['transactionId'] = _transactionId;
 
     return purchaseMap;
   }
