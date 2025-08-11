@@ -22,7 +22,10 @@ class AdjustPurchaseVerificationResult {
         }
       } catch (ex) {}
 
-      return AdjustPurchaseVerificationResult(parsedCode, map['message'], map['verificationStatus']);
+      return AdjustPurchaseVerificationResult(
+          parsedCode, 
+          map['message'] ?? '', 
+          map['verificationStatus'] ?? '');
     } catch (e) {
       throw Exception(
           '[AdjustFlutter]: Failed to create AdjustPurchaseVerificationResult object from given map object. Details: ' +

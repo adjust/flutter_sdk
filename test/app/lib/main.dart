@@ -39,7 +39,7 @@ class TestHomePage extends StatefulWidget {
 
 class _TestHomePageState extends State<TestHomePage> {
   // configuration constants
-  static const String _defaultAddress = '192.168.86.237';
+  static const String _defaultAddress = '192.168.86.211';
   static const String _androidProtocol = 'https';
   static const String _androidPort = '8443';
   static const String _iosProtocol = 'http';

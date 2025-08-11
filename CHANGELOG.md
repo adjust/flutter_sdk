@@ -1,3 +1,16 @@
+### Version 5.4.2 (12th August 2025)
+#### Fixed
+- Fixed first session delay pre-init actions array lazy initialization.
+
+#### Changed
+- Updated purchase verification handler (internal changes).
+
+#### Native SDKs
+- **iOS:** [v5.4.3](https://github.com/adjust/ios_sdk/tree/v5.4.3)
+- **Android:** [v5.4.2](https://github.com/adjust/android_sdk/tree/v5.4.2)
+
+---
+
 ### Version 5.4.1 (1st July 2025)
 
 #### Added
