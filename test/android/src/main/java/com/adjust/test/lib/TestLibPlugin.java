@@ -8,6 +8,7 @@
 
 package com.adjust.test.lib;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -31,17 +32,20 @@ public class TestLibPlugin implements FlutterPlugin, MethodCallHandler {
     private static String TAG = "TestLibPlugin";
     private TestLibrary testLibrary = null;
     private MethodChannel channel;
+    private Context applicationContext;
 
     public TestLibPlugin() {}
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+        applicationContext = binding.getApplicationContext();
         channel = new MethodChannel(binding.getBinaryMessenger(), "com.adjust.test.lib/api");
         channel.setMethodCallHandler(this);
     }
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        applicationContext = null;
         if (channel != null) {
             channel.setMethodCallHandler(null);
         }
@@ -92,7 +96,7 @@ public class TestLibPlugin implements FlutterPlugin, MethodCallHandler {
         String baseUrl = (String) paramsMap.get("baseUrl");
         String controlUrl = (String) paramsMap.get("controlUrl");
         final String dartMethodName = "adj-test-execute";
-        testLibrary = new TestLibrary(baseUrl, controlUrl, new ICommandJsonListener() {
+        testLibrary = new TestLibrary(baseUrl, controlUrl, applicationContext, new ICommandJsonListener() {
             @Override
             public void executeCommand(String className, String methodName, String jsonParameters) {
                 final HashMap<String, String> methodParams = new HashMap<String, String>();
