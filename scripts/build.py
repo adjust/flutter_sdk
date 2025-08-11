@@ -126,9 +126,11 @@ class SDKBuilder:
         """print a brew-style action message"""
         print(f"{Colors.CYAN}==> {Colors.BOLD}{action}{Colors.END} {item}")
 
-    def _print_copying(self, source_name, target_name):
-        """print a copying message with hourglass"""
-        print(f"{Colors.YELLOW}⏳ {Colors.BOLD}Copying{Colors.END} {source_name} → {target_name}")
+    def _print_copying(self, source_path, target_path):
+        """print a copying message with hourglass showing full paths"""
+        print(f"{Colors.YELLOW}⏳ {Colors.BOLD}Copying{Colors.END}")
+        print(f"   From: {Colors.BLUE}{source_path}{Colors.END}")
+        print(f"   To:   {Colors.BLUE}{target_path}{Colors.END}")
 
     def _print_success(self, message):
         """print a success message with green formatting"""
@@ -258,16 +260,16 @@ class SDKBuilder:
         test_project_path = self.sdk_path / "tests" / target
         
         if target == "test-library":
-            # use the custom Gradle task for test-library
+            # use assembleDebug and get JAR from AAR structure (like Cordova script)
             success = self.run_gradle_command(
                 test_project_path,
-                ["adjustTestLibraryJarDebug"]
+                ["clean", "assembleDebug"]
             )
             if not success:
                 return False
                 
-            # check if the JAR was created
-            jar_path = test_project_path / "build" / "libs" / "test-library-debug.jar"
+            # check if the JAR was created in AAR structure
+            jar_path = test_project_path / "build" / "intermediates" / "aar_main_jar" / "debug" / "syncDebugLibJars" / "classes.jar"
             if not jar_path.exists():
                 self._print_error(f"JAR not found at expected location: {jar_path}")
                 return False
@@ -279,7 +281,7 @@ class SDKBuilder:
             # build the test-options project
             success = self.run_gradle_command(
                 test_project_path,
-                ["assembleDebug"]
+                ["clean", "assembleDebug"]
             )
             if not success:
                 return False
@@ -357,7 +359,7 @@ class SDKBuilder:
                 self._print_progress(f"Removing existing framework: {target_name}")
                 shutil.rmtree(target_path)
                 
-            self._print_copying(source_framework_path.name, target_name)
+            self._print_copying(source_framework_path, target_path)
             shutil.copytree(source_framework_path, target_path)
             self._print_success(f"Copied {target_name}")
             return True
@@ -370,7 +372,7 @@ class SDKBuilder:
         target_path = self.test_libs_path / target_name
         
         try:
-            self._print_copying(source_jar_path.name, target_name)
+            self._print_copying(source_jar_path, target_path)
             shutil.copy2(source_jar_path, target_path)
             self._print_success(f"Copied {target_name}")
             return True
