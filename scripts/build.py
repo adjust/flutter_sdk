@@ -254,22 +254,24 @@ class SDKBuilder:
             return False
 
     def build_android_target(self, target):
-        """build a specific Android target JAR"""
+        """build a specific Android target JAR using React Native approach"""
         self._print_brewing("Building", f"Android {target}")
         
-        test_project_path = self.sdk_path / "tests" / target
+        # Build from SDK root directory (like React Native script)
+        build_mode = "debug"
+        build_mode_cap = build_mode.capitalize()
         
         if target == "test-library":
-            # use assembleDebug and get JAR from AAR structure (like Cordova script)
+            # use proper Gradle task with project namespace
             success = self.run_gradle_command(
-                test_project_path,
-                ["clean", "assembleDebug"]
+                self.sdk_path,
+                ["clean", f":tests:test-library:assemble{build_mode_cap}"]
             )
             if not success:
                 return False
                 
-            # check if the JAR was created in AAR structure
-            jar_path = test_project_path / "build" / "intermediates" / "aar_main_jar" / "debug" / "syncDebugLibJars" / "classes.jar"
+            # check if the JAR was created using React Native path structure
+            jar_path = self.sdk_path / "tests" / "test-library" / "build" / "intermediates" / "aar_main_jar" / build_mode / f"sync{build_mode_cap}LibJars" / "classes.jar"
             if not jar_path.exists():
                 self._print_error(f"JAR not found at expected location: {jar_path}")
                 return False
@@ -278,29 +280,22 @@ class SDKBuilder:
             return jar_path, "adjust-test-library.jar"
             
         elif target == "test-options":
-            # build the test-options project
+            # use proper Gradle task with project namespace
             success = self.run_gradle_command(
-                test_project_path,
-                ["clean", "assembleDebug"]
+                self.sdk_path,
+                ["clean", f":tests:test-options:assemble{build_mode_cap}"]
             )
             if not success:
                 return False
                 
-            # create the libs directory if it doesn't exist
-            libs_dir = test_project_path / "build" / "libs"
-            libs_dir.mkdir(parents=True, exist_ok=True)
-            
-            # copy the compiled classes JAR to a proper location
-            source_jar = test_project_path / "build" / "intermediates" / "aar_main_jar" / "debug" / "syncDebugLibJars" / "classes.jar"
-            target_jar = libs_dir / "test-options-debug.jar"
-            
-            if not source_jar.exists():
-                self._print_error(f"Source JAR not found at: {source_jar}")
+            # check if the JAR was created using React Native path structure
+            jar_path = self.sdk_path / "tests" / "test-options" / "build" / "intermediates" / "aar_main_jar" / build_mode / f"sync{build_mode_cap}LibJars" / "classes.jar"
+            if not jar_path.exists():
+                self._print_error(f"JAR not found at expected location: {jar_path}")
                 return False
                 
-            shutil.copy2(source_jar, target_jar)
-            self._print_success(f"JAR created at: {target_jar}")
-            return target_jar, "adjust-test-options.jar"
+            self._print_success(f"JAR created at: {jar_path}")
+            return jar_path, "adjust-test-options.jar"
             
         return False
 
@@ -387,8 +382,7 @@ class SDKBuilder:
             self._print_error("Prerequisites check failed")
             return False
             
-        # build all targets for the platform
-        built_artifacts = []
+        # build and copy each target immediately
         for target in self.test_targets:
             if self.platform == "android":
                 result = self.build_android_target(target)
@@ -402,20 +396,15 @@ class SDKBuilder:
                 self._print_error(f"Failed to build {self.platform} {target}")
                 return False
                 
-            built_artifacts.append(result)
-            
-        # copy all built artifacts
-        if self.platform == "android":
-            self._print_brewing("Copying", "JAR files")
-            for source_jar_path, target_name in built_artifacts:
-                if not self.copy_jar(source_jar_path, target_name):
-                    self._print_error("Failed to copy JAR files")
+            # copy the artifact immediately after building
+            source_path, target_name = result
+            if self.platform == "android":
+                if not self.copy_jar(source_path, target_name):
+                    self._print_error(f"Failed to copy {target}")
                     return False
-        elif self.platform == "ios":
-            self._print_brewing("Copying", "framework files")
-            for source_framework_path, target_name in built_artifacts:
-                if not self.copy_framework(source_framework_path, target_name):
-                    self._print_error("Failed to copy framework files")
+            elif self.platform == "ios":
+                if not self.copy_framework(source_path, target_name):
+                    self._print_error(f"Failed to copy {target}")
                     return False
                 
         print(f"{Colors.GREEN}{Colors.BOLD}🎉 All {self.target} components built and copied successfully!{Colors.END}")
