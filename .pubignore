@@ -1,6 +1,10 @@
 # Exclude test directory from published package
 test/
 
+# Exclude external SDK submodules and scripts directory
+ext/
+scripts/
+
 # Exclude build artifacts and development files
 **/build/
 **/.dart_tool/
