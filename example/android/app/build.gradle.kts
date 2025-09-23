@@ -38,3 +38,7 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    implementation("com.adjust.sdk:adjust-android-google-lvl:5.4.4")
+}
