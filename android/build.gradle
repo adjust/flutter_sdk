@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath('com.android.tools.build:gradle:8.2.1')
+        classpath('com.android.tools.build:gradle:8.13.0')
     }
 }
 rootProject.allprojects {
@@ -24,7 +24,7 @@ rootProject.allprojects {
 }
 apply plugin: 'com.android.library'
 android {
-    compileSdkVersion 33
+    compileSdkVersion 36
 
     defaultConfig {
         minSdkVersion 16
