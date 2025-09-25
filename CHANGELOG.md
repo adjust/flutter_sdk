@@ -1,3 +1,13 @@
+### Version 5.4.4 (25th September 2025)
+#### Changed
+- Updated Gradle version of the plugin, example and test Android apps to `8.13.0` and `compileSdk` and `targetSdk` to `36` (https://github.com/adjust/flutter_sdk/issues/178).
+
+#### Native SDKs
+- **iOS:** [v5.4.4](https://github.com/adjust/ios_sdk/tree/v5.4.4)
+- **Android:** [v5.4.4](https://github.com/adjust/android_sdk/tree/v5.4.4)
+
+---
+
 ### Version 5.4.3 (23rd September 2025)
 #### Added
 - Added support for processing deferred deep links in session responses.
