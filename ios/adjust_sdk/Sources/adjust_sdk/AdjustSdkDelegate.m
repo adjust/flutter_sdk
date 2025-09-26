@@ -7,7 +7,7 @@
 //
 
 #import <objc/runtime.h>
-#import "AdjustSdkDelegate.h"
+#import "./include/adjust_sdk/AdjustSdkDelegate.h"
 
 static dispatch_once_t onceToken;
 static AdjustSdkDelegate *defaultInstance = nil;

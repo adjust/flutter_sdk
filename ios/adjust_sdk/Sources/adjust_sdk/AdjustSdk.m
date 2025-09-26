@@ -6,8 +6,8 @@
 //  Copyright © 2018-Present Adjust GmbH. All rights reserved.
 //
 
-#import "AdjustSdk.h"
-#import "AdjustSdkDelegate.h"
+#import "./include/adjust_sdk/AdjustSdk.h"
+#import "./include/adjust_sdk/AdjustSdkDelegate.h"
 #import <AdjustSdk/AdjustSdk.h>
 
 static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
