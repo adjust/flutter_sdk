@@ -1,3 +1,13 @@
+### Version 5.4.5 (23rd October 2025)
+#### Changed
+- Updated the Adjust Signature library version to 3.61.0.
+
+#### Native SDKs
+- **iOS:** [v5.4.6](https://github.com/adjust/ios_sdk/tree/v5.4.6)
+- **Android:** [v5.4.5](https://github.com/adjust/android_sdk/tree/v5.4.5)
+
+---
+
 ### Version 5.4.4 (25th September 2025)
 #### Changed
 - Updated Gradle version of the plugin, example and test Android apps to `8.13.0` and `compileSdk` and `targetSdk` to `36` (https://github.com/adjust/flutter_sdk/issues/178).
