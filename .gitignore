@@ -108,6 +108,8 @@ unlinked_spec.ds
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
 **/ios/**/dgph
+**/ios/**/.build/
+**/ios/**/.swiftpm/
 
 # macos
 **/macos/Flutter/GeneratedPluginRegistrant.swift
