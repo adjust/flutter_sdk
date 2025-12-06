@@ -56,6 +56,7 @@ class AdjustConfig {
   bool? isDeferredDeeplinkOpeningEnabled;
   bool? isFirstSessionDelayEnabled;
   bool? isAppTrackingTransparencyUsageEnabled;
+  bool? isAppSetIdReadingEnabled;
 
   num? attConsentWaitingInterval;
   num? eventDeduplicationIdsMaxSize;
@@ -235,6 +236,9 @@ class AdjustConfig {
     }
     if (isDeferredDeeplinkOpeningEnabled != null) {
       configMap['isDeferredDeeplinkOpeningEnabled'] = isDeferredDeeplinkOpeningEnabled.toString();
+    }
+    if (isAppSetIdReadingEnabled != null) {
+      configMap['isAppSetIdReadingEnabled'] = isAppSetIdReadingEnabled.toString();
     }
     if (attConsentWaitingInterval != null) {
       configMap['attConsentWaitingInterval'] = attConsentWaitingInterval.toString();

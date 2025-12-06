@@ -24,7 +24,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter5.4.5';
+  static const String _sdkPrefix = 'flutter5.5.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
 
@@ -139,9 +139,23 @@ class Adjust {
     return adid;
   }
 
+  static Future<String?> getAdidWithTimeout(int timeoutInMilliseconds) async {
+    final String? adid = await _channel.invokeMethod('getAdidWithTimeout', {'timeoutInMilliseconds': timeoutInMilliseconds});
+    return adid;
+  }
+
   static Future<AdjustAttribution> getAttribution() async {
     final dynamic attributionMap =
         await _channel.invokeMethod('getAttribution');
+    return AdjustAttribution.fromMap(attributionMap);
+  }
+
+  static Future<AdjustAttribution?> getAttributionWithTimeout(int timeoutInMilliseconds) async {
+    final dynamic attributionMap =
+        await _channel.invokeMethod('getAttributionWithTimeout', {'timeoutInMilliseconds': timeoutInMilliseconds});
+    if (attributionMap == null) {
+      return null;
+    }
     return AdjustAttribution.fromMap(attributionMap);
   }
 

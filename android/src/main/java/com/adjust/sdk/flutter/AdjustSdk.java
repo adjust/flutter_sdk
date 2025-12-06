@@ -168,8 +168,14 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
             case "getAttribution":
                 getAttribution(result);
                 break;
+            case "getAttributionWithTimeout":
+                getAttributionWithTimeout(call, result);
+                break;
             case "getAdid":
                 getAdid(result);
+                break;
+            case "getAdidWithTimeout":
+                getAdidWithTimeout(call, result);
                 break;
             case "getLastDeeplink":
                 getLastDeeplink(result);
@@ -339,6 +345,15 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
             boolean isDeviceIdsReadingOnceEnabled = Boolean.parseBoolean(strIsDeviceIdsReadingOnceEnabled);
             if (isDeviceIdsReadingOnceEnabled) {
                 adjustConfig.enableDeviceIdsReadingOnce();
+            }
+        }
+
+        // app set ID reading (Android only)
+        if (configMap.containsKey("isAppSetIdReadingEnabled")) {
+            String strIsAppSetIdReadingEnabled = (String) configMap.get("isAppSetIdReadingEnabled");
+            boolean isAppSetIdReadingEnabled = Boolean.parseBoolean(strIsAppSetIdReadingEnabled);
+            if (!isAppSetIdReadingEnabled) {
+                adjustConfig.disableAppSetIdReading();
             }
         }
 
@@ -1010,10 +1025,76 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
         });
     }
 
+    private void getAdidWithTimeout(final MethodCall call, final Result result) {
+        Map timeoutMap = (Map) call.arguments;
+        if (timeoutMap == null || !timeoutMap.containsKey("timeoutInMilliseconds")) {
+            result.error("INVALID_ARGUMENT", "timeoutInMilliseconds is required", null);
+            return;
+        }
+
+        long timeoutInMilliseconds;
+        try {
+            timeoutInMilliseconds = Long.parseLong(timeoutMap.get("timeoutInMilliseconds").toString());
+        } catch (NumberFormatException e) {
+            result.error("INVALID_ARGUMENT", "timeoutInMilliseconds must be a valid number", null);
+            return;
+        }
+
+        Adjust.getAdidWithTimeout(applicationContext, timeoutInMilliseconds, new OnAdidReadListener() {
+            @Override
+            public void onAdidRead(String adid) {
+                result.success(adid);
+            }
+        });
+    }
+
     private void getAttribution(final Result result) {
         Adjust.getAttribution(new OnAttributionReadListener() {
             @Override
             public void onAttributionRead(AdjustAttribution attribution) {
+                HashMap<String, String> adjustAttributionMap = new HashMap<String, String>();
+                adjustAttributionMap.put("trackerToken", attribution.trackerToken);
+                adjustAttributionMap.put("trackerName", attribution.trackerName);
+                adjustAttributionMap.put("network", attribution.network);
+                adjustAttributionMap.put("campaign", attribution.campaign);
+                adjustAttributionMap.put("adgroup", attribution.adgroup);
+                adjustAttributionMap.put("creative", attribution.creative);
+                adjustAttributionMap.put("clickLabel", attribution.clickLabel);
+                adjustAttributionMap.put("costType", attribution.costType);
+                adjustAttributionMap.put("costAmount", attribution.costAmount != null ?
+                        attribution.costAmount.toString() : "");
+                adjustAttributionMap.put("costCurrency", attribution.costCurrency);
+                adjustAttributionMap.put("fbInstallReferrer", attribution.fbInstallReferrer);
+                if (attribution.jsonResponse != null) {
+                    adjustAttributionMap.put("jsonResponse", attribution.jsonResponse);
+                }
+                result.success(adjustAttributionMap);
+            }
+        });
+    }
+
+    private void getAttributionWithTimeout(final MethodCall call, final Result result) {
+        Map timeoutMap = (Map) call.arguments;
+        if (timeoutMap == null || !timeoutMap.containsKey("timeoutInMilliseconds")) {
+            result.error("INVALID_ARGUMENT", "timeoutInMilliseconds is required", null);
+            return;
+        }
+
+        long timeoutInMilliseconds;
+        try {
+            timeoutInMilliseconds = Long.parseLong(timeoutMap.get("timeoutInMilliseconds").toString());
+        } catch (NumberFormatException e) {
+            result.error("INVALID_ARGUMENT", "timeoutInMilliseconds must be a valid number", null);
+            return;
+        }
+
+        Adjust.getAttributionWithTimeout(applicationContext, timeoutInMilliseconds, new OnAttributionReadListener() {
+            @Override
+            public void onAttributionRead(AdjustAttribution attribution) {
+                if (attribution == null) {
+                    result.success(null);
+                    return;
+                }
                 HashMap<String, String> adjustAttributionMap = new HashMap<String, String>();
                 adjustAttributionMap.put("trackerToken", attribution.trackerToken);
                 adjustAttributionMap.put("trackerName", attribution.trackerName);

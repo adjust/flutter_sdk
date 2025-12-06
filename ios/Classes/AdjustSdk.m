@@ -48,6 +48,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self gdprForgetMe:call withResult:result];
     } else if ([@"getAttribution" isEqualToString:call.method]) {
         [self getAttribution:call withResult:result];
+    } else if ([@"getAttributionWithTimeout" isEqualToString:call.method]) {
+        [self getAttributionWithTimeout:call withResult:result];
     } else if ([@"getIdfa" isEqualToString:call.method]) {
         [self getIdfa:call withResult:result];
     } else if ([@"getIdfv" isEqualToString:call.method]) {
@@ -126,6 +128,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [Adjust adidWithCompletionHandler:^(NSString * _Nullable adid) {
             result(adid);
         }];
+    } else if ([@"getAdidWithTimeout" isEqualToString:call.method]) {
+        [self getAdidWithTimeout:call withResult:result];
     } else if ([@"verifyAppStorePurchase" isEqualToString:call.method]) {
         [self verifyAppStorePurchase:call withResult:result];
     } else if ([@"verifyAndTrackAppStorePurchase" isEqualToString:call.method]) {
@@ -657,8 +661,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         [self addValueOrEmpty:attribution.costCurrency withKey:@"costCurrency" toDictionary:dictionary];
         if (attribution.jsonResponse != nil) {
             NSData *dataJsonResponse = [NSJSONSerialization dataWithJSONObject:attribution.jsonResponse
-                                                                   options:0
-                                                                     error:nil];
+                                                                       options:0
+                                                                         error:nil];
             NSString *stringJsonResponse = [[NSString alloc] initWithBytes:[dataJsonResponse bytes]
                                                                 length:[dataJsonResponse length]
                                                               encoding:NSUTF8StringEncoding];
@@ -667,6 +671,62 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
             [self addValueOrEmpty:@"" withKey:@"jsonResponse" toDictionary:dictionary];
         }
         result(dictionary);
+    }];
+}
+
+- (void)getAttributionWithTimeout:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSNumber *timeoutInMilliseconds = call.arguments[@"timeoutInMilliseconds"];
+    if (timeoutInMilliseconds == nil) {
+        result([FlutterError errorWithCode:@"INVALID_ARGUMENT"
+                                   message:@"timeoutInMilliseconds is required"
+                                   details:nil]);
+        return;
+    }
+
+    NSInteger timeoutMs = [timeoutInMilliseconds integerValue];
+    [Adjust attributionWithTimeout:timeoutMs completionHandler:^(ADJAttribution * _Nullable attribution) {
+        if (attribution == nil) {
+            result(nil);
+            return;
+        }
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        [self addValueOrEmpty:attribution.trackerToken withKey:@"trackerToken" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.trackerName withKey:@"trackerName" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.network withKey:@"network" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.campaign withKey:@"campaign" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.creative withKey:@"creative" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.adgroup withKey:@"adgroup" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.clickLabel withKey:@"clickLabel" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.costType withKey:@"costType" toDictionary:dictionary];
+        [self addNumberOrEmpty:attribution.costAmount withKey:@"costAmount" toDictionary:dictionary];
+        [self addValueOrEmpty:attribution.costCurrency withKey:@"costCurrency" toDictionary:dictionary];
+        if (attribution.jsonResponse != nil) {
+            NSData *dataJsonResponse = [NSJSONSerialization dataWithJSONObject:attribution.jsonResponse
+                                                                       options:0
+                                                                         error:nil];
+            NSString *stringJsonResponse = [[NSString alloc] initWithBytes:[dataJsonResponse bytes]
+                                                                length:[dataJsonResponse length]
+                                                              encoding:NSUTF8StringEncoding];
+            [self addValueOrEmpty:stringJsonResponse withKey:@"jsonResponse" toDictionary:dictionary];
+        } else {
+            [self addValueOrEmpty:@"" withKey:@"jsonResponse" toDictionary:dictionary];
+        }
+        result(dictionary);
+    }];
+}
+
+- (void)getAdidWithTimeout:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSNumber *timeoutInMilliseconds = call.arguments[@"timeoutInMilliseconds"];
+    if (timeoutInMilliseconds == nil) {
+        result([FlutterError errorWithCode:@"INVALID_ARGUMENT"
+                                   message:@"timeoutInMilliseconds is required"
+                                   details:nil]);
+        return;
+    }
+
+    NSInteger timeoutMs = [timeoutInMilliseconds integerValue];
+    [Adjust adidWithTimeout:timeoutMs completionHandler:^(NSString * _Nullable adid) {
+        result(adid);
     }];
 }
 

@@ -1,3 +1,18 @@
+### Version 5.5.0 (6th December 2025)
+#### Added
+- Added `getAdidWithTimeout` method to the `Adjust` API to allow retrieving the ADID with a specified timeout. If the value is not obtained in time, nil is returned.
+- Added `getAttributionWithTimeout` method to the `Adjust` API to allow retrieving the current attribution information with a specified timeout. If the value is not obtained in time, nil is returned.
+- Added ability to disable the reading of the app set ID. You can do this by setting the `isAppSetIdReadingEnabled` member on your `AdjustConfig` instance to `false`.
+
+#### Changed
+- Updated the Adjust Signature library version to 3.62.0.
+
+#### Native SDKs
+- **iOS:** [v5.5.0](https://github.com/adjust/ios_sdk/tree/v5.5.0)
+- **Android:** [v5.5.0](https://github.com/adjust/android_sdk/tree/v5.5.0)
+
+---
+
 ### Version 5.4.5 (23rd October 2025)
 #### Changed
 - Updated the Adjust Signature library version to 3.61.0.
