@@ -39,7 +39,7 @@ class TestHomePage extends StatefulWidget {
 
 class _TestHomePageState extends State<TestHomePage> {
   // configuration constants
-  static const String _defaultAddress = '192.168.86.217';
+  static const String _defaultAddress = '192.168.86.241';
   static const String _androidProtocol = 'https';
   static const String _androidPort = '8443';
   static const String _iosProtocol = 'http';
@@ -89,6 +89,7 @@ class _TestHomePageState extends State<TestHomePage> {
   void _startTestSession() {
     Adjust.getSdkVersion().then((sdkVersion) {
       print('[AdjustTestApp]: Starting test session with SDK version: $sdkVersion');
+      // TestLib.addTestDirectory("getters");
       TestLib.startTestSession(sdkVersion);
     });
   }

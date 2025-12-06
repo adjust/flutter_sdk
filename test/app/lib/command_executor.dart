@@ -125,9 +125,6 @@ class CommandExecutor {
       case 'trackAdRevenue':
         _trackAdRevenue();
         break;
-      case 'getLastDeeplink':
-        _getLastDeeplink();
-        break;
       case 'verifyPurchase':
         _verifyPurchase();
         break;
@@ -151,6 +148,33 @@ class CommandExecutor {
         break;
       case 'attributionGetter':
         _attributionGetter();
+        break;
+      case 'adidGetter':
+        _adidGetter();
+        break;
+      case 'adidGetterWithTimeout':
+        _adidGetterWithTimeout();
+        break;
+      case 'attributionGetterWithTimeout':
+        _attributionGetterWithTimeout();
+        break;
+      case 'idfaGetter':
+        _idfaGetter();
+        break;
+      case 'idfvGetter':
+        _idfvGetter();
+        break;
+      case 'googleAdIdGetter':
+        _googleAdIdGetter();
+        break;
+      case 'amazonAdIdGetter':
+        _amazonAdIdGetter();
+        break;
+      case 'getLastDeeplink':
+        _lastDeeplinkGetter();
+        break;
+      case 'sdkVersionGetter':
+        _sdkVersionGetter();
         break;
     }
   }
@@ -399,6 +423,20 @@ class CommandExecutor {
     if (_command.containsParameter('allowAttUsage')) {
       if(_command.getFirstParameterValue('allowAttUsage') == 'false') {
         adjustConfig!.isAppTrackingTransparencyUsageEnabled = false;
+      }
+    }
+
+    if (_command.containsParameter('allowAppSetIdReading')) {
+      if(_command.getFirstParameterValue('allowAppSetIdReading') == 'false') {
+        adjustConfig!.isAppSetIdReadingEnabled = false;
+      }
+    }
+
+    if (Platform.isAndroid) {
+      if (_command.containsParameter('appSetIdReadingEnabled')) {
+        var appSetIdReadingEnabledS = _command.getFirstParameterValue('appSetIdReadingEnabled');
+        var appSetIdReadingEnabled = appSetIdReadingEnabledS?.toLowerCase() == 'true';
+        adjustConfig!.isAppSetIdReadingEnabled = appSetIdReadingEnabled;
       }
     }
 
@@ -925,11 +963,14 @@ class CommandExecutor {
     Adjust.trackAdRevenue(adjustAdRevenue);
   }
 
-  void _getLastDeeplink() {
-    Adjust.getLastDeeplink().then((lastDeeplink) {
-      String? localBasePath = _basePath;
-      TestLib.addInfoToSend('last_deeplink', lastDeeplink);
-      TestLib.sendInfoToServer(localBasePath);
+  void _adidGetter() {
+    var testCallbackId = _command.getFirstParameterValue('testCallbackId');
+    String? localExtraPath = _extraPath;
+
+    Adjust.getAdid().then((adid) {
+      TestLib.addInfoToSend('adid', adid);
+      TestLib.addInfoToSend('test_callback_id', testCallbackId);
+      TestLib.sendInfoToServer(localExtraPath);
     });
   }
 
@@ -1038,6 +1079,9 @@ class CommandExecutor {
   }
 
   void _attributionGetter() {
+    var testCallbackId = _command.getFirstParameterValue('testCallbackId');
+    String? localExtraPath = _extraPath;
+
     Adjust.getAttribution().then((attribution){
       if(attribution != null) {
         Map<String, String?> fields = <String, String?>{};
@@ -1076,8 +1120,168 @@ class CommandExecutor {
         fields.forEach((key, value) {
           TestLib.addInfoToSend(key, value);
         });
-        TestLib.sendInfoToServer(_basePath);
+        TestLib.addInfoToSend('test_callback_id', testCallbackId);
+        TestLib.sendInfoToServer(localExtraPath);
       }
+    });
+  }
+
+  void _adidGetterWithTimeout() {
+    var timeoutStr = _command.getFirstParameterValue('timeout');
+    var timeout = int.parse(timeoutStr!);
+    var testCallbackId = _command.getFirstParameterValue('testCallbackId');
+    String? localExtraPath = _extraPath;
+
+    Adjust.getAdidWithTimeout(timeout).then((adid) {
+      if (adid != null) {
+        TestLib.addInfoToSend('adid', adid);
+      } else {
+        if (Platform.isIOS) {
+          TestLib.addInfoToSend('adid', 'nil');
+        } else if (Platform.isAndroid) {
+          TestLib.addInfoToSend('adid', 'null');
+        }
+      }
+      TestLib.addInfoToSend('test_callback_id', testCallbackId);
+      TestLib.sendInfoToServer(localExtraPath);
+    });
+  }
+
+  void _attributionGetterWithTimeout() {
+    var timeoutStr = _command.getFirstParameterValue('timeout');
+    var timeout = int.parse(timeoutStr!);
+    var testCallbackId = _command.getFirstParameterValue('testCallbackId');
+    String? localBasePath = _basePath;
+
+    Adjust.getAttributionWithTimeout(timeout).then((attribution) {
+      if (attribution != null) {
+        Map<String, String?> fields = <String, String?>{};
+        fields["tracker_token"] = attribution.trackerToken;
+        fields["tracker_name"] = attribution.trackerName;
+        fields["network"] = attribution.network;
+        fields["campaign"] = attribution.campaign;
+        fields["adgroup"] = attribution.adgroup;
+        fields["creative"] = attribution.creative;
+        fields["click_label"] = attribution.clickLabel;
+        fields["cost_type"] = attribution.costType;
+        fields["cost_amount"] = attribution.costAmount?.toString();
+        fields["cost_currency"] = attribution.costCurrency;
+        fields["fb_install_referrer"] = attribution.fbInstallReferrer;
+        if (attribution.jsonResponse != null && attribution.jsonResponse!.isNotEmpty) {
+          try {
+            String rawJson = attribution.jsonResponse!;
+            print(rawJson);
+
+            // Ensure it's a valid JSON string
+            if (rawJson.isEmpty) {
+              throw FormatException("Empty JSON response");
+            }
+
+            Map<String, dynamic> jsonMap = jsonDecode(rawJson);
+            if (Platform.isIOS) {
+              jsonMap.remove('fb_install_referrer');
+            }
+
+            String jsonString = jsonEncode(jsonMap);
+            TestLib.addInfoToSend('json_response', jsonString);
+          } catch (e) {
+            print("JSON Parsing Error: $e");
+          }
+        }
+        fields.forEach((key, value) {
+          TestLib.addInfoToSend(key, value);
+        });
+      } else {
+        if (Platform.isIOS) {
+          TestLib.addInfoToSend('attribution', 'nil');
+        } else if (Platform.isAndroid) {
+          TestLib.addInfoToSend('attribution', 'null');
+        }
+      }
+      TestLib.addInfoToSend('test_callback_id', testCallbackId);
+      TestLib.sendInfoToServer(localBasePath);
+    });
+  }
+
+  void _lastDeeplinkGetter() {
+    var testCallbackId = _command.getFirstParameterValue('testCallbackId');
+    String? localExtraPath = _extraPath;
+
+    Adjust.getLastDeeplink().then((lastDeeplink) {
+      TestLib.addInfoToSend('last_deeplink', lastDeeplink);
+      TestLib.addInfoToSend('test_callback_id', testCallbackId);
+      TestLib.sendInfoToServer(localExtraPath);
+    });
+  }
+
+  void _idfaGetter() {
+    var testCallbackId = _command.getFirstParameterValue('testCallbackId');
+    String? localExtraPath = _extraPath;
+
+    if (Platform.isIOS) {
+      Adjust.getIdfa().then((idfa) {
+        TestLib.addInfoToSend('idfa', idfa);
+        TestLib.addInfoToSend('test_callback_id', testCallbackId);
+        TestLib.sendInfoToServer(localExtraPath);
+      });
+    } else {
+      print('[Adjust]: Error! IDFA is not available on this platform.');
+    }
+  }
+
+  void _idfvGetter() {
+    var testCallbackId = _command.getFirstParameterValue('testCallbackId');
+    String? localExtraPath = _extraPath;
+
+    if (Platform.isIOS) {
+      Adjust.getIdfv().then((idfv) {
+        TestLib.addInfoToSend('idfv', idfv);
+        TestLib.addInfoToSend('test_callback_id', testCallbackId);
+        TestLib.sendInfoToServer(localExtraPath);
+      });
+    } else {
+      print('[Adjust]: Error! IDFV is not available on this platform.');
+    }
+  }
+
+  void _googleAdIdGetter() {
+    var testCallbackId = _command.getFirstParameterValue('testCallbackId');
+    String? localExtraPath = _extraPath;
+
+    if (Platform.isAndroid) {
+      Adjust.getGoogleAdId().then((googleAdId) {
+        TestLib.addInfoToSend('gps_adid', googleAdId);
+        TestLib.addInfoToSend('test_callback_id', testCallbackId);
+        TestLib.sendInfoToServer(localExtraPath);
+      });
+    } else {
+      print('[Adjust]: Error! Google Advertising ID is not available on this platform.');
+    }
+  }
+
+  void _amazonAdIdGetter() {
+    var testCallbackId = _command.getFirstParameterValue('testCallbackId');
+    String? localExtraPath = _extraPath;
+
+    if (Platform.isAndroid) {
+      Adjust.getAmazonAdId().then((amazonAdId) {
+        TestLib.addInfoToSend('fire_adid', amazonAdId);
+        TestLib.addInfoToSend('test_callback_id', testCallbackId);
+        TestLib.sendInfoToServer(localExtraPath);
+      });
+    } else {
+      print('[Adjust]: Error! Amazon Fire Advertising ID is not available on this platform.');
+    }
+  }
+
+  void _sdkVersionGetter() {
+    var testCallbackId = _command.getFirstParameterValue('testCallbackId');
+    String? localExtraPath = _extraPath;
+
+    Adjust.getSdkVersion().then((sdkVersion) {
+      TestLib.addInfoToSend('sdk_version', sdkVersion);
+      TestLib.addInfoToSend('test_callback_id', testCallbackId);
+      TestLib.sendInfoToServer(localExtraPath);
     });
   }
 }
