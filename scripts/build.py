@@ -315,7 +315,7 @@ class SDKBuilder:
         test_lib_dst = self.test_libs_path / "AdjustTestLibrary.framework"
         
         # path to the built framework in iOS SDK distribution folder
-        ios_framework_src = ios_sdk_path / "sdk_distribution" / "test-static-framework" / "AdjustTestLibrary.framework"
+        ios_framework_src = ios_sdk_path / "sdk_distribution" / "test-static-framework-device" / "AdjustTestLibrary.framework"
         
         try:
             # run the iOS SDK build script to build test framework
