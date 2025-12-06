@@ -1,7 +1,7 @@
 name: adjust_sdk
 description: This is the Flutter SDK of Adjust™. You can read more about Adjust™ at adjust.com.
 homepage: https://github.com/adjust/flutter_sdk
-version: 5.4.5
+version: 5.5.0
 
 environment:
   sdk: ">=2.12.0 <4.0.0"
