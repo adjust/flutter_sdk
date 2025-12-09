@@ -1,28 +1,10 @@
+plugins {
+    id "com.android.library"
+}
+
 group 'com.adjust.sdk.flutter'
 version '1.0-SNAPSHOT'
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
 
-    dependencies {
-        classpath('com.android.tools.build:gradle:8.13.0')
-    }
-}
-rootProject.allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-        }
-    }
-}
-apply plugin: 'com.android.library'
 android {
     compileSdkVersion 36
 

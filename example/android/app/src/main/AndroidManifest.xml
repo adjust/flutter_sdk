@@ -22,7 +22,14 @@
               />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:scheme="adjust"
+                    android:host="test" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
