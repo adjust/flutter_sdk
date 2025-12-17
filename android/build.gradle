@@ -1,39 +1,11 @@
-plugins {
-    id "com.android.library"
-}
-
 group 'com.adjust.sdk.flutter'
 version '1.0-SNAPSHOT'
 
-def resolveHostAppProject() {
-    def hostName = rootProject.hasProperty('flutter.hostAppProjectName') ?
-        rootProject.property('flutter.hostAppProjectName')?.toString() :
-        'app'
-    return rootProject.findProject(":${hostName}")
-}
+apply plugin: 'com.android.library'
 
-def hostAppProject = resolveHostAppProject()
-def hostBuildTypeSnapshots = []
+def hostAppProject = rootProject.findProject(':app')
 if (hostAppProject != null) {
-    // Ensure the host app is fully evaluated before this plugin, so copying its
-    // build types (done by the Flutter tooling) sees the final configuration.
     project.evaluationDependsOn(hostAppProject.path)
-    def hostAndroidExtension = hostAppProject.extensions.findByName("android")
-    if (hostAndroidExtension?.hasProperty("buildTypes")) {
-        hostBuildTypeSnapshots = hostAndroidExtension.buildTypes.collect { buildType ->
-            [
-                name              : buildType.name,
-                debuggable        : buildType.debuggable,
-                minifyEnabled     : buildType.minifyEnabled,
-                matchingFallbacks : (buildType.matchingFallbacks ?: []).collect { it }
-            ]
-        }
-    }
-}
-
-def resolveBaseBuildTypeName = { snapshot ->
-    snapshot.name.equalsIgnoreCase('profile') ? 'profile' :
-        (snapshot.debuggable ? 'debug' : 'release')
 }
 
 android {
@@ -48,20 +20,10 @@ android {
     }
     namespace 'com.adjust.sdk.flutter'
 
-    hostBuildTypeSnapshots.each { snapshot ->
-        if (buildTypes.findByName(snapshot.name) == null) {
-            def base = buildTypes.findByName(resolveBaseBuildTypeName(snapshot))
-            buildTypes.create(snapshot.name) {
-                if (base != null) {
-                    initWith(base)
-                } else {
-                    debuggable = snapshot.debuggable
-                    minifyEnabled = snapshot.minifyEnabled
-                }
-                matchingFallbacks.clear()
-                matchingFallbacks.addAll(snapshot.matchingFallbacks)
-            }
-        }
+    buildTypes {
+        release {}
+        debug {}
+        profile {}
     }
 }
 
