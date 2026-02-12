@@ -44,7 +44,13 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     [self processDeeplinkWithUrl:launchUrl referrer:nil];
 
     NSDictionary *userActivityDictionary = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
-    NSUserActivity *userActivity = userActivityDictionary[UIApplicationLaunchOptionsUserActivityKey];
+    NSUserActivity *userActivity = nil;
+    for (id value in [userActivityDictionary allValues]) {
+        if ([value isKindOfClass:[NSUserActivity class]]) {
+            userActivity = (NSUserActivity *)value;
+            break;
+        }
+    }
     if ([self isFieldValid:userActivity]
         && [userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
         [self processDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
