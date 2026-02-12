@@ -15,6 +15,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 @interface AdjustSdk ()
 
 @property (nonatomic, retain) FlutterMethodChannel *channel;
+- (void)processDeeplinkWithUrl:(NSURL *)deeplinkUrl referrer:(NSURL *)referrer;
 
 @end
 
@@ -28,11 +29,53 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     AdjustSdk *instance = [[AdjustSdk alloc] init];
     instance.channel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
+    [registrar addApplicationDelegate:instance];
 }
 
 - (void)dealloc {
     [self.channel setMethodCallHandler:nil];
     self.channel = nil;
+}
+
+#pragma mark - iOS app lifecycle methods
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    NSURL *launchUrl = launchOptions[UIApplicationLaunchOptionsURLKey];
+    [self processDeeplinkWithUrl:launchUrl referrer:nil];
+
+    NSDictionary *userActivityDictionary = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+    NSUserActivity *userActivity = userActivityDictionary[UIApplicationLaunchOptionsUserActivityKey];
+    if ([self isFieldValid:userActivity]
+        && [userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        [self processDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
+    }
+
+    return NO;
+}
+
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    [self processDeeplinkWithUrl:url referrer:nil];
+    return NO;
+}
+
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation {
+    [self processDeeplinkWithUrl:url referrer:nil];
+    return NO;
+}
+
+- (BOOL)application:(UIApplication *)application
+continueUserActivity:(NSUserActivity *)userActivity
+ restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler {
+    if ([self isFieldValid:userActivity]
+        && [userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        [self processDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
+    }
+    return NO;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -555,12 +598,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 
     if ([self isFieldValid:deeplink]) {
         NSURL *urlDeeplink = [NSURL URLWithString:deeplink];
-        ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:urlDeeplink];
+        NSURL *urlReferrer = nil;
         if ([self isFieldValid:referrer]) {
-            NSURL *urlReferrer = [NSURL URLWithString:referrer];
-            [deeplink setReferrer:urlReferrer];
+            urlReferrer = [NSURL URLWithString:referrer];
         }
-        [Adjust processDeeplink:deeplink];
+        [self processDeeplinkWithUrl:urlDeeplink referrer:urlReferrer];
     }
 }
 
@@ -1070,6 +1112,18 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
 
     return YES;
+}
+
+- (void)processDeeplinkWithUrl:(NSURL *)deeplinkUrl referrer:(NSURL *)referrer {
+    if (![self isFieldValid:deeplinkUrl]) {
+        return;
+    }
+
+    ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:deeplinkUrl];
+    if ([self isFieldValid:referrer]) {
+        [deeplink setReferrer:referrer];
+    }
+    [Adjust processDeeplink:deeplink];
 }
 
 - (void)addValueOrEmpty:(NSObject *)value

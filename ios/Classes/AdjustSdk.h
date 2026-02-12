@@ -8,5 +8,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface AdjustSdk : NSObject<FlutterPlugin>
+@interface AdjustSdk : NSObject<FlutterPlugin, FlutterApplicationLifeCycleDelegate>
 @end

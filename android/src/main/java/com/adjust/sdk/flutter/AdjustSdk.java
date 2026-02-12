@@ -8,7 +8,9 @@
 
 package com.adjust.sdk.flutter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
@@ -55,16 +57,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 
-public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
+public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAware, NewIntentListener {
     private static String TAG = "AdjustBridge";
     private static boolean isDeferredDeeplinkOpeningEnabled = true;
     private MethodChannel channel;
     private Context applicationContext;
+    private ActivityPluginBinding activityPluginBinding;
 
     // FlutterPlugin
     @Override
@@ -76,11 +82,74 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
 
     @Override
     public void onDetachedFromEngine(FlutterPluginBinding binding) {
+        detachFromActivity();
         applicationContext = null;
         if (channel != null) {
             channel.setMethodCallHandler(null);
         }
         channel = null;
+    }
+
+    // ActivityAware
+    @Override
+    public void onAttachedToActivity(ActivityPluginBinding binding) {
+        activityPluginBinding = binding;
+        activityPluginBinding.addOnNewIntentListener(this);
+        processDeeplinkFromIntent(activityPluginBinding.getActivity().getIntent());
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+        detachFromActivity();
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+        onAttachedToActivity(binding);
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+        detachFromActivity();
+    }
+
+    @Override
+    public boolean onNewIntent(Intent intent) {
+        processDeeplinkFromIntent(intent);
+        return false;
+    }
+
+    private void detachFromActivity() {
+        if (activityPluginBinding != null) {
+            activityPluginBinding.removeOnNewIntentListener(this);
+            activityPluginBinding = null;
+        }
+    }
+
+    private void processDeeplinkFromIntent(final Intent intent) {
+        if (intent == null) {
+            return;
+        }
+
+        Uri deeplinkUri = intent.getData();
+        if (deeplinkUri == null) {
+            return;
+        }
+
+        Context context = applicationContext;
+        if (context == null && activityPluginBinding != null) {
+            Activity activity = activityPluginBinding.getActivity();
+            if (activity != null) {
+                context = activity.getApplicationContext();
+            }
+        }
+
+        if (context == null) {
+            return;
+        }
+
+        AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplinkUri);
+        Adjust.processDeeplink(adjustDeeplink, context);
     }
 
     @Override
