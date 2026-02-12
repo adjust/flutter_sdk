@@ -11,6 +11,9 @@ package com.adjust.sdk.flutter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.net.Uri;
 import android.util.Log;
 
@@ -67,15 +70,18 @@ import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 
 public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAware, NewIntentListener {
     private static String TAG = "AdjustBridge";
+    private static String AUTO_DEEPLINK_HANDLING_MANIFEST_KEY = "AdjustFlutterAutoDeepLinkHandlingEnabled";
     private static boolean isDeferredDeeplinkOpeningEnabled = true;
     private MethodChannel channel;
     private Context applicationContext;
     private ActivityPluginBinding activityPluginBinding;
+    private boolean isAutoDeepLinkHandlingEnabled = false;
 
     // FlutterPlugin
     @Override
     public void onAttachedToEngine(FlutterPluginBinding binding) {
         applicationContext = binding.getApplicationContext();
+        isAutoDeepLinkHandlingEnabled = readAutoDeeplinkHandlingFromManifest(applicationContext);
         channel = new MethodChannel(binding.getBinaryMessenger(), "com.adjust.sdk/api");
         channel.setMethodCallHandler(this);
     }
@@ -127,6 +133,10 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
     }
 
     private void processDeeplinkFromIntent(final Intent intent) {
+        if (!isAutoDeepLinkHandlingEnabled) {
+            return;
+        }
+
         if (intent == null) {
             return;
         }
@@ -150,6 +160,36 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
 
         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplinkUri);
         Adjust.processDeeplink(adjustDeeplink, context);
+    }
+
+    private boolean readAutoDeeplinkHandlingFromManifest(Context context) {
+        if (context == null) {
+            return false;
+        }
+
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            if (packageManager == null) {
+                return false;
+            }
+
+            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(
+                    context.getPackageName(),
+                    PackageManager.GET_META_DATA
+            );
+            if (applicationInfo == null) {
+                return false;
+            }
+
+            Bundle metaData = applicationInfo.metaData;
+            if (metaData == null) {
+                return false;
+            }
+
+            return metaData.getBoolean(AUTO_DEEPLINK_HANDLING_MANIFEST_KEY, false);
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 
     @Override

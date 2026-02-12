@@ -24,6 +24,8 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>AdjustFlutterAutoDeepLinkHandlingEnabled</key>
+	<true/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

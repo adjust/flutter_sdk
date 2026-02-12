@@ -11,11 +11,14 @@
 #import <AdjustSdk/AdjustSdk.h>
 
 static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
+static NSString * const AUTO_DEEPLINK_HANDLING_INFO_PLIST_KEY = @"AdjustFlutterAutoDeepLinkHandlingEnabled";
 
 @interface AdjustSdk ()
 
 @property (nonatomic, retain) FlutterMethodChannel *channel;
+@property (nonatomic, assign) BOOL isAutoDeepLinkHandlingEnabled;
 - (void)processDeeplinkWithUrl:(NSURL *)deeplinkUrl referrer:(NSURL *)referrer;
+- (BOOL)readAutoDeeplinkHandlingFromInfoPlist;
 
 @end
 
@@ -28,6 +31,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                                                                 binaryMessenger:[registrar messenger]];
     AdjustSdk *instance = [[AdjustSdk alloc] init];
     instance.channel = channel;
+    instance.isAutoDeepLinkHandlingEnabled = [instance readAutoDeeplinkHandlingFromInfoPlist];
     [registrar addMethodCallDelegate:instance channel:channel];
     [registrar addApplicationDelegate:instance];
 }
@@ -40,6 +44,10 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 #pragma mark - iOS app lifecycle methods
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    if (!self.isAutoDeepLinkHandlingEnabled) {
+        return NO;
+    }
+
     NSURL *launchUrl = launchOptions[UIApplicationLaunchOptionsURLKey];
     [self processDeeplinkWithUrl:launchUrl referrer:nil];
 
@@ -62,6 +70,9 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    if (!self.isAutoDeepLinkHandlingEnabled) {
+        return NO;
+    }
     [self processDeeplinkWithUrl:url referrer:nil];
     return NO;
 }
@@ -70,6 +81,9 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
+    if (!self.isAutoDeepLinkHandlingEnabled) {
+        return NO;
+    }
     [self processDeeplinkWithUrl:url referrer:nil];
     return NO;
 }
@@ -77,6 +91,9 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 - (BOOL)application:(UIApplication *)application
 continueUserActivity:(NSUserActivity *)userActivity
  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler {
+    if (!self.isAutoDeepLinkHandlingEnabled) {
+        return NO;
+    }
     if ([self isFieldValid:userActivity]
         && [userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
         [self processDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
@@ -1118,6 +1135,17 @@ continueUserActivity:(NSUserActivity *)userActivity
     }
 
     return YES;
+}
+
+- (BOOL)readAutoDeeplinkHandlingFromInfoPlist {
+    id value = [[NSBundle mainBundle] objectForInfoDictionaryKey:AUTO_DEEPLINK_HANDLING_INFO_PLIST_KEY];
+    if ([value isKindOfClass:[NSNumber class]]) {
+        return [(NSNumber *)value boolValue];
+    }
+    if ([value isKindOfClass:[NSString class]]) {
+        return [(NSString *)value boolValue];
+    }
+    return NO;
 }
 
 - (void)processDeeplinkWithUrl:(NSURL *)deeplinkUrl referrer:(NSURL *)referrer {
