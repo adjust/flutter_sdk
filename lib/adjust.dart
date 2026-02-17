@@ -27,12 +27,106 @@ class Adjust {
   static const String _sdkPrefix = 'flutter5.5.1';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
+  static const String _attributionCallbackName = 'adj-attribution-changed';
+  static const String _sessionSuccessCallbackName = 'adj-session-success';
+  static const String _sessionFailureCallbackName = 'adj-session-failure';
+  static const String _eventSuccessCallbackName = 'adj-event-success';
+  static const String _eventFailureCallbackName = 'adj-event-failure';
+  static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
+  static const String _skanUpdatedCallbackName = 'adj-skan-updated';
+
+  static bool _isMethodCallHandlerInitialized = false;
+  static AttributionCallback? _attributionCallback;
+  static SessionSuccessCallback? _sessionSuccessCallback;
+  static SessionFailureCallback? _sessionFailureCallback;
+  static EventSuccessCallback? _eventSuccessCallback;
+  static EventFailureCallback? _eventFailureCallback;
+  static DeferredDeeplinkCallback? _deferredDeeplinkCallback;
+  static SkanUpdatedCallback? _skanUpdatedCallback;
 
   // common
 
   static void initSdk(AdjustConfig config) {
+    _initMethodCallHandler();
+    _setSdkCallbacks(config);
     config.sdkPrefix = _sdkPrefix;
     _channel.invokeMethod('initSdk', config.toMap);
+  }
+
+  static void _setSdkCallbacks(AdjustConfig config) {
+    _attributionCallback = config.attributionCallback;
+    _sessionSuccessCallback = config.sessionSuccessCallback;
+    _sessionFailureCallback = config.sessionFailureCallback;
+    _eventSuccessCallback = config.eventSuccessCallback;
+    _eventFailureCallback = config.eventFailureCallback;
+    _deferredDeeplinkCallback = config.deferredDeeplinkCallback;
+    _skanUpdatedCallback = config.skanUpdatedCallback;
+  }
+
+  static void _initMethodCallHandler() {
+    if (_isMethodCallHandlerInitialized) {
+      return;
+    }
+
+    _channel.setMethodCallHandler((MethodCall call) async {
+      try {
+        switch (call.method) {
+          case _attributionCallbackName:
+            if (_attributionCallback != null) {
+              AdjustAttribution attribution =
+                  AdjustAttribution.fromMap(call.arguments);
+              _attributionCallback!(attribution);
+            }
+            break;
+          case _sessionSuccessCallbackName:
+            if (_sessionSuccessCallback != null) {
+              AdjustSessionSuccess sessionSuccess =
+                  AdjustSessionSuccess.fromMap(call.arguments);
+              _sessionSuccessCallback!(sessionSuccess);
+            }
+            break;
+          case _sessionFailureCallbackName:
+            if (_sessionFailureCallback != null) {
+              AdjustSessionFailure sessionFailure =
+                  AdjustSessionFailure.fromMap(call.arguments);
+              _sessionFailureCallback!(sessionFailure);
+            }
+            break;
+          case _eventSuccessCallbackName:
+            if (_eventSuccessCallback != null) {
+              AdjustEventSuccess eventSuccess =
+                  AdjustEventSuccess.fromMap(call.arguments);
+              _eventSuccessCallback!(eventSuccess);
+            }
+            break;
+          case _eventFailureCallbackName:
+            if (_eventFailureCallback != null) {
+              AdjustEventFailure eventFailure =
+                  AdjustEventFailure.fromMap(call.arguments);
+              _eventFailureCallback!(eventFailure);
+            }
+            break;
+          case _deferredDeeplinkCallbackName:
+            if (_deferredDeeplinkCallback != null) {
+              String? deeplink = call.arguments['deeplink'];
+              _deferredDeeplinkCallback!(deeplink);
+            }
+            break;
+          case _skanUpdatedCallbackName:
+            if (_skanUpdatedCallback != null) {
+              _skanUpdatedCallback!(Map<String, String>.from(call.arguments));
+            }
+            break;
+          default:
+            throw new UnsupportedError(
+                '[AdjustFlutter]: Received unknown native method: ${call.method}');
+        }
+      } catch (e) {
+        print(e.toString());
+      }
+    });
+
+    _isMethodCallHandlerInitialized = true;
   }
 
   static void trackEvent(AdjustEvent event) {

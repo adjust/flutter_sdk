@@ -14,7 +14,6 @@ import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_store_info.dart';
-import 'package:flutter/services.dart';
 
 enum AdjustLogLevel { verbose, debug, info, warn, error, suppress }
 
@@ -29,8 +28,6 @@ typedef void DeferredDeeplinkCallback(String? deeplink);
 typedef void SkanUpdatedCallback(Map<String, String> skanUpdateData);
 
 class AdjustConfig {
-  static const MethodChannel _channel =
-      const MethodChannel('com.adjust.sdk/api');
   static const String _attributionCallbackName = 'adj-attribution-changed';
   static const String _sessionSuccessCallbackName = 'adj-session-success';
   static const String _sessionFailureCallbackName = 'adj-session-failure';
@@ -82,71 +79,12 @@ class AdjustConfig {
   DeferredDeeplinkCallback? deferredDeeplinkCallback;
   SkanUpdatedCallback? skanUpdatedCallback;
 
-  AdjustConfig(this._appToken, this._environment) {
-    _initCallbackHandlers();
-  }
+  AdjustConfig(this._appToken, this._environment);
 
   void setUrlStrategy(List<String> urlStrategyDomains, bool useSubdomains, bool isDataResidency) {
     _urlStrategyDomains.addAll(urlStrategyDomains);
     _useSubdomains = useSubdomains;
     _isDataResidency = isDataResidency;
-  }
-
-  void _initCallbackHandlers() {
-    _channel.setMethodCallHandler((MethodCall call) async {
-      try {
-        switch (call.method) {
-          case _attributionCallbackName:
-            if (attributionCallback != null) {
-              AdjustAttribution attribution = AdjustAttribution.fromMap(call.arguments);
-              attributionCallback!(attribution);
-            }
-            break;
-          case _sessionSuccessCallbackName:
-            if (sessionSuccessCallback != null) {
-              AdjustSessionSuccess sessionSuccess = AdjustSessionSuccess.fromMap(call.arguments);
-              sessionSuccessCallback!(sessionSuccess);
-            }
-            break;
-          case _sessionFailureCallbackName:
-            if (sessionFailureCallback != null) {
-              AdjustSessionFailure sessionFailure = AdjustSessionFailure.fromMap(call.arguments);
-              sessionFailureCallback!(sessionFailure);
-            }
-            break;
-          case _eventSuccessCallbackName:
-            if (eventSuccessCallback != null) {
-              AdjustEventSuccess eventSuccess = AdjustEventSuccess.fromMap(call.arguments);
-              eventSuccessCallback!(eventSuccess);
-            }
-            break;
-          case _eventFailureCallbackName:
-            if (eventFailureCallback != null) {
-              AdjustEventFailure eventFailure = AdjustEventFailure.fromMap(call.arguments);
-              eventFailureCallback!(eventFailure);
-            }
-            break;
-          case _deferredDeeplinkCallbackName:
-            if (deferredDeeplinkCallback != null) {
-              String? deeplink = call.arguments['deeplink'];
-              if (deferredDeeplinkCallback != null) {
-                deferredDeeplinkCallback!(deeplink);
-              }
-            }
-            break;
-          case _skanUpdatedCallbackName:
-            if (skanUpdatedCallback != null) {
-              skanUpdatedCallback!(Map<String, String>.from(call.arguments));
-            }
-            break;
-          default:
-            throw new UnsupportedError(
-                '[AdjustFlutter]: Received unknown native method: ${call.method}');
-        }
-      } catch (e) {
-        print(e.toString());
-      }
-    });
   }
 
   Map<String, String?> get toMap {
