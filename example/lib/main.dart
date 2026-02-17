@@ -183,6 +183,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       
       // configure deeplink callback
       config.deferredDeeplinkCallback = _handleDeferredDeeplink;
+      Adjust.directDeeplinkCallback = _handleDirectDeeplink;
       
       // configure SKAN callback
       config.skanUpdatedCallback = _handleSkanUpdate;
@@ -314,6 +315,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     await _processAndRouteLink(uri);
   }
 
+  /// handle direct deeplinks
+  void _handleDirectDeeplink(String? uri) {
+    print('[AdjustExample]: Received direct deeplink: $uri');
+  }
 
   /// handle SKAN updates
   void _handleSkanUpdate(Map<String, String> skanData) {
