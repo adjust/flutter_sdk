@@ -12,12 +12,19 @@
 
 static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 static NSString * const AUTO_DEEPLINK_HANDLING_INFO_PLIST_KEY = @"AdjustFlutterAutoDeepLinkHandlingEnabled";
+static NSString * const DIRECT_DEEPLINK_CALLBACK_NAME = @"adj-direct-deeplink";
 
 @interface AdjustSdk ()
 
 @property (nonatomic, retain) FlutterMethodChannel *channel;
 @property (nonatomic, assign) BOOL isAutoDeepLinkHandlingEnabled;
+@property (nonatomic, assign) BOOL isSdkInitialized;
+@property (nonatomic, strong) NSMutableArray<NSDictionary *> *cachedDirectDeeplinks;
+
 - (void)processDeeplinkWithUrl:(NSURL *)deeplinkUrl referrer:(NSURL *)referrer;
+- (void)processCapturedDeeplinkWithUrl:(NSURL *)deeplinkUrl referrer:(NSURL *)referrer;
+- (void)dispatchOrCacheDirectDeeplink:(NSDictionary *)deeplinkMap;
+- (void)flushCachedDirectDeeplinks;
 - (BOOL)readAutoDeeplinkHandlingFromInfoPlist;
 
 @end
@@ -32,6 +39,8 @@ static NSString * const AUTO_DEEPLINK_HANDLING_INFO_PLIST_KEY = @"AdjustFlutterA
     AdjustSdk *instance = [[AdjustSdk alloc] init];
     instance.channel = channel;
     instance.isAutoDeepLinkHandlingEnabled = [instance readAutoDeeplinkHandlingFromInfoPlist];
+    instance.isSdkInitialized = NO;
+    instance.cachedDirectDeeplinks = [NSMutableArray array];
     [registrar addMethodCallDelegate:instance channel:channel];
     [registrar addApplicationDelegate:instance];
 }
@@ -39,6 +48,8 @@ static NSString * const AUTO_DEEPLINK_HANDLING_INFO_PLIST_KEY = @"AdjustFlutterA
 - (void)dealloc {
     [self.channel setMethodCallHandler:nil];
     self.channel = nil;
+    [self.cachedDirectDeeplinks removeAllObjects];
+    self.cachedDirectDeeplinks = nil;
 }
 
 #pragma mark - iOS app lifecycle methods
@@ -49,7 +60,7 @@ static NSString * const AUTO_DEEPLINK_HANDLING_INFO_PLIST_KEY = @"AdjustFlutterA
     }
 
     NSURL *launchUrl = launchOptions[UIApplicationLaunchOptionsURLKey];
-    [self processDeeplinkWithUrl:launchUrl referrer:nil];
+    [self processCapturedDeeplinkWithUrl:launchUrl referrer:nil];
 
     NSDictionary *userActivityDictionary = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
     NSUserActivity *userActivity = nil;
@@ -61,7 +72,7 @@ static NSString * const AUTO_DEEPLINK_HANDLING_INFO_PLIST_KEY = @"AdjustFlutterA
     }
     if ([self isFieldValid:userActivity]
         && [userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-        [self processDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
+        [self processCapturedDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
     }
 
     return NO;
@@ -73,7 +84,7 @@ static NSString * const AUTO_DEEPLINK_HANDLING_INFO_PLIST_KEY = @"AdjustFlutterA
     if (!self.isAutoDeepLinkHandlingEnabled) {
         return NO;
     }
-    [self processDeeplinkWithUrl:url referrer:nil];
+    [self processCapturedDeeplinkWithUrl:url referrer:nil];
     return NO;
 }
 
@@ -84,7 +95,7 @@ static NSString * const AUTO_DEEPLINK_HANDLING_INFO_PLIST_KEY = @"AdjustFlutterA
     if (!self.isAutoDeepLinkHandlingEnabled) {
         return NO;
     }
-    [self processDeeplinkWithUrl:url referrer:nil];
+    [self processCapturedDeeplinkWithUrl:url referrer:nil];
     return NO;
 }
 
@@ -96,7 +107,7 @@ continueUserActivity:(NSUserActivity *)userActivity
     }
     if ([self isFieldValid:userActivity]
         && [userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-        [self processDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
+        [self processCapturedDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
     }
     return NO;
 }
@@ -428,6 +439,8 @@ continueUserActivity:(NSUserActivity *)userActivity
 
     // start SDK
     [Adjust initSdk:adjustConfig];
+    self.isSdkInitialized = YES;
+    [self flushCachedDirectDeeplinks];
     result(nil);
 }
 
@@ -1158,6 +1171,43 @@ continueUserActivity:(NSUserActivity *)userActivity
         [deeplink setReferrer:referrer];
     }
     [Adjust processDeeplink:deeplink];
+}
+
+- (void)processCapturedDeeplinkWithUrl:(NSURL *)deeplinkUrl referrer:(NSURL *)referrer {
+    if (![self isFieldValid:deeplinkUrl]) {
+        return;
+    }
+
+    NSMutableDictionary *deeplinkMap = [NSMutableDictionary dictionary];
+    [deeplinkMap setObject:[deeplinkUrl absoluteString] forKey:@"deeplink"];
+    if ([self isFieldValid:referrer]) {
+        [deeplinkMap setObject:[referrer absoluteString] forKey:@"referrer"];
+    }
+    [self dispatchOrCacheDirectDeeplink:deeplinkMap];
+}
+
+- (void)dispatchOrCacheDirectDeeplink:(NSDictionary *)deeplinkMap {
+    if (![self isFieldValid:deeplinkMap]) {
+        return;
+    }
+
+    if (!self.isSdkInitialized || self.channel == nil) {
+        [self.cachedDirectDeeplinks addObject:deeplinkMap];
+        return;
+    }
+
+    [self.channel invokeMethod:DIRECT_DEEPLINK_CALLBACK_NAME arguments:deeplinkMap];
+}
+
+- (void)flushCachedDirectDeeplinks {
+    if (!self.isSdkInitialized || self.channel == nil || [self.cachedDirectDeeplinks count] == 0) {
+        return;
+    }
+
+    for (NSDictionary *deeplinkMap in self.cachedDirectDeeplinks) {
+        [self.channel invokeMethod:DIRECT_DEEPLINK_CALLBACK_NAME arguments:deeplinkMap];
+    }
+    [self.cachedDirectDeeplinks removeAllObjects];
 }
 
 - (void)addValueOrEmpty:(NSObject *)value

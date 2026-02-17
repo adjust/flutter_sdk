@@ -8,7 +8,6 @@
 
 package com.adjust.sdk.flutter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -71,11 +70,14 @@ import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAware, NewIntentListener {
     private static String TAG = "AdjustBridge";
     private static String AUTO_DEEPLINK_HANDLING_MANIFEST_KEY = "AdjustFlutterAutoDeepLinkHandlingEnabled";
+    private static String DIRECT_DEEPLINK_CALLBACK_NAME = "adj-direct-deeplink";
     private static boolean isDeferredDeeplinkOpeningEnabled = true;
     private MethodChannel channel;
     private Context applicationContext;
     private ActivityPluginBinding activityPluginBinding;
     private boolean isAutoDeepLinkHandlingEnabled = false;
+    private boolean isSdkInitialized = false;
+    private final ArrayList<HashMap<String, String>> cachedDirectDeeplinks = new ArrayList<>();
 
     // FlutterPlugin
     @Override
@@ -89,6 +91,8 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
     @Override
     public void onDetachedFromEngine(FlutterPluginBinding binding) {
         detachFromActivity();
+        isSdkInitialized = false;
+        cachedDirectDeeplinks.clear();
         applicationContext = null;
         if (channel != null) {
             channel.setMethodCallHandler(null);
@@ -146,20 +150,37 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
             return;
         }
 
-        Context context = applicationContext;
-        if (context == null && activityPluginBinding != null) {
-            Activity activity = activityPluginBinding.getActivity();
-            if (activity != null) {
-                context = activity.getApplicationContext();
-            }
-        }
+        dispatchOrCacheDirectDeeplink(deeplinkUri, null);
+    }
 
-        if (context == null) {
+    private void dispatchOrCacheDirectDeeplink(final Uri deeplinkUri, final Uri referrerUri) {
+        if (deeplinkUri == null) {
             return;
         }
 
-        AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplinkUri);
-        Adjust.processDeeplink(adjustDeeplink, context);
+        HashMap<String, String> uriParamsMap = new HashMap<String, String>();
+        uriParamsMap.put("deeplink", deeplinkUri.toString());
+        if (referrerUri != null) {
+            uriParamsMap.put("referrer", referrerUri.toString());
+        }
+
+        if (!isSdkInitialized || channel == null) {
+            cachedDirectDeeplinks.add(uriParamsMap);
+            return;
+        }
+
+        channel.invokeMethod(DIRECT_DEEPLINK_CALLBACK_NAME, uriParamsMap);
+    }
+
+    private void flushCachedDirectDeeplinks() {
+        if (!isSdkInitialized || channel == null || cachedDirectDeeplinks.isEmpty()) {
+            return;
+        }
+
+        for (HashMap<String, String> deeplinkMap : cachedDirectDeeplinks) {
+            channel.invokeMethod(DIRECT_DEEPLINK_CALLBACK_NAME, deeplinkMap);
+        }
+        cachedDirectDeeplinks.clear();
     }
 
     private boolean readAutoDeeplinkHandlingFromManifest(Context context) {
@@ -722,6 +743,8 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
 
         // initialize SDK
         Adjust.initSdk(adjustConfig);
+        isSdkInitialized = true;
+        flushCachedDirectDeeplinks();
         result.success(null);
     }
 

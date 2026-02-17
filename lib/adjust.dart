@@ -14,14 +14,20 @@ import 'package:adjust_sdk/adjust_app_store_purchase.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
+import 'package:adjust_sdk/adjust_event_failure.dart';
+import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_play_store_purchase.dart';
 import 'package:adjust_sdk/adjust_play_store_subscription.dart';
 import 'package:adjust_sdk/adjust_purchase_verification_result.dart';
+import 'package:adjust_sdk/adjust_session_failure.dart';
+import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
 import 'package:adjust_sdk/adjust_deeplink.dart';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
+
+typedef void DirectDeeplinkCallback(String? deeplink);
 
 class Adjust {
   static const String _sdkPrefix = 'flutter5.5.1';
@@ -33,6 +39,7 @@ class Adjust {
   static const String _eventSuccessCallbackName = 'adj-event-success';
   static const String _eventFailureCallbackName = 'adj-event-failure';
   static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
+  static const String _directDeeplinkCallbackName = 'adj-direct-deeplink';
   static const String _skanUpdatedCallbackName = 'adj-skan-updated';
 
   static bool _isMethodCallHandlerInitialized = false;
@@ -43,6 +50,11 @@ class Adjust {
   static EventFailureCallback? _eventFailureCallback;
   static DeferredDeeplinkCallback? _deferredDeeplinkCallback;
   static SkanUpdatedCallback? _skanUpdatedCallback;
+  static DirectDeeplinkCallback? _directDeeplinkCallback;
+
+  static set directDeeplinkCallback(DirectDeeplinkCallback? callback) {
+    _directDeeplinkCallback = callback;
+  }
 
   // common
 
@@ -112,6 +124,10 @@ class Adjust {
               _deferredDeeplinkCallback!(deeplink);
             }
             break;
+          case _directDeeplinkCallbackName:
+            String? deeplink = call.arguments['deeplink'];
+            _onDirectDeeplinkReceived(deeplink);
+            break;
           case _skanUpdatedCallbackName:
             if (_skanUpdatedCallback != null) {
               _skanUpdatedCallback!(Map<String, String>.from(call.arguments));
@@ -127,6 +143,12 @@ class Adjust {
     });
 
     _isMethodCallHandlerInitialized = true;
+  }
+
+  static void _onDirectDeeplinkReceived(String? deeplink) {
+    if (_directDeeplinkCallback != null) {
+      _directDeeplinkCallback!(deeplink);
+    }
   }
 
   static void trackEvent(AdjustEvent event) {
