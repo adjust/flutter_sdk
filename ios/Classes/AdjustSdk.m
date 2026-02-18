@@ -39,6 +39,12 @@ static NSString * const DIRECT_DEEPLINK_CALLBACK_NAME = @"adj-direct-deeplink";
     instance.cachedDirectDeeplinks = [NSMutableArray array];
     [registrar addMethodCallDelegate:instance channel:channel];
     [registrar addApplicationDelegate:instance];
+#if ADJUST_FLUTTER_HAS_SCENE_LIFECYCLE
+    id registrarObject = registrar;
+    if ([registrarObject respondsToSelector:@selector(addSceneDelegate:)]) {
+        [registrarObject addSceneDelegate:instance];
+    }
+#endif
 }
 
 - (void)dealloc {
@@ -94,6 +100,58 @@ continueUserActivity:(NSUserActivity *)userActivity
     }
     return NO;
 }
+
+#if ADJUST_FLUTTER_HAS_SCENE_LIFECYCLE
+- (BOOL)scene:(UIScene *)scene
+willConnectToSession:(UISceneSession *)session
+      options:(UISceneConnectionOptions *)connectionOptions API_AVAILABLE(ios(13.0)) {
+    if (connectionOptions == nil) {
+        return NO;
+    }
+
+    for (NSUserActivity *userActivity in connectionOptions.userActivities) {
+        if (![self isFieldValid:userActivity]) {
+            continue;
+        }
+        if (![userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+            continue;
+        }
+        [self processCapturedDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
+    }
+
+    for (UIOpenURLContext *urlContext in connectionOptions.URLContexts) {
+        if (![self isFieldValid:urlContext.URL]) {
+            continue;
+        }
+        [self processCapturedDeeplinkWithUrl:urlContext.URL referrer:nil];
+    }
+
+    return NO;
+}
+
+- (BOOL)scene:(UIScene *)scene
+openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts API_AVAILABLE(ios(13.0)) {
+    for (UIOpenURLContext *urlContext in URLContexts) {
+        if (![self isFieldValid:urlContext.URL]) {
+            continue;
+        }
+        [self processCapturedDeeplinkWithUrl:urlContext.URL referrer:nil];
+    }
+    return NO;
+}
+
+- (BOOL)scene:(UIScene *)scene
+continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
+    if (![self isFieldValid:userActivity]) {
+        return NO;
+    }
+    if (![userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        return NO;
+    }
+    [self processCapturedDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
+    return NO;
+}
+#endif
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
     if ([@"initSdk" isEqualToString:call.method]) {
