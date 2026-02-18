@@ -10,9 +10,6 @@ package com.adjust.sdk.flutter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
 import android.net.Uri;
 import android.util.Log;
 
@@ -69,13 +66,11 @@ import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 
 public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAware, NewIntentListener {
     private static String TAG = "AdjustBridge";
-    private static String AUTO_DEEPLINK_HANDLING_MANIFEST_KEY = "AdjustFlutterAutoDeepLinkHandlingEnabled";
     private static String DIRECT_DEEPLINK_CALLBACK_NAME = "adj-direct-deeplink";
     private static boolean isDeferredDeeplinkOpeningEnabled = true;
     private MethodChannel channel;
     private Context applicationContext;
     private ActivityPluginBinding activityPluginBinding;
-    private boolean isAutoDeepLinkHandlingEnabled = false;
     private boolean isSdkInitialized = false;
     private final ArrayList<HashMap<String, String>> cachedDirectDeeplinks = new ArrayList<>();
 
@@ -83,7 +78,6 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
     @Override
     public void onAttachedToEngine(FlutterPluginBinding binding) {
         applicationContext = binding.getApplicationContext();
-        isAutoDeepLinkHandlingEnabled = readAutoDeeplinkHandlingFromManifest(applicationContext);
         channel = new MethodChannel(binding.getBinaryMessenger(), "com.adjust.sdk/api");
         channel.setMethodCallHandler(this);
     }
@@ -137,10 +131,6 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
     }
 
     private void processDeeplinkFromIntent(final Intent intent) {
-        if (!isAutoDeepLinkHandlingEnabled) {
-            return;
-        }
-
         if (intent == null) {
             return;
         }
@@ -181,36 +171,6 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
             channel.invokeMethod(DIRECT_DEEPLINK_CALLBACK_NAME, deeplinkMap);
         }
         cachedDirectDeeplinks.clear();
-    }
-
-    private boolean readAutoDeeplinkHandlingFromManifest(Context context) {
-        if (context == null) {
-            return false;
-        }
-
-        try {
-            PackageManager packageManager = context.getPackageManager();
-            if (packageManager == null) {
-                return false;
-            }
-
-            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(
-                    context.getPackageName(),
-                    PackageManager.GET_META_DATA
-            );
-            if (applicationInfo == null) {
-                return false;
-            }
-
-            Bundle metaData = applicationInfo.metaData;
-            if (metaData == null) {
-                return false;
-            }
-
-            return metaData.getBoolean(AUTO_DEEPLINK_HANDLING_MANIFEST_KEY, false);
-        } catch (Exception ignored) {
-            return false;
-        }
     }
 
     @Override

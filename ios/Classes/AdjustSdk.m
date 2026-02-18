@@ -11,13 +11,11 @@
 #import <AdjustSdk/AdjustSdk.h>
 
 static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
-static NSString * const AUTO_DEEPLINK_HANDLING_INFO_PLIST_KEY = @"AdjustFlutterAutoDeepLinkHandlingEnabled";
 static NSString * const DIRECT_DEEPLINK_CALLBACK_NAME = @"adj-direct-deeplink";
 
 @interface AdjustSdk ()
 
 @property (nonatomic, retain) FlutterMethodChannel *channel;
-@property (nonatomic, assign) BOOL isAutoDeepLinkHandlingEnabled;
 @property (nonatomic, assign) BOOL isSdkInitialized;
 @property (nonatomic, strong) NSMutableArray<NSDictionary *> *cachedDirectDeeplinks;
 
@@ -25,7 +23,6 @@ static NSString * const DIRECT_DEEPLINK_CALLBACK_NAME = @"adj-direct-deeplink";
 - (void)processCapturedDeeplinkWithUrl:(NSURL *)deeplinkUrl referrer:(NSURL *)referrer;
 - (void)dispatchOrCacheDirectDeeplink:(NSDictionary *)deeplinkMap;
 - (void)flushCachedDirectDeeplinks;
-- (BOOL)readAutoDeeplinkHandlingFromInfoPlist;
 
 @end
 
@@ -38,7 +35,6 @@ static NSString * const DIRECT_DEEPLINK_CALLBACK_NAME = @"adj-direct-deeplink";
                                                                 binaryMessenger:[registrar messenger]];
     AdjustSdk *instance = [[AdjustSdk alloc] init];
     instance.channel = channel;
-    instance.isAutoDeepLinkHandlingEnabled = [instance readAutoDeeplinkHandlingFromInfoPlist];
     instance.isSdkInitialized = NO;
     instance.cachedDirectDeeplinks = [NSMutableArray array];
     [registrar addMethodCallDelegate:instance channel:channel];
@@ -55,10 +51,6 @@ static NSString * const DIRECT_DEEPLINK_CALLBACK_NAME = @"adj-direct-deeplink";
 #pragma mark - iOS app lifecycle methods
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    if (!self.isAutoDeepLinkHandlingEnabled) {
-        return NO;
-    }
-
     NSURL *launchUrl = launchOptions[UIApplicationLaunchOptionsURLKey];
     [self processCapturedDeeplinkWithUrl:launchUrl referrer:nil];
 
@@ -81,9 +73,6 @@ static NSString * const DIRECT_DEEPLINK_CALLBACK_NAME = @"adj-direct-deeplink";
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    if (!self.isAutoDeepLinkHandlingEnabled) {
-        return NO;
-    }
     [self processCapturedDeeplinkWithUrl:url referrer:nil];
     return NO;
 }
@@ -92,9 +81,6 @@ static NSString * const DIRECT_DEEPLINK_CALLBACK_NAME = @"adj-direct-deeplink";
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
-    if (!self.isAutoDeepLinkHandlingEnabled) {
-        return NO;
-    }
     [self processCapturedDeeplinkWithUrl:url referrer:nil];
     return NO;
 }
@@ -102,9 +88,6 @@ static NSString * const DIRECT_DEEPLINK_CALLBACK_NAME = @"adj-direct-deeplink";
 - (BOOL)application:(UIApplication *)application
 continueUserActivity:(NSUserActivity *)userActivity
  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler {
-    if (!self.isAutoDeepLinkHandlingEnabled) {
-        return NO;
-    }
     if ([self isFieldValid:userActivity]
         && [userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
         [self processCapturedDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
@@ -1148,17 +1131,6 @@ continueUserActivity:(NSUserActivity *)userActivity
     }
 
     return YES;
-}
-
-- (BOOL)readAutoDeeplinkHandlingFromInfoPlist {
-    id value = [[NSBundle mainBundle] objectForInfoDictionaryKey:AUTO_DEEPLINK_HANDLING_INFO_PLIST_KEY];
-    if ([value isKindOfClass:[NSNumber class]]) {
-        return [(NSNumber *)value boolValue];
-    }
-    if ([value isKindOfClass:[NSString class]]) {
-        return [(NSString *)value boolValue];
-    }
-    return NO;
 }
 
 - (void)processDeeplinkWithUrl:(NSURL *)deeplinkUrl referrer:(NSURL *)referrer {
