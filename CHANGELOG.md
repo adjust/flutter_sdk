@@ -1,3 +1,12 @@
+### Version 5.5.1 (9th March 2026)
+#### Fixed
+- Fixed an Android build failure (`Cannot run Project.afterEvaluate(Action) when the project is already evaluated`) by handling Gradle evaluation order when `:adjust_sdk` is evaluated before the host `:app` project.
+
+#### Changed
+- Updated the example app to showcase recommended `app_links` usage for deep link handling with Adjust.
+
+---
+
 ### Version 5.5.0 (6th December 2025)
 #### Added
 - Added `getAdidWithTimeout` method to the `Adjust` API to allow retrieving the ADID with a specified timeout. If the value is not obtained in time, nil is returned.
