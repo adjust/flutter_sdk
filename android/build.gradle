@@ -1,28 +1,13 @@
 group 'com.adjust.sdk.flutter'
 version '1.0-SNAPSHOT'
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
 
-    dependencies {
-        classpath('com.android.tools.build:gradle:8.13.0')
-    }
-}
-rootProject.allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-        }
-    }
-}
 apply plugin: 'com.android.library'
+
+def hostAppProject = rootProject.findProject(':app')
+if (hostAppProject != null) {
+    project.evaluationDependsOn(hostAppProject.path)
+}
+
 android {
     compileSdkVersion 36
 
@@ -34,8 +19,14 @@ android {
         disable 'InvalidPackage'
     }
     namespace 'com.adjust.sdk.flutter'
+
+    buildTypes {
+        release {}
+        debug {}
+        profile {}
+    }
 }
 
 dependencies {
-    implementation 'com.adjust.sdk:adjust-android:5.5.0'
+    implementation 'com.adjust.sdk:adjust-android:5.5.1'
 }
