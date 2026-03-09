@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  app_links: ^7.0.0
+  app_links: ^6.4.1
   adjust_sdk:
     path: ../
 
