@@ -309,6 +309,7 @@ continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
     NSString *dartEventSuccessCallback = call.arguments[@"eventSuccessCallback"];
     NSString *dartEventFailureCallback = call.arguments[@"eventFailureCallback"];
     NSString *dartDeferredDeeplinkCallback = call.arguments[@"deferredDeeplinkCallback"];
+    NSString *dartRemoteTriggerCallback = call.arguments[@"remoteTriggerCallback"];
     NSString *dartSkanUpdatedCallback = call.arguments[@"skanUpdatedCallback"];
     BOOL allowSuppressLogLevel = NO;
     BOOL launchDeferredDeeplink = [call.arguments[@"launchDeferredDeeplink"] boolValue];
@@ -465,6 +466,7 @@ continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
         || dartEventSuccessCallback != nil
         || dartEventFailureCallback != nil
         || dartDeferredDeeplinkCallback != nil
+        || dartRemoteTriggerCallback != nil
         || dartSkanUpdatedCallback != nil) {
         [adjustConfig setDelegate:
          [AdjustSdkDelegate getInstanceWithSwizzleOfAttributionCallback:dartAttributionCallback
@@ -473,6 +475,7 @@ continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
                                                    eventSuccessCallback:dartEventSuccessCallback
                                                    eventFailureCallback:dartEventFailureCallback
                                                deferredDeeplinkCallback:dartDeferredDeeplinkCallback
+                                                remoteTriggerCallback:dartRemoteTriggerCallback
                                                     skanUpdatedCallback:dartSkanUpdatedCallback
                                            shouldLaunchDeferredDeeplink:launchDeferredDeeplink
                                                           methodChannel:self.channel]];

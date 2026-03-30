@@ -25,6 +25,7 @@ import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
 import 'package:adjust_sdk/adjust_purchase_verification_result.dart';
 import 'package:adjust_sdk/adjust_deeplink.dart';
+import 'package:adjust_sdk/adjust_remote_trigger.dart';
 import 'package:adjust_sdk/adjust_store_info.dart';
 import 'package:test_app/command.dart';
 import 'package:test_lib/test_lib.dart';
@@ -452,6 +453,7 @@ class CommandExecutor {
     adjustConfig.eventSuccessCallback = null;
     adjustConfig.eventFailureCallback = null;
     adjustConfig.deferredDeeplinkCallback = null;
+    adjustConfig.remoteTriggerCallback = null;
     adjustConfig.skanUpdatedCallback = null;
 
     // TODO: Deeplinking in Flutter example.
@@ -599,6 +601,18 @@ class CommandExecutor {
         print(
             '[CommandExecutor]: Skan Callback: $data');
         data.forEach((k, v) => TestLib.addInfoToSend(k, v));
+        TestLib.sendInfoToServer(localBasePath);
+      };
+    }
+
+    if (_command.containsParameter('remoteTriggerCallback')) {
+      String? localBasePath = _extraPath;
+      adjustConfig.remoteTriggerCallback =
+          (AdjustRemoteTrigger remoteTrigger) {
+        print(
+            '[CommandExecutor]: Remote Trigger Callback: ${remoteTrigger.label}, payload: ${remoteTrigger.payload}');
+        TestLib.addInfoToSend('label', remoteTrigger.label);
+        TestLib.addInfoToSend('payload', jsonEncode(remoteTrigger.payload));
         TestLib.sendInfoToServer(localBasePath);
       };
     }

@@ -19,6 +19,7 @@ import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_play_store_purchase.dart';
 import 'package:adjust_sdk/adjust_play_store_subscription.dart';
 import 'package:adjust_sdk/adjust_purchase_verification_result.dart';
+import 'package:adjust_sdk/adjust_remote_trigger.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
@@ -38,6 +39,7 @@ class Adjust {
   static const String _eventFailureCallbackName = 'adj-event-failure';
   static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
   static const String _directDeeplinkCallbackName = 'adj-direct-deeplink';
+  static const String _remoteTriggerCallbackName = 'adj-remote-trigger';
   static const String _skanUpdatedCallbackName = 'adj-skan-updated';
 
   static bool _isMethodCallHandlerInitialized = false;
@@ -49,6 +51,7 @@ class Adjust {
   static DeferredDeeplinkCallback? _deferredDeeplinkCallback;
   static SkanUpdatedCallback? _skanUpdatedCallback;
   static DirectDeeplinkCallback? _directDeeplinkCallback;
+  static RemoteTriggerCallback? _remoteTriggerCallback;
 
   // common
 
@@ -67,6 +70,7 @@ class Adjust {
     _eventFailureCallback = config.eventFailureCallback;
     _deferredDeeplinkCallback = config.deferredDeeplinkCallback;
     _directDeeplinkCallback = config.directDeeplinkCallback;
+    _remoteTriggerCallback = config.remoteTriggerCallback;
     _skanUpdatedCallback = config.skanUpdatedCallback;
   }
 
@@ -122,6 +126,13 @@ class Adjust {
           case _directDeeplinkCallbackName:
             String? deeplink = call.arguments['deeplink'];
             _onDirectDeeplinkReceived(deeplink);
+            break;
+          case _remoteTriggerCallbackName:
+            if (_remoteTriggerCallback != null) {
+              AdjustRemoteTrigger remoteTrigger =
+                  AdjustRemoteTrigger.fromMap(call.arguments);
+              _remoteTriggerCallback!(remoteTrigger);
+            }
             break;
           case _skanUpdatedCallbackName:
             if (_skanUpdatedCallback != null) {

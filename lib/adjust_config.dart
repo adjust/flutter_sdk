@@ -11,6 +11,7 @@ import 'dart:convert';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
+import 'package:adjust_sdk/adjust_remote_trigger.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_store_info.dart';
@@ -26,6 +27,7 @@ typedef void EventSuccessCallback(AdjustEventSuccess successData);
 typedef void EventFailureCallback(AdjustEventFailure failureData);
 typedef void DeferredDeeplinkCallback(String? deeplink);
 typedef void DirectDeeplinkCallback(String? deeplink);
+typedef void RemoteTriggerCallback(AdjustRemoteTrigger remoteTrigger);
 typedef void SkanUpdatedCallback(Map<String, String> skanUpdateData);
 
 class AdjustConfig {
@@ -35,6 +37,7 @@ class AdjustConfig {
   static const String _eventSuccessCallbackName = 'adj-event-success';
   static const String _eventFailureCallbackName = 'adj-event-failure';
   static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
+  static const String _remoteTriggerCallbackName = 'adj-remote-trigger';
   static const String _skanUpdatedCallbackName = 'adj-skan-updated';
 
   final String _appToken;
@@ -79,6 +82,7 @@ class AdjustConfig {
   EventFailureCallback? eventFailureCallback;
   DeferredDeeplinkCallback? deferredDeeplinkCallback;
   DirectDeeplinkCallback? directDeeplinkCallback;
+  RemoteTriggerCallback? remoteTriggerCallback;
   SkanUpdatedCallback? skanUpdatedCallback;
 
   AdjustConfig(this._appToken, this._environment);
@@ -200,6 +204,9 @@ class AdjustConfig {
     }
     if (deferredDeeplinkCallback != null) {
       configMap['deferredDeeplinkCallback'] = _deferredDeeplinkCallbackName;
+    }
+    if (remoteTriggerCallback != null) {
+      configMap['remoteTriggerCallback'] = _remoteTriggerCallbackName;
     }
     if (skanUpdatedCallback != null) {
       configMap['skanUpdatedCallback'] = _skanUpdatedCallbackName;

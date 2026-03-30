@@ -17,6 +17,7 @@ static NSString *dartSessionFailureCallback = nil;
 static NSString *dartEventSuccessCallback = nil;
 static NSString *dartEventFailureCallback = nil;
 static NSString *dartDeferredDeeplinkCallback = nil;
+static NSString *dartRemoteTriggerCallback = nil;
 static NSString *dartSkanUpdatedCallback = nil;
 
 @implementation AdjustSdkDelegate
@@ -39,6 +40,7 @@ static NSString *dartSkanUpdatedCallback = nil;
                              eventSuccessCallback:(NSString *)swizzleEventSuccessCallback
                              eventFailureCallback:(NSString *)swizzleEventFailureCallback
                          deferredDeeplinkCallback:(NSString *)swizzleDeferredDeeplinkCallback
+                             remoteTriggerCallback:(NSString *)swizzleRemoteTriggerCallback
                               skanUpdatedCallback:(NSString *)swizzleSkanUpdatedCallback
                      shouldLaunchDeferredDeeplink:(BOOL)shouldLaunchDeferredDeeplink
                                     methodChannel:(FlutterMethodChannel *)channel {
@@ -76,6 +78,11 @@ static NSString *dartSkanUpdatedCallback = nil;
                                   swizzledSelector:@selector(adjustDeferredDeeplinkReceivedWannabe:)];
             dartDeferredDeeplinkCallback = swizzleDeferredDeeplinkCallback;
         }
+        if (swizzleRemoteTriggerCallback != nil) {
+            [defaultInstance swizzleCallbackMethod:@selector(adjustRemoteTriggerReceived:)
+                                  swizzledSelector:@selector(adjustRemoteTriggerReceivedWannabe:)];
+            dartRemoteTriggerCallback = swizzleRemoteTriggerCallback;
+        }
         if (swizzleSkanUpdatedCallback != nil) {
             [defaultInstance swizzleCallbackMethod:@selector(adjustSkanUpdatedWithConversionData:)
                                   swizzledSelector:@selector(adjustSkanUpdatedWithConversionDataWannabe:)];
@@ -98,6 +105,7 @@ static NSString *dartSkanUpdatedCallback = nil;
     dartEventSuccessCallback = nil;
     dartEventFailureCallback = nil;
     dartDeferredDeeplinkCallback = nil;
+    dartRemoteTriggerCallback = nil;
     dartSkanUpdatedCallback = nil;
 }
 
@@ -284,6 +292,26 @@ static NSString *dartSkanUpdatedCallback = nil;
     }
 
     [self.channel invokeMethod:dartSkanUpdatedCallback arguments:data];
+}
+
+- (void)adjustRemoteTriggerReceivedWannabe:(ADJRemoteTrigger *)remoteTrigger {
+    if (nil == remoteTrigger || nil == dartRemoteTriggerCallback) {
+        return;
+    }
+
+    id keys[] = {
+        @"label",
+        @"payload",
+    };
+    id values[] = {
+        [self getValueOrEmpty:[remoteTrigger label]],
+        [self getObjectValueOrEmpty:[remoteTrigger payload]],
+    };
+    NSUInteger count = sizeof(values) / sizeof(id);
+    NSDictionary *remoteTriggerMap = [NSDictionary dictionaryWithObjects:values
+                                                                 forKeys:keys
+                                                                   count:count];
+    [self.channel invokeMethod:dartRemoteTriggerCallback arguments:remoteTriggerMap];
 }
 
 - (void)swizzleCallbackMethod:(SEL)originalSelector
