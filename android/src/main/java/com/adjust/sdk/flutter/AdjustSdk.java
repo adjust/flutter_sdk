@@ -24,6 +24,7 @@ import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustPlayStoreSubscription;
 import com.adjust.sdk.AdjustPurchaseVerificationResult;
+import com.adjust.sdk.AdjustRemoteTrigger;
 import com.adjust.sdk.AdjustStoreInfo;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.AdjustTestOptions;
@@ -35,6 +36,7 @@ import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
+import com.adjust.sdk.OnRemoteTriggerListener;
 import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 import com.adjust.sdk.OnLastDeeplinkReadListener;
 import com.adjust.sdk.OnDeeplinkResolvedListener;
@@ -696,6 +698,21 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
                             channel.invokeMethod(dartMethodName, uriParamsMap);
                         }
                         return isDeferredDeeplinkOpeningEnabled;
+                    }
+                });
+            }
+        }
+
+        // remote trigger callback
+        if (configMap.containsKey("remoteTriggerCallback")) {
+            final String dartMethodName = (String) configMap.get("remoteTriggerCallback");
+            if (dartMethodName != null) {
+                adjustConfig.setOnRemoteTriggerListener(new OnRemoteTriggerListener() {
+                    @Override
+                    public void onRemoteTrigger(AdjustRemoteTrigger remoteTrigger) {
+                        if (channel != null) {
+                            channel.invokeMethod(dartMethodName, getRemoteTriggerMap(remoteTrigger));
+                        }
                     }
                 });
             }
@@ -1591,5 +1608,70 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
         }
 
         Adjust.setTestOptions(testOptions);
+    }
+
+    private HashMap<String, Object> getRemoteTriggerMap(AdjustRemoteTrigger remoteTrigger) {
+        HashMap<String, Object> remoteTriggerMap = new HashMap<String, Object>();
+        if (remoteTrigger == null) {
+            remoteTriggerMap.put("label", "");
+            remoteTriggerMap.put("payload", new HashMap<String, Object>());
+            return remoteTriggerMap;
+        }
+
+        remoteTriggerMap.put("label", remoteTrigger.getLabel());
+        remoteTriggerMap.put("payload", jsonObjectToMap(remoteTrigger.getPayload()));
+        return remoteTriggerMap;
+    }
+
+    private HashMap<String, Object> jsonObjectToMap(JSONObject jsonObject) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        if (jsonObject == null) {
+            return map;
+        }
+
+        JSONArray names = jsonObject.names();
+        if (names == null) {
+            return map;
+        }
+
+        for (int i = 0; i < names.length(); ++i) {
+            String key = names.optString(i, null);
+            if (key == null) {
+                continue;
+            }
+
+            map.put(key, jsonValueToObject(jsonObject.opt(key)));
+        }
+
+        return map;
+    }
+
+    private ArrayList<Object> jsonArrayToList(JSONArray jsonArray) {
+        ArrayList<Object> list = new ArrayList<Object>();
+        if (jsonArray == null) {
+            return list;
+        }
+
+        for (int i = 0; i < jsonArray.length(); ++i) {
+            list.add(jsonValueToObject(jsonArray.opt(i)));
+        }
+
+        return list;
+    }
+
+    private Object jsonValueToObject(Object value) {
+        if (value == null || value == JSONObject.NULL) {
+            return null;
+        }
+
+        if (value instanceof JSONObject) {
+            return jsonObjectToMap((JSONObject) value);
+        }
+
+        if (value instanceof JSONArray) {
+            return jsonArrayToList((JSONArray) value);
+        }
+
+        return value;
     }
 }
