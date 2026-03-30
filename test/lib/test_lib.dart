@@ -62,6 +62,31 @@ class TestLib {
     _channel.invokeMethod('sendInfoToServer', {'basePath': basePath});
   }
 
+  static void sendInfoMapToServer(
+      String? basePath, Map<String, String?> info) {
+    if (basePath == null) {
+      print(
+          '[TestLibrary]: Skip sending info to server with base path set to null.');
+      return;
+    }
+
+    final Map<String, String> filteredInfo = <String, String>{};
+    info.forEach((String key, String? value) {
+      if (value == null) {
+        print(
+            '[TestLibrary]: Skip adding info to server for key [$key]. Value is null.');
+        return;
+      }
+
+      filteredInfo[key] = value;
+    });
+
+    _channel.invokeMethod('sendInfoMapToServer', {
+      'basePath': basePath,
+      'info': filteredInfo,
+    });
+  }
+
   static void addTest(String? testName) {
     if (testName == null) {
       print('[TestLibrary]: Skip adding test with null value for the name.');

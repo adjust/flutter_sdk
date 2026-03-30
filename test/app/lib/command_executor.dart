@@ -611,9 +611,10 @@ class CommandExecutor {
           (AdjustRemoteTrigger remoteTrigger) {
         print(
             '[CommandExecutor]: Remote Trigger Callback: ${remoteTrigger.label}, payload: ${remoteTrigger.payload}');
-        TestLib.addInfoToSend('label', remoteTrigger.label);
-        TestLib.addInfoToSend('payload', jsonEncode(remoteTrigger.payload));
-        TestLib.sendInfoToServer(localBasePath);
+        TestLib.sendInfoMapToServer(localBasePath, <String, String?>{
+          'label': remoteTrigger.label,
+          'payload': jsonEncode(remoteTrigger.payload),
+        });
       };
     }
   }
@@ -998,10 +999,11 @@ class CommandExecutor {
 
       Adjust.verifyAppStorePurchase(purchase).then((result) {
         String? localBasePath = _basePath;
-        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
-        TestLib.addInfoToSend('code', result?.code.toString());
-        TestLib.addInfoToSend('message', result?.message);
-        TestLib.sendInfoToServer(localBasePath);
+        TestLib.sendInfoMapToServer(localBasePath, <String, String?>{
+          'verification_status': result?.verificationStatus,
+          'code': result?.code.toString(),
+          'message': result?.message,
+        });
       });
     } else if (Platform.isAndroid) {
       String productId = _command.getFirstParameterValue('productId')!;
@@ -1012,10 +1014,11 @@ class CommandExecutor {
 
       Adjust.verifyPlayStorePurchase(purchase).then((result) {
         String? localBasePath = _basePath;
-        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
-        TestLib.addInfoToSend('code', result?.code.toString());
-        TestLib.addInfoToSend('message', result?.message);
-        TestLib.sendInfoToServer(localBasePath);
+        TestLib.sendInfoMapToServer(localBasePath, <String, String?>{
+          'verification_status': result?.verificationStatus,
+          'code': result?.code.toString(),
+          'message': result?.message,
+        });
       });
     }
   }
@@ -1033,18 +1036,20 @@ class CommandExecutor {
     if (Platform.isIOS) {
       Adjust.verifyAndTrackAppStorePurchase(adjustEvent).then((result) {
         String? localBasePath = _basePath;
-        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
-        TestLib.addInfoToSend('code', result?.code.toString());
-        TestLib.addInfoToSend('message', result?.message);
-        TestLib.sendInfoToServer(localBasePath);
+        TestLib.sendInfoMapToServer(localBasePath, <String, String?>{
+          'verification_status': result?.verificationStatus,
+          'code': result?.code.toString(),
+          'message': result?.message,
+        });
       });
     } else if (Platform.isAndroid) {
       Adjust.verifyAndTrackPlayStorePurchase(adjustEvent).then((result) {
         String? localBasePath = _basePath;
-        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
-        TestLib.addInfoToSend('code', result?.code.toString());
-        TestLib.addInfoToSend('message', result?.message);
-        TestLib.sendInfoToServer(localBasePath);
+        TestLib.sendInfoMapToServer(localBasePath, <String, String?>{
+          'verification_status': result?.verificationStatus,
+          'code': result?.code.toString(),
+          'message': result?.message,
+        });
       });
     }
 

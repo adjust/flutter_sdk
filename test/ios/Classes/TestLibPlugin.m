@@ -40,6 +40,8 @@
       [self startTestSession:call withResult:result];
   } else if ([@"addInfoToSend" isEqualToString:call.method]) {
       [self addInfoToSend:call withResult:result];
+  } else if ([@"sendInfoMapToServer" isEqualToString:call.method]) {
+      [self sendInfoMapToServer:call withResult:result];
   } else if ([@"sendInfoToServer" isEqualToString:call.method]) {
       [self sendInfoToServer:call withResult:result];
   } else if ([@"addTest" isEqualToString:call.method]) {
@@ -103,6 +105,18 @@
         return;
     }
     NSString *basePath = call.arguments[@"basePath"];
+    [self.testLibrary sendInfoToServer:basePath];
+}
+
+- (void)sendInfoMapToServer:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    if ([self testLibOk:result] == NO) {
+        return;
+    }
+    NSString *basePath = call.arguments[@"basePath"];
+    NSDictionary *info = call.arguments[@"info"];
+    if ([info isKindOfClass:[NSDictionary class]]) {
+        [self.testLibrary setInfoToSend:info];
+    }
     [self.testLibrary sendInfoToServer:basePath];
 }
 
