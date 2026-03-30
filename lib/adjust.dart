@@ -30,7 +30,7 @@ import 'package:meta/meta.dart';
 typedef void DirectDeeplinkCallback(String? deeplink);
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter5.5.1';
+  static const String _sdkPrefix = 'flutter5.6.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
   static const String _attributionCallbackName = 'adj-attribution-changed';
