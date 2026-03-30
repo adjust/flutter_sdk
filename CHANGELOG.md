@@ -1,3 +1,15 @@
+### Version 5.6.0 (31st March 2026)
+#### Added
+- Added support for direct deep link callbacks. You can now receive direct deep links by assigning the `directDeeplinkCallback` member of your `AdjustConfig` instance.
+- Added support for remote trigger callbacks. You can now receive remote trigger updates by assigning the `remoteTriggerCallback` member of your `AdjustConfig`
+instance.
+
+#### Native SDKs
+- **iOS:** [v5.6.0](https://github.com/adjust/ios_sdk/tree/v5.6.0)
+- **Android:** [v5.6.0](https://github.com/adjust/android_sdk/tree/v5.6.0)
+
+---
+
 ### Version 5.5.1 (9th March 2026)
 #### Fixed
 - Fixed an Android build failure (`Cannot run Project.afterEvaluate(Action) when the project is already evaluated`) by handling Gradle evaluation order when `:adjust_sdk` is evaluated before the host `:app` project.
