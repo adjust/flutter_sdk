@@ -25,6 +25,7 @@ typedef void SessionFailureCallback(AdjustSessionFailure failureData);
 typedef void EventSuccessCallback(AdjustEventSuccess successData);
 typedef void EventFailureCallback(AdjustEventFailure failureData);
 typedef void DeferredDeeplinkCallback(String? deeplink);
+typedef void DirectDeeplinkCallback(String? deeplink);
 typedef void SkanUpdatedCallback(Map<String, String> skanUpdateData);
 
 class AdjustConfig {
@@ -77,6 +78,7 @@ class AdjustConfig {
   EventSuccessCallback? eventSuccessCallback;
   EventFailureCallback? eventFailureCallback;
   DeferredDeeplinkCallback? deferredDeeplinkCallback;
+  DirectDeeplinkCallback? directDeeplinkCallback;
   SkanUpdatedCallback? skanUpdatedCallback;
 
   AdjustConfig(this._appToken, this._environment);

@@ -27,8 +27,6 @@ import 'package:adjust_sdk/adjust_deeplink.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
-typedef void DirectDeeplinkCallback(String? deeplink);
-
 class Adjust {
   static const String _sdkPrefix = 'flutter5.6.0';
   static const MethodChannel _channel =
@@ -52,10 +50,6 @@ class Adjust {
   static SkanUpdatedCallback? _skanUpdatedCallback;
   static DirectDeeplinkCallback? _directDeeplinkCallback;
 
-  static set directDeeplinkCallback(DirectDeeplinkCallback? callback) {
-    _directDeeplinkCallback = callback;
-  }
-
   // common
 
   static void initSdk(AdjustConfig config) {
@@ -72,6 +66,7 @@ class Adjust {
     _eventSuccessCallback = config.eventSuccessCallback;
     _eventFailureCallback = config.eventFailureCallback;
     _deferredDeeplinkCallback = config.deferredDeeplinkCallback;
+    _directDeeplinkCallback = config.directDeeplinkCallback;
     _skanUpdatedCallback = config.skanUpdatedCallback;
   }
 

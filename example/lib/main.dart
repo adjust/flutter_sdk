@@ -183,7 +183,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       
       // configure deeplink callback
       config.deferredDeeplinkCallback = _handleDeferredDeeplink;
-      Adjust.directDeeplinkCallback = _handleDirectDeeplink;
+      config.directDeeplinkCallback = _handleDirectDeeplink;
       
       // configure SKAN callback
       config.skanUpdatedCallback = _handleSkanUpdate;
