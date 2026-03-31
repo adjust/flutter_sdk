@@ -11,10 +11,18 @@
 #import <AdjustSdk/AdjustSdk.h>
 
 static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
+static NSString * const DIRECT_DEEPLINK_CALLBACK_NAME = @"adj-direct-deeplink";
 
 @interface AdjustSdk ()
 
 @property (nonatomic, retain) FlutterMethodChannel *channel;
+@property (nonatomic, assign) BOOL isSdkInitialized;
+@property (nonatomic, strong) NSMutableArray<NSDictionary *> *cachedDirectDeeplinks;
+
+- (void)processDeeplinkWithUrl:(NSURL *)deeplinkUrl referrer:(NSURL *)referrer;
+- (void)processCapturedDeeplinkWithUrl:(NSURL *)deeplinkUrl referrer:(NSURL *)referrer;
+- (void)dispatchOrCacheDirectDeeplink:(NSDictionary *)deeplinkMap;
+- (void)flushCachedDirectDeeplinks;
 
 @end
 
@@ -27,13 +35,123 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                                                                 binaryMessenger:[registrar messenger]];
     AdjustSdk *instance = [[AdjustSdk alloc] init];
     instance.channel = channel;
+    instance.isSdkInitialized = NO;
+    instance.cachedDirectDeeplinks = [NSMutableArray array];
     [registrar addMethodCallDelegate:instance channel:channel];
+    [registrar addApplicationDelegate:instance];
+#if ADJUST_FLUTTER_HAS_SCENE_LIFECYCLE
+    id registrarObject = registrar;
+    if ([registrarObject respondsToSelector:@selector(addSceneDelegate:)]) {
+        [registrarObject addSceneDelegate:instance];
+    }
+#endif
 }
 
 - (void)dealloc {
     [self.channel setMethodCallHandler:nil];
     self.channel = nil;
+    [self.cachedDirectDeeplinks removeAllObjects];
+    self.cachedDirectDeeplinks = nil;
 }
+
+#pragma mark - iOS app lifecycle methods
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    NSURL *launchUrl = launchOptions[UIApplicationLaunchOptionsURLKey];
+    [self processCapturedDeeplinkWithUrl:launchUrl referrer:nil];
+
+    NSDictionary *userActivityDictionary = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+    NSUserActivity *userActivity = nil;
+    for (id value in [userActivityDictionary allValues]) {
+        if ([value isKindOfClass:[NSUserActivity class]]) {
+            userActivity = (NSUserActivity *)value;
+            break;
+        }
+    }
+    if ([self isFieldValid:userActivity]
+        && [userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        [self processCapturedDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
+    }
+
+    return NO;
+}
+
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    [self processCapturedDeeplinkWithUrl:url referrer:nil];
+    return NO;
+}
+
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation {
+    [self processCapturedDeeplinkWithUrl:url referrer:nil];
+    return NO;
+}
+
+- (BOOL)application:(UIApplication *)application
+continueUserActivity:(NSUserActivity *)userActivity
+ restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler {
+    if ([self isFieldValid:userActivity]
+        && [userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        [self processCapturedDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
+    }
+    return NO;
+}
+
+#if ADJUST_FLUTTER_HAS_SCENE_LIFECYCLE
+- (BOOL)scene:(UIScene *)scene
+willConnectToSession:(UISceneSession *)session
+      options:(UISceneConnectionOptions *)connectionOptions API_AVAILABLE(ios(13.0)) {
+    if (connectionOptions == nil) {
+        return NO;
+    }
+
+    for (NSUserActivity *userActivity in connectionOptions.userActivities) {
+        if (![self isFieldValid:userActivity]) {
+            continue;
+        }
+        if (![userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+            continue;
+        }
+        [self processCapturedDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
+    }
+
+    for (UIOpenURLContext *urlContext in connectionOptions.URLContexts) {
+        if (![self isFieldValid:urlContext.URL]) {
+            continue;
+        }
+        [self processCapturedDeeplinkWithUrl:urlContext.URL referrer:nil];
+    }
+
+    return NO;
+}
+
+- (BOOL)scene:(UIScene *)scene
+openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts API_AVAILABLE(ios(13.0)) {
+    for (UIOpenURLContext *urlContext in URLContexts) {
+        if (![self isFieldValid:urlContext.URL]) {
+            continue;
+        }
+        [self processCapturedDeeplinkWithUrl:urlContext.URL referrer:nil];
+    }
+    return NO;
+}
+
+- (BOOL)scene:(UIScene *)scene
+continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
+    if (![self isFieldValid:userActivity]) {
+        return NO;
+    }
+    if (![userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        return NO;
+    }
+    [self processCapturedDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
+    return NO;
+}
+#endif
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
     if ([@"initSdk" isEqualToString:call.method]) {
@@ -191,6 +309,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     NSString *dartEventSuccessCallback = call.arguments[@"eventSuccessCallback"];
     NSString *dartEventFailureCallback = call.arguments[@"eventFailureCallback"];
     NSString *dartDeferredDeeplinkCallback = call.arguments[@"deferredDeeplinkCallback"];
+    NSString *dartRemoteTriggerCallback = call.arguments[@"remoteTriggerCallback"];
     NSString *dartSkanUpdatedCallback = call.arguments[@"skanUpdatedCallback"];
     BOOL allowSuppressLogLevel = NO;
     BOOL launchDeferredDeeplink = [call.arguments[@"launchDeferredDeeplink"] boolValue];
@@ -347,6 +466,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
         || dartEventSuccessCallback != nil
         || dartEventFailureCallback != nil
         || dartDeferredDeeplinkCallback != nil
+        || dartRemoteTriggerCallback != nil
         || dartSkanUpdatedCallback != nil) {
         [adjustConfig setDelegate:
          [AdjustSdkDelegate getInstanceWithSwizzleOfAttributionCallback:dartAttributionCallback
@@ -355,6 +475,7 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
                                                    eventSuccessCallback:dartEventSuccessCallback
                                                    eventFailureCallback:dartEventFailureCallback
                                                deferredDeeplinkCallback:dartDeferredDeeplinkCallback
+                                                remoteTriggerCallback:dartRemoteTriggerCallback
                                                     skanUpdatedCallback:dartSkanUpdatedCallback
                                            shouldLaunchDeferredDeeplink:launchDeferredDeeplink
                                                           methodChannel:self.channel]];
@@ -362,6 +483,8 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 
     // start SDK
     [Adjust initSdk:adjustConfig];
+    self.isSdkInitialized = YES;
+    [self flushCachedDirectDeeplinks];
     result(nil);
 }
 
@@ -555,12 +678,11 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 
     if ([self isFieldValid:deeplink]) {
         NSURL *urlDeeplink = [NSURL URLWithString:deeplink];
-        ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:urlDeeplink];
+        NSURL *urlReferrer = nil;
         if ([self isFieldValid:referrer]) {
-            NSURL *urlReferrer = [NSURL URLWithString:referrer];
-            [deeplink setReferrer:urlReferrer];
+            urlReferrer = [NSURL URLWithString:referrer];
         }
-        [Adjust processDeeplink:deeplink];
+        [self processDeeplinkWithUrl:urlDeeplink referrer:urlReferrer];
     }
 }
 
@@ -1070,6 +1192,55 @@ static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
     }
 
     return YES;
+}
+
+- (void)processDeeplinkWithUrl:(NSURL *)deeplinkUrl referrer:(NSURL *)referrer {
+    if (![self isFieldValid:deeplinkUrl]) {
+        return;
+    }
+
+    ADJDeeplink *deeplink = [[ADJDeeplink alloc] initWithDeeplink:deeplinkUrl];
+    if ([self isFieldValid:referrer]) {
+        [deeplink setReferrer:referrer];
+    }
+    [Adjust processDeeplink:deeplink];
+}
+
+- (void)processCapturedDeeplinkWithUrl:(NSURL *)deeplinkUrl referrer:(NSURL *)referrer {
+    if (![self isFieldValid:deeplinkUrl]) {
+        return;
+    }
+
+    NSMutableDictionary *deeplinkMap = [NSMutableDictionary dictionary];
+    [deeplinkMap setObject:[deeplinkUrl absoluteString] forKey:@"deeplink"];
+    if ([self isFieldValid:referrer]) {
+        [deeplinkMap setObject:[referrer absoluteString] forKey:@"referrer"];
+    }
+    [self dispatchOrCacheDirectDeeplink:deeplinkMap];
+}
+
+- (void)dispatchOrCacheDirectDeeplink:(NSDictionary *)deeplinkMap {
+    if (![self isFieldValid:deeplinkMap]) {
+        return;
+    }
+
+    if (!self.isSdkInitialized || self.channel == nil) {
+        [self.cachedDirectDeeplinks addObject:deeplinkMap];
+        return;
+    }
+
+    [self.channel invokeMethod:DIRECT_DEEPLINK_CALLBACK_NAME arguments:deeplinkMap];
+}
+
+- (void)flushCachedDirectDeeplinks {
+    if (!self.isSdkInitialized || self.channel == nil || [self.cachedDirectDeeplinks count] == 0) {
+        return;
+    }
+
+    for (NSDictionary *deeplinkMap in self.cachedDirectDeeplinks) {
+        [self.channel invokeMethod:DIRECT_DEEPLINK_CALLBACK_NAME arguments:deeplinkMap];
+    }
+    [self.cachedDirectDeeplinks removeAllObjects];
 }
 
 - (void)addValueOrEmpty:(NSObject *)value

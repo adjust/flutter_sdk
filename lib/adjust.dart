@@ -14,9 +14,14 @@ import 'package:adjust_sdk/adjust_app_store_purchase.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:adjust_sdk/adjust_event.dart';
+import 'package:adjust_sdk/adjust_event_failure.dart';
+import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_play_store_purchase.dart';
 import 'package:adjust_sdk/adjust_play_store_subscription.dart';
 import 'package:adjust_sdk/adjust_purchase_verification_result.dart';
+import 'package:adjust_sdk/adjust_remote_trigger.dart';
+import 'package:adjust_sdk/adjust_session_failure.dart';
+import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
 import 'package:adjust_sdk/adjust_deeplink.dart';
 
@@ -24,15 +29,132 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter5.5.1';
+  static const String _sdkPrefix = 'flutter5.6.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
+  static const String _attributionCallbackName = 'adj-attribution-changed';
+  static const String _sessionSuccessCallbackName = 'adj-session-success';
+  static const String _sessionFailureCallbackName = 'adj-session-failure';
+  static const String _eventSuccessCallbackName = 'adj-event-success';
+  static const String _eventFailureCallbackName = 'adj-event-failure';
+  static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
+  static const String _directDeeplinkCallbackName = 'adj-direct-deeplink';
+  static const String _remoteTriggerCallbackName = 'adj-remote-trigger';
+  static const String _skanUpdatedCallbackName = 'adj-skan-updated';
+
+  static bool _isMethodCallHandlerInitialized = false;
+  static AttributionCallback? _attributionCallback;
+  static SessionSuccessCallback? _sessionSuccessCallback;
+  static SessionFailureCallback? _sessionFailureCallback;
+  static EventSuccessCallback? _eventSuccessCallback;
+  static EventFailureCallback? _eventFailureCallback;
+  static DeferredDeeplinkCallback? _deferredDeeplinkCallback;
+  static SkanUpdatedCallback? _skanUpdatedCallback;
+  static DirectDeeplinkCallback? _directDeeplinkCallback;
+  static RemoteTriggerCallback? _remoteTriggerCallback;
 
   // common
 
   static void initSdk(AdjustConfig config) {
+    _initMethodCallHandler();
+    _setSdkCallbacks(config);
     config.sdkPrefix = _sdkPrefix;
     _channel.invokeMethod('initSdk', config.toMap);
+  }
+
+  static void _setSdkCallbacks(AdjustConfig config) {
+    _attributionCallback = config.attributionCallback;
+    _sessionSuccessCallback = config.sessionSuccessCallback;
+    _sessionFailureCallback = config.sessionFailureCallback;
+    _eventSuccessCallback = config.eventSuccessCallback;
+    _eventFailureCallback = config.eventFailureCallback;
+    _deferredDeeplinkCallback = config.deferredDeeplinkCallback;
+    _directDeeplinkCallback = config.directDeeplinkCallback;
+    _remoteTriggerCallback = config.remoteTriggerCallback;
+    _skanUpdatedCallback = config.skanUpdatedCallback;
+  }
+
+  static void _initMethodCallHandler() {
+    if (_isMethodCallHandlerInitialized) {
+      return;
+    }
+
+    _channel.setMethodCallHandler((MethodCall call) async {
+      try {
+        switch (call.method) {
+          case _attributionCallbackName:
+            if (_attributionCallback != null) {
+              AdjustAttribution attribution =
+                  AdjustAttribution.fromMap(call.arguments);
+              _attributionCallback!(attribution);
+            }
+            break;
+          case _sessionSuccessCallbackName:
+            if (_sessionSuccessCallback != null) {
+              AdjustSessionSuccess sessionSuccess =
+                  AdjustSessionSuccess.fromMap(call.arguments);
+              _sessionSuccessCallback!(sessionSuccess);
+            }
+            break;
+          case _sessionFailureCallbackName:
+            if (_sessionFailureCallback != null) {
+              AdjustSessionFailure sessionFailure =
+                  AdjustSessionFailure.fromMap(call.arguments);
+              _sessionFailureCallback!(sessionFailure);
+            }
+            break;
+          case _eventSuccessCallbackName:
+            if (_eventSuccessCallback != null) {
+              AdjustEventSuccess eventSuccess =
+                  AdjustEventSuccess.fromMap(call.arguments);
+              _eventSuccessCallback!(eventSuccess);
+            }
+            break;
+          case _eventFailureCallbackName:
+            if (_eventFailureCallback != null) {
+              AdjustEventFailure eventFailure =
+                  AdjustEventFailure.fromMap(call.arguments);
+              _eventFailureCallback!(eventFailure);
+            }
+            break;
+          case _deferredDeeplinkCallbackName:
+            if (_deferredDeeplinkCallback != null) {
+              String? deeplink = call.arguments['deeplink'];
+              _deferredDeeplinkCallback!(deeplink);
+            }
+            break;
+          case _directDeeplinkCallbackName:
+            String? deeplink = call.arguments['deeplink'];
+            _onDirectDeeplinkReceived(deeplink);
+            break;
+          case _remoteTriggerCallbackName:
+            if (_remoteTriggerCallback != null) {
+              AdjustRemoteTrigger remoteTrigger =
+                  AdjustRemoteTrigger.fromMap(call.arguments);
+              _remoteTriggerCallback!(remoteTrigger);
+            }
+            break;
+          case _skanUpdatedCallbackName:
+            if (_skanUpdatedCallback != null) {
+              _skanUpdatedCallback!(Map<String, String>.from(call.arguments));
+            }
+            break;
+          default:
+            throw new UnsupportedError(
+                '[AdjustFlutter]: Received unknown native method: ${call.method}');
+        }
+      } catch (e) {
+        print(e.toString());
+      }
+    });
+
+    _isMethodCallHandlerInitialized = true;
+  }
+
+  static void _onDirectDeeplinkReceived(String? deeplink) {
+    if (_directDeeplinkCallback != null) {
+      _directDeeplinkCallback!(deeplink);
+    }
   }
 
   static void trackEvent(AdjustEvent event) {

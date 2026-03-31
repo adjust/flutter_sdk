@@ -64,6 +64,9 @@ public class TestLibPlugin implements FlutterPlugin, MethodCallHandler {
             case "addInfoToSend":
                 addInfoToSend(call, result);
                 break;
+            case "sendInfoMapToServer":
+                sendInfoMapToServer(call, result);
+                break;
             case "sendInfoToServer":
                 sendInfoToServer(call, result);
                 break;
@@ -156,6 +159,31 @@ public class TestLibPlugin implements FlutterPlugin, MethodCallHandler {
 
         Map paramsMap = (Map)call.arguments;
         String basePath = (String) paramsMap.get("basePath");
+        testLibrary.sendInfoToServer(basePath);
+        result.success(null);
+    }
+
+    private void sendInfoMapToServer(final MethodCall call, final Result result) {
+        if (testLibrary == null) {
+            result.error("0", "Test Library not initialized. Call 'init' method first.", null);
+            return;
+        }
+
+        Map paramsMap = (Map) call.arguments;
+        String basePath = (String) paramsMap.get("basePath");
+        Map<?, ?> info = (Map<?, ?>) paramsMap.get("info");
+        HashMap<String, String> infoMap = new HashMap<String, String>();
+        if (info != null) {
+            for (Map.Entry<?, ?> entry : info.entrySet()) {
+                Object key = entry.getKey();
+                Object value = entry.getValue();
+                if (key instanceof String && value instanceof String) {
+                    infoMap.put((String) key, (String) value);
+                }
+            }
+        }
+
+        testLibrary.setInfoToSend(infoMap);
         testLibrary.sendInfoToServer(basePath);
         result.success(null);
     }

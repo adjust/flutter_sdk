@@ -1,13 +1,11 @@
 import 'package:adjust_sdk/adjust.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_config.dart';
-import 'package:adjust_sdk/adjust_deeplink.dart';
 import 'package:adjust_sdk/adjust_event.dart';
 import 'package:adjust_sdk/adjust_event_failure.dart';
 import 'package:adjust_sdk/adjust_event_success.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
-import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -44,9 +42,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-
-  late final AppLinks _appLinks;
-
   // event tokens for demonstration
   static const String _eventTokenSimple = 'g3mfiw';
   static const String _eventTokenRevenue = 'a4fd35';
@@ -70,12 +65,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-
-
-    _appLinks = AppLinks();
-    _listenForAppLinks();
-
-
     _initializeAdjustSdk();
     _updateToggleButtonText();
   }
@@ -85,82 +74,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-
-  // listening to app links
-  Future<void> _listenForAppLinks() async {
-    try {
-      // 1) initial link when app is started via deep link
-      final initialUri = await _appLinks.getInitialLink();
-      if (initialUri != null) {
-        print('[DeepLink]: Initial link: $initialUri');
-        await _processAndRouteLink(initialUri.toString());
-      }
-
-      // 2) stream for links while app is running
-      _appLinks.uriLinkStream.listen((Uri uri) {
-        print('[DeepLink]: Incoming link: $uri');
-        _processAndRouteLink(uri.toString());
-      });
-    } catch (e, s) {
-      print('[DeepLink]: Error listening for app links: $e');
-      print(s);
-    }
-  }
-
-
-  Future<void> _processAndRouteLink(String url) async {
-    print('[DeepLink]: Processing URL via Adjust: $url');
-
-    try {
-      final deeplink = AdjustDeeplink(url);
-
-      final resolved = await Adjust.processAndResolveDeeplink(deeplink);
-
-      print('[DeepLink]: Resolved deeplink: $resolved');
-
-      final targetUrl = resolved ?? url;
-
-      if (!mounted) return;
-      _handleDeepLinkUrl(targetUrl);
-    } catch (e, s) {
-      print('[DeepLink]: Error during Adjust deeplink processing: $e');
-      print(s);
-    }
-  }
-
-  void _handleDeepLinkUrl(String url) {
-    print('[DeepLink]: Handling final deeplink URL: $url');
-
-    Uri uri;
-    try {
-      uri = Uri.parse(url);
-    } catch (e) {
-      print('[DeepLink]: Invalid deeplink URL: $url, error: $e');
-      return;
-    }
-
-    // Example: myapp://product/123
-    final segments = uri.pathSegments;
-
-    if (segments.isNotEmpty && segments.first == 'product') {
-      final productId = segments.length > 1 ? segments[1] : null;
-      print('[DeepLink]: Navigate to PRODUCT, id: $productId');
-
-      _showDialog(
-        'Deep link',
-        'Navigate to PRODUCT screen\n\nURL: $url\nProduct ID: $productId',
-      );
-      return;
-    }
-
-    // Fallback / unknown deeplink
-    _showDialog(
-      'Deep link',
-      'Received deeplink:\n$url',
-    );
-  }
-
-
 
   /// initialize the Adjust SDK with configuration
   Future<void> _initializeAdjustSdk() async {
@@ -183,6 +96,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       
       // configure deeplink callback
       config.deferredDeeplinkCallback = _handleDeferredDeeplink;
+      config.directDeeplinkCallback = _handleDirectDeeplink;
       
       // configure SKAN callback
       config.skanUpdatedCallback = _handleSkanUpdate;
@@ -303,17 +217,37 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if (jsonResponse != null) print('[AdjustExample]: JSON response: $jsonResponse');
   }
 
-  /// handle deferred deeplinks from Adjust
+  /// handle deferred deeplinks
   Future<void> _handleDeferredDeeplink(String? uri) async {
     print('[AdjustExample]: Received deferred deeplink: $uri');
 
-    if (uri == null) {
+    if (!mounted) {
       return;
     }
 
-    await _processAndRouteLink(uri);
+    _showDialog(
+      'Deferred deeplink',
+      uri == null
+          ? 'Deferred deep link:\n\n(null)'
+          : 'Deferred deep link:\n\n$uri',
+    );
   }
 
+  /// handle direct deeplinks
+  void _handleDirectDeeplink(String? uri) {
+    print('[AdjustExample]: Received direct deeplink: $uri');
+
+    if (!mounted) {
+      return;
+    }
+
+    _showDialog(
+      'Direct deeplink',
+      uri == null
+          ? 'Direct deep link:\n\n(null)'
+          : 'Direct deep link:\n\n$uri',
+    );
+  }
 
   /// handle SKAN updates
   void _handleSkanUpdate(Map<String, String> skanData) {

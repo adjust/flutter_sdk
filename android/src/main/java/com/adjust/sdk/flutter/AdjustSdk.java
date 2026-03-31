@@ -9,6 +9,7 @@
 package com.adjust.sdk.flutter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
@@ -23,6 +24,7 @@ import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustPlayStoreSubscription;
 import com.adjust.sdk.AdjustPurchaseVerificationResult;
+import com.adjust.sdk.AdjustRemoteTrigger;
 import com.adjust.sdk.AdjustStoreInfo;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.AdjustTestOptions;
@@ -34,6 +36,7 @@ import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
+import com.adjust.sdk.OnRemoteTriggerListener;
 import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 import com.adjust.sdk.OnLastDeeplinkReadListener;
 import com.adjust.sdk.OnDeeplinkResolvedListener;
@@ -55,16 +58,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 
-public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
+public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAware, NewIntentListener {
     private static String TAG = "AdjustBridge";
+    private static String DIRECT_DEEPLINK_CALLBACK_NAME = "adj-direct-deeplink";
     private static boolean isDeferredDeeplinkOpeningEnabled = true;
     private MethodChannel channel;
     private Context applicationContext;
+    private ActivityPluginBinding activityPluginBinding;
+    private boolean isSdkInitialized = false;
+    private final ArrayList<HashMap<String, String>> cachedDirectDeeplinks = new ArrayList<>();
 
     // FlutterPlugin
     @Override
@@ -76,11 +86,93 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
 
     @Override
     public void onDetachedFromEngine(FlutterPluginBinding binding) {
+        detachFromActivity();
+        isSdkInitialized = false;
+        cachedDirectDeeplinks.clear();
         applicationContext = null;
         if (channel != null) {
             channel.setMethodCallHandler(null);
         }
         channel = null;
+    }
+
+    // ActivityAware
+    @Override
+    public void onAttachedToActivity(ActivityPluginBinding binding) {
+        activityPluginBinding = binding;
+        activityPluginBinding.addOnNewIntentListener(this);
+        processDeeplinkFromIntent(activityPluginBinding.getActivity().getIntent());
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+        detachFromActivity();
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+        onAttachedToActivity(binding);
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+        detachFromActivity();
+    }
+
+    @Override
+    public boolean onNewIntent(Intent intent) {
+        processDeeplinkFromIntent(intent);
+        return false;
+    }
+
+    private void detachFromActivity() {
+        if (activityPluginBinding != null) {
+            activityPluginBinding.removeOnNewIntentListener(this);
+            activityPluginBinding = null;
+        }
+    }
+
+    private void processDeeplinkFromIntent(final Intent intent) {
+        if (intent == null) {
+            return;
+        }
+
+        Uri deeplinkUri = intent.getData();
+        if (deeplinkUri == null) {
+            return;
+        }
+
+        dispatchOrCacheDirectDeeplink(deeplinkUri, null);
+    }
+
+    private void dispatchOrCacheDirectDeeplink(final Uri deeplinkUri, final Uri referrerUri) {
+        if (deeplinkUri == null) {
+            return;
+        }
+
+        HashMap<String, String> uriParamsMap = new HashMap<String, String>();
+        uriParamsMap.put("deeplink", deeplinkUri.toString());
+        if (referrerUri != null) {
+            uriParamsMap.put("referrer", referrerUri.toString());
+        }
+
+        if (!isSdkInitialized || channel == null) {
+            cachedDirectDeeplinks.add(uriParamsMap);
+            return;
+        }
+
+        channel.invokeMethod(DIRECT_DEEPLINK_CALLBACK_NAME, uriParamsMap);
+    }
+
+    private void flushCachedDirectDeeplinks() {
+        if (!isSdkInitialized || channel == null || cachedDirectDeeplinks.isEmpty()) {
+            return;
+        }
+
+        for (HashMap<String, String> deeplinkMap : cachedDirectDeeplinks) {
+            channel.invokeMethod(DIRECT_DEEPLINK_CALLBACK_NAME, deeplinkMap);
+        }
+        cachedDirectDeeplinks.clear();
     }
 
     @Override
@@ -611,8 +703,25 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
             }
         }
 
+        // remote trigger callback
+        if (configMap.containsKey("remoteTriggerCallback")) {
+            final String dartMethodName = (String) configMap.get("remoteTriggerCallback");
+            if (dartMethodName != null) {
+                adjustConfig.setOnRemoteTriggerListener(new OnRemoteTriggerListener() {
+                    @Override
+                    public void onRemoteTrigger(AdjustRemoteTrigger remoteTrigger) {
+                        if (channel != null) {
+                            channel.invokeMethod(dartMethodName, getRemoteTriggerMap(remoteTrigger));
+                        }
+                    }
+                });
+            }
+        }
+
         // initialize SDK
         Adjust.initSdk(adjustConfig);
+        isSdkInitialized = true;
+        flushCachedDirectDeeplinks();
         result.success(null);
     }
 
@@ -1499,5 +1608,70 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler {
         }
 
         Adjust.setTestOptions(testOptions);
+    }
+
+    private HashMap<String, Object> getRemoteTriggerMap(AdjustRemoteTrigger remoteTrigger) {
+        HashMap<String, Object> remoteTriggerMap = new HashMap<String, Object>();
+        if (remoteTrigger == null) {
+            remoteTriggerMap.put("label", "");
+            remoteTriggerMap.put("payload", new HashMap<String, Object>());
+            return remoteTriggerMap;
+        }
+
+        remoteTriggerMap.put("label", remoteTrigger.getLabel());
+        remoteTriggerMap.put("payload", jsonObjectToMap(remoteTrigger.getPayload()));
+        return remoteTriggerMap;
+    }
+
+    private HashMap<String, Object> jsonObjectToMap(JSONObject jsonObject) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        if (jsonObject == null) {
+            return map;
+        }
+
+        JSONArray names = jsonObject.names();
+        if (names == null) {
+            return map;
+        }
+
+        for (int i = 0; i < names.length(); ++i) {
+            String key = names.optString(i, null);
+            if (key == null) {
+                continue;
+            }
+
+            map.put(key, jsonValueToObject(jsonObject.opt(key)));
+        }
+
+        return map;
+    }
+
+    private ArrayList<Object> jsonArrayToList(JSONArray jsonArray) {
+        ArrayList<Object> list = new ArrayList<Object>();
+        if (jsonArray == null) {
+            return list;
+        }
+
+        for (int i = 0; i < jsonArray.length(); ++i) {
+            list.add(jsonValueToObject(jsonArray.opt(i)));
+        }
+
+        return list;
+    }
+
+    private Object jsonValueToObject(Object value) {
+        if (value == null || value == JSONObject.NULL) {
+            return null;
+        }
+
+        if (value instanceof JSONObject) {
+            return jsonObjectToMap((JSONObject) value);
+        }
+
+        if (value instanceof JSONArray) {
+            return jsonArrayToList((JSONArray) value);
+        }
+
+        return value;
     }
 }

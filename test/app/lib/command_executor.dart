@@ -25,6 +25,7 @@ import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
 import 'package:adjust_sdk/adjust_purchase_verification_result.dart';
 import 'package:adjust_sdk/adjust_deeplink.dart';
+import 'package:adjust_sdk/adjust_remote_trigger.dart';
 import 'package:adjust_sdk/adjust_store_info.dart';
 import 'package:test_app/command.dart';
 import 'package:test_lib/test_lib.dart';
@@ -452,6 +453,7 @@ class CommandExecutor {
     adjustConfig.eventSuccessCallback = null;
     adjustConfig.eventFailureCallback = null;
     adjustConfig.deferredDeeplinkCallback = null;
+    adjustConfig.remoteTriggerCallback = null;
     adjustConfig.skanUpdatedCallback = null;
 
     // TODO: Deeplinking in Flutter example.
@@ -600,6 +602,19 @@ class CommandExecutor {
             '[CommandExecutor]: Skan Callback: $data');
         data.forEach((k, v) => TestLib.addInfoToSend(k, v));
         TestLib.sendInfoToServer(localBasePath);
+      };
+    }
+
+    if (_command.containsParameter('remoteTriggerCallback')) {
+      String? localBasePath = _extraPath;
+      adjustConfig.remoteTriggerCallback =
+          (AdjustRemoteTrigger remoteTrigger) {
+        print(
+            '[CommandExecutor]: Remote Trigger Callback: ${remoteTrigger.label}, payload: ${remoteTrigger.payload}');
+        TestLib.sendInfoMapToServer(localBasePath, <String, String?>{
+          'label': remoteTrigger.label,
+          'payload': jsonEncode(remoteTrigger.payload),
+        });
       };
     }
   }
@@ -984,10 +999,11 @@ class CommandExecutor {
 
       Adjust.verifyAppStorePurchase(purchase).then((result) {
         String? localBasePath = _basePath;
-        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
-        TestLib.addInfoToSend('code', result?.code.toString());
-        TestLib.addInfoToSend('message', result?.message);
-        TestLib.sendInfoToServer(localBasePath);
+        TestLib.sendInfoMapToServer(localBasePath, <String, String?>{
+          'verification_status': result?.verificationStatus,
+          'code': result?.code.toString(),
+          'message': result?.message,
+        });
       });
     } else if (Platform.isAndroid) {
       String productId = _command.getFirstParameterValue('productId')!;
@@ -998,10 +1014,11 @@ class CommandExecutor {
 
       Adjust.verifyPlayStorePurchase(purchase).then((result) {
         String? localBasePath = _basePath;
-        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
-        TestLib.addInfoToSend('code', result?.code.toString());
-        TestLib.addInfoToSend('message', result?.message);
-        TestLib.sendInfoToServer(localBasePath);
+        TestLib.sendInfoMapToServer(localBasePath, <String, String?>{
+          'verification_status': result?.verificationStatus,
+          'code': result?.code.toString(),
+          'message': result?.message,
+        });
       });
     }
   }
@@ -1019,18 +1036,20 @@ class CommandExecutor {
     if (Platform.isIOS) {
       Adjust.verifyAndTrackAppStorePurchase(adjustEvent).then((result) {
         String? localBasePath = _basePath;
-        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
-        TestLib.addInfoToSend('code', result?.code.toString());
-        TestLib.addInfoToSend('message', result?.message);
-        TestLib.sendInfoToServer(localBasePath);
+        TestLib.sendInfoMapToServer(localBasePath, <String, String?>{
+          'verification_status': result?.verificationStatus,
+          'code': result?.code.toString(),
+          'message': result?.message,
+        });
       });
     } else if (Platform.isAndroid) {
       Adjust.verifyAndTrackPlayStorePurchase(adjustEvent).then((result) {
         String? localBasePath = _basePath;
-        TestLib.addInfoToSend('verification_status', result?.verificationStatus);
-        TestLib.addInfoToSend('code', result?.code.toString());
-        TestLib.addInfoToSend('message', result?.message);
-        TestLib.sendInfoToServer(localBasePath);
+        TestLib.sendInfoMapToServer(localBasePath, <String, String?>{
+          'verification_status': result?.verificationStatus,
+          'code': result?.code.toString(),
+          'message': result?.message,
+        });
       });
     }
 

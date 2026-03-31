@@ -7,6 +7,14 @@
 //
 
 #import <Flutter/Flutter.h>
+#if __has_include(<Flutter/FlutterSceneLifeCycle.h>)
+#import <Flutter/FlutterSceneLifeCycle.h>
+#define ADJUST_FLUTTER_HAS_SCENE_LIFECYCLE 1
+#endif
 
-@interface AdjustSdk : NSObject<FlutterPlugin>
+@interface AdjustSdk : NSObject<FlutterPlugin, FlutterApplicationLifeCycleDelegate
+#if ADJUST_FLUTTER_HAS_SCENE_LIFECYCLE
+, FlutterSceneLifeCycleDelegate
+#endif
+>
 @end
