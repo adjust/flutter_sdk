@@ -27,13 +27,11 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.adjust.examples.deeplink</string>
+			<string>com.adjust.examples</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>adjust-ios-example</string>
+				<string>adjust</string>
 			</array>
 		</dict>
 	</array>
@@ -60,18 +58,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-
-<!--    add the deeplink configuration here-->
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleURLName</key>
-            <string>adjust_deeplink</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>adjust</string>
-            </array>
-        </dict>
-    </array>
 </dict>
 </plist>
