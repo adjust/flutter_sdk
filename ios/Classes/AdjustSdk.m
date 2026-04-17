@@ -56,26 +56,6 @@ static NSString * const DIRECT_DEEPLINK_CALLBACK_NAME = @"adj-direct-deeplink";
 
 #pragma mark - iOS app lifecycle methods
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    NSURL *launchUrl = launchOptions[UIApplicationLaunchOptionsURLKey];
-    [self processCapturedDeeplinkWithUrl:launchUrl referrer:nil];
-
-    NSDictionary *userActivityDictionary = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
-    NSUserActivity *userActivity = nil;
-    for (id value in [userActivityDictionary allValues]) {
-        if ([value isKindOfClass:[NSUserActivity class]]) {
-            userActivity = (NSUserActivity *)value;
-            break;
-        }
-    }
-    if ([self isFieldValid:userActivity]
-        && [userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-        [self processCapturedDeeplinkWithUrl:userActivity.webpageURL referrer:userActivity.referrerURL];
-    }
-
-    return NO;
-}
-
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
