@@ -42,5 +42,5 @@ flutter {
 }
 
 dependencies {
-    implementation("com.adjust.sdk:adjust-android-google-lvl:5.6.0")
+    implementation("com.adjust.sdk:adjust-android-google-lvl:5.6.1")
 }
