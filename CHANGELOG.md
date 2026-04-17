@@ -1,3 +1,16 @@
+### Version 5.6.1 (17th April 2026)
+#### Fixed
+- Fixed an iOS issue where cold-start deep link handling could interfere with other plugins that listen for URL opens or universal links.
+
+#### Changed
+- Updated the Adjust Signature library version to 3.67.0.
+
+#### Native SDKs
+- **iOS:** [v5.6.2](https://github.com/adjust/ios_sdk/tree/v5.6.2)
+- **Android:** [v5.6.1](https://github.com/adjust/android_sdk/tree/v5.6.1)
+
+---
+
 ### Version 5.6.0 (31st March 2026)
 #### Added
 - Added support for direct deep link callbacks. You can now receive direct deep links by assigning the `directDeeplinkCallback` member of your `AdjustConfig` instance.
