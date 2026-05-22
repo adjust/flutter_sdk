@@ -7,7 +7,11 @@
 //
 
 #import <Flutter/Flutter.h>
+#if __has_include(<AdjustSdk/AdjustSdk.h>)
 #import <AdjustSdk/AdjustSdk.h>
+#else
+#import <Adjust/Adjust.h>
+#endif
 
 @interface AdjustSdkDelegate : NSObject<AdjustDelegate>
 

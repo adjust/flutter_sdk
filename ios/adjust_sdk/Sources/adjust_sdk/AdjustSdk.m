@@ -6,9 +6,13 @@
 //  Copyright © 2018-Present Adjust GmbH. All rights reserved.
 //
 
-#import "AdjustSdk.h"
-#import "AdjustSdkDelegate.h"
+#import "./include/adjust_sdk/AdjustSdk.h"
+#import "./include/adjust_sdk/AdjustSdkDelegate.h"
+#if __has_include(<AdjustSdk/AdjustSdk.h>)
 #import <AdjustSdk/AdjustSdk.h>
+#else
+#import <Adjust/Adjust.h>
+#endif
 
 static NSString * const CHANNEL_API_NAME = @"com.adjust.sdk/api";
 static NSString * const DIRECT_DEEPLINK_CALLBACK_NAME = @"adj-direct-deeplink";
