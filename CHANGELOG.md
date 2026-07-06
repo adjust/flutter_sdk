@@ -1,5 +1,6 @@
 ### Version 5.7.0 (6th July 2026)
 #### Added
+- Added support for iOS integration via Swift Package Manager.
 - Added `Adjust.getThirdPartySharingSettingsWithTimeout` method and the `thirdPartySharingSettingsChangedCallback` member of `AdjustConfig` for reading the current third-party-sharing settings from the Adjust backend and receiving updates when they change.
 
 #### Native SDKs
