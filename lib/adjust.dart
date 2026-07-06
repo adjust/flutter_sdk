@@ -23,13 +23,14 @@ import 'package:adjust_sdk/adjust_remote_trigger.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
+import 'package:adjust_sdk/adjust_third_party_sharing_result.dart';
 import 'package:adjust_sdk/adjust_deeplink.dart';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter5.6.2';
+  static const String _sdkPrefix = 'flutter5.7.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
   static const String _attributionCallbackName = 'adj-attribution-changed';
@@ -41,6 +42,8 @@ class Adjust {
   static const String _directDeeplinkCallbackName = 'adj-direct-deeplink';
   static const String _remoteTriggerCallbackName = 'adj-remote-trigger';
   static const String _skanUpdatedCallbackName = 'adj-skan-updated';
+  static const String _thirdPartySharingSettingsChangedCallbackName =
+      'adj-third-party-sharing-settings-changed';
 
   static bool _isMethodCallHandlerInitialized = false;
   static AttributionCallback? _attributionCallback;
@@ -52,6 +55,8 @@ class Adjust {
   static SkanUpdatedCallback? _skanUpdatedCallback;
   static DirectDeeplinkCallback? _directDeeplinkCallback;
   static RemoteTriggerCallback? _remoteTriggerCallback;
+  static ThirdPartySharingSettingsChangedCallback?
+      _thirdPartySharingSettingsChangedCallback;
 
   // common
 
@@ -72,6 +77,8 @@ class Adjust {
     _directDeeplinkCallback = config.directDeeplinkCallback;
     _remoteTriggerCallback = config.remoteTriggerCallback;
     _skanUpdatedCallback = config.skanUpdatedCallback;
+    _thirdPartySharingSettingsChangedCallback =
+        config.thirdPartySharingSettingsChangedCallback;
   }
 
   static void _initMethodCallHandler() {
@@ -137,6 +144,14 @@ class Adjust {
           case _skanUpdatedCallbackName:
             if (_skanUpdatedCallback != null) {
               _skanUpdatedCallback!(Map<String, String>.from(call.arguments));
+            }
+            break;
+          case _thirdPartySharingSettingsChangedCallbackName:
+            if (_thirdPartySharingSettingsChangedCallback != null) {
+              AdjustThirdPartySharingResult thirdPartySharingResult =
+                  AdjustThirdPartySharingResult.fromMap(call.arguments);
+              _thirdPartySharingSettingsChangedCallback!(
+                  thirdPartySharingResult);
             }
             break;
           default:
@@ -284,6 +299,18 @@ class Adjust {
   static Future<String?> getLastDeeplink() async {
     final String? deeplink = await _channel.invokeMethod('getLastDeeplink');
     return deeplink;
+  }
+
+  static Future<AdjustThirdPartySharingResult?>
+      getThirdPartySharingSettingsWithTimeout(
+          int timeoutInMilliseconds) async {
+    final dynamic thirdPartySharingResultMap = await _channel.invokeMethod(
+        'getThirdPartySharingSettingsWithTimeout',
+        {'timeoutInMilliseconds': timeoutInMilliseconds});
+    if (thirdPartySharingResultMap == null) {
+      return null;
+    }
+    return AdjustThirdPartySharingResult.fromMap(thirdPartySharingResultMap);
   }
 
   static Future<String> getSdkVersion() async {

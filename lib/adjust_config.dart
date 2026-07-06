@@ -15,6 +15,7 @@ import 'package:adjust_sdk/adjust_remote_trigger.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_store_info.dart';
+import 'package:adjust_sdk/adjust_third_party_sharing_result.dart';
 
 enum AdjustLogLevel { verbose, debug, info, warn, error, suppress }
 
@@ -29,6 +30,8 @@ typedef void DeferredDeeplinkCallback(String? deeplink);
 typedef void DirectDeeplinkCallback(String? deeplink);
 typedef void RemoteTriggerCallback(AdjustRemoteTrigger remoteTrigger);
 typedef void SkanUpdatedCallback(Map<String, String> skanUpdateData);
+typedef void ThirdPartySharingSettingsChangedCallback(
+    AdjustThirdPartySharingResult thirdPartySharingResult);
 
 class AdjustConfig {
   static const String _attributionCallbackName = 'adj-attribution-changed';
@@ -39,6 +42,8 @@ class AdjustConfig {
   static const String _deferredDeeplinkCallbackName = 'adj-deferred-deeplink';
   static const String _remoteTriggerCallbackName = 'adj-remote-trigger';
   static const String _skanUpdatedCallbackName = 'adj-skan-updated';
+  static const String _thirdPartySharingSettingsChangedCallbackName =
+      'adj-third-party-sharing-settings-changed';
 
   final String _appToken;
   final AdjustEnvironment _environment;
@@ -58,6 +63,7 @@ class AdjustConfig {
   bool? isFirstSessionDelayEnabled;
   bool? isAppTrackingTransparencyUsageEnabled;
   bool? isAppSetIdReadingEnabled;
+  bool? isFbIdReadingEnabled;
 
   num? attConsentWaitingInterval;
   num? eventDeduplicationIdsMaxSize;
@@ -84,6 +90,8 @@ class AdjustConfig {
   DirectDeeplinkCallback? directDeeplinkCallback;
   RemoteTriggerCallback? remoteTriggerCallback;
   SkanUpdatedCallback? skanUpdatedCallback;
+  ThirdPartySharingSettingsChangedCallback?
+      thirdPartySharingSettingsChangedCallback;
 
   AdjustConfig(this._appToken, this._environment);
 
@@ -184,6 +192,9 @@ class AdjustConfig {
     if (isAppSetIdReadingEnabled != null) {
       configMap['isAppSetIdReadingEnabled'] = isAppSetIdReadingEnabled.toString();
     }
+    if (isFbIdReadingEnabled != null) {
+      configMap['isFbIdReadingEnabled'] = isFbIdReadingEnabled.toString();
+    }
     if (attConsentWaitingInterval != null) {
       configMap['attConsentWaitingInterval'] = attConsentWaitingInterval.toString();
     }
@@ -210,6 +221,10 @@ class AdjustConfig {
     }
     if (skanUpdatedCallback != null) {
       configMap['skanUpdatedCallback'] = _skanUpdatedCallbackName;
+    }
+    if (thirdPartySharingSettingsChangedCallback != null) {
+      configMap['thirdPartySharingSettingsChangedCallback'] =
+          _thirdPartySharingSettingsChangedCallbackName;
     }
 
     return configMap;

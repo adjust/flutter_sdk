@@ -19,6 +19,7 @@ static NSString *dartEventFailureCallback = nil;
 static NSString *dartDeferredDeeplinkCallback = nil;
 static NSString *dartRemoteTriggerCallback = nil;
 static NSString *dartSkanUpdatedCallback = nil;
+static NSString *dartThirdPartySharingSettingsChangedCallback = nil;
 
 @implementation AdjustSdkDelegate
 
@@ -42,6 +43,7 @@ static NSString *dartSkanUpdatedCallback = nil;
                          deferredDeeplinkCallback:(NSString *)swizzleDeferredDeeplinkCallback
                              remoteTriggerCallback:(NSString *)swizzleRemoteTriggerCallback
                               skanUpdatedCallback:(NSString *)swizzleSkanUpdatedCallback
+            thirdPartySharingSettingsChangedCallback:(NSString *)swizzleThirdPartySharingSettingsChangedCallback
                      shouldLaunchDeferredDeeplink:(BOOL)shouldLaunchDeferredDeeplink
                                     methodChannel:(FlutterMethodChannel *)channel {
     dispatch_once(&onceToken, ^{
@@ -88,6 +90,11 @@ static NSString *dartSkanUpdatedCallback = nil;
                                   swizzledSelector:@selector(adjustSkanUpdatedWithConversionDataWannabe:)];
             dartSkanUpdatedCallback = swizzleSkanUpdatedCallback;
         }
+        if (swizzleThirdPartySharingSettingsChangedCallback != nil) {
+            [defaultInstance swizzleCallbackMethod:@selector(adjustThirdPartySharingSettingsChanged:)
+                                  swizzledSelector:@selector(adjustThirdPartySharingSettingsChangedWannabe:)];
+            dartThirdPartySharingSettingsChangedCallback = swizzleThirdPartySharingSettingsChangedCallback;
+        }
 
         [defaultInstance setShouldLaunchDeferredDeeplink:shouldLaunchDeferredDeeplink];
         [defaultInstance setChannel:channel];
@@ -107,6 +114,7 @@ static NSString *dartSkanUpdatedCallback = nil;
     dartDeferredDeeplinkCallback = nil;
     dartRemoteTriggerCallback = nil;
     dartSkanUpdatedCallback = nil;
+    dartThirdPartySharingSettingsChangedCallback = nil;
 }
 
 #pragma mark - Private & helper methods
@@ -320,6 +328,20 @@ static NSString *dartSkanUpdatedCallback = nil;
                                                                  forKeys:keys
                                                                    count:count];
     [self.channel invokeMethod:dartRemoteTriggerCallback arguments:remoteTriggerMap];
+}
+
+- (void)adjustThirdPartySharingSettingsChangedWannabe:(ADJThirdPartySharingResult *)thirdPartySharingResult {
+    if (nil == thirdPartySharingResult || nil == dartThirdPartySharingSettingsChangedCallback) {
+        return;
+    }
+
+    id keys[] = { @"thirdPartySharingSettingsJson" };
+    id values[] = { [self getValueOrEmpty:[thirdPartySharingResult thirdPartySharingSettingsJson]] };
+    NSUInteger count = sizeof(values) / sizeof(id);
+    NSDictionary *thirdPartySharingResultMap = [NSDictionary dictionaryWithObjects:values
+                                                                           forKeys:keys
+                                                                             count:count];
+    [self.channel invokeMethod:dartThirdPartySharingSettingsChangedCallback arguments:thirdPartySharingResultMap];
 }
 
 - (void)swizzleCallbackMethod:(SEL)originalSelector
