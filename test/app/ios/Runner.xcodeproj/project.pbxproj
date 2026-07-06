@@ -18,6 +18,7 @@
 		9D6D515025E068480074ED65 /* AdServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D6D514F25E068480074ED65 /* AdServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		9D6D515225E0684E0074ED65 /* AppTrackingTransparency.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D6D515125E0684E0074ED65 /* AppTrackingTransparency.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		9DF8057224F92ED000A001CE /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DF8057124F92ED000A001CE /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -57,6 +58,7 @@
 		9DF8057124F92ED000A001CE /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		CE5E6A5DD57C2557BF4AFA42 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		FF5BD321F363541564281E03 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
+		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
 				9DF8057224F92ED000A001CE /* AdSupport.framework in Frameworks */,
 				9D6D515025E068480074ED65 /* AdServices.framework in Frameworks */,
 				9D2B91D62C73E84D00507EA6 /* StoreKit.framework in Frameworks */,
@@ -102,6 +105,7 @@
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
+				78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */,
 				3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */,
 				9740EEB21CF90195004384FC /* Debug.xcconfig */,
 				7AFA3C8E1D35360C0083082E /* Release.xcconfig */,
@@ -148,6 +152,9 @@
 
 /* Begin PBXNativeTarget section */
 		97C146ED1CF9000F007C117D /* Runner */ = {
+			packageProductDependencies = (
+				78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */,
+			);
 			isa = PBXNativeTarget;
 			buildConfigurationList = 97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
@@ -173,6 +180,9 @@
 
 /* Begin PBXProject section */
 		97C146E61CF9000F007C117D /* Project object */ = {
+			packageReferences = (
+				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */,
+			);
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 1510;
@@ -400,10 +410,6 @@
 					"-ObjC",
 					"-framework",
 					"\"SystemConfiguration\"",
-					"-framework",
-					"\"adjust_sdk\"",
-					"-framework",
-					"\"test_lib\"",
 					"-weak_framework",
 					"\"AdSupport\"",
 					"-weak_framework",
@@ -556,10 +562,6 @@
 					"-ObjC",
 					"-framework",
 					"\"SystemConfiguration\"",
-					"-framework",
-					"\"adjust_sdk\"",
-					"-framework",
-					"\"test_lib\"",
 					"-weak_framework",
 					"\"AdSupport\"",
 					"-weak_framework",
@@ -604,10 +606,6 @@
 					"-ObjC",
 					"-framework",
 					"\"SystemConfiguration\"",
-					"-framework",
-					"\"adjust_sdk\"",
-					"-framework",
-					"\"test_lib\"",
 					"-weak_framework",
 					"\"AdSupport\"",
 					"-weak_framework",
@@ -647,6 +645,18 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+/* Begin XCLocalSwiftPackageReference section */
+		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
+		};
+/* End XCLocalSwiftPackageReference section */
+/* Begin XCSwiftPackageProductDependency section */
+		78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FlutterGeneratedPluginSwiftPackage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 97C146E61CF9000F007C117D /* Project object */;
 }
