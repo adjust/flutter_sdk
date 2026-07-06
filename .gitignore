@@ -108,6 +108,8 @@ unlinked_spec.ds
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
 **/ios/**/dgph
+# SwiftPM resolved state (regenerated each build; versions pinned via pubspec.lock + Package.swift)
+**/ios/**/xcshareddata/swiftpm/Package.resolved
 
 # macos
 **/macos/Flutter/GeneratedPluginRegistrant.swift

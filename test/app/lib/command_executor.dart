@@ -23,6 +23,7 @@ import 'package:adjust_sdk/adjust_play_store_purchase.dart';
 import 'package:adjust_sdk/adjust_session_failure.dart';
 import 'package:adjust_sdk/adjust_session_success.dart';
 import 'package:adjust_sdk/adjust_third_party_sharing.dart';
+import 'package:adjust_sdk/adjust_third_party_sharing_result.dart';
 import 'package:adjust_sdk/adjust_purchase_verification_result.dart';
 import 'package:adjust_sdk/adjust_deeplink.dart';
 import 'package:adjust_sdk/adjust_remote_trigger.dart';
@@ -158,6 +159,9 @@ class CommandExecutor {
         break;
       case 'attributionGetterWithTimeout':
         _attributionGetterWithTimeout();
+        break;
+      case 'tpsSettingsGetter':
+        _tpsSettingsGetter();
         break;
       case 'idfaGetter':
         _idfaGetter();
@@ -441,6 +445,11 @@ class CommandExecutor {
       }
     }
 
+    if (_command.containsParameter('fbIdReadingEnabled')) {
+      adjustConfig!.isFbIdReadingEnabled =
+          _command.getFirstParameterValue('fbIdReadingEnabled') == 'true';
+    }
+
     if (_command.containsParameter('attConsentWaitingSeconds')) {
       adjustConfig!.attConsentWaitingInterval =
           double.parse(_command.getFirstParameterValue('attConsentWaitingSeconds')!);
@@ -455,6 +464,7 @@ class CommandExecutor {
     adjustConfig.deferredDeeplinkCallback = null;
     adjustConfig.remoteTriggerCallback = null;
     adjustConfig.skanUpdatedCallback = null;
+    adjustConfig.thirdPartySharingSettingsChangedCallback = null;
 
     // TODO: Deeplinking in Flutter example.
     // https://github.com/flutter/flutter/issues/8711#issuecomment-304681212
@@ -614,6 +624,19 @@ class CommandExecutor {
         TestLib.sendInfoMapToServer(localBasePath, <String, String?>{
           'label': remoteTrigger.label,
           'payload': remoteTrigger.payloadJson,
+        });
+      };
+    }
+
+    if (_command.containsParameter('thirdPartySharingSettingsChangedCallbackSendAll')) {
+      String? localBasePath = _extraPath;
+      adjustConfig.thirdPartySharingSettingsChangedCallback =
+          (AdjustThirdPartySharingResult thirdPartySharingResult) {
+        print(
+            '[CommandExecutor]: Third Party Sharing Settings Changed Callback: ${thirdPartySharingResult.thirdPartySharingSettingsJson}');
+        TestLib.sendInfoMapToServer(localBasePath, <String, String?>{
+          'third_party_sharing_settings':
+              thirdPartySharingResult.thirdPartySharingSettingsJson,
         });
       };
     }
@@ -1219,6 +1242,28 @@ class CommandExecutor {
       }
       TestLib.addInfoToSend('test_callback_id', testCallbackId);
       TestLib.sendInfoToServer(localBasePath);
+    });
+  }
+
+  void _tpsSettingsGetter() {
+    var timeoutStr = _command.getFirstParameterValue('timeout');
+    var timeout = int.parse(timeoutStr!);
+    var testCallbackId = _command.getFirstParameterValue('testCallbackId');
+    String? localExtraPath = _extraPath;
+
+    Adjust.getThirdPartySharingSettingsWithTimeout(timeout).then((result) {
+      if (result != null) {
+        TestLib.addInfoToSend(
+            'third_party_sharing', result.thirdPartySharingSettingsJson);
+      } else {
+        if (Platform.isIOS) {
+          TestLib.addInfoToSend('third_party_sharing', 'nil');
+        } else if (Platform.isAndroid) {
+          TestLib.addInfoToSend('third_party_sharing', 'null');
+        }
+      }
+      TestLib.addInfoToSend('test_callback_id', testCallbackId);
+      TestLib.sendInfoToServer(localExtraPath);
     });
   }
 
