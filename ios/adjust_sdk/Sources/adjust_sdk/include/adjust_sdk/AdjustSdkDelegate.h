@@ -26,6 +26,7 @@
                          deferredDeeplinkCallback:(NSString *)swizzleDeferredDeeplinkCallback
                              remoteTriggerCallback:(NSString *)swizzleRemoteTriggerCallback
                               skanUpdatedCallback:(NSString *)swizzleSkanUpdatedCallback
+            thirdPartySharingSettingsChangedCallback:(NSString *)swizzleThirdPartySharingSettingsChangedCallback
                      shouldLaunchDeferredDeeplink:(BOOL)shouldLaunchDeferredDeeplink
                                     methodChannel:(FlutterMethodChannel *)channel;
 

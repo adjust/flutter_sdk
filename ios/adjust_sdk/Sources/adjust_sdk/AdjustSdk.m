@@ -232,6 +232,8 @@ continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
         }];
     } else if ([@"getAdidWithTimeout" isEqualToString:call.method]) {
         [self getAdidWithTimeout:call withResult:result];
+    } else if ([@"getThirdPartySharingSettingsWithTimeout" isEqualToString:call.method]) {
+        [self getThirdPartySharingSettingsWithTimeout:call withResult:result];
     } else if ([@"verifyAppStorePurchase" isEqualToString:call.method]) {
         [self verifyAppStorePurchase:call withResult:result];
     } else if ([@"verifyAndTrackAppStorePurchase" isEqualToString:call.method]) {
@@ -287,6 +289,7 @@ continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
     NSString *strStoreInfoJson = call.arguments[@"storeInfo"];
     NSString *isSkanAttributionEnabled = call.arguments[@"isSkanAttributionEnabled"];
     NSString *isDeviceIdsReadingOnceEnabled = call.arguments[@"isDeviceIdsReadingOnceEnabled"];
+    NSString *isFbIdReadingEnabled = call.arguments[@"isFbIdReadingEnabled"];
     NSString *dartAttributionCallback = call.arguments[@"attributionCallback"];
     NSString *dartSessionSuccessCallback = call.arguments[@"sessionSuccessCallback"];
     NSString *dartSessionFailureCallback = call.arguments[@"sessionFailureCallback"];
@@ -295,6 +298,7 @@ continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
     NSString *dartDeferredDeeplinkCallback = call.arguments[@"deferredDeeplinkCallback"];
     NSString *dartRemoteTriggerCallback = call.arguments[@"remoteTriggerCallback"];
     NSString *dartSkanUpdatedCallback = call.arguments[@"skanUpdatedCallback"];
+    NSString *dartThirdPartySharingSettingsChangedCallback = call.arguments[@"thirdPartySharingSettingsChangedCallback"];
     BOOL allowSuppressLogLevel = NO;
     BOOL launchDeferredDeeplink = [call.arguments[@"launchDeferredDeeplink"] boolValue];
 
@@ -424,6 +428,13 @@ continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
         }
     }
 
+    // FB ID reading
+    if ([self isFieldValid:isFbIdReadingEnabled]) {
+        if ([isFbIdReadingEnabled boolValue] == NO) {
+            [adjustConfig disableFbIdReading];
+        }
+    }
+
     // SKAdNetwork attribution
     if ([self isFieldValid:isSkanAttributionEnabled]) {
         if ([isSkanAttributionEnabled boolValue] == NO) {
@@ -451,7 +462,8 @@ continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
         || dartEventFailureCallback != nil
         || dartDeferredDeeplinkCallback != nil
         || dartRemoteTriggerCallback != nil
-        || dartSkanUpdatedCallback != nil) {
+        || dartSkanUpdatedCallback != nil
+        || dartThirdPartySharingSettingsChangedCallback != nil) {
         [adjustConfig setDelegate:
          [AdjustSdkDelegate getInstanceWithSwizzleOfAttributionCallback:dartAttributionCallback
                                                  sessionSuccessCallback:dartSessionSuccessCallback
@@ -461,6 +473,7 @@ continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
                                                deferredDeeplinkCallback:dartDeferredDeeplinkCallback
                                                 remoteTriggerCallback:dartRemoteTriggerCallback
                                                     skanUpdatedCallback:dartSkanUpdatedCallback
+                            thirdPartySharingSettingsChangedCallback:dartThirdPartySharingSettingsChangedCallback
                                            shouldLaunchDeferredDeeplink:launchDeferredDeeplink
                                                           methodChannel:self.channel]];
     }
@@ -833,6 +846,30 @@ continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
     NSInteger timeoutMs = [timeoutInMilliseconds integerValue];
     [Adjust adidWithTimeout:timeoutMs completionHandler:^(NSString * _Nullable adid) {
         result(adid);
+    }];
+}
+
+- (void)getThirdPartySharingSettingsWithTimeout:(FlutterMethodCall *)call withResult:(FlutterResult)result {
+    NSNumber *timeoutInMilliseconds = call.arguments[@"timeoutInMilliseconds"];
+    if (timeoutInMilliseconds == nil) {
+        result([FlutterError errorWithCode:@"INVALID_ARGUMENT"
+                                   message:@"timeoutInMilliseconds is required"
+                                   details:nil]);
+        return;
+    }
+
+    NSInteger timeoutMs = [timeoutInMilliseconds integerValue];
+    [Adjust thirdPartySharingSettingsWithTimeout:timeoutMs
+                               completionHandler:^(ADJThirdPartySharingResult * _Nullable thirdPartySharingResult) {
+        if (thirdPartySharingResult == nil) {
+            result(nil);
+            return;
+        }
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        [self addValueOrEmpty:thirdPartySharingResult.thirdPartySharingSettingsJson
+                      withKey:@"thirdPartySharingSettingsJson"
+                 toDictionary:dictionary];
+        result(dictionary);
     }];
 }
 

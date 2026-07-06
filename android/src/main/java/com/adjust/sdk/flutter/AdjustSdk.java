@@ -27,6 +27,7 @@ import com.adjust.sdk.AdjustPurchaseVerificationResult;
 import com.adjust.sdk.AdjustRemoteTrigger;
 import com.adjust.sdk.AdjustStoreInfo;
 import com.adjust.sdk.AdjustThirdPartySharing;
+import com.adjust.sdk.AdjustThirdPartySharingResult;
 import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
@@ -37,6 +38,8 @@ import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import com.adjust.sdk.OnRemoteTriggerListener;
+import com.adjust.sdk.OnThirdPartySharingSettingsReadListener;
+import com.adjust.sdk.OnThirdPartySharingSettingsChangedListener;
 import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 import com.adjust.sdk.OnLastDeeplinkReadListener;
 import com.adjust.sdk.OnDeeplinkResolvedListener;
@@ -269,6 +272,9 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
             case "getAdidWithTimeout":
                 getAdidWithTimeout(call, result);
                 break;
+            case "getThirdPartySharingSettingsWithTimeout":
+                getThirdPartySharingSettingsWithTimeout(call, result);
+                break;
             case "getLastDeeplink":
                 getLastDeeplink(result);
                 break;
@@ -446,6 +452,15 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
             boolean isAppSetIdReadingEnabled = Boolean.parseBoolean(strIsAppSetIdReadingEnabled);
             if (!isAppSetIdReadingEnabled) {
                 adjustConfig.disableAppSetIdReading();
+            }
+        }
+
+        // FB ID reading (Android only)
+        if (configMap.containsKey("isFbIdReadingEnabled")) {
+            String strIsFbIdReadingEnabled = (String) configMap.get("isFbIdReadingEnabled");
+            boolean isFbIdReadingEnabled = Boolean.parseBoolean(strIsFbIdReadingEnabled);
+            if (!isFbIdReadingEnabled) {
+                adjustConfig.disableFbIdReading();
             }
         }
 
@@ -712,6 +727,21 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
                     public void onRemoteTrigger(AdjustRemoteTrigger remoteTrigger) {
                         if (channel != null) {
                             channel.invokeMethod(dartMethodName, getRemoteTriggerMap(remoteTrigger));
+                        }
+                    }
+                });
+            }
+        }
+
+        // third party sharing settings changed callback
+        if (configMap.containsKey("thirdPartySharingSettingsChangedCallback")) {
+            final String dartMethodName = (String) configMap.get("thirdPartySharingSettingsChangedCallback");
+            if (dartMethodName != null) {
+                adjustConfig.setOnThirdPartySharingSettingsChangedListener(new OnThirdPartySharingSettingsChangedListener() {
+                    @Override
+                    public void onThirdPartySharingSettingsChanged(AdjustThirdPartySharingResult thirdPartySharingResult) {
+                        if (channel != null) {
+                            channel.invokeMethod(dartMethodName, getThirdPartySharingResultMap(thirdPartySharingResult));
                         }
                     }
                 });
@@ -1153,6 +1183,33 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
             @Override
             public void onAdidRead(String adid) {
                 result.success(adid);
+            }
+        });
+    }
+
+    private void getThirdPartySharingSettingsWithTimeout(final MethodCall call, final Result result) {
+        Map timeoutMap = (Map) call.arguments;
+        if (timeoutMap == null || !timeoutMap.containsKey("timeoutInMilliseconds")) {
+            result.error("INVALID_ARGUMENT", "timeoutInMilliseconds is required", null);
+            return;
+        }
+
+        long timeoutInMilliseconds;
+        try {
+            timeoutInMilliseconds = Long.parseLong(timeoutMap.get("timeoutInMilliseconds").toString());
+        } catch (NumberFormatException e) {
+            result.error("INVALID_ARGUMENT", "timeoutInMilliseconds must be a valid number", null);
+            return;
+        }
+
+        Adjust.getThirdPartySharingSettingsWithTimeout(applicationContext, timeoutInMilliseconds, new OnThirdPartySharingSettingsReadListener() {
+            @Override
+            public void onThirdPartySharingSettingsRead(AdjustThirdPartySharingResult thirdPartySharingResult) {
+                if (thirdPartySharingResult == null) {
+                    result.success(null);
+                    return;
+                }
+                result.success(getThirdPartySharingResultMap(thirdPartySharingResult));
             }
         });
     }
@@ -1621,5 +1678,16 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
         remoteTriggerMap.put("label", remoteTrigger.getLabel() != null ? remoteTrigger.getLabel() : "");
         remoteTriggerMap.put("payloadJson", remoteTrigger.getPayload() != null ? remoteTrigger.getPayload().toString() : "{}");
         return remoteTriggerMap;
+    }
+
+    private HashMap<String, String> getThirdPartySharingResultMap(AdjustThirdPartySharingResult thirdPartySharingResult) {
+        HashMap<String, String> thirdPartySharingResultMap = new HashMap<String, String>();
+        if (thirdPartySharingResult == null || thirdPartySharingResult.getThirdPartySharingSettingsJson() == null) {
+            thirdPartySharingResultMap.put("thirdPartySharingSettingsJson", "{}");
+            return thirdPartySharingResultMap;
+        }
+
+        thirdPartySharingResultMap.put("thirdPartySharingSettingsJson", thirdPartySharingResult.getThirdPartySharingSettingsJson());
+        return thirdPartySharingResultMap;
     }
 }
