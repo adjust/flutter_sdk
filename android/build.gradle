@@ -9,13 +9,13 @@ if (hostAppProject != null) {
 }
 
 android {
-    compileSdkVersion 36
+    compileSdk = 36
 
     defaultConfig {
-        minSdkVersion 16
+        minSdk = 16
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-    lintOptions {
+    lint {
         disable 'InvalidPackage'
     }
     namespace 'com.adjust.sdk.flutter'
