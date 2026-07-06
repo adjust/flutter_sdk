@@ -3,6 +3,9 @@
 - Added support for iOS integration via Swift Package Manager.
 - Added `Adjust.getThirdPartySharingSettingsWithTimeout` method and the `thirdPartySharingSettingsChangedCallback` member of `AdjustConfig` for reading the current third-party-sharing settings from the Adjust backend and receiving updates when they change.
 
+#### Changed
+- Updated the Android plugin's Gradle DSL (`compileSdk`, `minSdk`, `lint`) for compatibility with Android Gradle Plugin (AGP) 9, while remaining backward compatible with earlier AGP versions (https://github.com/adjust/flutter_sdk/issues/195).
+
 #### Native SDKs
 - **iOS:** [v5.7.0](https://github.com/adjust/ios_sdk/tree/v5.7.0)
 - **Android:** [v5.7.0](https://github.com/adjust/android_sdk/tree/v5.7.0)
