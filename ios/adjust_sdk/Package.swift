@@ -10,7 +10,7 @@ let package = Package(
     .library(name: "adjust-sdk", targets: ["adjust_sdk"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/adjust/ios_sdk.git", exact: "5.6.2"),
+    .package(url: "https://github.com/adjust/ios_sdk.git", exact: "5.7.0"),
   ],
   targets: [
     .target(
