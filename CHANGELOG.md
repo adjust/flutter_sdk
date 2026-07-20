@@ -1,3 +1,13 @@
+### Version 5.7.1 (20th July 2026)
+#### Fixed
+- Fixed handling of the deferred deep links opening on the iOS (https://github.com/adjust/flutter_sdk/issues/188).
+
+#### Native SDKs
+- **iOS:** [v5.7.0](https://github.com/adjust/ios_sdk/tree/v5.7.0)
+- **Android:** [v5.7.0](https://github.com/adjust/android_sdk/tree/v5.7.0)
+
+---
+
 ### Version 5.7.0 (6th July 2026)
 #### Added
 - Added support for iOS integration via Swift Package Manager.
