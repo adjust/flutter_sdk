@@ -300,7 +300,10 @@ continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
     NSString *dartSkanUpdatedCallback = call.arguments[@"skanUpdatedCallback"];
     NSString *dartThirdPartySharingSettingsChangedCallback = call.arguments[@"thirdPartySharingSettingsChangedCallback"];
     BOOL allowSuppressLogLevel = NO;
-    BOOL launchDeferredDeeplink = [call.arguments[@"launchDeferredDeeplink"] boolValue];
+    BOOL launchDeferredDeeplink = YES;
+    if (call.arguments[@"isDeferredDeeplinkOpeningEnabled"] != nil) {
+        launchDeferredDeeplink = [call.arguments[@"isDeferredDeeplinkOpeningEnabled"] boolValue];
+    }
 
     // suppress log level
     if ([self isFieldValid:logLevel]) {
