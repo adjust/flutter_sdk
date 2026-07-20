@@ -465,6 +465,7 @@ class CommandExecutor {
     adjustConfig.remoteTriggerCallback = null;
     adjustConfig.skanUpdatedCallback = null;
     adjustConfig.thirdPartySharingSettingsChangedCallback = null;
+    adjustConfig.directDeeplinkCallback = null;
 
     // TODO: Deeplinking in Flutter example.
     // https://github.com/flutter/flutter/issues/8711#issuecomment-304681212
@@ -477,6 +478,15 @@ class CommandExecutor {
       adjustConfig.deferredDeeplinkCallback = (String? deeplink) {
         print('[CommandExecutor]: Sending deeplink info to server: $deeplink');
         TestLib.addInfoToSend('deeplink', deeplink);
+        TestLib.sendInfoToServer(localBasePath);
+      };
+    }
+
+    if (_command.containsParameter('directDeeplinkCallback')) {
+      String? localBasePath = _extraPath;
+      adjustConfig.directDeeplinkCallback = (String? deeplink) {
+        print('[CommandExecutor]: Sending direct deeplink info to server: $deeplink');
+        TestLib.addInfoToSend('direct_deeplink', deeplink);
         TestLib.sendInfoToServer(localBasePath);
       };
     }
