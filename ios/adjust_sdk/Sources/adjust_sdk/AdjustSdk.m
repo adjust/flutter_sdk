@@ -290,6 +290,7 @@ continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
     NSString *isSkanAttributionEnabled = call.arguments[@"isSkanAttributionEnabled"];
     NSString *isDeviceIdsReadingOnceEnabled = call.arguments[@"isDeviceIdsReadingOnceEnabled"];
     NSString *isFbIdReadingEnabled = call.arguments[@"isFbIdReadingEnabled"];
+    NSString *isDeviceIdsReadingEnabled = call.arguments[@"isDeviceIdsReadingEnabled"];
     NSString *dartAttributionCallback = call.arguments[@"attributionCallback"];
     NSString *dartSessionSuccessCallback = call.arguments[@"sessionSuccessCallback"];
     NSString *dartSessionFailureCallback = call.arguments[@"sessionFailureCallback"];
@@ -435,6 +436,13 @@ continueUserActivity:(NSUserActivity *)userActivity API_AVAILABLE(ios(13.0)) {
     if ([self isFieldValid:isFbIdReadingEnabled]) {
         if ([isFbIdReadingEnabled boolValue] == NO) {
             [adjustConfig disableFbIdReading];
+        }
+    }
+
+    // all device IDs reading
+    if ([self isFieldValid:isDeviceIdsReadingEnabled]) {
+        if ([isDeviceIdsReadingEnabled boolValue] == NO) {
+            [adjustConfig disableDeviceIdsReading];
         }
     }
 

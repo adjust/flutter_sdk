@@ -446,6 +446,24 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
             }
         }
 
+        // Google advertising ID reading (Android only)
+        if (configMap.containsKey("isGoogleAdIdReadingEnabled")) {
+            String strIsGoogleAdIdReadingEnabled = (String) configMap.get("isGoogleAdIdReadingEnabled");
+            boolean isGoogleAdIdReadingEnabled = Boolean.parseBoolean(strIsGoogleAdIdReadingEnabled);
+            if (!isGoogleAdIdReadingEnabled) {
+                adjustConfig.disableGoogleAdIdReading();
+            }
+        }
+
+        // Android ID reading (Android only)
+        if (configMap.containsKey("isAndroidIdReadingEnabled")) {
+            String strIsAndroidIdReadingEnabled = (String) configMap.get("isAndroidIdReadingEnabled");
+            boolean isAndroidIdReadingEnabled = Boolean.parseBoolean(strIsAndroidIdReadingEnabled);
+            if (!isAndroidIdReadingEnabled) {
+                adjustConfig.disableAndroidIdReading();
+            }
+        }
+
         // app set ID reading (Android only)
         if (configMap.containsKey("isAppSetIdReadingEnabled")) {
             String strIsAppSetIdReadingEnabled = (String) configMap.get("isAppSetIdReadingEnabled");
@@ -455,12 +473,39 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
             }
         }
 
-        // FB ID reading (Android only)
+        // FB ID reading
         if (configMap.containsKey("isFbIdReadingEnabled")) {
             String strIsFbIdReadingEnabled = (String) configMap.get("isFbIdReadingEnabled");
             boolean isFbIdReadingEnabled = Boolean.parseBoolean(strIsFbIdReadingEnabled);
             if (!isFbIdReadingEnabled) {
                 adjustConfig.disableFbIdReading();
+            }
+        }
+
+        // Fire advertising ID reading (Android only)
+        if (configMap.containsKey("isFireAdIdReadingEnabled")) {
+            String strIsFireAdIdReadingEnabled = (String) configMap.get("isFireAdIdReadingEnabled");
+            boolean isFireAdIdReadingEnabled = Boolean.parseBoolean(strIsFireAdIdReadingEnabled);
+            if (!isFireAdIdReadingEnabled) {
+                adjustConfig.disableFireAdIdReading();
+            }
+        }
+
+        // device IDs from plugins reading (Android only)
+        if (configMap.containsKey("isDeviceIdsFromPluginsReadingEnabled")) {
+            String strIsDeviceIdsFromPluginsReadingEnabled = (String) configMap.get("isDeviceIdsFromPluginsReadingEnabled");
+            boolean isDeviceIdsFromPluginsReadingEnabled = Boolean.parseBoolean(strIsDeviceIdsFromPluginsReadingEnabled);
+            if (!isDeviceIdsFromPluginsReadingEnabled) {
+                adjustConfig.disableDeviceIdsFromPluginsReading();
+            }
+        }
+
+        // all device IDs reading
+        if (configMap.containsKey("isDeviceIdsReadingEnabled")) {
+            String strIsDeviceIdsReadingEnabled = (String) configMap.get("isDeviceIdsReadingEnabled");
+            boolean isDeviceIdsReadingEnabled = Boolean.parseBoolean(strIsDeviceIdsReadingEnabled);
+            if (!isDeviceIdsReadingEnabled) {
+                adjustConfig.disableDeviceIdsReading();
             }
         }
 
@@ -740,6 +785,9 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
                 adjustConfig.setOnThirdPartySharingSettingsChangedListener(new OnThirdPartySharingSettingsChangedListener() {
                     @Override
                     public void onThirdPartySharingSettingsChanged(AdjustThirdPartySharingResult thirdPartySharingResult) {
+                        if (thirdPartySharingResult == null) {
+                            return;
+                        }
                         if (channel != null) {
                             channel.invokeMethod(dartMethodName, getThirdPartySharingResultMap(thirdPartySharingResult));
                         }
@@ -1166,7 +1214,7 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
 
     private void getAdidWithTimeout(final MethodCall call, final Result result) {
         Map timeoutMap = (Map) call.arguments;
-        if (timeoutMap == null || !timeoutMap.containsKey("timeoutInMilliseconds")) {
+        if (timeoutMap == null || timeoutMap.get("timeoutInMilliseconds") == null) {
             result.error("INVALID_ARGUMENT", "timeoutInMilliseconds is required", null);
             return;
         }
@@ -1189,7 +1237,7 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
 
     private void getThirdPartySharingSettingsWithTimeout(final MethodCall call, final Result result) {
         Map timeoutMap = (Map) call.arguments;
-        if (timeoutMap == null || !timeoutMap.containsKey("timeoutInMilliseconds")) {
+        if (timeoutMap == null || timeoutMap.get("timeoutInMilliseconds") == null) {
             result.error("INVALID_ARGUMENT", "timeoutInMilliseconds is required", null);
             return;
         }
@@ -1241,7 +1289,7 @@ public class AdjustSdk implements FlutterPlugin, MethodCallHandler, ActivityAwar
 
     private void getAttributionWithTimeout(final MethodCall call, final Result result) {
         Map timeoutMap = (Map) call.arguments;
-        if (timeoutMap == null || !timeoutMap.containsKey("timeoutInMilliseconds")) {
+        if (timeoutMap == null || timeoutMap.get("timeoutInMilliseconds") == null) {
             result.error("INVALID_ARGUMENT", "timeoutInMilliseconds is required", null);
             return;
         }

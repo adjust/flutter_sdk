@@ -438,16 +438,41 @@ class CommandExecutor {
     }
 
     if (Platform.isAndroid) {
+      if (_command.containsParameter('googleAdIdReadingEnabled')) {
+        adjustConfig!.isGoogleAdIdReadingEnabled =
+            _command.getFirstParameterValue('googleAdIdReadingEnabled') == 'true';
+      }
+
+      if (_command.containsParameter('androidIdReadingEnabled')) {
+        adjustConfig!.isAndroidIdReadingEnabled =
+            _command.getFirstParameterValue('androidIdReadingEnabled') == 'true';
+      }
+
       if (_command.containsParameter('appSetIdReadingEnabled')) {
         var appSetIdReadingEnabledS = _command.getFirstParameterValue('appSetIdReadingEnabled');
         var appSetIdReadingEnabled = appSetIdReadingEnabledS?.toLowerCase() == 'true';
         adjustConfig!.isAppSetIdReadingEnabled = appSetIdReadingEnabled;
+      }
+
+      if (_command.containsParameter('fireAdIdReadingEnabled')) {
+        adjustConfig!.isFireAdIdReadingEnabled =
+            _command.getFirstParameterValue('fireAdIdReadingEnabled') == 'true';
+      }
+
+      if (_command.containsParameter('deviceIdsFromPluginsReadingEnabled')) {
+        adjustConfig!.isDeviceIdsFromPluginsReadingEnabled =
+            _command.getFirstParameterValue('deviceIdsFromPluginsReadingEnabled') == 'true';
       }
     }
 
     if (_command.containsParameter('fbIdReadingEnabled')) {
       adjustConfig!.isFbIdReadingEnabled =
           _command.getFirstParameterValue('fbIdReadingEnabled') == 'true';
+    }
+
+    if (_command.containsParameter('deviceIdsReadingEnabled')) {
+      adjustConfig!.isDeviceIdsReadingEnabled =
+          _command.getFirstParameterValue('deviceIdsReadingEnabled') == 'true';
     }
 
     if (_command.containsParameter('attConsentWaitingSeconds')) {
