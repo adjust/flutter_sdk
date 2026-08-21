@@ -1,3 +1,18 @@
+### Version 5.8.0 (21st August 2026)
+#### Added
+- Added `isDeviceIdsReadingEnabled` member to `AdjustConfig` as an umbrella member alternative to setting individual device ID disabling members.
+- Added support for Samsung MAPS (Mobile Application Preload System).
+- Added support for sending parameters that identify preinstalled Android system apps.
+
+#### Changed
+- Updated the Adjust Signature library version to 5.0.0.
+
+#### Native SDKs
+- **iOS:** [v5.8.0](https://github.com/adjust/ios_sdk/tree/v5.8.0)
+- **Android:** [v5.8.0](https://github.com/adjust/android_sdk/tree/v5.8.0)
+
+---
+
 ### Version 5.7.1 (20th July 2026)
 #### Fixed
 - Fixed handling of the deferred deep links opening on the iOS (https://github.com/adjust/flutter_sdk/issues/188).

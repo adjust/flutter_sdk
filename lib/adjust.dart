@@ -30,7 +30,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class Adjust {
-  static const String _sdkPrefix = 'flutter5.7.1';
+  static const String _sdkPrefix = 'flutter5.8.0';
   static const MethodChannel _channel =
       const MethodChannel('com.adjust.sdk/api');
   static const String _attributionCallbackName = 'adj-attribution-changed';

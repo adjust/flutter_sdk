@@ -48,22 +48,32 @@ class AdjustConfig {
   final String _appToken;
   final AdjustEnvironment _environment;
 
-  bool? isSkanAttributionEnabled;
+  // common
   bool? isSendingInBackgroundEnabled;
+  bool? isCostDataInAttributionEnabled;
+  bool? isDeviceIdsReadingOnceEnabled;
+  bool? isCoppaComplianceEnabled;
+  bool? isDeferredDeeplinkOpeningEnabled;
+  bool? isFirstSessionDelayEnabled;
+  bool? isFbIdReadingEnabled;
+  bool? isDeviceIdsReadingEnabled;
+
+  // ios only
+  bool? isSkanAttributionEnabled;
   bool? isAdServicesEnabled;
   bool? isIdfaReadingEnabled;
   bool? isIdfvReadingEnabled;
-  bool? isCostDataInAttributionEnabled;
-  bool? isPreinstallTrackingEnabled;
   bool? isLinkMeEnabled;
-  bool? isDeviceIdsReadingOnceEnabled;
-  bool? isCoppaComplianceEnabled;
-  bool? isPlayStoreKidsComplianceEnabled;
-  bool? isDeferredDeeplinkOpeningEnabled;
-  bool? isFirstSessionDelayEnabled;
   bool? isAppTrackingTransparencyUsageEnabled;
+
+  // android only
+  bool? isPreinstallTrackingEnabled;
+  bool? isPlayStoreKidsComplianceEnabled;
+  bool? isGoogleAdIdReadingEnabled;
+  bool? isAndroidIdReadingEnabled;
   bool? isAppSetIdReadingEnabled;
-  bool? isFbIdReadingEnabled;
+  bool? isFireAdIdReadingEnabled;
+  bool? isDeviceIdsFromPluginsReadingEnabled;
 
   num? attConsentWaitingInterval;
   num? eventDeduplicationIdsMaxSize;
@@ -189,11 +199,26 @@ class AdjustConfig {
     if (isDeferredDeeplinkOpeningEnabled != null) {
       configMap['isDeferredDeeplinkOpeningEnabled'] = isDeferredDeeplinkOpeningEnabled.toString();
     }
+    if (isGoogleAdIdReadingEnabled != null) {
+      configMap['isGoogleAdIdReadingEnabled'] = isGoogleAdIdReadingEnabled.toString();
+    }
+    if (isAndroidIdReadingEnabled != null) {
+      configMap['isAndroidIdReadingEnabled'] = isAndroidIdReadingEnabled.toString();
+    }
     if (isAppSetIdReadingEnabled != null) {
       configMap['isAppSetIdReadingEnabled'] = isAppSetIdReadingEnabled.toString();
     }
     if (isFbIdReadingEnabled != null) {
       configMap['isFbIdReadingEnabled'] = isFbIdReadingEnabled.toString();
+    }
+    if (isFireAdIdReadingEnabled != null) {
+      configMap['isFireAdIdReadingEnabled'] = isFireAdIdReadingEnabled.toString();
+    }
+    if (isDeviceIdsFromPluginsReadingEnabled != null) {
+      configMap['isDeviceIdsFromPluginsReadingEnabled'] = isDeviceIdsFromPluginsReadingEnabled.toString();
+    }
+    if (isDeviceIdsReadingEnabled != null) {
+      configMap['isDeviceIdsReadingEnabled'] = isDeviceIdsReadingEnabled.toString();
     }
     if (attConsentWaitingInterval != null) {
       configMap['attConsentWaitingInterval'] = attConsentWaitingInterval.toString();
