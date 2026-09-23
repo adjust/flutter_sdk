@@ -5,9 +5,6 @@ test/
 ext/
 scripts/
 
-# Exclude plugins directory (plugins are published as separate packages)
-plugins/
-
 # Exclude build artifacts and development files
 **/build/
 **/.dart_tool/
