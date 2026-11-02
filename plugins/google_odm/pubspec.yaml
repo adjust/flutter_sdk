@@ -1,0 +1,18 @@
+name: adjust_sdk_google_odm
+description: Google On-Device Measurement (ODM) plugin for the Flutter SDK of Adjust™. You can read more about Adjust™ at adjust.com.
+homepage: https://github.com/adjust/flutter_sdk
+version: 5.8.0
+
+environment:
+  sdk: ">=2.12.0 <4.0.0"
+  flutter: ">=1.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      ios:
+        pluginClass: AdjustSdkGoogleOdm
