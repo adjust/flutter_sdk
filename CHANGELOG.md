@@ -1,4 +1,4 @@
-### Version 5.8.1 (28th October 2026)
+### Version 5.8.1 (2nd November 2026)
 #### Changed
 - Updated the Adjust Signature library version to 5.8.0.
 
