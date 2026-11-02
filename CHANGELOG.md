@@ -1,3 +1,13 @@
+### Version 5.8.1 (2nd November 2026)
+#### Changed
+- Updated the Adjust Signature library version to 5.8.0.
+
+#### Native SDKs
+- **iOS:** [v5.8.1](https://github.com/adjust/ios_sdk/tree/v5.8.1)
+- **Android:** [v5.8.1](https://github.com/adjust/android_sdk/tree/v5.8.1)
+
+---
+
 ### Version 5.8.0 (21st August 2026)
 #### Added
 - Added `isDeviceIdsReadingEnabled` member to `AdjustConfig` as an umbrella member alternative to setting individual device ID disabling members.
